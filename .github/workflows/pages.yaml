@@ -24,11 +24,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare site content
+      - name: Prepare Jekyll source
         run: |
-          mkdir -p site
-          cp README.md site/README.md
-          cp -r docs site/docs
+          mkdir -p site-src/docs
+          cat > site-src/_config.yml <<'EOF'
+          title: kotlin-peg-parser
+          theme: minima
+          EOF
+          {
+            cat <<'EOF'
+          ---
+          layout: default
+          title: Home
+          ---
+          EOF
+            cat README.md
+          } > site-src/index.md
+          find docs -name '*.md' -print0 | while IFS= read -r -d '' file; do
+            dest="site-src/$file"
+            mkdir -p "$(dirname "$dest")"
+            {
+              echo '---'
+              echo 'layout: default'
+              echo "title: $(basename "${file%.md}")"
+              echo '---'
+              echo
+              cat "$file"
+            } > "$dest"
+          done
+
+      - name: Build site with Jekyll
+        uses: actions/jekyll-build@v2
+        with:
+          source: ./site-src
+          destination: ./site
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
