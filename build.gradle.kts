@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "2.2.20"
+    id("maven-publish")
 }
 
 group = "mirrg.xarpite"
@@ -45,5 +46,13 @@ kotlin {
         val jsTest by getting
         val linuxX64Main by getting
         val linuxX64Test by getting
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri(layout.buildDirectory.dir("maven"))
+        }
     }
 }
