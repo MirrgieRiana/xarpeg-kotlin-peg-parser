@@ -20,15 +20,15 @@
     
     <nav class="header-nav" style="margin-top: 1.5rem;">
       <a href="{{ '/' | relative_url }}" class="btn">Home</a>
-      <a href="{{ '/docs/' | relative_url }}" class="btn">チュートリアル</a>
+      <a href="{{ '/docs/' | relative_url }}" class="btn">Tutorial</a>
       <a href="{{ site.repository }}" class="btn" target="_blank">GitHub</a>
     </nav>
   </header>
 
   <main class="main-content" role="main">
     {% if page.url contains '/docs/' and page.url != '/docs/index.html' %}
-    <nav class="doc-nav" aria-label="チュートリアルナビゲーション">
-      <a href="{{ '/docs/' | relative_url }}" class="doc-nav-item">📚 チュートリアルホーム</a>
+    <nav class="doc-nav" aria-label="Tutorial Navigation">
+      <a href="{{ '/docs/' | relative_url }}" class="doc-nav-item">📚 Tutorial Home</a>
       <a href="{{ '/docs/01-quickstart.html' | relative_url }}" class="doc-nav-item">🚀 Step 1: Quickstart</a>
       <a href="{{ '/docs/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 Step 2: Combinators</a>
       <a href="{{ '/docs/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 Step 3: Expressions</a>
