@@ -27,24 +27,14 @@ jobs:
           ref: maven
           path: maven
 
-      - name: Check relevant changes
-        id: changes
+      - name: Extract version and tag commit
         run: |
           tag_commit="$(git -C main rev-list -n 1 "$GITHUB_REF")"
           echo "TAG_COMMIT=$tag_commit" >> "$GITHUB_ENV"
-          changed_files="$(git -C main diff-tree --no-commit-id --name-only -r "$tag_commit")"
-          echo "Changed files:"
-          echo "$changed_files"
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-
-      - name: Extract version from tag
-        if: steps.changes.outputs.changed == 'true'
-        run: |
           version="${GITHUB_REF_NAME#v}"
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Verify tag is on main
-        if: steps.changes.outputs.changed == 'true'
         working-directory: main
         run: |
           git fetch origin main
@@ -54,20 +44,17 @@ jobs:
           fi
 
       - name: Set up JDK 17
-        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        if: steps.changes.outputs.changed == 'true'
         uses: gradle/actions/setup-gradle@v4
         with:
           build-root-directory: main
 
       - name: Prepare local maven repository
-        if: steps.changes.outputs.changed == 'true'
         run: |
           mkdir -p main/build/maven
           if [ -d maven/maven ]; then
@@ -75,18 +62,15 @@ jobs:
           fi
 
       - name: Publish artifacts
-        if: steps.changes.outputs.changed == 'true'
         working-directory: main
         run: ./gradlew publish
 
       - name: Sync artifacts to maven branch
-        if: steps.changes.outputs.changed == 'true'
         run: |
           mkdir -p maven/maven
           rsync -av --delete --exclude '.git/' main/build/maven/ maven/maven/
 
       - name: Commit and push artifacts
-        if: steps.changes.outputs.changed == 'true'
         working-directory: maven
         env:
           VERSION: ${{ github.ref_name }}
