@@ -201,6 +201,13 @@ A standalone Gradle sample that consumes the library via its Maven coordinate li
 (cd samples/java-run && ./gradlew run)
 ```
 
+A browser-based online parser sample lives under `samples/online-parser`. Build it to emit `build/site/index.html` that imports the JS module:
+
+```bash
+(cd samples/online-parser && ./gradlew build)
+# Open samples/online-parser/build/site/index.html in a browser
+```
+
 ---
 
 ## License
