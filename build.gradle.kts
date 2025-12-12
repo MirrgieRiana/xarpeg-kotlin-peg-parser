@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform") version "2.2.20"
     id("maven-publish")
+    id("org.jetbrains.dokka") version "2.0.0"
 }
 
 group = "io.github.mirrgieriana.xarpite"
@@ -60,6 +61,19 @@ publishing {
         maven {
             name = "local"
             url = uri(layout.buildDirectory.dir("maven"))
+        }
+    }
+}
+
+// Dokka configuration for KDoc generation
+tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
+    moduleName.set("kotlin-peg-parser")
+    outputDirectory.set(layout.buildDirectory.dir("dokka"))
+    
+    // Suppress linuxX64 source set to avoid Kotlin/Native download issues
+    dokkaSourceSets.configureEach {
+        if (name.contains("linuxX64", ignoreCase = true)) {
+            suppress.set(true)
         }
     }
 }
