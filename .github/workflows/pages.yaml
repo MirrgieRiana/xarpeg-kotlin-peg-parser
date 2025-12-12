@@ -54,6 +54,7 @@ jobs:
             } > "$dest"
           done
           cp pages/googlea59f33fe422494f1.html site-src
+          cp LICENSE site-src
 
       - name: Build site with Jekyll
         uses: actions/jekyll-build-pages@v1
