@@ -278,11 +278,32 @@ tasks.register("generateSrcFromDocs") {
         sourceFiles
             .sortedBy { it.first }
             .forEach { (relativePath, sourceFile) ->
-                val outputFile = outputDir.get().file("${relativePath.replace("/", ".")}.kt").asFile
+                val outputFile = outputDir.file("${relativePath.replace("/", ".")}.kt").asFile
                 val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
                 if (codeBlocks.isNotEmpty()) {
+                    val constantName = relativePath.replace("/", "_").replace(".", "_").replace(Regex("[^A-Za-z0-9_]"), "_") + "_snippets"
+                    fun escapeBlock(block: String): String {
+                        val tripleEscaped = block.replace("\"\"\"", "\\\"\\\"\\\"")
+                        return buildString {
+                            tripleEscaped.forEach { ch ->
+                                if (ch == '$') append("\${'$'}") else append(ch)
+                            }
+                        }
+                    }
+                    val snippetsBody = codeBlocks.joinToString(",\n\n") { block ->
+                        val escaped = escapeBlock(block)
+                        "    \"\"\"\n$escaped\n    \"\"\".trimIndent()"
+                    }
+                    val fileContent = buildString {
+                        appendLine("@file:Suppress(\"unused\")")
+                        appendLine("package docsnippets")
+                        appendLine()
+                        appendLine("val $constantName = listOf(")
+                        appendLine(snippetsBody)
+                        appendLine(")")
+                    }
                     outputFile.parentFile.mkdirs()
-                    outputFile.writeText(codeBlocks.joinToString("\n\n"))
+                    outputFile.writeText(fileContent)
                     println("Generated: ${outputFile.absolutePath}")
                 } else if (outputFile.exists()) {
                     outputFile.delete()
