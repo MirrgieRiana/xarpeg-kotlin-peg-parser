@@ -43,7 +43,6 @@ kotlin {
             kotlin.srcDir("imported/src/commonTest/kotlin")
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
             }
         }
 
