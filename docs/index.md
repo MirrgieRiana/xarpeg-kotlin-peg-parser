@@ -1,6 +1,5 @@
 # Kotlin PEG Parser Guide
 
-All documentation is maintained in English; please keep additions in English as well.  
 This guide is split into themed subpages so you can learn step by step. For API signatures, rely on IDE completion and KDoc.
 
 ## Reading path (hub)
