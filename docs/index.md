@@ -14,6 +14,8 @@ This guide is split into themed subpages so you can learn step by step. For API 
   → [04-runtime.md](04-runtime.md)
 - **Step 5 – Working with parsing positions:** using `mapEx` to access positions while keeping types simple  
   → [05-positions.md](05-positions.md)
+- **Step 6 – Template strings without tokenization:** handling embedded expressions naturally with PEG parsers  
+  → [06-template-strings.md](06-template-strings.md)
 
 ## Complete example: JSON parser
 

@@ -71,6 +71,12 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 4. **⚙️ [Runtime Behavior](./docs/04-runtime.md)** - Understand errors and performance  
    Deep dive into exceptions, full consumption requirements, and cache control.
 
+5. **📍 [Parsing Positions](./docs/05-positions.md)** - Access position information  
+   Work with parsing positions using `mapEx` while keeping types simple.
+
+6. **🔗 [Template Strings](./docs/06-template-strings.md)** - Parse without tokenization  
+   Discover how PEG parsers naturally handle template strings with embedded expressions.
+
 ### Additional Resources
 
 - **[Complete Tutorial Guide](./docs/index.md)** — Entry point for all tutorial content
