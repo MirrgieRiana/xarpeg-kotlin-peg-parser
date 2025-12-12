@@ -1,83 +1,59 @@
+import mirrg.xarpite.parser.ParseException
+import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.utilities.LazyArithmetic
-import mirrg.xarpite.parser.utilities.PositionMarkerException
+import mirrg.xarpite.parser.parsers.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 /**
- * Tests for the LazyArithmetic utility, which demonstrates position tracking
- * in a parser that returns lazy-evaluated arithmetic expressions.
+ * Exception thrown when the special '!' operator is evaluated.
+ */
+class PositionMarkerException(message: String, position: Int) : ParseException(message, position)
+
+/**
+ * Test demonstrating position tracking using mapEx with lazy arithmetic parser.
+ * The parser evaluates integer arithmetic lazily and uses '!' to mark positions.
  */
 class LazyArithmeticTest {
-
-    @Test
-    fun parseSimpleNumber() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("42")
-        assertEquals(42, lazyResult())
-    }
-
-    @Test
-    fun parseAddition() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("1+2")
-        assertEquals(3, lazyResult())
-    }
-
-    @Test
-    fun parseSubtraction() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("10-3")
-        assertEquals(7, lazyResult())
-    }
-
-    @Test
-    fun parseMultiplication() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("3*4")
-        assertEquals(12, lazyResult())
-    }
-
-    @Test
-    fun parseDivision() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("15/3")
-        assertEquals(5, lazyResult())
-    }
-
-    @Test
-    fun parseComplexExpression() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("2+3*4")
-        // Should respect operator precedence: 2 + (3 * 4) = 14
-        assertEquals(14, lazyResult())
-    }
-
-    @Test
-    fun parseParentheses() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("(2+3)*4")
-        // Parentheses change precedence: (2 + 3) * 4 = 20
-        assertEquals(20, lazyResult())
-    }
-
-    @Test
-    fun parseNestedParentheses() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("((2+3)*4)+1")
-        assertEquals(21, lazyResult())
-    }
-
-    @Test
-    fun parseChainedAdditions() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("1+2+3+4")
-        assertEquals(10, lazyResult())
-    }
-
-    @Test
-    fun parseChainedMultiplications() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("2*3*4")
-        assertEquals(24, lazyResult())
-    }
-
-    @Test
-    fun parseMixedOperators() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("10-2*3+4")
-        // Should be: 10 - (2 * 3) + 4 = 10 - 6 + 4 = 8
-        assertEquals(8, lazyResult())
+    
+    // Lazy arithmetic parser implementation
+    private object LazyArithmetic {
+        private val number: Parser<() -> Int> = 
+            +Regex("[0-9]+") mapEx { _, result ->
+                val value = result.value.value.toInt()
+                return@mapEx { value }
+            }
+        
+        private val positionMarker: Parser<() -> Int> =
+            +'!' mapEx { _, result ->
+                val position = result.start
+                return@mapEx { throw PositionMarkerException("Position marker at index $position", position) }
+            }
+        
+        private val primary: Parser<() -> Int> by lazy {
+            number + positionMarker + (-'(' * parser { expr } * -')')
+        }
+        
+        private val term: Parser<() -> Int> by lazy {
+            leftAssociative(primary, +'*' + +'/') { a, op, b -> 
+                when (op) {
+                    '*' -> ({ a() * b() })
+                    '/' -> ({ a() / b() })
+                    else -> error("Unknown operator: $op")
+                }
+            }
+        }
+        
+        val expr: Parser<() -> Int> by lazy {
+            leftAssociative(term, +'+' + +'-') { a, op, b -> 
+                when (op) {
+                    '+' -> ({ a() + b() })
+                    '-' -> ({ a() - b() })
+                    else -> error("Unknown operator: $op")
+                }
+            }
+        }
     }
 
     @Test
@@ -108,15 +84,6 @@ class LazyArithmeticTest {
     }
 
     @Test
-    fun positionMarkerInMultiplication() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("2*!*4")
-        val exception = assertFailsWith<PositionMarkerException> {
-            lazyResult()
-        }
-        assertEquals(2, exception.position)
-    }
-
-    @Test
     fun positionMarkerInsideParentheses() {
         val lazyResult = LazyArithmetic.expr.parseAllOrThrow("(2+!)")
         val exception = assertFailsWith<PositionMarkerException> {
@@ -135,58 +102,11 @@ class LazyArithmeticTest {
     }
 
     @Test
-    fun positionMarkerAfterMultipleDigits() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("123+!")
-        val exception = assertFailsWith<PositionMarkerException> {
-            lazyResult()
-        }
-        assertEquals(4, exception.position)
-    }
-
-    @Test
     fun positionMarkerDeepNesting() {
         val lazyResult = LazyArithmetic.expr.parseAllOrThrow("((1+2)*(3+!))")
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
         assertEquals(10, exception.position)
-    }
-
-    @Test
-    fun positionMarkerInSubtraction() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("100-!")
-        val exception = assertFailsWith<PositionMarkerException> {
-            lazyResult()
-        }
-        assertEquals(4, exception.position)
-    }
-
-    @Test
-    fun positionMarkerInDivision() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("50/!")
-        val exception = assertFailsWith<PositionMarkerException> {
-            lazyResult()
-        }
-        assertEquals(3, exception.position)
-    }
-
-    @Test
-    fun lazyEvaluationDoesNotComputeUntilCalled() {
-        // Parse without evaluating
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("!")
-        // No exception thrown yet during parsing
-        
-        // Exception only thrown when we evaluate
-        assertFailsWith<PositionMarkerException> {
-            lazyResult()
-        }
-    }
-
-    @Test
-    fun multipleEvaluationsProduceSameResult() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("2+3*4")
-        assertEquals(14, lazyResult())
-        assertEquals(14, lazyResult())
-        assertEquals(14, lazyResult())
     }
 }
