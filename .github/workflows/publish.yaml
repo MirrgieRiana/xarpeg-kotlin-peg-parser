@@ -37,6 +37,12 @@ jobs:
           echo "$changed_files"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
+      - name: Extract version from tag
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
       - name: Verify tag is on main
         if: steps.changes.outputs.changed == 'true'
         working-directory: main
