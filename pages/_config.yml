@@ -1,4 +1,4 @@
-title: Xarpeg - Kotlin PEG Parser
+title: kotlin-peg-parser
 description: Lightweight PEG-style parser combinators for Kotlin Multiplatform
 theme: jekyll-theme-cayman
 show_downloads: false
