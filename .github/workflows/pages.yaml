@@ -25,6 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up JDK
+        uses: actions/setup-java@v4.5.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # dokkaHtml is the available Dokka task for this project (no dokkaHtmlMultiplatform task is registered)
+      - name: Generate KDoc
+        run: ./gradlew dokkaHtml --no-daemon --stacktrace
+
       - name: Prepare Jekyll source
         run: |
           mkdir -p site-src/docs site-src/assets/css site-src/_layouts site-src/_includes
@@ -56,6 +66,15 @@ jobs:
               cat "$file"
             } > "$dest"
           done
+          BUILD_DIR="${BUILD_DIR:-build}"
+          DOKKA_OUTPUT="${BUILD_DIR}/dokka"
+          if [ ! -d "$DOKKA_OUTPUT" ]; then
+            echo "KDoc output not found at $DOKKA_OUTPUT after running ./gradlew dokkaHtml" >&2
+            exit 1
+          fi
+          # Copy KDoc output
+          mkdir -p site-src/kdoc
+          cp -r "$DOKKA_OUTPUT"/. site-src/kdoc/
           # Copy Google verification
           cp pages/googlea59f33fe422494f1.html site-src
 
