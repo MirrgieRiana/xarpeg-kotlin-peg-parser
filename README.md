@@ -49,7 +49,7 @@ Key points in the example:
 - `leftAssociative`/`rightAssociative` build operator chains without manual recursion.
 - `parseAllOrThrow` requires the entire input to be consumed; it throws on unmatched input or trailing characters.
 
-> 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) above for a complete step-by-step guide!
+> 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) below for a complete step-by-step guide!
 
 ---
 
@@ -194,11 +194,11 @@ A small Hello World app is available for quick verification:
 java -cp build/libs/kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
 ```
 
-A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/hello`:
+A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/java-run`:
 
 ```bash
 ./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
-(cd samples/hello && ./gradlew run)
+(cd samples/java-run && ./gradlew run)
 ```
 
 ---
