@@ -270,3 +270,117 @@ html {
   background: var(--accent-color);
   color: white;
 }
+
+/* Additional modern enhancements */
+
+/* Horizontal rule styling */
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--border-color), transparent);
+  margin: 2rem 0;
+}
+
+/* Code block enhancements */
+.highlight {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.highlight pre {
+  margin: 0;
+  border: none;
+}
+
+/* Improved focus states for accessibility */
+a:focus, button:focus, .btn:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Better code language badges */
+.highlight .language-kotlin::before,
+.highlight .language-groovy::before {
+  content: attr(class);
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: #6a737d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem 0;
+}
+
+/* Animated arrow for navigation links */
+nav a[href*="→"]::after,
+nav a:contains("Next")::after {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+nav a[href*="→"]:hover::after,
+nav a:contains("Next"):hover::after {
+  transform: translateX(3px);
+}
+
+nav a[href*="←"]::before,
+nav a:contains("Previous")::before {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+nav a[href*="←"]:hover::before,
+nav a:contains("Previous"):hover::before {
+  transform: translateX(-3px);
+}
+
+/* Documentation index special styling */
+.main-content ul li {
+  padding-left: 0.5rem;
+}
+
+.main-content ul li::marker {
+  color: var(--accent-color);
+}
+
+/* Print styles */
+@media print {
+  .page-header, nav, footer {
+    display: none;
+  }
+  
+  body {
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #e6edf3;
+    --code-bg: #161b22;
+    --border-color: #30363d;
+  }
+  
+  body {
+    background: #0d1117;
+    color: var(--text-color);
+  }
+  
+  .feature-item, .doc-nav-item {
+    background: #161b22;
+  }
+  
+  pre {
+    background: var(--code-bg);
+  }
+  
+  code {
+    background: var(--code-bg);
+    color: #f47067;
+  }
+}

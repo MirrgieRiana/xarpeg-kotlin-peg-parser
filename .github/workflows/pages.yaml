@@ -27,11 +27,12 @@ jobs:
 
       - name: Prepare Jekyll source
         run: |
-          mkdir -p site-src/docs site-src/assets/css site-src/_layouts
-          # Copy config, assets, and layouts
+          mkdir -p site-src/docs site-src/assets/css site-src/_layouts site-src/_includes
+          # Copy config, assets, layouts, and includes
           cp pages/_config.yml site-src/
           cp pages/assets/css/style.scss site-src/assets/css/
           cp pages/_layouts/default.html site-src/_layouts/
+          cp pages/_includes/head-custom.html site-src/_includes/
           # Create index from README
           {
             cat <<'EOF'
