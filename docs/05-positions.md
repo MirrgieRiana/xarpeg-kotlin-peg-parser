@@ -21,7 +21,9 @@ import mirrg.xarpite.parser.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() }
 
-number.parseAllOrThrow("42") // => 42 (just the value)
+fun main() {
+    number.parseAllOrThrow("42") // => 42 (just the value)
+}
 ```
 
 This is ideal when you don't need position information and want to keep your code clean.
@@ -92,7 +94,9 @@ val numberWithText = number mapEx { ctx, result ->
     "Parsed '$matched' as $value"
 }
 
-numberWithText.parseAllOrThrow("123") // => "Parsed '123' as 123"
+fun main() {
+    numberWithText.parseAllOrThrow("123") // => "Parsed '123' as 123"
+}
 ```
 
 ## Best practices

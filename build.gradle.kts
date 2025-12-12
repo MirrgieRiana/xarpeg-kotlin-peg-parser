@@ -261,12 +261,13 @@ tasks.register("generateSrcFromDocs") {
     description = "Extracts Kotlin code blocks from README.md and docs into generated sources"
     group = "documentation"
 
-    val outputDir = layout.projectDirectory.dir("src/commonMain/kotlin")
+    val outputDir = layout.projectDirectory.dir("src/commonMain/kotlin/docsnippets")
 
     inputs.files(file("README.md"), fileTree("docs") { include("**/*.md") })
     outputs.dir(outputDir)
 
     doLast {
+        outputDir.asFile.deleteRecursively()
         val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
         val projectDirFile = projectDir
         val sourceFiles = (listOf(file("README.md")) + fileTree("docs") { include("**/*.md") }.files)
@@ -281,33 +282,31 @@ tasks.register("generateSrcFromDocs") {
                 val outputFile = outputDir.file("${relativePath.replace("/", ".")}.kt").asFile
                 val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
                 if (codeBlocks.isNotEmpty()) {
-                    val constantName = relativePath.replace("/", "_").replace(".", "_").replace(Regex("[^A-Za-z0-9_]"), "_") + "_snippets"
-                    fun escapeBlock(block: String): String {
-                        val tripleEscaped = block.replace("\"\"\"", "\\\"\\\"\\\"")
-                        return buildString {
-                            tripleEscaped.forEach { ch ->
-                                if (ch == '$') append("\${'$'}") else append(ch)
-                            }
+                    codeBlocks.forEachIndexed { index, originalBlock ->
+                        val imports = linkedSetOf<String>()
+                        val blockBody = originalBlock.lines().filterNot { line ->
+                            val trimmed = line.trim()
+                            if (trimmed.startsWith("import ")) {
+                                imports.add(trimmed)
+                                true
+                            } else false
+                        }.joinToString("\n").trim()
+
+                        val fileContent = buildString {
+                            appendLine("@file:Suppress(\"unused\")")
+                            appendLine("package docsnippets")
+                            appendLine()
+                            imports.forEach { appendLine(it) }
+                            if (imports.isNotEmpty()) appendLine()
+                            appendLine("/*")
+                            appendLine(blockBody)
+                            appendLine("*/")
                         }
+                        val blockFile = outputDir.file("${relativePath.replace("/", ".")}.block$index.kt").asFile
+                        blockFile.parentFile.mkdirs()
+                        blockFile.writeText(fileContent)
+                        println("Generated: ${blockFile.absolutePath}")
                     }
-                    val snippetsBody = codeBlocks.joinToString(",\n\n") { block ->
-                        val escaped = escapeBlock(block)
-                        "    \"\"\"\n$escaped\n    \"\"\".trimIndent()"
-                    }
-                    val fileContent = buildString {
-                        appendLine("@file:Suppress(\"unused\")")
-                        appendLine("package docsnippets")
-                        appendLine()
-                        appendLine("val $constantName = listOf(")
-                        appendLine(snippetsBody)
-                        appendLine(")")
-                    }
-                    outputFile.parentFile.mkdirs()
-                    outputFile.writeText(fileContent)
-                    println("Generated: ${outputFile.absolutePath}")
-                } else if (outputFile.exists()) {
-                    outputFile.delete()
-                    println("Removed: ${outputFile.absolutePath}")
                 } else {
                     println("Skipped (no Kotlin blocks): ${relativePath}")
                 }
