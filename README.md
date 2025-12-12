@@ -1,22 +1,22 @@
 # mirrg.xarpite.kotlin-peg-parser
 
-**mirrg.xarpite.kotlin-peg-parser: Minimal PEG-style Parser DSL for Kotlin Multiplatform**
+**mirrg.xarpite.kotlin-peg-parser: Lightweight PEG-style parser combinators for Kotlin Multiplatform**
 
-`mirrg.xarpite.kotlin-peg-parser` is a small PEG-style parser combinator library for Kotlin Multiplatform. It lets you write grammars as a Kotlin DSL, parse directly from raw input text (no tokenizer), and relies on built-in memoization to keep backtracking fast and predictable.
+`mirrg.xarpite.kotlin-peg-parser` provides a compact, operator-driven parser combinator API. It targets JVM, JS (Node.js), and Linux x64, works directly on raw input strings (no tokenizer), and ships with opt-in caching to keep backtracking predictable.
 
 ## Features
 
-- **Kotlin Multiplatform** - Works on JVM, JS (Node.js), and Native (Linux x64)
-- **PEG-style DSL** - Write grammars directly in Kotlin as a composable DSL
-- **No pre-tokenization** - Parse directly from `String` using character and regex parsers
-- **Built-in memoization** - Packrat-style caching for efficient backtracking
-- **Small, focused API** - Only the primitives needed for typical PEG-style grammars
+- **Kotlin Multiplatform** - JVM, JS (IR/Node.js), and Native (Linux x64)
+- **Operator-based DSL** - Unary `+` builds parsers from literals/regex, binary `+` expresses alternatives, `*` sequences tuples, `!` is negative lookahead, `-` ignores tokens
+- **Tuple-centric results** - Sequence results are `Tuple0..Tuple5` so you can explicitly keep or drop intermediate values
+- **Built-in cache** - Memoizes `(parser, position)` by default; toggle per parse call
+- **No tokenizer** - Consume the source `String` directly with character, string, or regex parsers
 
 ---
 
 ## Installation
 
-Add the library to your project using Gradle:
+Gradle coordinates follow the project metadata (`group = "mirrg.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation("mirrg.xarpite:kotlin-peg-parser:0.1.0")
+    implementation("mirrg.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
 }
 ```
 
@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation "mirrg.xarpite:kotlin-peg-parser:0.1.0"
+    implementation "mirrg.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT"
 }
 ```
 
@@ -46,209 +46,63 @@ dependencies {
 
 ## Quick Start
 
-Here's a simple example that parses and evaluates arithmetic expressions:
+The API lives under `mirrg.xarpite.parser` and its `parsers` helpers. Operator overloads keep grammars short while remaining explicit about what is kept or ignored.
 
 ```kotlin
-import mirrg.xarpite.kotlinpeg.Grammar
-import mirrg.xarpite.kotlinpeg.Parser
-import mirrg.xarpite.kotlinpeg.peg
-import mirrg.xarpite.kotlinpeg.text
-import mirrg.xarpite.kotlinpeg.regex
-import mirrg.xarpite.kotlinpeg.rule
-import mirrg.xarpite.kotlinpeg.choice
-import mirrg.xarpite.kotlinpeg.seq
-import mirrg.xarpite.kotlinpeg.leftAssoc
+import mirrg.xarpite.parser.Parser
+import mirrg.xarpite.parser.parseAllOrThrow
+import mirrg.xarpite.parser.parsers.*
+
+// Simple arithmetic expression parser.
+val expr: Parser<Int> = object {
+    val number = +Regex("[0-9]+") map { match -> match.value.toInt() }
+    val brackets: Parser<Int> by lazy { -'(' * parser { root } * -')' }
+    val factor = number + brackets
+    val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
+    val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
+    val root = add
+}.root
 
 fun main() {
-    val grammar: Grammar<Int> = peg {
-        val number: Parser<Int> =
-            regex("[0-9]+").map { it.text.toInt() }
-
-        val lparen = text("(")
-        val rparen = text(")")
-        val plus = text("+")
-        val minus = text("-")
-        val times = text("*")
-        val div = text("/")
-
-        val expr = rule<Int>("expr")
-        val term = rule<Int>("term")
-        val factor = rule<Int>("factor")
-
-        factor.define(
-            choice(
-                number,
-                seq(lparen, expr, rparen).map { it[1] }
-            )
-        )
-
-        term.define(
-            leftAssoc(
-                factor,
-                choice(times, div)
-            ) { left, op, right ->
-                when (op.text) {
-                    "*" -> left * right
-                    "/" -> left / right
-                    else -> error("unreachable")
-                }
-            }
-        )
-
-        expr.define(
-            leftAssoc(
-                term,
-                choice(plus, minus)
-            ) { left, op, right ->
-                when (op.text) {
-                    "+" -> left + right
-                    "-" -> left - right
-                    else -> error("unreachable")
-                }
-            }
-        )
-
-        start(expr)
-    }
-
-    val result = grammar.parse("1+2*3-4")
-    println(result)  // Outputs: 3
+    println(expr.parseAllOrThrow("2*(3+4)")) // => 14
 }
 ```
 
-This example demonstrates the core workflow: define terminals (literals and patterns), build non-terminals using combinators, and specify a start rule.
+Key points in the example:
+
+- The wildcard `parsers.*` import brings all operator overloads (`+`, `-`, `*`, `!`, `map`, etc.) into scope.
+- `+'a'`, `+"abc"`, and `+Regex("...")` create parsers for characters, strings, and regex matches (`MatchResult`)—map them to the shape you need.
+- `-parser` (for example, `-'('`) ignores the matched token and yields `Tuple0`, so you can drop delimiters.
+- `*` sequences parsers and returns tuples (`Tuple1..Tuple5`), preserving the parts you care about.
+- `leftAssociative`/`rightAssociative` build operator chains without manual recursion.
+- `parseAllOrThrow` requires the entire input to be consumed; it throws on unmatched input or trailing characters.
 
 ---
 
-## Core Concepts
+## Core Concepts & Combinators
 
-### Parser
-
-The fundamental abstraction is `Parser<T>`, which consumes input and either fails or produces a value of type `T`.
-
-```kotlin
-val integer: Parser<Int> =
-    regex("[0-9]+").map { it.text.toInt() }
-```
-
-### Grammar and Rules
-
-A `Grammar<T>` bundles rules together with a start rule:
-
-```kotlin
-val grammar: Grammar<String> = peg {
-    val word: Parser<String> =
-        regex("[A-Za-z]+").map { it.text }
-
-    val space = regex("[ \t\r\n]+")
-    val hello = rule<String>("hello")
-
-    hello.define(
-        seq(word, space, word)
-            .map { parts -> parts[0] + " " + parts[2] }
-    )
-
-    start(hello)
-}
-
-val result = grammar.parse("hello world")
-println(result)
-```
-
-Use `rule(name)` to create a placeholder for recursive rules, then `define(...)` to attach the parser expression.
-
-### Combinators
-
-Build complex parsers from simpler ones:
-
-```kotlin
-val a = text("a")
-val b = text("b")
-
-// Sequence: match a then b
-val ab: Parser<String> =
-    seq(a, b).map { it[0].text + it[1].text }
-
-// Choice: match a or b
-val aOrB: Parser<String> =
-    choice(a, b).map { it.text }
-
-// Repetition: match zero or more digits
-val manyDigits: Parser<String> =
-    regex("[0-9]").many().map { tokens ->
-        tokens.joinToString(separator = "") { it.text }
-    }
-```
-
-**Available combinators:**
-
-- `text("...")` - Match exact text
-- `regex("...")` - Match regular expression
-- `seq(p1, p2, ...)` - Match sequence of parsers
-- `choice(p1, p2, ...)` - Try parsers in order (first match wins)
-- `many(p)` / `p.many()` - Match zero or more
-- `many1(p)` - Match one or more
-- `optional(p)` - Match zero or one
-- `not(p)` - Negative lookahead (succeeds if p fails, without consuming input)
-- `leftAssoc(term, op, combine)` - Left-associative binary operators
-
----
-
-## Design Goals
-
-This library prioritizes:
-
-- **Minimal** - Keep the core small; provide only essential PEG primitives
-- **PEG-style DSL** - Grammars as Kotlin code, not separate grammar files
-- **No tokenizer** - Work directly on input strings with character and regex parsers
-- **Built-in memoization** - Cache results per `(parser, position)` to prevent exponential backtracking
-- **Multiplatform** - One grammar definition that runs on JVM, JS, and Native
+- **Parser<T>**: `fun interface` with `parseOrNull(context, start)`; parse helpers pass a `ParseContext` that handles caching.
+- **Total parsing**: `parseAllOrThrow(src, useCache = true)` returns the parsed value or throws `UnmatchedInputParseException` (no match at start) / `ExtraCharactersParseException` (trailing input).
+- **Sequences and tuples**: `*` chains parsers and returns `Tuple0..Tuple5`. Ignored pieces (`-parser`) collapse out of the tuple.
+- **Alternatives**: `parserA + parserB` (or `or(...)`) tries options in order.
+- **Repetition**: `parser.zeroOrMore`, `parser.oneOrMore`, or `parser.list(min, max)` collect results into `List<T>`.
+- **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
+- **Mapping**: `parser map { ... }` transforms the parsed value.
+- **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
+- **Recursion**: `parser { ... }` (delegation) or `by lazy` fields allow self-referential grammars.
 
 ---
 
 ## Memoization and Performance
 
-The parser engine uses memoization to cache results per `(parser, offset)`, avoiding exponential time complexity with backtracking grammars.
-
-Memoization is enabled by default:
-
-```kotlin
-val result = grammar.parse("some input")
-```
-
-You can customize parsing behavior if needed:
-
-```kotlin
-val config = ParseConfig(
-    memoize = true
-)
-
-val result = grammar.parse("some input", config)
-```
-
-Disabling memoization reduces memory usage but may increase parse time for grammars with heavy backtracking.
+`ParseContext` caches results per `(parser, position)` when `useCache = true` (the default in `parseAllOrThrow`). Disable caching with `useCache = false` if you need to reduce memory and your grammar does not backtrack heavily.
 
 ---
 
 ## Error Handling
 
-Inspect parse failures without throwing exceptions:
-
-```kotlin
-when (val result = grammar.tryParse("invalid input")) {
-    is ParseResult.Success -> {
-        println(result.value)
-    }
-    is ParseResult.Failure -> {
-        println(result.diagnostic)
-    }
-}
-```
-
-Diagnostics include:
-- Position of the furthest failure
-- Set of expected tokens or patterns
-- Fragment of input around the failure
+- `UnmatchedInputParseException` — nothing matched at the current position.
+- `ExtraCharactersParseException` — parsing succeeded but did not consume all input (reports the trailing position).
 
 ---
 
@@ -256,85 +110,40 @@ Diagnostics include:
 
 ### Prerequisites
 
-- JDK 8 or higher
-- Gradle 8.5 (included via wrapper)
+- JDK 11 or higher
+- Gradle 9.2.1 (provided via the wrapper)
 
-### Building
-
-Build the project:
+### Building & Testing
 
 ```bash
-./gradlew build
+./gradlew check
 ```
 
-### Running Tests
-
-Run all tests across all platforms:
-
-```bash
-./gradlew test
-```
-
-Run tests for specific targets:
-
-```bash
-./gradlew jvmTest        # JVM tests
-./gradlew jsTest         # JavaScript tests
-./gradlew linuxX64Test   # Native Linux tests
-```
+Targets include JVM, JS (Node.js), and Linux x64. Native builds download Kotlin/Native toolchains from JetBrains; ensure outbound network access when running Native tasks.
 
 ### Running the Sample
 
-The repository includes a Hello World sample demonstrating basic usage. Run it on different platforms:
+A small Hello World app is available for quick verification:
 
-**JVM:**
 ```bash
 ./gradlew jvmJar
 java -cp build/libs/kotlin-peg-parser-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.peg.HelloWorldKt
-```
-
-**JavaScript (Node.js):**
-```bash
-./gradlew jsNodeDevelopmentRun
-```
-
-**Native Linux:**
-```bash
-./gradlew linuxX64Binaries
-./build/bin/linuxX64/debugExecutable/kotlin-peg-parser.kexe
 ```
 
 ---
 
 ## Versioning
 
-This library is currently in the `0.x` series. The DSL and public API may change between releases. Pin a specific version if you depend on particular API behavior.
+The current version is `1.0.0-SNAPSHOT`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
 
 ---
 
 ## License
 
-`mirrg.xarpite.kotlin-peg-parser` is distributed under the MIT License.
-
-```text
-MIT License
-
-Copyright (c) 20xx Mirrg
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-[See LICENSE file for full text]
-```
-
-See the [LICENSE](LICENSE) file for complete details.
+`mirrg.xarpite.kotlin-peg-parser` is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## About
 
-This library was originally developed as an internal parser component in the Xarpite project and later extracted and generalized into a standalone, reusable PEG-style parser DSL for Kotlin Multiplatform.
+This library began as a parser component inside the Xarpite project and was extracted into a standalone, reusable PEG-style parser toolkit for Kotlin Multiplatform.

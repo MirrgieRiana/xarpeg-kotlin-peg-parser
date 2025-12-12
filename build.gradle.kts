@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "2.2.20"
+    id("maven-publish")
 }
 
 group = "mirrg.xarpite"
@@ -37,9 +38,10 @@ kotlin {
             kotlin.srcDir("imported/src/commonMain/kotlin")
         }
         val commonTest by getting {
+            kotlin.srcDir("imported/src/commonTest/kotlin")
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
             }
         }
         val jvmMain by getting
@@ -48,5 +50,14 @@ kotlin {
         val jsTest by getting
         val linuxX64Main by getting
         val linuxX64Test by getting
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "local"
+            url = uri(layout.buildDirectory.dir("maven"))
+        }
     }
 }
