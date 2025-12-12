@@ -1,12 +1,12 @@
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import mirrg.xarpite.parser.ExtraCharactersParseException
 import mirrg.xarpite.parser.NumberParser
 import mirrg.xarpite.parser.ParseContext
-import mirrg.xarpite.parser.UnmatchedInputParseException
 import mirrg.xarpite.parser.parseAllOrThrow
 import mirrg.xarpite.parser.parsers.leftAssociative
+import mirrg.xarpite.parser.parsers.map
 import mirrg.xarpite.parser.parsers.not
+import mirrg.xarpite.parser.parsers.nothing
 import mirrg.xarpite.parser.parsers.oneOrMore
 import mirrg.xarpite.parser.parsers.optional
 import mirrg.xarpite.parser.parsers.or
@@ -14,7 +14,6 @@ import mirrg.xarpite.parser.parsers.parser
 import mirrg.xarpite.parser.parsers.plus
 import mirrg.xarpite.parser.parsers.rightAssociative
 import mirrg.xarpite.parser.parsers.times
-import mirrg.xarpite.parser.parsers.map
 import mirrg.xarpite.parser.parsers.unaryMinus
 import mirrg.xarpite.parser.parsers.unaryPlus
 import mirrg.xarpite.parser.parsers.unit
@@ -55,7 +54,7 @@ class ParserAdditionalTest {
 
     @Test
     fun nothingParserRejectsAnyInput() = runTest {
-        val parser = mirrg.xarpite.parser.parsers.nothing
+        val parser = nothing
         assertUnmatchedInput { parser.parseAllOrThrow("") }
         assertUnmatchedInput { parser.parseAllOrThrow("anything") }
     }
@@ -169,23 +168,5 @@ class ParserAdditionalTest {
         val parser = (+'k').optional
         val result = parser.parseAllOrThrow("")
         assertNull(result.a)
-    }
-
-    private fun assertExtraCharacters(block: () -> Unit) {
-        try {
-            block()
-            kotlin.test.fail("Expected ExtraCharactersParseException")
-        } catch (_: ExtraCharactersParseException) {
-            // ok
-        }
-    }
-
-    private fun assertUnmatchedInput(block: () -> Unit) {
-        try {
-            block()
-            kotlin.test.fail("Expected UnmatchedInputParseException")
-        } catch (_: UnmatchedInputParseException) {
-            // ok
-        }
     }
 }
