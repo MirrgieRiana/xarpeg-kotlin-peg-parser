@@ -1,3 +1,5 @@
+import assertExtraCharacters
+import assertUnmatchedInput
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
