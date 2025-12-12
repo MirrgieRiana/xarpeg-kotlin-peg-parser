@@ -27,7 +27,7 @@ See the published docs entry point at [docs/index.md](./docs/index.md). GitHub P
 
 ## Installation
 
-Gradle coordinates follow the project metadata (`group = "mirrg.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
+Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation("mirrg.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
+    implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
 }
 ```
 
@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    implementation "mirrg.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT"
+    implementation "io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT"
 }
 ```
 

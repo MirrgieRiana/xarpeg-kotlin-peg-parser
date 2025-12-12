@@ -3,7 +3,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "mirrg.xarpite"
+group = "io.github.mirrgieriana.xarpite"
 version = "1.0.0-SNAPSHOT"
 
 repositories {
