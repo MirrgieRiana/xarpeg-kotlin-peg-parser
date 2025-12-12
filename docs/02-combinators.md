@@ -26,7 +26,7 @@ signedInt.parseAllOrThrow("99")  // => 99
 repeatedA.parseAllOrThrow("aaaa") // => "aaaa"
 ```
 
-- `optional` は必ず巻き戻すので、後ろに来るパーサーの邪魔をしません。
+- `optional` は必ず巻き戻すので、後ろに来るパーサーの邪魔をしません。戻り値は `Tuple1` なので `it.a` で取り出すか、`map { (value) -> ... }` と分解できます。
 - 繰り返し系の戻り値はすぐ `map` で加工できます。上の例では `joinToString` で文字列化しています。
 
 ## シーケンス結果の整形
