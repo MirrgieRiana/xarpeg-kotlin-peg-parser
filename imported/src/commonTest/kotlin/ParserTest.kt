@@ -1,6 +1,4 @@
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.cancellation.CancellationException
 import mirrg.xarpite.parser.ExtraCharactersParseException
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.Tuple0
@@ -31,11 +29,10 @@ import kotlin.test.assertFails
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ParserTest {
 
     @Test
-    fun parse() = runTest {
+    fun parse() {
         val parser = +'a'
         assertEquals('a', parser.parseAllOrThrow("a")) // 全体にマッチできる
         assertExtraCharacters { parser.parseAllOrThrow("ab") } // 末尾にゴミがあると失敗
@@ -43,21 +40,21 @@ class ParserTest {
     }
 
     @Test
-    fun charParser() = runTest {
+    fun charParser() {
         val parser = +'a'
         assertEquals('a', parser.parseAllOrThrow("a")) // 同じ文字で成功
         assertUnmatchedInput { parser.parseAllOrThrow("b") } // 異なる文字で失敗
     }
 
     @Test
-    fun stringParser() = runTest {
+    fun stringParser() {
         val parser = +"abc"
         assertEquals("abc", parser.parseAllOrThrow("abc")) // 同じ文字列で成功
         assertUnmatchedInput { parser.parseAllOrThrow("abd") } // 異なる文字列で失敗
     }
 
     @Test
-    fun regexParser() = runTest {
+    fun regexParser() {
         val parser = +Regex("[1-9]+")
         assertNotNull(parser.parseAllOrThrow("123")) // 正規表現にマッチする文字列で成功
         assertUnmatchedInput { parser.parseAllOrThrow("abc") } // 正規表現にマッチしない文字列で失敗
@@ -65,21 +62,21 @@ class ParserTest {
     }
 
     @Test
-    fun unitParser() = runTest {
+    fun unitParser() {
         val parser = unit(1)
         assertEquals(1, parser.parseAllOrThrow("")) // 空文字で成功
         assertExtraCharacters { parser.parseAllOrThrow("a") } // 何も消費しない
     }
 
     @Test
-    fun nothingParser() = runTest {
+    fun nothingParser() {
         val parser = nothing
         assertUnmatchedInput { parser.parseAllOrThrow("") } // 何を与えても失敗
         assertUnmatchedInput { parser.parseAllOrThrow("a") } // 何を与えても失敗
     }
 
     @Test
-    fun tupleParsers() = runTest {
+    fun tupleParsers() {
 
         // Tuple5
         run {
@@ -108,7 +105,7 @@ class ParserTest {
     }
 
     @Test
-    fun listParser() = runTest {
+    fun listParser() {
 
         // zeroOrMore
         run {
@@ -146,7 +143,7 @@ class ParserTest {
     }
 
     @Test
-    fun optionalParser() = runTest {
+    fun optionalParser() {
 
         // 単体
         run {
@@ -166,7 +163,7 @@ class ParserTest {
     }
 
     @Test
-    fun orParser() = runTest {
+    fun orParser() {
 
         // 0項
         run {
@@ -193,28 +190,28 @@ class ParserTest {
     }
 
     @Test
-    fun notParser() = runTest {
+    fun notParser() {
         val parser = !+'a' * +'b'
         assertEquals('b', parser.parseAllOrThrow("b")) // 最初の子パーサーがマッチしない文字で成功
         assertUnmatchedInput { parser.parseAllOrThrow("a") } // 最初の子パーサーがマッチする文字で失敗
     }
 
     @Test
-    fun map() = runTest {
+    fun map() {
         val parser = +Regex("[1-9a-z]+") map { it.value.toInt() }
         assertEquals(123, parser.parseAllOrThrow("123")) // 正規表現にマッチしつつ数値に変換できる
         assertFails { parser.parseAllOrThrow("123a") } // 数値化部分が失敗すると失敗
     }
 
     @Test
-    fun ignoreParser() = runTest {
+    fun ignoreParser() {
         val parser = -'a'
         assertEquals(Tuple0, parser.parseAllOrThrow("a")) // マッチする文字で成功
         assertUnmatchedInput { parser.parseAllOrThrow("b") } // マッチしない文字で失敗
     }
 
     @Test
-    fun delegationParser() = runTest {
+    fun delegationParser() {
         val parser = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
             val brackets: Parser<Int> by lazy { -'(' * parser { root } * -')' }
@@ -230,7 +227,7 @@ class ParserTest {
     }
 
     @Test
-    fun cache() = runTest {
+    fun cache() {
         val language = object {
             var counter = 0
 
@@ -275,7 +272,7 @@ class ParserTest {
     }
 
     @Test
-    fun associative() = runTest {
+    fun associative() {
 
         // leftAssociative
         run {

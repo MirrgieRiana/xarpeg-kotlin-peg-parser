@@ -36,7 +36,7 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    println(expr.parseAllOrThrow("2*(3+4)")) // => 14
+    check(expr.parseAllOrThrow("2*(3+4)") == 14)
 }
 ```
 
@@ -49,7 +49,7 @@ Key points in the example:
 - `leftAssociative`/`rightAssociative` build operator chains without manual recursion.
 - `parseAllOrThrow` requires the entire input to be consumed; it throws on unmatched input or trailing characters.
 
-> 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) above for a complete step-by-step guide!
+> 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) below for a complete step-by-step guide!
 
 ---
 
@@ -80,8 +80,8 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 ### Additional Resources
 
 - **[Complete Tutorial Guide](./docs/index.md)** — Entry point for all tutorial content
-- **[GitHub Pages](https://mirrgieriana.github.io/kotlin-peg-parser)** — Published documentation site
-- **[GitHub Repository](https://github.com/MirrgieRiana/kotlin-peg-parser/)** — Source code and issue tracking
+- **[GitHub Pages](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser)** — Published documentation site
+- **[GitHub Repository](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/)** — Source code and issue tracking
 
 ---
 
@@ -136,17 +136,17 @@ Exploring the Xarpite source code can provide additional insights into:
 
 ## Installation
 
-Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.3"`). Add the dependency as usual:
+Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "<latest-version>"`). Check [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases) for the current value. Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/kotlin-peg-parser/maven/maven") }
+    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
+    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
 }
 ```
 
@@ -154,11 +154,11 @@ dependencies {
 
 ```groovy
 repositories {
-    maven { url "https://raw.githubusercontent.com/MirrgieRiana/kotlin-peg-parser/maven/maven" }
+    maven { url "https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven" }
 }
 
 dependencies {
-    implementation "io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3"
+    implementation "io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>"
 }
 ```
 
@@ -166,7 +166,7 @@ dependencies {
 
 ## Versioning
 
-The current version is `1.0.3`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
+Use the latest version from [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases) (replace `<latest-version>` in the snippets with the number shown there); the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
 
 ---
 
@@ -191,7 +191,7 @@ A small Hello World app is available for quick verification:
 
 ```bash
 ./gradlew jvmJar
-java -cp build/libs/kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
+java -cp build/libs/xarpeg-kotlin-peg-parser-jvm-<latest-version>.jar mirrg.xarpite.peg.HelloWorldKt # replace with the version shown on Releases
 ```
 
 A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/java-run`:
@@ -212,7 +212,7 @@ A browser-based online parser sample lives under `samples/online-parser`. Build 
 
 ## License
 
-Xarpeg is distributed under the MIT License. See the [LICENSE](https://github.com/MirrgieRiana/kotlin-peg-parser/blob/main/LICENSE) file for details.
+Xarpeg is distributed under the MIT License. See the [LICENSE](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/LICENSE) file for details.
 
 ---
 

@@ -1,5 +1,3 @@
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import mirrg.xarpite.parser.ExtraCharactersParseException
 import mirrg.xarpite.parser.ParseContext
 import mirrg.xarpite.parser.ParseResult
@@ -29,7 +27,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertFailsWith
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ImportedParserCoverageTest {
 
     @Test
@@ -49,7 +46,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun delegationParserInvokesGetterOnlyOnce() = runTest {
+    fun delegationParserInvokesGetterOnlyOnce() {
         var invoked = 0
         val delegating = parser {
             invoked++
@@ -154,7 +151,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun leftAssociativeTrailingOperatorReportsExtraPosition() = runTest {
+    fun leftAssociativeTrailingOperatorReportsExtraPosition() {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
 
@@ -163,7 +160,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun rightAssociativeTrailingOperatorReportsExtraPosition() = runTest {
+    fun rightAssociativeTrailingOperatorReportsExtraPosition() {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = rightAssociative(num, -'+') { a, _, b -> a + b }
 
@@ -172,7 +169,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun parseAllOrThrowUnmatchedInputHasPosition() = runTest {
+    fun parseAllOrThrowUnmatchedInputHasPosition() {
         val parser = +'a'
 
         val exception = assertFailsWith<UnmatchedInputParseException> { parser.parseAllOrThrow("") }
@@ -194,7 +191,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun orParserPlusAppendsBranch() = runTest {
+    fun orParserPlusAppendsBranch() {
         val base = or(+'a', +'b')
         val parser = base + +'c'
 
@@ -203,7 +200,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun tupleCombinationTimes23ProducesTuple5() = runTest {
+    fun tupleCombinationTimes23ProducesTuple5() {
         val left = +'a' * +'b'
         val right = +'c' * +'d' * +'e'
         val parser = left * right
@@ -212,7 +209,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun tupleCombinationTimes32ProducesTuple5() = runTest {
+    fun tupleCombinationTimes32ProducesTuple5() {
         val left = +'a' * +'b' * +'c'
         val right = +'d' * +'e'
         val parser = left * right
@@ -221,7 +218,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun tupleCombinationTimes14ProducesTuple5() = runTest {
+    fun tupleCombinationTimes14ProducesTuple5() {
         val left: Parser<Tuple1<Char>> = +(+'a')
         val right = +'b' * +'c' * +'d' * +'e'
         val parser = left * right
@@ -230,7 +227,7 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun tupleCombinationWithLeadingTuple0PassesThroughRight() = runTest {
+    fun tupleCombinationWithLeadingTuple0PassesThroughRight() {
         val left = -'x'
         val right: Parser<Tuple1<Char>> = +(+'y')
         val parser = left * right

@@ -106,5 +106,8 @@ The key insight is that parsing positions implicitly accompany every parse resul
 
 ---
 
-Return to the guide hub for more patterns and advanced features.  
+Next, discover how PEG parsers naturally handle template strings with embedded expressions.  
+→ [Step 6: Template strings without tokenization](06-template-strings.md)
+
+Or return to the guide hub for more patterns and advanced features.  
 ← [docs/index.md](index.md)

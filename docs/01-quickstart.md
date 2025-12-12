@@ -15,7 +15,7 @@ val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
 fun main() {
-    println(kv.parseAllOrThrow("count=42")) // => (count, 42)
+    check(kv.parseAllOrThrow("count=42") == ("count" to 42))
 }
 ```
 

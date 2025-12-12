@@ -66,17 +66,13 @@ val templateStringParser: Parser<String> = object {
 }.root
 
 fun main() {
-    println(templateStringParser.parseAllOrThrow(""""hello""""))
-    // => hello
+    check(templateStringParser.parseAllOrThrow(""""hello"""") == "hello")
     
-    println(templateStringParser.parseAllOrThrow(""""result: $(1+2)""""))
-    // => result: 3
+    check(templateStringParser.parseAllOrThrow(""""result: $(1+2)"""") == "result: 3")
     
-    println(templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer""""))
-    // => 14 = answer
+    check(templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer"""") == "14 = answer")
     
-    println(templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d""""))
-    // => a1b2c3d
+    check(templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d"""") == "a1b2c3d")
 }
 ```
 

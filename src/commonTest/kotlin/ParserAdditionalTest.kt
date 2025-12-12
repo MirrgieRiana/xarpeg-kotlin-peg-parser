@@ -1,7 +1,5 @@
 import assertExtraCharacters
 import assertUnmatchedInput
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import mirrg.xarpite.parser.NumberParser
 import mirrg.xarpite.parser.ParseContext
 import mirrg.xarpite.parser.parseAllOrThrow
@@ -26,43 +24,42 @@ import kotlin.test.assertFails
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ParserAdditionalTest {
 
     @Test
-    fun charParserFailsOnEmpty() = runTest {
+    fun charParserFailsOnEmpty() {
         val parser = +'a'
         assertUnmatchedInput { parser.parseAllOrThrow("") }
     }
 
     @Test
-    fun stringParserDetectsTrailingGarbage() = runTest {
+    fun stringParserDetectsTrailingGarbage() {
         val parser = +"abc"
         assertExtraCharacters { parser.parseAllOrThrow("abcc") }
     }
 
     @Test
-    fun regexParserAnchorsAtStart() = runTest {
+    fun regexParserAnchorsAtStart() {
         val parser = +Regex("[a-z]+") map { it.value }
         assertUnmatchedInput { parser.parseAllOrThrow("1abc") }
         assertEquals("abc", parser.parseAllOrThrow("abc"))
     }
 
     @Test
-    fun unitParserRejectsConsumedInput() = runTest {
+    fun unitParserRejectsConsumedInput() {
         val parser = unit("ok")
         assertExtraCharacters { parser.parseAllOrThrow("x") }
     }
 
     @Test
-    fun nothingParserRejectsAnyInput() = runTest {
+    fun nothingParserRejectsAnyInput() {
         val parser = nothing
         assertUnmatchedInput { parser.parseAllOrThrow("") }
         assertUnmatchedInput { parser.parseAllOrThrow("anything") }
     }
 
     @Test
-    fun zeroOrMoreStopsBeforeMismatch() = runTest {
+    fun zeroOrMoreStopsBeforeMismatch() {
         val parser = (+'a').zeroOrMore
         val context = ParseContext("aab", useCache = true)
         val result = parser.parseOrNull(context, 0)
@@ -72,39 +69,39 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun oneOrMoreFailsWithoutFirstMatch() = runTest {
+    fun oneOrMoreFailsWithoutFirstMatch() {
         val parser = (+'b').oneOrMore
         assertUnmatchedInput { parser.parseAllOrThrow("a") }
     }
 
     @Test
-    fun optionalDoesNotConsumeOnFailure() = runTest {
+    fun optionalDoesNotConsumeOnFailure() {
         val parser = (+'x').optional * +'y'
         assertEquals('y', parser.parseAllOrThrow("y").b)
     }
 
     @Test
-    fun orParserTriesLaterBranches() = runTest {
+    fun orParserTriesLaterBranches() {
         val parser = or(+'a', +'b', +'c')
         assertEquals('c', parser.parseAllOrThrow("c"))
     }
 
     @Test
-    fun notParserBlocksMatchingPrefix() = runTest {
+    fun notParserBlocksMatchingPrefix() {
         val parser = !+"ab" * +"cd"
         assertUnmatchedInput { parser.parseAllOrThrow("ab") }
         assertEquals("cd", parser.parseAllOrThrow("cd"))
     }
 
     @Test
-    fun ignoreParserConsumesValue() = runTest {
+    fun ignoreParserConsumesValue() {
         val parser = -'q' * +'w'
         val result = parser.parseAllOrThrow("qw")
         assertEquals('w', result)
     }
 
     @Test
-    fun delegationParserAllowsMutualRecursion() = runTest {
+    fun delegationParserAllowsMutualRecursion() {
         val language = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
             val term: mirrg.xarpite.parser.Parser<Int> by lazy {
@@ -119,21 +116,21 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun leftAssociativeStopsAtGap() = runTest {
+    fun leftAssociativeStopsAtGap() {
         val num = +Regex("[0-9]+") map { it.value.toInt() }
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
         assertExtraCharacters { add.parseAllOrThrow("1+2x3") }
     }
 
     @Test
-    fun rightAssociativeConsumesChain() = runTest {
+    fun rightAssociativeConsumesChain() {
         val num = +Regex("[0-9]+") map { it.value }
         val pow = rightAssociative(num, -'^') { a, _, b -> "${a}^$b" }
         assertEquals("1^2^3", pow.parseAllOrThrow("1^2^3"))
     }
 
     @Test
-    fun mapPreservesRange() = runTest {
+    fun mapPreservesRange() {
         val parser = (+"hi") map { it.uppercase() }
         val context = ParseContext("hi!", useCache = true)
         val result = parser.parseOrNull(context, 0)
@@ -142,13 +139,13 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun mapThrowsArePropagated() = runTest {
+    fun mapThrowsArePropagated() {
         val parser = (+'a') map { error("boom") }
         assertFails { parser.parseAllOrThrow("a") }
     }
 
     @Test
-    fun numberParserRespectsStartOffset() = runTest {
+    fun numberParserRespectsStartOffset() {
         val context = ParseContext("xx42yy", useCache = true)
         val result = NumberParser.parseOrNull(context, 2)
         assertNotNull(result)
@@ -157,19 +154,19 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun parseAllOrThrowWithoutCacheStillWorks() = runTest {
+    fun parseAllOrThrowWithoutCacheStillWorks() {
         val parser = (+'a').oneOrMore
         assertEquals(listOf('a', 'a'), parser.parseAllOrThrow("aa", useCache = false))
     }
 
     @Test
-    fun zeroOrMoreCanReturnEmptyList() = runTest {
+    fun zeroOrMoreCanReturnEmptyList() {
         val parser = (+'z').zeroOrMore
         assertEquals(emptyList<Char>(), parser.parseAllOrThrow(""))
     }
 
     @Test
-    fun optionalReturnsTupleWithNull() = runTest {
+    fun optionalReturnsTupleWithNull() {
         val parser = (+'k').optional
         val result = parser.parseAllOrThrow("")
         assertNull(result.a)
