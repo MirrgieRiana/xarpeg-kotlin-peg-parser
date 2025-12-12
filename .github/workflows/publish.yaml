@@ -35,11 +35,7 @@ jobs:
           changed_files="$(git -C main diff-tree --no-commit-id --name-only -r "$tag_commit")"
           echo "Changed files:"
           echo "$changed_files"
-          if echo "$changed_files" | grep -E -q '^(src/|build\.gradle\.kts|settings\.gradle\.kts|gradle/|gradlew$|gradlew\.bat$|README\.md$|\.github/workflows/publish\.yaml$)'; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag is on main
         if: steps.changes.outputs.changed == 'true'
