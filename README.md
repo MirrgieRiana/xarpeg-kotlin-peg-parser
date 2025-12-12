@@ -16,6 +16,11 @@
 
 ## Documentation
 
+### Links
+
+- [GitHub Repository](https://github.com/MirrgieRiana/kotlin-peg-parser/) — ソースコードと Issue を管理する公式リポジトリ
+- [GitHub Pages](https://mirrgieriana.github.io/kotlin-peg-parser/) — README と `docs` ディレクトリを公開しているサイト
+
 See the published docs entry point at [docs/index.md](./docs/index.md). GitHub Pages hosts the README at the site root with the `docs` directory preserved for deeper content.
 
 ---
