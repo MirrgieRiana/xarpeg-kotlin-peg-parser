@@ -30,21 +30,19 @@ jobs:
       - name: Check relevant changes
         id: changes
         run: |
-          changed_files="$(git -C main diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          tag_commit="$(git -C main rev-list -n 1 "$GITHUB_REF")"
+          echo "TAG_COMMIT=$tag_commit" >> "$GITHUB_ENV"
+          changed_files="$(git -C main diff-tree --no-commit-id --name-only -r "$tag_commit")"
           echo "Changed files:"
           echo "$changed_files"
-          if echo "$changed_files" | grep -E -q '^(src/|build\.gradle\.kts|settings\.gradle\.kts|gradle/|gradlew$|gradlew\.bat$|README\.md$|\.github/workflows/publish\.yaml$)'; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Verify tag is on main
         if: steps.changes.outputs.changed == 'true'
         working-directory: main
         run: |
           git fetch origin main
-          if ! git branch --remotes --contains "$GITHUB_SHA" | grep -q "origin/main"; then
+          if ! git branch --remotes --contains "$TAG_COMMIT" | grep -q "origin/main"; then
             echo "Tag ${GITHUB_REF_NAME:-$GITHUB_REF} is not on main"
             exit 1
           fi
