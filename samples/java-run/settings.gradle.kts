@@ -9,4 +9,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "hello"
+rootProject.name = "java-run"

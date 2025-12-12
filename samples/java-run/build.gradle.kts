@@ -13,7 +13,7 @@ group = "mirrg.xarpite.samples"
 version = "1.0.3"
 
 application {
-    mainClass.set("mirrg.xarpite.samples.hello.MainKt")
+    mainClass.set("mirrg.xarpite.samples.javarun.MainKt")
 }
 
 dependencies {

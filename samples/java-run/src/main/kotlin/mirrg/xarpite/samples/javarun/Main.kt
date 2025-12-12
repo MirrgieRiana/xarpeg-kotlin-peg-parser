@@ -1,4 +1,4 @@
-package mirrg.xarpite.samples.hello
+package mirrg.xarpite.samples.javarun
 
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow

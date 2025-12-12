@@ -23,17 +23,17 @@ jobs:
       with:
         cache-disabled: true
 
-    - name: Build hello sample distribution
-      working-directory: samples/hello
+    - name: Build java-run sample distribution
+      working-directory: samples/java-run
       run: |
         # Build the executable distribution using Gradle
         ./gradlew installDist --console=plain
 
-    - name: Run hello sample and verify output
-      working-directory: samples/hello
+    - name: Run java-run sample and verify output
+      working-directory: samples/java-run
       run: |
         # Run the sample using java command directly
-        OUTPUT=$(java -cp "build/install/hello/lib/*" mirrg.xarpite.samples.hello.MainKt)
+        OUTPUT=$(java -cp "build/install/java-run/lib/*" mirrg.xarpite.samples.javarun.MainKt)
         echo "Sample output: $OUTPUT"
         
         # Expected output
