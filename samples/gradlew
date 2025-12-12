@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/../gradlew" "$@"
+PARENT_GRADLEW="$DIR/../gradlew"
+
+if [ ! -x "$PARENT_GRADLEW" ]; then
+  echo "gradlew not found at $PARENT_GRADLEW" >&2
+  exit 1
+fi
+
+exec "$PARENT_GRADLEW" "$@"
