@@ -21,11 +21,17 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
-    - name: Run hello sample and verify output
+    - name: Build hello sample distribution
       working-directory: samples
       run: |
-        # Run the sample and capture output using Gradle task
-        OUTPUT=$(../gradlew :hello:jvmRun --quiet --console=plain)
+        # Build the executable distribution using Gradle
+        ../gradlew :hello:installDist --console=plain
+
+    - name: Run hello sample and verify output
+      working-directory: samples/hello
+      run: |
+        # Run the sample using java command directly
+        OUTPUT=$(java -cp "build/install/hello/lib/*" mirrg.xarpite.samples.hello.MainKt)
         echo "Sample output: $OUTPUT"
         
         # Expected output
