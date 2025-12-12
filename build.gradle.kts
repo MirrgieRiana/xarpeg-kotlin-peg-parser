@@ -11,8 +11,6 @@ repositories {
     mavenCentral()
 }
 
-val generatedDocsDir = layout.buildDirectory.dir("docSrc")
-
 kotlin {
     // JVM target
     jvm {
@@ -39,7 +37,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("imported/src/commonMain/kotlin")
-            kotlin.srcDir(generatedDocsDir)
         }
 
         val commonTest by getting {
@@ -256,61 +253,5 @@ tasks.register("generateTuples") {
         println("Verified: TupleParser.kt matches imported file")
         
         println("All tuple files generated and verified successfully!")
-    }
-}
-
-// Documentation source generator task
-tasks.register("generateDocSrc") {
-    description = "Extracts Kotlin code blocks from README.md and docs into generated sources"
-    group = "documentation"
-
-    val outputDir = generatedDocsDir
-
-    inputs.files(file("README.md"), fileTree("docs") { include("**/*.md") })
-    outputs.dir(outputDir)
-
-    doLast {
-        outputDir.asFile.deleteRecursively()
-        val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
-        val projectDirFile = projectDir
-        val sourceFiles = (listOf(file("README.md")) + fileTree("docs") { include("**/*.md") }.files)
-            .map { sourceFile ->
-                val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
-                relativePath to sourceFile
-            }
-
-        sourceFiles
-            .sortedBy { it.first }
-            .forEach { (relativePath, sourceFile) ->
-                val outputFile = outputDir.file("${relativePath.replace("/", ".")}.kt").asFile
-                val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
-                if (codeBlocks.isNotEmpty()) {
-                    codeBlocks.forEachIndexed { index, originalBlock ->
-                        val imports = linkedSetOf<String>()
-                        val blockBody = originalBlock.lines().filterNot { line ->
-                            val trimmed = line.trim()
-                            if (trimmed.startsWith("import ")) {
-                                imports.add(trimmed)
-                                true
-                            } else false
-                        }.joinToString("\n").trim()
-
-                        val fileContent = buildString {
-                            appendLine("@file:Suppress(\"unused\")")
-                            appendLine("package docsnippets")
-                            appendLine()
-                            imports.forEach { appendLine(it) }
-                            if (imports.isNotEmpty()) appendLine()
-                            appendLine(blockBody)
-                        }
-                        val blockFile = outputDir.file("${relativePath.replace("/", ".")}.block$index.kt").asFile
-                        blockFile.parentFile.mkdirs()
-                        blockFile.writeText(fileContent)
-                        println("Generated: ${blockFile.absolutePath}")
-                    }
-                } else {
-                    println("Skipped (no Kotlin blocks): ${relativePath}")
-                }
-            }
     }
 }
