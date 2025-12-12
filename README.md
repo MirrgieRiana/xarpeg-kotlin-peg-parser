@@ -205,7 +205,7 @@ A standalone Gradle sample that consumes the library via its Maven coordinate li
 
 ## License
 
-Xarpeg is distributed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Xarpeg is distributed under the MIT License. See the [LICENSE](https://github.com/MirrgieRiana/kotlin-peg-parser/blob/main/LICENSE) file for details.
 
 ---
 
