@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "mirrg.xarpite.samples"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.3"
 
 kotlin {
     jvm()
@@ -11,7 +11,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
+                implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
             }
         }
         val commonTest by getting {

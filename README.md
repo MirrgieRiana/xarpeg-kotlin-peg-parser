@@ -27,7 +27,7 @@ See the published docs entry point at [docs/index.md](./docs/index.md). GitHub P
 
 ## Installation
 
-Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
+Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.3"`). Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
+    implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
 }
 ```
 
@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    implementation "io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT"
+    implementation "io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3"
 }
 ```
 
@@ -138,22 +138,22 @@ A small Hello World app is available for quick verification:
 
 ```bash
 ./gradlew jvmJar
-java -cp build/libs/kotlin-peg-parser-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.peg.HelloWorldKt
+java -cp build/libs/kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
 ```
 
 A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/hello`:
 
 ```bash
 ./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
-(cd samples && ../gradlew :hello:build)
-java -cp samples/hello/build/libs/hello-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.samples.hello.MainKt
+(cd samples && ./gradlew :hello:build)
+java -cp samples/hello/build/libs/hello-jvm-1.0.3.jar mirrg.xarpite.samples.hello.MainKt
 ```
 
 ---
 
 ## Versioning
 
-The current version is `1.0.0-SNAPSHOT`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
+The current version is `1.0.3`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
 
 ---
 
