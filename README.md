@@ -14,7 +14,7 @@
 
 ---
 
-## Documentation
+## Tutorial
 
 ### Links
 
