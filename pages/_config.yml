@@ -1,4 +1,4 @@
-title: kotlin-peg-parser
+title: xarpeg-kotlin-peg-parser
 description: Lightweight PEG-style parser combinators for Kotlin Multiplatform
 theme: jekyll-theme-cayman
 show_downloads: false
@@ -24,8 +24,8 @@ kramdown:
 
 # Metadata
 url: "https://mirrgieriana.github.io"
-baseurl: "/kotlin-peg-parser"
-repository: "MirrgieRiana/kotlin-peg-parser"
+baseurl: "/xarpeg-kotlin-peg-parser"
+repository: "MirrgieRiana/xarpeg-kotlin-peg-parser"
 
 # Plugins
 plugins:
