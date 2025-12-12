@@ -82,15 +82,15 @@ fun main() {
 
 ## How it works
 
-The key to this parser is the `stringPart` regex:
+The key to this parser is the `stringPart` regex (shown below with Kotlin's `${'$'}` escape syntax):
 
 ```kotlin
-+Regex("""[^"${'$'}]+|${'$'}(?!\{)""")
++Regex("""[^"$]+|\$(?!\{)""")
 ```
 
-This pattern matches:
-- `[^"${'$'}]+` — one or more characters that are neither `"` nor `$`
-- `${'$'}(?!\{)` — a `$` that is **not** followed by `{` (using negative lookahead)
+This regex pattern matches:
+- `[^"$]+` — one or more characters that are neither `"` nor `$`
+- `\$(?!\{)` — a `$` that is **not** followed by `{` (using negative lookahead)
 
 This regex naturally stops at template boundaries (`${`) without needing explicit tokenization rules. When the parser encounters `${`, it switches to `expressionPart`, which recursively invokes the expression parser.
 
