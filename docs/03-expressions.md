@@ -1,8 +1,8 @@
-# Step 3: 式と再帰を扱う
+# Step 3: Handle expressions and recursion
 
-複雑な構文では自己参照や結合規則が必要になります。ここでは再帰パーサーの定義方法と、左右結合ヘルパーの使い方を紹介します。
+Complex grammars need self-reference and associativity. This step shows how to define recursive parsers and use left/right associativity helpers.
 
-## 再帰を含む式パーサー
+## Expression parser with recursion
 
 ```kotlin
 import mirrg.xarpite.parser.Parser
@@ -21,14 +21,14 @@ val expr: Parser<Int> = object {
 expr.parseAllOrThrow("2*(3+4)") // => 14
 ```
 
-- `parser { ... }` あるいは `by lazy` を使って自己参照を解決します。
-- `leftAssociative` / `rightAssociative` に「項のパーサー」「演算子のパーサー」「結合関数」を渡すだけで、再帰 descent を自前で書く手間を省けます。
-- 演算子も通常のパーサーなので、空白スキップや複数文字の記号も同じ構成で扱えます。
+- Resolve self-reference with `parser { ... }` or `by lazy`.
+- `leftAssociative` / `rightAssociative` take a term parser, an operator parser, and a combiner, saving you from hand-written recursive descent.
+- Operators are ordinary parsers, so handling whitespace or multi-character operators works the same way.
 
-## パターンを追加する
+## Extending the pattern
 
-- 優先順位の異なる演算子は、上の例のように「低優先度のレイヤー」を後に定義して重ねていきます。
-- 単項演算子や前置/後置の記号も、`leftAssociative` 以前に前処理用の `map` を挟むだけで対応できます。
+- For multiple precedence levels, layer from high to low priority as shown above.
+- Unary, prefix, or postfix operators can be handled by inserting preprocessing `map` steps before the associativity helpers.
 
-再帰と結合規則を押さえたら、実行時の例外やキャッシュの扱いを確認して完成度を高めましょう。  
-→ [Step 4: エラーと実行時の振る舞い](04-runtime.md)
+Once recursion and associativity are in place, review runtime exceptions and caching behavior to round out your parser.  
+→ [Step 4: Errors and runtime behavior](04-runtime.md)

@@ -1,8 +1,8 @@
-# Step 1: 最初のパーサーを作る
+# Step 1: Build your first parser
 
-このステップでは、最小構成のパーサーを作り、入力をパースして値に変換するところまでを体験します。
+This step walks through creating the smallest parser, running it, and turning input into typed values.
 
-## 最小サンプル
+## Minimal sample
 
 ```kotlin
 import mirrg.xarpite.parser.Parser
@@ -19,17 +19,17 @@ fun main() {
 }
 ```
 
-- `+literal` / `+Regex("...")` で現在位置にマッチするパーサーを作ります。
-- `identifier` は「英字で始まり、英数字と `_` を含められる」識別子を例にしています。
-- `*` はシーケンス結合で、結果は `Tuple` 系にまとめられます。
-- `-parser` は値を捨ててマッチだけ行うので、デリミタを除外するのに便利です。
-- `map` で戻り値を任意の型に整形します。
+- `+literal` / `+Regex("...")` create parsers that must match at the current position.
+- `identifier` demonstrates an identifier that starts with a letter and may contain letters, digits, and `_`.
+- `*` builds a sequence; the results are packaged into `Tuple` types.
+- `-parser` matches but drops the value, which is handy for delimiters.
+- `map` reshapes the result into any type you need.
 
-## 実行と動作確認
+## Run and verify
 
-1. 上記コードを任意の Kotlin エントリーポイントに配置するか、スニペットとして実行します。
-2. `parseAllOrThrow` は入力を最後まで消費できなかった場合に例外を投げるので、間違った入力もすぐに気付けます。
-3. IDE の補完と KDoc を使うと、各コンビネータの型や戻り値を確認できます。
+1. Place the snippet in any Kotlin entry point or run it as-is.
+2. `parseAllOrThrow` throws if the input is not fully consumed, so you notice bad input immediately.
+3. Use IDE completion and KDoc to inspect each combinator’s types and return shapes.
 
-次のステップでは、合成パターンを増やして複雑な構文を組み立てていきます。  
-→ [Step 2: パーサーを組み合わせる](02-combinators.md)
+Next, expand the composition patterns to build richer grammars.  
+→ [Step 2: Combine parsers](02-combinators.md)

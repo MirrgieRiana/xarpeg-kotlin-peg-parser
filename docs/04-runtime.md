@@ -1,27 +1,27 @@
-# Step 4: エラーと実行時の振る舞い
+# Step 4: Errors and runtime behavior
 
-仕上げとして、パーサーが入力全体を消費できなかった場合の例外や、メモ化キャッシュの扱いを確認します。
+Finish by checking how parsers handle full consumption, exceptions, and memoization cache settings.
 
-## 入力を最後まで消費する
+## Consume the entire input
 
-`parseAllOrThrow` は「最初から最後までマッチできたか」をチェックします。失敗時には例外で原因が分かります。
+`parseAllOrThrow` verifies that the input is matched from start to end and throws informative exceptions when it is not:
 
-- 先頭で何もマッチしない: `UnmatchedInputParseException`
-- 部分的には成功したが末尾に余りがある: `ExtraCharactersParseException`
+- Nothing matches at the start: `UnmatchedInputParseException`
+- A prefix matches but trailing input remains: `ExtraCharactersParseException`
 
-`map` 内で例外を投げるとその分岐は失敗として扱われるため、変換時のバリデーションを簡潔に書けます。
+If a `map` throws, that branch simply fails, which lets you embed validation inside transformations.
 
-## キャッシュのオン/オフ
+## Cache on or off
 
-`ParseContext` はデフォルトでメモ化するため、バックトラッキングが多い構文でも実行時間が安定します。  
-メモリ使用量を抑えたい場合や、副作用を都度実行したい場合は `parseAllOrThrow(input, useCache = false)` で無効化できます。
+`ParseContext` memoizes by default so heavy backtracking stays predictable.  
+Disable with `parseAllOrThrow(input, useCache = false)` if you want lower memory usage or need side effects to re-run.
 
-## デバッグの足がかり
+## Debugging tips
 
-- 小さな入力で失敗ケースを切り分け、`optional` や `zeroOrMore` が巻き戻しているかを確認します。
-- 型や戻り値の形が不明なときは、IDE の KDoc とコード補完を参照すると誤りを減らせます。
-- さらに詳しくは `imported/src/commonTest/kotlin/ParserTest.kt` のテストケースが実例になっています。
+- Reproduce failures with small inputs and confirm how `optional` or `zeroOrMore` rewind.
+- When unsure about shapes and types, lean on IDE KDoc and completion.
+- For more examples, see the tests in `imported/src/commonTest/kotlin/ParserTest.kt`.
 
 ---
 
-お疲れさまでした！各ステップを組み合わせて、自分のドメインに合わせたパーサーを作成してみてください。
+Nice work! Combine these steps to build parsers tailored to your domain.
