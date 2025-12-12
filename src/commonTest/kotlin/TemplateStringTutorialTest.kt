@@ -23,16 +23,16 @@ class TemplateStringTutorialTest {
         val sum: Parser<Int> = leftAssociative(product, -'+') { a, _, b -> a + b }
         val expression = sum
 
-        // String parts: match everything except ${ and closing "
+        // String parts: match everything except $( and closing "
         // The key insight: use a regex that stops before template markers
         val stringPart: Parser<TemplateElement> =
-            +Regex("""[^"$]+|\$(?!\{)""") map { match ->
+            +Regex("""[^"$]+|\$(?!\()""") map { match ->
                 StringPart(match.value)
             }
 
-        // Expression part: ${...}
+        // Expression part: $(...)
         val expressionPart: Parser<TemplateElement> =
-            -Regex("""\$\{""") * expression * -'}' map { value ->
+            -Regex("""\$\(""") * expression * -')' map { value ->
                 ExpressionPart(value)
             }
 
@@ -60,17 +60,17 @@ class TemplateStringTutorialTest {
 
     @Test
     fun stringWithOneExpression() {
-        assertEquals("result: 3", templateStringParser.parseAllOrThrow(""""result: ${1 + 2}""""))
+        assertEquals("result: 3", templateStringParser.parseAllOrThrow(""""result: $(1+2)""""))
     }
 
     @Test
     fun expressionAtStart() {
-        assertEquals("14 = answer", templateStringParser.parseAllOrThrow(""""${2*(3+4)} = answer""""))
+        assertEquals("14 = answer", templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer""""))
     }
 
     @Test
     fun multipleExpressions() {
-        assertEquals("a1b2c3d", templateStringParser.parseAllOrThrow(""""a${1}b${2}c${3}d""""))
+        assertEquals("a1b2c3d", templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d""""))
     }
 
     @Test
@@ -80,11 +80,11 @@ class TemplateStringTutorialTest {
 
     @Test
     fun onlyExpression() {
-        assertEquals("42", templateStringParser.parseAllOrThrow(""""${42}""""))
+        assertEquals("42", templateStringParser.parseAllOrThrow(""""$(42)""""))
     }
 
     @Test
     fun complexExpression() {
-        assertEquals("result is 19", templateStringParser.parseAllOrThrow(""""result is ${2*(3+4)+5}""""))
+        assertEquals("result is 19", templateStringParser.parseAllOrThrow(""""result is $(2*(3+4)+5)""""))
     }
 }

@@ -4,7 +4,7 @@ One of the key advantages of PEG-style parsers is that they work directly on the
 
 ## The challenge with tokenization
 
-Traditional parsers with separate lexer/tokenizer phases struggle with template strings like `"hello ${1 + 2} world"` because:
+Traditional parsers with separate lexer/tokenizer phases struggle with template strings like `"hello $(1+2) world"` because:
 
 - The lexer must decide upfront whether `$` is part of a string literal or an expression delimiter
 - Nested structures (expressions inside strings inside expressions) require complex lookahead logic
@@ -35,16 +35,16 @@ val templateStringParser: Parser<String> = object {
     val sum: Parser<Int> = leftAssociative(product, -'+') { a, _, b -> a + b }
     val expression = sum
 
-    // String parts: match everything except ${ and closing "
+    // String parts: match everything except $( and closing "
     // The key insight: use a regex that stops before template markers
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"${'$'}]+|${'$'}(?!\{)""") map { match ->
+        +Regex("""[^"$]+|\$(?!\()""") map { match ->
             StringPart(match.value)
         }
 
-    // Expression part: ${...}
+    // Expression part: $(...)
     val expressionPart: Parser<TemplateElement> =
-        -Regex("""\${'$'}\{""") * expression * -'}' map { value ->
+        -Regex("""\$\(""") * expression * -')' map { value ->
             ExpressionPart(value)
         }
 
@@ -69,30 +69,30 @@ fun main() {
     println(templateStringParser.parseAllOrThrow(""""hello""""))
     // => hello
     
-    println(templateStringParser.parseAllOrThrow(""""result: ${'$'}{1 + 2}""""))
+    println(templateStringParser.parseAllOrThrow(""""result: $(1+2)""""))
     // => result: 3
     
-    println(templateStringParser.parseAllOrThrow(""""${'$'}{2*(3+4)} = answer""""))
+    println(templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer""""))
     // => 14 = answer
     
-    println(templateStringParser.parseAllOrThrow(""""a${'$'}{1}b${'$'}{2}c${'$'}{3}d""""))
+    println(templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d""""))
     // => a1b2c3d
 }
 ```
 
 ## How it works
 
-The key to this parser is the `stringPart` regex (shown below with Kotlin's `${'$'}` escape syntax):
+The key to this parser is the `stringPart` regex:
 
 ```kotlin
-+Regex("""[^"$]+|\$(?!\{)""")
++Regex("""[^"$]+|\$(?!\()""")
 ```
 
 This regex pattern matches:
 - `[^"$]+` — one or more characters that are neither `"` nor `$`
-- `\$(?!\{)` — a `$` that is **not** followed by `{` (using negative lookahead)
+- `\$(?!\()` — a `$` that is **not** followed by `(` (using negative lookahead)
 
-This regex naturally stops at template boundaries (`${`) without needing explicit tokenization rules. When the parser encounters `${`, it switches to `expressionPart`, which recursively invokes the expression parser.
+This regex naturally stops at template boundaries (`$(`) without needing explicit tokenization rules. When the parser encounters `$(`, it switches to `expressionPart`, which recursively invokes the expression parser.
 
 ## Nested template strings
 
@@ -127,8 +127,8 @@ Using a PEG parser without tokenization for template strings provides:
 4. **Regex-based boundaries** — Use negative lookahead and character classes to define natural stopping points
 
 This approach scales well to more complex scenarios like:
-- Multiple expression delimiters (`${...}`, `#{...}`, etc.)
-- Escape sequences (`\${` to include literal `${`)
+- Multiple expression delimiters (`$(...)`, `#{...}`, etc.)
+- Escape sequences (`\$(` to include literal `$(`)
 - Different string quote styles (`"..."`, `'...'`, `"""..."""`)
 
 Each addition is a localized change to the relevant parser, not a redesign of the entire token vocabulary.
