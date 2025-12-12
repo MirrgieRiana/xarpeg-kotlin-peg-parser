@@ -96,3 +96,11 @@ jobs:
           git add -A
           git commit --allow-empty -m "$VERSION"
           git push origin HEAD:maven
+
+      - name: Create GitHub Release
+        if: steps.changes.outputs.changed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
