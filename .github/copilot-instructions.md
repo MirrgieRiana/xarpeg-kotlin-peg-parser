@@ -1,4 +1,4 @@
-# GitHub Copilot への指示
+# Instructions for GitHub Copilot
 
-- Issue ではタイトルと同じ自然言語で会話してください。
-- プルリクエストではタイトルと同じ自然言語で会話してください。
+- In Issues, please communicate in the same natural language as the title.
+- In Pull Requests, please communicate in the same natural language as the title.
