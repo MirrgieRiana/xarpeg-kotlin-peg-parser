@@ -141,6 +141,14 @@ A small Hello World app is available for quick verification:
 java -cp build/libs/kotlin-peg-parser-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.peg.HelloWorldKt
 ```
 
+A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/hello`:
+
+```bash
+./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
+(cd samples && ../gradlew :hello:build)
+java -cp samples/hello/build/libs/hello-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.samples.hello.MainKt
+```
+
 ---
 
 ## Versioning
