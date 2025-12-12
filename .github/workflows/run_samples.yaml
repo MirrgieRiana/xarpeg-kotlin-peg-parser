@@ -27,7 +27,7 @@ jobs:
       working-directory: samples/hello
       run: |
         # Build the executable distribution using Gradle
-        ./gradlew installDist --console=plain
+        ./gradlew installDist --console=plain --info --stacktrace
 
     - name: Run hello sample and verify output
       working-directory: samples/hello
