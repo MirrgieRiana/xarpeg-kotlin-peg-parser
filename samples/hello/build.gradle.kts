@@ -6,7 +6,12 @@ group = "mirrg.xarpite.samples"
 version = "1.0.3"
 
 kotlin {
-    jvm()
+    jvm {
+        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+        mainRun {
+            mainClass.set("mirrg.xarpite.samples.hello.MainKt")
+        }
+    }
 
     sourceSets {
         val commonMain by getting {

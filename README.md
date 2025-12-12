@@ -145,8 +145,14 @@ A standalone Gradle sample that consumes the library via its Maven coordinate li
 
 ```bash
 ./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
-(cd samples && ../gradlew :hello:build)
-java -cp samples/hello/build/libs/hello-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.samples.hello.MainKt
+(cd samples && ../gradlew run)
+```
+
+Alternatively, you can run the hello sample directly:
+
+```bash
+./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
+(cd samples && ../gradlew :hello:jvmRun)
 ```
 
 ---

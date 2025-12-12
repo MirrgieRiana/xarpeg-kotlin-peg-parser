@@ -26,20 +26,11 @@ jobs:
         VERSION: 1.0.3
       run: ./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
 
-    - name: Build hello sample
-      working-directory: samples
-      run: ../gradlew :hello:build
-
     - name: Run hello sample and verify output
       working-directory: samples
       run: |
-        # Construct classpath with dependencies
-        KOTLIN_STDLIB=$(find ~/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib -name "kotlin-stdlib-*.jar" | grep -v sources | grep -v '\-all\.jar' | head -1)
-        PARSER_JAR=$(find ~/.m2/repository/io/github/mirrgieriana/xarpite -name "kotlin-peg-parser-jvm-1.0.3.jar" | grep -v sources | head -1)
-        CLASSPATH="hello/build/libs/hello-jvm-1.0.3.jar:$PARSER_JAR:$KOTLIN_STDLIB"
-        
-        # Run the sample and capture output
-        OUTPUT=$(java -cp "$CLASSPATH" mirrg.xarpite.samples.hello.MainKt)
+        # Run the sample and capture output using Gradle task
+        OUTPUT=$(../gradlew :hello:jvmRun --quiet --console=plain)
         echo "Sample output: $OUTPUT"
         
         # Expected output
