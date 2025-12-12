@@ -12,6 +12,16 @@ import kotlin.test.assertEquals
  */
 class PositionTutorialTest {
 
+    data class Located<T>(val value: T, val line: Int, val column: Int)
+
+    fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, result ->
+        // Calculate line and column from position
+        val text = ctx.src.substring(0, result.start)
+        val line = text.count { it == '\n' } + 1
+        val column = text.length - (text.lastIndexOf('\n') + 1) + 1
+        Located(result.value, line, column)
+    }
+
     @Test
     fun simpleMapExample() {
         val number = +Regex("[0-9]+") map { it.value.toInt() }
@@ -29,16 +39,6 @@ class PositionTutorialTest {
 
     @Test
     fun withLocationExample() {
-        data class Located<T>(val value: T, val line: Int, val column: Int)
-
-        fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, result ->
-            // Calculate line and column from position
-            val text = ctx.src.substring(0, result.start)
-            val line = text.count { it == '\n' } + 1
-            val column = text.length - (text.lastIndexOf('\n') + 1) + 1
-            Located(result.value, line, column)
-        }
-
         val keyword = +Regex("[a-z]+") map { it.value }
         val keywordWithLocation = keyword.withLocation()
 
@@ -49,15 +49,6 @@ class PositionTutorialTest {
 
     @Test
     fun withLocationMultiline() {
-        data class Located<T>(val value: T, val line: Int, val column: Int)
-
-        fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, result ->
-            val text = ctx.src.substring(0, result.start)
-            val line = text.count { it == '\n' } + 1
-            val column = text.length - (text.lastIndexOf('\n') + 1) + 1
-            Located(result.value, line, column)
-        }
-
         val keyword = +Regex("[a-z]+") map { it.value }
         val keywordWithLocation = keyword.withLocation()
 
