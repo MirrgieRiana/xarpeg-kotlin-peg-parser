@@ -12,7 +12,7 @@ val parseA: Parser<String> = { input ->
     }
 }
 
-fun <T> repeatParser(parser: Parser<T>): Parser<List<T>> = fun(input: String): ParseResult<List<T>>? {
+fun <T> repeatParser(parser: Parser<T>): Parser<List<T>> = { input ->
     var rest = input
     val results = mutableListOf<T>()
 
@@ -20,9 +20,9 @@ fun <T> repeatParser(parser: Parser<T>): Parser<List<T>> = fun(input: String): P
         val result = parser(rest) ?: break
         results.add(result.value)
         val nextRest = result.rest
-        if (nextRest.length == rest.length) break
+        if (nextRest == rest) break
         rest = nextRest
     }
 
-    return ParseResult(results, rest)
+    ParseResult(results, rest)
 }
