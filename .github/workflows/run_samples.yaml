@@ -27,7 +27,7 @@ jobs:
       working-directory: samples/java-run
       run: |
         # Build the executable distribution using Gradle
-        ./gradlew installDist --console=plain
+        ./gradlew installDist --console=plain --info --stacktrace
 
     - name: Run java-run sample and verify output
       working-directory: samples/java-run
