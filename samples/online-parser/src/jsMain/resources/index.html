@@ -14,6 +14,8 @@
             --accent-strong-hover: #143ec7;
             --accent-focus: #cbdafe;
             --border: #e5e7eb;
+            --textarea-bg: #fbfdff;
+            --button-text: #ffffff;
             --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
         }
         * { box-sizing: border-box; }
@@ -48,7 +50,7 @@
             margin-top: 0.4rem;
             border-radius: 12px;
             border: 1px solid var(--border);
-            background: #fbfdff;
+            background: var(--textarea-bg);
             color: var(--ink);
             font-size: 1rem;
             resize: vertical;
@@ -73,7 +75,7 @@
             appearance: none;
             border: 1px solid var(--accent-strong);
             background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-            color: #fff;
+            color: var(--button-text);
             padding: 0.55rem 1.2rem;
             border-radius: 12px;
             font-weight: 700;
