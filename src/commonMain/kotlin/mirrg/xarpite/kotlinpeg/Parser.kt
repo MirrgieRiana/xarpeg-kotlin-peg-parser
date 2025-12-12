@@ -3,6 +3,8 @@ package mirrg.xarpite.kotlinpeg
 import kotlin.math.max
 import kotlin.math.min
 
+private const val DIAGNOSTIC_CONTEXT = 10
+
 /**
  * Token produced by primitive parsers such as [text] and [regex].
  */
@@ -164,7 +166,7 @@ fun <T> choice(vararg parsers: Parser<out T>): Parser<T> = object : Parser<T> {
             for (parser in parsers) {
                 @Suppress("UNCHECKED_CAST")
                 val typed = parser as Parser<T>
-                val result = ctx.memoized(typed, pos) { typed.parse(ctx, pos) }
+                val result = typed.parse(ctx, pos)
                 when (result) {
                     is StepResult.Ok -> return@memoized result
                     is StepResult.Err -> failure = failure.merge(result)
@@ -221,10 +223,9 @@ fun <T> Parser<T>.many(): Parser<List<T>> = object : Parser<List<T>> {
                         position = result.next
                     }
 
-                    is StepResult.Err -> return@memoized StepResult.Ok(values, position)
+                    is StepResult.Err -> break
                 }
             }
-            @Suppress("UNREACHABLE_CODE")
             StepResult.Ok(values, position)
         }
     }
@@ -261,7 +262,7 @@ fun <T> not(parser: Parser<T>): Parser<Unit> = object : Parser<Unit> {
 
 fun <T> leftAssoc(
     term: Parser<T>,
-    op: Parser<*>,
+    op: Parser<Token>,
     combine: (T, Token, T) -> T,
 ): Parser<T> = object : Parser<T> {
     override fun parse(ctx: Context, pos: Int): StepResult<T> {
@@ -274,22 +275,19 @@ fun <T> leftAssoc(
             var position = first.next
             while (true) {
                 when (val opRes = op.parse(ctx, position)) {
-                    is StepResult.Err -> return@memoized StepResult.Ok(acc, position)
+                    is StepResult.Err -> break
                     is StepResult.Ok -> {
                         val right = term.parse(ctx, opRes.next)
                         when (right) {
                             is StepResult.Err -> return@memoized right
                             is StepResult.Ok -> {
-                                val operator = (opRes.value as? Token)
-                                    ?: Token(opRes.value.toString(), position, opRes.next)
-                                acc = combine(acc, operator, right.value)
+                                acc = combine(acc, opRes.value, right.value)
                                 position = right.next
                             }
                         }
                     }
                 }
             }
-            @Suppress("UNREACHABLE_CODE")
             StepResult.Ok(acc, position)
         }
     }
@@ -297,7 +295,7 @@ fun <T> leftAssoc(
 
 private fun StepResult.Err.toFailure(input: String): ParseResult.Failure {
     val found = if (position < input.length) {
-        input.substring(position, min(position + 10, input.length)).replace("\n", "\\n")
+        input.substring(position, min(position + DIAGNOSTIC_CONTEXT, input.length)).replace("\n", "\\n")
     } else {
         "end of input"
     }
@@ -310,8 +308,8 @@ private fun StepResult.Err.toFailure(input: String): ParseResult.Failure {
         append(found)
         append('\'')
         append("\n")
-        val start = max(0, position - 10)
-        val end = min(input.length, position + 10)
+        val start = max(0, position - DIAGNOSTIC_CONTEXT)
+        val end = min(input.length, position + DIAGNOSTIC_CONTEXT)
         append(input.substring(start, end).replace("\n", "\\n"))
         append("\n")
         append(" ".repeat(position - start))

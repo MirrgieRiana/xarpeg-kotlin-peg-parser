@@ -2,6 +2,7 @@ package mirrg.xarpite.kotlinpeg
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ParserTest {
@@ -21,7 +22,9 @@ class ParserTest {
     fun seqAndChoice() {
         val grammar = peg<String> {
             val ab = seq(text("a"), text("b")).map { parts ->
-                (parts[0] as Token).text + (parts[1] as Token).text
+                val first = parts.getOrNull(0) as? Token ?: error("expected first token")
+                val second = parts.getOrNull(1) as? Token ?: error("expected second token")
+                first.text + second.text
             }
             val c = text("c").map { it.text }
             start(choice(ab, c).map { it as String })
@@ -38,7 +41,9 @@ class ParserTest {
                 tokens.joinToString("") { it.text }
             }
             start(seq(sign, digits).map { parts ->
-                (parts[0] as String) + (parts[1] as String)
+                val signPart = parts.getOrNull(0) as? String ?: ""
+                val digitPart = parts.getOrNull(1) as? String ?: ""
+                signPart + digitPart
             })
         }
         assertEquals("-1234", grammar.parse("-1234"))
@@ -73,9 +78,8 @@ class ParserTest {
             start(text("a"))
         }
         val result = grammar.tryParse("b")
-        assertTrue(result is ParseResult.Failure)
-        result as ParseResult.Failure
-        assertEquals(0, result.position)
-        assertTrue(result.expected.contains("'a'"))
+        val failure = assertIs<ParseResult.Failure>(result)
+        assertEquals(0, failure.position)
+        assertTrue(failure.expected.contains("'a'"))
     }
 }
