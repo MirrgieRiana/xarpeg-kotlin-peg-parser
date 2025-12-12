@@ -163,6 +163,28 @@ The current version is `1.0.0-SNAPSHOT`; the API may evolve while iterating on t
 
 ---
 
+## Real-World Examples
+
+### Xarpite
+
+**Xarpite** is a practical application built using this parser library. It demonstrates how `kotlin-peg-parser` can be used in real-world scenarios to parse complex grammars efficiently.
+
+Xarpite serves as both:
+- A **working example** of the parser library in action
+- The **original project** from which this parser was extracted and generalized
+
+The parser component that powers Xarpite was refined over time and eventually extracted into this standalone library to make it reusable across different Kotlin Multiplatform projects.
+
+**Repository:** [github.com/MirrgieRiana/Xarpite](https://github.com/MirrgieRiana/Xarpite)
+
+Exploring the Xarpite source code can provide additional insights into:
+- Structuring larger parser grammars
+- Integrating the parser into a complete application
+- Performance optimization techniques with caching
+- Handling complex parsing scenarios
+
+---
+
 ## About
 
 This library began as a parser component inside the Xarpite project and was extracted into a standalone, reusable PEG-style parser toolkit for Kotlin Multiplatform.
