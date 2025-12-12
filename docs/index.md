@@ -2,6 +2,8 @@
 
 This guide is split into themed subpages so you can learn step by step. For API signatures, rely on IDE completion and KDoc.
 
+When adding the library to your project, replace `<latest-version>` with the version shown on [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
+
 ## Reading path (hub)
 
 - **Step 1 – Build your first parser:** minimal DSL example and how to run it  

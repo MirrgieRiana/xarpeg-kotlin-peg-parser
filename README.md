@@ -136,7 +136,7 @@ Exploring the Xarpite source code can provide additional insights into:
 
 ## Installation
 
-Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.3"`). Add the dependency as usual:
+Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "<latest-version>"`). Check [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases) for the current value. Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
@@ -146,7 +146,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:1.0.3")
+    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
 }
 ```
 
@@ -158,7 +158,7 @@ repositories {
 }
 
 dependencies {
-    implementation "io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:1.0.3"
+    implementation "io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>"
 }
 ```
 
@@ -166,7 +166,7 @@ dependencies {
 
 ## Versioning
 
-The current version is `1.0.3`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
+Use the latest version from [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases) (replace `<latest-version>` in the snippets with the number shown there); the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
 
 ---
 
@@ -191,7 +191,7 @@ A small Hello World app is available for quick verification:
 
 ```bash
 ./gradlew jvmJar
-java -cp build/libs/xarpeg-kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
+java -cp build/libs/xarpeg-kotlin-peg-parser-jvm-<latest-version>.jar mirrg.xarpite.peg.HelloWorldKt # replace with the version shown on Releases
 ```
 
 A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/java-run`:
