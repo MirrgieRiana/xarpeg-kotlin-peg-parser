@@ -8,4 +8,4 @@
 gradlew text eol=lf
 
 *.bat text eol=crlf
-gradlew.bat text eol=crlf
+gradlew.bat -text
