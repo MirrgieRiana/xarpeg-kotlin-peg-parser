@@ -23,15 +23,6 @@ kotlin {
         nodejs()
     }
     
-    // Native target for Linux x64
-    linuxX64 {
-        binaries {
-            executable {
-                entryPoint = "mirrg.xarpite.peg.main"
-            }
-        }
-    }
-    
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
@@ -43,7 +34,5 @@ kotlin {
         val jvmTest by getting
         val jsMain by getting
         val jsTest by getting
-        val linuxX64Main by getting
-        val linuxX64Test by getting
     }
 }
