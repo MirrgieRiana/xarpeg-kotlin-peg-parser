@@ -1,0 +1,31 @@
+title: kotlin-peg-parser
+description: Lightweight PEG-style parser combinators for Kotlin Multiplatform
+theme: jekyll-theme-cayman
+show_downloads: false
+
+# Navigation
+header_pages:
+  - docs/index.md
+  - docs/01-quickstart.md
+  - docs/02-combinators.md
+  - docs/03-expressions.md
+  - docs/04-runtime.md
+
+# Appearance
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+# Metadata
+url: "https://mirrgieriana.github.io"
+baseurl: "/kotlin-peg-parser"
+repository: "MirrgieRiana/kotlin-peg-parser"
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap

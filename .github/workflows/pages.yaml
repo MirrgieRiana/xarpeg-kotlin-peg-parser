@@ -27,11 +27,13 @@ jobs:
 
       - name: Prepare Jekyll source
         run: |
-          mkdir -p site-src/docs
-          cat > site-src/_config.yml <<'EOF'
-          title: kotlin-peg-parser
-          theme: minima
-          EOF
+          mkdir -p site-src/docs site-src/assets/css site-src/_layouts site-src/_includes
+          # Copy config, assets, layouts, and includes
+          cp pages/_config.yml site-src/
+          cp pages/assets/css/style.scss site-src/assets/css/
+          cp pages/_layouts/default.html site-src/_layouts/
+          cp pages/_includes/head-custom.html site-src/_includes/
+          # Create index from README
           {
             cat <<'EOF'
           ---
@@ -41,6 +43,7 @@ jobs:
           EOF
             cat README.md
           } > site-src/index.md
+          # Copy documentation with front matter
           find docs -name '*.md' -print0 | while IFS= read -r -d '' file; do
             dest="site-src/$file"
             mkdir -p "$(dirname "$dest")"
@@ -53,6 +56,7 @@ jobs:
               cat "$file"
             } > "$dest"
           done
+          # Copy Google verification
           cp pages/googlea59f33fe422494f1.html site-src
           cp LICENSE site-src
 

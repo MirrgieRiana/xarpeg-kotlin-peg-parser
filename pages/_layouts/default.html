@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% seo %}
+  {% include head-custom.html %}
+</head>
+<body>
+  <header class="page-header" role="banner">
+    <h1 class="project-name">
+      <a href="{{ '/' | relative_url }}" style="color: white; text-decoration: none; border: none;">
+        {{ site.title }}
+      </a>
+    </h1>
+    <h2 class="project-tagline">{{ site.description }}</h2>
+    
+    <nav class="header-nav" style="margin-top: 1.5rem;">
+      <a href="{{ '/' | relative_url }}" class="btn">Home</a>
+      <a href="{{ '/docs/' | relative_url }}" class="btn">Documentation</a>
+      <a href="{{ site.repository }}" class="btn" target="_blank">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="main-content" role="main">
+    {% if page.url contains '/docs/' and page.url != '/docs/index.html' %}
+    <nav class="doc-nav" aria-label="Documentation Navigation">
+      <a href="{{ '/docs/' | relative_url }}" class="doc-nav-item">📚 Guide Home</a>
+      <a href="{{ '/docs/01-quickstart.html' | relative_url }}" class="doc-nav-item">🚀 Step 1: Quickstart</a>
+      <a href="{{ '/docs/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 Step 2: Combinators</a>
+      <a href="{{ '/docs/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 Step 3: Expressions</a>
+      <a href="{{ '/docs/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ Step 4: Runtime</a>
+    </nav>
+    {% endif %}
+
+    <article>
+      {{ content }}
+    </article>
+
+    {% if page.url contains '/docs/' %}
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display: flex; justify-content: space-between;">
+      {% if page.url contains '01-quickstart' %}
+        <div></div>
+        <a href="{{ '/docs/02-combinators.html' | relative_url }}" style="font-weight: 600;">Next: Step 2 – Combinators →</a>
+      {% elsif page.url contains '02-combinators' %}
+        <a href="{{ '/docs/01-quickstart.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 1 – Quickstart</a>
+        <a href="{{ '/docs/03-expressions.html' | relative_url }}" style="font-weight: 600;">Next: Step 3 – Expressions →</a>
+      {% elsif page.url contains '03-expressions' %}
+        <a href="{{ '/docs/02-combinators.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 2 – Combinators</a>
+        <a href="{{ '/docs/04-runtime.html' | relative_url }}" style="font-weight: 600;">Next: Step 4 – Runtime →</a>
+      {% elsif page.url contains '04-runtime' %}
+        <a href="{{ '/docs/03-expressions.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 3 – Expressions</a>
+        <div></div>
+      {% endif %}
+    </nav>
+    {% endif %}
+  </main>
+
+  <footer style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 2px solid var(--border-color); color: #6a737d;">
+    <p>
+      <a href="{{ site.repository }}" target="_blank">{{ site.title }}</a> is maintained by 
+      <a href="https://github.com/{{ site.repository | split: '/' | first }}" target="_blank">
+        {{ site.repository | split: '/' | first }}
+      </a>
+    </p>
+    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+      Built with ❤️ using Jekyll and GitHub Pages
+    </p>
+  </footer>
+</body>
+</html>
