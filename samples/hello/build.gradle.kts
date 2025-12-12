@@ -14,10 +14,3 @@ dependencies {
     implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
     testImplementation(kotlin("test"))
 }
-
-// Set source directory to commonMain for compatibility
-sourceSets {
-    main {
-        kotlin.srcDir("src/commonMain/kotlin")
-    }
-}
