@@ -11,7 +11,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("mirrg.xarpite:kotlin-peg-parser-jvm:1.0.0-SNAPSHOT")
+                implementation("mirrg.xarpite:kotlin-peg-parser:1.0.0-SNAPSHOT")
             }
         }
         val commonTest by getting {
