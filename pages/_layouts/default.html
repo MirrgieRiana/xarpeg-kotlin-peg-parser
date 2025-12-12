@@ -21,7 +21,7 @@
     <nav class="header-nav" style="margin-top: 1.5rem;">
       <a href="{{ '/' | relative_url }}" class="btn">Home</a>
       <a href="{{ '/docs/' | relative_url }}" class="btn">Tutorial</a>
-      <a href="{{ site.repository }}" class="btn" target="_blank">GitHub</a>
+      <a href="https://github.com/{{ site.repository }}" class="btn" target="_blank">GitHub</a>
     </nav>
   </header>
 
@@ -61,7 +61,7 @@
 
   <footer style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 2px solid var(--border-color); color: #6a737d;">
     <p>
-      <a href="{{ site.repository }}" target="_blank">{{ site.title }}</a> is maintained by 
+      <a href="https://github.com/{{ site.repository }}" target="_blank">{{ site.title }}</a> is maintained by 
       <a href="https://github.com/{{ site.repository | split: '/' | first }}" target="_blank">
         {{ site.repository | split: '/' | first }}
       </a>
