@@ -194,11 +194,18 @@ A small Hello World app is available for quick verification:
 java -cp build/libs/kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
 ```
 
-A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/hello`:
+A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/java-run`:
 
 ```bash
 ./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
-(cd samples/hello && ./gradlew run)
+(cd samples/java-run && ./gradlew run)
+```
+
+A browser-based online parser sample lives under `samples/online-parser`. Build it to emit `build/site/index.html` that imports the JS module:
+
+```bash
+(cd samples/online-parser && ./gradlew build)
+# Open samples/online-parser/build/site/index.html in a browser
 ```
 
 ---
