@@ -52,6 +52,7 @@ jobs:
               cat "$file"
             } > "$dest"
           done
+          cp googlea59f33fe422494f1.html site-src
 
       - name: Build site with Jekyll
         uses: actions/jekyll-build-pages@v1
