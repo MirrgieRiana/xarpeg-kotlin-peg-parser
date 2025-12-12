@@ -32,9 +32,9 @@ object LazyArithmetic {
      */
     private val number: Parser<() -> Int> = 
         +Regex("[0-9]+") mapEx { _, result ->
+            // result.value is a MatchResult, result.value.value is the matched string
             val value = result.value.value.toInt()
-            val lambda: () -> Int = { value }
-            lambda
+            return@mapEx { value }
         }
     
     /**
@@ -44,8 +44,7 @@ object LazyArithmetic {
     private val positionMarker: Parser<() -> Int> =
         +'!' mapEx { _, result ->
             val position = result.start
-            val lambda: () -> Int = { throw PositionMarkerException("Position marker at index $position", position) }
-            lambda
+            return@mapEx { throw PositionMarkerException("Position marker at index $position", position) }
         }
     
     /**
