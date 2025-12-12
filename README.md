@@ -14,6 +14,12 @@
 
 ---
 
+## Documentation
+
+See the published docs entry point at [docs/index.md](./docs/index.md). GitHub Pages hosts the README at the site root with the `docs` directory preserved for deeper content.
+
+---
+
 ## Installation
 
 Gradle coordinates follow the project metadata (`group = "mirrg.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
