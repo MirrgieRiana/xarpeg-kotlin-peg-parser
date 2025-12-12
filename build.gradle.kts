@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.mirrgieriana.xarpite"
-version = "1.0.3"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
