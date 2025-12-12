@@ -54,11 +54,10 @@ jobs:
           done
 
       - name: Build site with Jekyll
-        uses: actions/jekyll-build@v2
+        uses: actions/jekyll-build-pages@v1
         with:
           source: ./site-src
           destination: ./site
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
