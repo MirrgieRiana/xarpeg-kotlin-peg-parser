@@ -29,7 +29,6 @@ Gradle coordinates follow the project metadata (`group = "mirrg.xarpite"`, `vers
 ```kotlin
 repositories {
     maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/kotlin-peg-parser/maven/maven") }
-    mavenCentral()
 }
 
 dependencies {
@@ -42,7 +41,6 @@ dependencies {
 ```groovy
 repositories {
     maven { url "https://raw.githubusercontent.com/MirrgieRiana/kotlin-peg-parser/maven/maven" }
-    mavenCentral()
 }
 
 dependencies {
