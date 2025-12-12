@@ -25,6 +25,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+
+      - name: Build online parser sample
+        run: |
+          cd samples/online-parser
+          ./gradlew build --console=plain --info --stacktrace
+
       - name: Set up JDK
         uses: actions/setup-java@v4.5.0
         with:
@@ -66,6 +72,11 @@ jobs:
               cat "$file"
             } > "$dest"
           done
+
+          # Copy online parser sample output
+          mkdir -p site-src/online-parser
+          cp -r samples/online-parser/build/site/* site-src/online-parser/
+
           BUILD_DIR="${BUILD_DIR:-build}"
           DOKKA_OUTPUT="${BUILD_DIR}/dokka"
           if [ ! -d "$DOKKA_OUTPUT" ]; then
@@ -75,6 +86,7 @@ jobs:
           # Copy KDoc output
           mkdir -p site-src/kdoc
           cp -r "$DOKKA_OUTPUT"/. site-src/kdoc/
+
           # Copy Google verification
           cp pages/googlea59f33fe422494f1.html site-src
 
