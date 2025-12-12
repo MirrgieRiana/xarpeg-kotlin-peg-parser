@@ -26,7 +26,9 @@ kotlin {
     // Native target for Linux x64
     linuxX64 {
         binaries {
-            executable()
+            executable {
+                entryPoint = "mirrg.xarpite.peg.main"
+            }
         }
     }
     
