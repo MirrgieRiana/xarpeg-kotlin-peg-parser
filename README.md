@@ -191,7 +191,6 @@ A small Hello World app is available for quick verification:
 
 ```bash
 ./gradlew jvmJar
-
 java -cp build/libs/xarpeg-kotlin-peg-parser-jvm-<latest-version>.jar mirrg.xarpite.peg.HelloWorldKt # replace with the version shown on Releases
 ```
 
