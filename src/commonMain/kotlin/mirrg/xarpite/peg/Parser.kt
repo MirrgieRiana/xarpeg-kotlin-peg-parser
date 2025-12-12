@@ -19,6 +19,7 @@ fun <T> repeatParser(parser: Parser<T>): Parser<List<T>> = { input ->
     while (true) {
         val result = parser(rest) ?: break
         val nextRest = result.rest
+        // Avoid infinite loops when the parser succeeds without consuming input.
         if (nextRest == rest) break
         results.add(result.value)
         rest = nextRest
