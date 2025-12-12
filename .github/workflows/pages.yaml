@@ -25,6 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Build online parser sample
+        run: |
+          cd samples/online-parser
+          ./gradlew build --console=plain --info --stacktrace
+
       - name: Prepare Jekyll source
         run: |
           mkdir -p site-src/docs site-src/assets/css site-src/_layouts site-src/_includes
@@ -56,6 +61,9 @@ jobs:
               cat "$file"
             } > "$dest"
           done
+          # Copy online parser sample output
+          mkdir -p site-src/online-parser
+          cp -r samples/online-parser/build/site/* site-src/online-parser/
           # Copy Google verification
           cp pages/googlea59f33fe422494f1.html site-src
 

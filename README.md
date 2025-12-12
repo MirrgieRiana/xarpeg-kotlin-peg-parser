@@ -208,6 +208,8 @@ A browser-based online parser sample lives under `samples/online-parser`. Build 
 # Open samples/online-parser/build/site/index.html in a browser
 ```
 
+View the hosted version at https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/.
+
 ---
 
 ## License
