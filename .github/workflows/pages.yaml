@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p site
           cp README.md site/README.md
-          cp -r docs site/docs
+          if [ -d docs ]; then cp -r docs site/docs; fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
