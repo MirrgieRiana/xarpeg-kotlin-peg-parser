@@ -10,13 +10,13 @@ repositories {
 }
 
 group = "mirrg.xarpite.samples"
-version = "1.0.3"
+version = libs.versions.xarpeg.get()
 
 application {
     mainClass.set("mirrg.xarpite.samples.java_run.MainKt")
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:1.0.3")
+    implementation(libs.xarpeg)
     testImplementation(kotlin("test"))
 }

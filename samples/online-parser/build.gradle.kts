@@ -14,7 +14,7 @@ repositories {
 }
 
 group = "mirrg.xarpite.samples"
-version = "1.0.3"
+version = libs.versions.xarpeg.get()
 
 kotlin {
     js(IR) {
@@ -33,7 +33,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:1.0.3")
+                implementation(libs.xarpeg)
             }
         }
         val jsTest by getting {
