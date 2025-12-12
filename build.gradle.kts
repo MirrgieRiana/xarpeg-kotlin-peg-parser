@@ -255,3 +255,32 @@ tasks.register("generateTuples") {
         println("All tuple files generated and verified successfully!")
     }
 }
+
+// Documentation source generator task
+tasks.register("generateSrcFromDocs") {
+    description = "Extracts Kotlin code blocks from README.md and docs into generated sources"
+    group = "documentation"
+
+    val outputDir = layout.buildDirectory.dir("generated/docs")
+
+    inputs.files(file("README.md"), fileTree("docs") { include("**/*.md") })
+    outputs.dir(outputDir)
+
+    doLast {
+        val kotlinBlockRegex = Regex("""```kotlin\s*\n(.*?)```""", setOf(RegexOption.DOT_MATCHES_ALL))
+        val projectDirFile = projectDir
+        val sourceFiles = listOf(file("README.md")) + fileTree("docs") { include("**/*.md") }.files
+
+        sourceFiles
+            .sortedBy { it.relativeTo(projectDirFile).path.replace('\\', '/') }
+            .forEach { sourceFile ->
+                val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
+                val outputFile = outputDir.get().file("${relativePath.replace("/", ".")}.kt").asFile
+                outputFile.parentFile.mkdirs()
+
+                val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
+                outputFile.writeText(codeBlocks.joinToString("\n\n"))
+                println("Generated: ${outputFile.absolutePath}")
+            }
+    }
+}
