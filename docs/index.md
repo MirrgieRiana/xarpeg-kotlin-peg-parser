@@ -32,19 +32,23 @@ fun main() {
 
 ## 2. 繰り返し・オプションを組み合わせる
 
-リストやオプションはビルダーを重ねるだけです。省略可能な空白や CSV 風の配列パースを例にします。
+リストやオプションはビルダーを重ねるだけです。符号付き整数と連続文字列の例を見てみます。
 
 ```kotlin
-val spaces = +Regex("[ \\t]*") map { Tuple0 }           // 空白を捨てる
-val comma = -spaces * -',' * -spaces                     // 区切りも捨てる
-val intList = number.list(min = 1).optional              // 1 個以上の数値リストを許可し、省略も可
-val array = -'[' * intList * -']' map { it.a ?: emptyList() }
+val sign = (+'+' + +'-').optional map { it.a ?: '+' }
+val unsigned = +Regex("[0-9]+") map { it.value.toInt() }
+val signedInt = sign * unsigned map { (s, value) ->
+    if (s == '-') -value else value
+}
 
-array.parseAllOrThrow("[1, 2,3]")   // => [1, 2, 3]
-array.parseAllOrThrow("[]")         // => []
+val repeatedA = (+'a').oneOrMore map { it.joinToString("") }
+
+signedInt.parseAllOrThrow("-42") // => -42
+signedInt.parseAllOrThrow("99")  // => 99
+repeatedA.parseAllOrThrow("aaaa") // => "aaaa"
 ```
 
-`optional` は入力を消費しなかった場合でも位置を戻してくれるため、後続のパーサーに影響を与えません。
+`optional` はマッチしなかった場合でも解析位置を戻してくれるため、後続のパーサーに影響を与えません。繰り返し系 (`zeroOrMore` / `oneOrMore` / `list`) は `List<T>` を返すので、`map` でそのまま好きな形に変換できます。
 
 ## 3. 再帰と結合規則で表現式を作る
 
@@ -53,7 +57,7 @@ array.parseAllOrThrow("[]")         // => []
 ```kotlin
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() }
-    val paren: Parser<Int> by lazy { -'(' * parser { root } * -')' }
+    val paren: Parser<Int> by lazy { -'(' * root * -')' }
     val factor = number + paren
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
