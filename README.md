@@ -1,6 +1,6 @@
 # mirrg.xarpite.kotlin-peg-parser
 
-**Minimal PEG-style Parser DSL for Kotlin Multiplatform**
+**mirrg.xarpite.kotlin-peg-parser: Minimal PEG-style Parser DSL for Kotlin Multiplatform**
 
 `mirrg.xarpite.kotlin-peg-parser` is a small PEG-style parser combinator library for Kotlin Multiplatform. It lets you write grammars as a Kotlin DSL, parse directly from raw input text (no tokenizer), and relies on built-in memoization to keep backtracking fast and predictable.
 
