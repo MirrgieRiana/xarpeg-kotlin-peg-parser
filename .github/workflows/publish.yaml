@@ -27,7 +27,20 @@ jobs:
           ref: maven
           path: maven
 
+      - name: Check relevant changes
+        id: changes
+        run: |
+          changed_files="$(git -C main diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          echo "Changed files:"
+          echo "$changed_files"
+          if echo "$changed_files" | grep -E -q '^(src/|build\.gradle\.kts|settings\.gradle\.kts|gradle/|gradlew$|gradlew\.bat$|README\.md$|\.github/workflows/publish\.yaml$)'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify tag is on main
+        if: steps.changes.outputs.changed == 'true'
         working-directory: main
         run: |
           git fetch origin main
@@ -37,26 +50,39 @@ jobs:
           fi
 
       - name: Set up JDK 17
+        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Gradle
+        if: steps.changes.outputs.changed == 'true'
         uses: gradle/actions/setup-gradle@v4
         with:
           build-root-directory: main
 
+      - name: Prepare local maven repository
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          mkdir -p main/build/maven
+          if [ -d maven/maven ]; then
+            rsync -av --delete --exclude '.git/' maven/maven/ main/build/maven/
+          fi
+
       - name: Publish artifacts
+        if: steps.changes.outputs.changed == 'true'
         working-directory: main
         run: ./gradlew publish
 
       - name: Sync artifacts to maven branch
+        if: steps.changes.outputs.changed == 'true'
         run: |
-          mkdir -p main/build/maven
-          rsync -av --delete --exclude '.git/' main/build/maven/ maven/
+          mkdir -p maven/maven
+          rsync -av --delete --exclude '.git/' main/build/maven/ maven/maven/
 
       - name: Commit and push artifacts
+        if: steps.changes.outputs.changed == 'true'
         working-directory: maven
         env:
           VERSION: ${{ github.ref_name }}
