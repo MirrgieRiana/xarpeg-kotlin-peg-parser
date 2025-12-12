@@ -299,9 +299,19 @@ a:focus, button:focus, .btn:focus {
 }
 
 /* Better code language badges */
-.highlight .language-kotlin::before,
+.highlight .language-kotlin::before {
+  content: 'KOTLIN';
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: #6a737d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem 0;
+}
+
 .highlight .language-groovy::before {
-  content: attr(class);
+  content: 'GROOVY';
   display: block;
   text-align: right;
   font-size: 0.75rem;
