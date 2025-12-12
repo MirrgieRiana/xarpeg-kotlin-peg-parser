@@ -11,6 +11,8 @@ repositories {
     mavenCentral()
 }
 
+val generatedDocsDir = layout.buildDirectory.dir("generated/docsnippets")
+
 kotlin {
     // JVM target
     jvm {
@@ -37,6 +39,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("imported/src/commonMain/kotlin")
+            kotlin.srcDir(generatedDocsDir)
         }
 
         val commonTest by getting {
@@ -261,7 +264,7 @@ tasks.register("generateSrcFromDocs") {
     description = "Extracts Kotlin code blocks from README.md and docs into generated sources"
     group = "documentation"
 
-    val outputDir = layout.projectDirectory.dir("src/commonMain/kotlin/docsnippets")
+    val outputDir = generatedDocsDir
 
     inputs.files(file("README.md"), fileTree("docs") { include("**/*.md") })
     outputs.dir(outputDir)
