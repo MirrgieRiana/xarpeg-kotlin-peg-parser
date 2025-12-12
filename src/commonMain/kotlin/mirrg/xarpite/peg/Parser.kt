@@ -20,10 +20,7 @@ fun <T> repeatParser(parser: Parser<T>): Parser<List<T>> = fun(input: String): P
         val result = parser(rest) ?: break
         results.add(result.value)
         val nextRest = result.rest
-        if (nextRest.length == rest.length) {
-            rest = nextRest
-            break
-        }
+        if (nextRest.length == rest.length) break
         rest = nextRest
     }
 
