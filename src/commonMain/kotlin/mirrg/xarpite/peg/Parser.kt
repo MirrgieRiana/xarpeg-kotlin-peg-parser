@@ -18,7 +18,7 @@ fun <T> repeatParser(parser: Parser<T>): (String) -> ParseResult<List<T>> = fun(
 
     while (true) {
         val result = parser(rest) ?: break
-        if (result.rest.length >= rest.length) break
+        if (result.rest.length == rest.length) break
         results.add(result.value)
         rest = result.rest
     }
