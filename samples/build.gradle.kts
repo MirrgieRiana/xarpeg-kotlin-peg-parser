@@ -10,5 +10,5 @@ allprojects {
 tasks.register("run") {
     group = "application"
     description = "Runs the hello sample application"
-    dependsOn(":hello:jvmRun")
+    dependsOn(":hello:run")
 }
