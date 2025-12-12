@@ -1,28 +1,16 @@
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
+    application
 }
 
 group = "mirrg.xarpite.samples"
 version = "1.0.3"
 
-kotlin {
-    jvm {
-        @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-        mainRun {
-            mainClass.set("mirrg.xarpite.samples.hello.MainKt")
-        }
-    }
+application {
+    mainClass.set("mirrg.xarpite.samples.hello.MainKt")
+}
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-    }
+dependencies {
+    implementation("io.github.mirrgieriana.xarpite:kotlin-peg-parser:1.0.3")
+    testImplementation(kotlin("test"))
 }
