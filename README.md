@@ -28,7 +28,7 @@ import mirrg.xarpite.parser.parsers.*
 // Simple arithmetic expression parser.
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { match -> match.value.toInt() }
-    val brackets: Parser<Int> by lazy { -'(' * parser { root } * -')' }
+    val brackets: Parser<Int> by lazy { (-'(' * parser { root } * -')') map { (_, value, _) -> value } }
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -136,7 +136,7 @@ Exploring the Xarpite source code can provide additional insights into:
 
 ## Installation
 
-Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.0-SNAPSHOT"`). Add the dependency as usual:
+Gradle coordinates follow the project metadata (`group = "io.github.mirrgieriana.xarpite"`, `version = "1.0.3"`). Add the dependency as usual:
 
 ### Gradle (Kotlin DSL)
 
@@ -166,7 +166,7 @@ dependencies {
 
 ## Versioning
 
-The current version is `1.0.0-SNAPSHOT`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
+The current version is `1.0.3`; the API may evolve while iterating on the operator-based DSL. Pin an explicit version when depending on this library.
 
 ---
 
@@ -191,7 +191,7 @@ A small Hello World app is available for quick verification:
 
 ```bash
 ./gradlew jvmJar
-java -cp build/libs/kotlin-peg-parser-jvm-1.0.0-SNAPSHOT.jar mirrg.xarpite.peg.HelloWorldKt
+java -cp build/libs/kotlin-peg-parser-jvm-1.0.3.jar mirrg.xarpite.peg.HelloWorldKt
 ```
 
 A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/hello`:
