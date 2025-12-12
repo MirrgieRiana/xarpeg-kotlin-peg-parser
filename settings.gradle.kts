@@ -1,1 +1,1 @@
-rootProject.name = "kotlin-peg-parser"
+rootProject.name = "xarpeg-kotlin-peg-parser"

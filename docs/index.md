@@ -21,7 +21,7 @@ This guide is split into themed subpages so you can learn step by step. For API 
 
 Want to see a real-world parser in action? Check out the full JSON parser implementation that handles all JSON data types including strings with escape sequences, numbers, booleans, null, arrays, and nested objects with recursion.
 
-→ [src/commonTest/kotlin/JsonParserTest.kt](https://github.com/MirrgieRiana/kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt)
+→ [src/commonTest/kotlin/JsonParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt)
 
 This example demonstrates:
 - Parsing strings with escape sequences (`\"`, `\\`, `\n`, `\uXXXX`, etc.)
@@ -32,6 +32,6 @@ This example demonstrates:
 
 ## When you want more detail
 
-- For observed behavior, the tests in [imported/src/commonTest/kotlin/ParserTest.kt](https://github.com/MirrgieRiana/kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/ParserTest.kt) are a quick reference.
-- For implementation details, browse [imported/src/commonMain/kotlin/mirrg/xarpite/parser](https://github.com/MirrgieRiana/kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/mirrg/xarpite/parser).
+- For observed behavior, the tests in [imported/src/commonTest/kotlin/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/ParserTest.kt) are a quick reference.
+- For implementation details, browse [imported/src/commonMain/kotlin/mirrg/xarpite/parser](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/mirrg/xarpite/parser).
 - For return types and signatures, rely on IDE KDoc and code completion.

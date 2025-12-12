@@ -67,7 +67,7 @@ publishing {
 
 // Dokka configuration for KDoc generation
 tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
-    moduleName.set("kotlin-peg-parser")
+    moduleName.set("xarpeg-kotlin-peg-parser")
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
     
     // Suppress linuxX64 source set to avoid Kotlin/Native download issues
