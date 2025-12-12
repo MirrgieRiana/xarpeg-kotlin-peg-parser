@@ -267,14 +267,17 @@ tasks.register("generateSrcFromDocs") {
     outputs.dir(outputDir)
 
     doLast {
-        val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*\R?(.*?)\R?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+        val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
         val projectDirFile = projectDir
-        val sourceFiles = listOf(file("README.md")) + fileTree("docs") { include("**/*.md") }.files
+        val sourceFiles = (listOf(file("README.md")) + fileTree("docs") { include("**/*.md") }.files)
+            .map { sourceFile ->
+                val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
+                relativePath to sourceFile
+            }
 
         sourceFiles
-            .sortedBy { it.relativeTo(projectDirFile).path.replace('\\', '/') }
-            .forEach { sourceFile ->
-                val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
+            .sortedBy { it.first }
+            .forEach { (relativePath, sourceFile) ->
                 val outputFile = outputDir.get().file("${relativePath.replace("/", ".")}.kt").asFile
                 val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
                 if (codeBlocks.isNotEmpty()) {
