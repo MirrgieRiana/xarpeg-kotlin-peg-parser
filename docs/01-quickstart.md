@@ -9,7 +9,7 @@ import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow
 import mirrg.xarpite.parser.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*")
+val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value }
 val number = +Regex("[0-9]+") map { it.value.toInt() }
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
@@ -31,5 +31,4 @@ fun main() {
 2. `parseAllOrThrow` throws if the input is not fully consumed, so you notice bad input immediately.
 3. Use IDE completion and KDoc to inspect each combinator’s types and return shapes.
 
-Next, expand the composition patterns to build richer grammars.  
-→ [Step 2: Combine parsers](02-combinators.md)
+Next, expand the composition patterns to build richer grammars.

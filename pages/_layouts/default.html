@@ -33,6 +33,8 @@
       <a href="{{ '/docs/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 Step 2: Combinators</a>
       <a href="{{ '/docs/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 Step 3: Expressions</a>
       <a href="{{ '/docs/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ Step 4: Runtime</a>
+      <a href="{{ '/docs/05-positions.html' | relative_url }}" class="doc-nav-item">📍 Step 5: Positions</a>
+      <a href="{{ '/docs/06-template-strings.html' | relative_url }}" class="doc-nav-item">🧩 Step 6: Template strings</a>
     </nav>
     {% endif %}
 
@@ -53,6 +55,12 @@
         <a href="{{ '/docs/04-runtime.html' | relative_url }}" style="font-weight: 600;">Next: Step 4 – Runtime →</a>
       {% elsif page.url contains '04-runtime' %}
         <a href="{{ '/docs/03-expressions.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 3 – Expressions</a>
+        <a href="{{ '/docs/05-positions.html' | relative_url }}" style="font-weight: 600;">Next: Step 5 – Positions →</a>
+      {% elsif page.url contains '05-positions' %}
+        <a href="{{ '/docs/04-runtime.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 4 – Runtime</a>
+        <a href="{{ '/docs/06-template-strings.html' | relative_url }}" style="font-weight: 600;">Next: Step 6 – Template strings →</a>
+      {% elsif page.url contains '06-template-strings' %}
+        <a href="{{ '/docs/05-positions.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 5 – Positions</a>
         <div></div>
       {% endif %}
     </nav>

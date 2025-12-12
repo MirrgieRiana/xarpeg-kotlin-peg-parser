@@ -10,6 +10,8 @@ header_pages:
   - docs/02-combinators.md
   - docs/03-expressions.md
   - docs/04-runtime.md
+  - docs/05-positions.md
+  - docs/06-template-strings.md
 
 # Appearance
 markdown: kramdown

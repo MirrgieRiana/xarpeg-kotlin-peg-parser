@@ -88,7 +88,7 @@ val number = +Regex("[0-9]+")
 
 val numberWithText = number mapEx { ctx, result ->
     val matched = result.text(ctx)
-    val value = result.value.toInt()
+    val value = matched.toInt()
     "Parsed '$matched' as $value"
 }
 

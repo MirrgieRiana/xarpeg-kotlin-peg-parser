@@ -1,21 +1,21 @@
-# Kotlin PEG Parser Guide
+# Xarpeg: Kotlin PEG Parser Guide
 
 This guide is split into themed subpages so you can learn step by step. For API signatures, rely on IDE completion and KDoc.
 
 ## Reading path (hub)
 
 - **Step 1 – Build your first parser:** minimal DSL example and how to run it  
-  → [01-quickstart.md](01-quickstart.md)
+  → [Step 1: Quickstart](01-quickstart.html)
 - **Step 2 – Combine parsers:** sequences, choices, repetition, and other core patterns  
-  → [02-combinators.md](02-combinators.md)
+  → [Step 2: Combinators](02-combinators.html)
 - **Step 3 – Handle expressions and recursion:** using `parser {}` / `by lazy` plus associativity helpers  
-  → [03-expressions.md](03-expressions.md)
+  → [Step 3: Expressions](03-expressions.html)
 - **Step 4 – Errors and runtime behavior:** exceptions, full consumption, cache on/off  
-  → [04-runtime.md](04-runtime.md)
+  → [Step 4: Runtime](04-runtime.html)
 - **Step 5 – Working with parsing positions:** using `mapEx` to access positions while keeping types simple  
-  → [05-positions.md](05-positions.md)
+  → [Step 5: Positions](05-positions.html)
 - **Step 6 – Template strings without tokenization:** handling embedded expressions naturally with PEG parsers  
-  → [06-template-strings.md](06-template-strings.md)
+  → [Step 6: Template strings](06-template-strings.html)
 
 ## Complete example: JSON parser
 
