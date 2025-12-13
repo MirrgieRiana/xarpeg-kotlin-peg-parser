@@ -126,7 +126,7 @@
     <body>
         <main>
             <h1>Online Parser Sample</h1>
-            <p class="lead">This hosted sample from the <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser" target="_blank" rel="noopener noreferrer">Xarpeg Kotlin PEG Parser</a> documentation runs the arithmetic expression parser from the “Expressions” guide in Kotlin/JS so you can try the grammar without building the project.</p>
+            <p class="lead">This hosted sample from the <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser" target="_blank" rel="noopener noreferrer">Xarpeg Kotlin PEG Parser</a> documentation runs an arithmetic expression parser inspired by the “Expressions” guide in Kotlin/JS. It adds whitespace and decimal support so you can try the grammar without building the project.</p>
 
             <div class="section">
                 <label for="input">Input</label>
@@ -148,7 +148,7 @@
                         <a class="source" href="https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/index.html" target="_blank" rel="noopener noreferrer">Documentation home</a>
                     </div>
                 </div>
-                <p class="muted-text">The parser evaluates a simple arithmetic grammar with operator precedence and the documented whitespace handling.</p>
+                <p class="muted-text">The parser evaluates a simple arithmetic grammar with operator precedence, whitespace handling, and decimal numbers.</p>
                 <ul class="muted-list">
                     <li>Enter expressions using <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and parentheses.</li>
                     <li>See the evaluated result update as you type, or read the error message when parsing fails.</li>
@@ -158,7 +158,7 @@
 
             <div class="section">
                 <label>Grammar (PEG)</label>
-                <p class="muted-text">This is the same grammar presented in the “Expressions” documentation chapter.</p>
+                <p class="muted-text">This grammar follows the “Expressions” documentation chapter but includes whitespace and decimal support for interactive use.</p>
                 <pre class="code-block"><code>Expression  &lt;- _ Product (('+' / '-') _ Product)*
 Product     &lt;- Factor (('*' / '/') _ Factor)*
 Factor      &lt;- Number / '(' _ Expression _ ')'
