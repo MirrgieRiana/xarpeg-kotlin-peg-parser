@@ -1,7 +1,7 @@
 <div align="center">
   [![CI Status](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/actions/workflows/check.yaml/badge.svg)](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/actions/workflows/check.yaml)<br>
   [![GitHub Release](https://img.shields.io/github/v/release/MirrgieRiana/xarpeg-kotlin-peg-parser)](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases/latest)<br>
-  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)<br>
 </div>
 
 <p align="center">
