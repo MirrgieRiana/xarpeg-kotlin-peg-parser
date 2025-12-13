@@ -96,14 +96,14 @@ tasks.register("generateTuples") {
     description = "Generates tuple source files and verifies they match imported files"
     group = "build"
     
-    val outputDir = layout.buildDirectory.dir("generated/tuples/io/github/mirrgieriana/xarpite/xarpeg")
-    val outputDirParsers = layout.buildDirectory.dir("generated/tuples/io/github/mirrgieriana/xarpite/xarpeg/parsers")
+    val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg")
+    val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers")
     
     val tuplesKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Tuples.kt")
     val tupleParserKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers/TupleParser.kt")
     
-    val generatedTuplesKt = outputDir.get().file("Tuples.kt").asFile
-    val generatedTupleParserKt = outputDirParsers.get().file("TupleParser.kt").asFile
+    val generatedTuplesKt = outputDir.file("Tuples.kt").asFile
+    val generatedTupleParserKt = outputDirParsers.file("TupleParser.kt").asFile
     
     doLast {
         // Configuration: Maximum tuple size to generate
@@ -115,8 +115,9 @@ tasks.register("generateTuples") {
         
         // Generate Tuples.kt programmatically
         val typeParams = listOf("A", "B", "C", "D", "E")
+        val tuplesPackage = tuplesKt.readLines().first { it.startsWith("package ") }
         val tuplesContent = buildString {
-            appendLine("package io.github.mirrgieriana.xarpite.xarpeg")
+            appendLine(tuplesPackage)
             appendLine()
             appendLine("object Tuple0")
             for (n in 1..maxTupleSize) {
@@ -130,8 +131,9 @@ tasks.register("generateTuples") {
         println("Generated: ${generatedTuplesKt.absolutePath}")
         
         // Generate TupleParser.kt programmatically
+        val tupleParserPackage = tupleParserKt.readLines().first { it.startsWith("package ") }
         val tupleParserContent = buildString {
-            appendLine("package io.github.mirrgieriana.xarpite.xarpeg.parsers")
+            appendLine(tupleParserPackage)
             appendLine()
             appendLine("import io.github.mirrgieriana.xarpite.xarpeg.ParseResult")
             appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Parser")
