@@ -13,6 +13,9 @@ Use the core DSL combinators to assemble multiple pieces into one parser.
 ## Combining option and repetition
 
 ```kotlin
+import mirrg.xarpite.parser.parseAllOrThrow
+import mirrg.xarpite.parser.parsers.*
+
 val sign = (+'+' + +'-').optional map { it.a ?: '+' }
 val unsigned = +Regex("[0-9]+") map { it.value.toInt() }
 val signedInt = sign * unsigned map { (s, value) ->
