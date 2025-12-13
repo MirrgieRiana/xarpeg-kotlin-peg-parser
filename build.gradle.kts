@@ -76,17 +76,14 @@ publishing {
     }
 }
 
-val kotlinPluginVersion by lazy {
-    kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
-}
-
 tasks.register("writeKotlinMetadata") {
+    val kotlinVersion = kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
     val outputFile = layout.buildDirectory.file("maven/metadata/kotlin.json")
-    inputs.property("kotlinVersion", kotlinPluginVersion)
+    inputs.property("kotlinVersion", kotlinVersion)
     outputs.file(outputFile)
 
     doLast {
-        val versionEscaped = kotlinPluginVersion.replace("\"", "\\\"")
+        val versionEscaped = kotlinVersion.replace("\"", "\\\"")
         val json = """{"schemaVersion":1,"label":"Kotlin","message":"$versionEscaped","color":"blue"}"""
         outputFile.get().asFile.apply {
             parentFile.mkdirs()
