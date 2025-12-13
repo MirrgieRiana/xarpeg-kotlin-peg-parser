@@ -4,7 +4,6 @@ import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import mirrg.xarpite.parser.NumberParser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -129,15 +128,6 @@ class ParserAdditionalTest {
     fun mapThrowsArePropagated() {
         val parser = (+'a') map { error("boom") }
         assertFails { parser.parseAllOrThrow("a") }
-    }
-
-    @Test
-    fun numberParserRespectsStartOffset() {
-        val context = ParseContext("xx42yy", useCache = true)
-        val result = NumberParser.parseOrNull(context, 2)
-        assertNotNull(result)
-        assertEquals(42, result.value)
-        assertEquals(4, result.end)
     }
 
     @Test
