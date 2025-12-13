@@ -35,5 +35,5 @@ This example demonstrates:
 ## When you want more detail
 
 - For observed behavior, the tests in [imported/src/commonTest/kotlin/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/ParserTest.kt) are a quick reference.
-- For implementation details, browse [imported/src/commonMain/kotlin/mirrg/xarpite/parser](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/mirrg/xarpite/parser).
+- For implementation details, browse [imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg).
 - For return types and signatures, rely on IDE KDoc and code completion.

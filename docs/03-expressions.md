@@ -5,9 +5,9 @@ Complex grammars need self-reference and associativity. This step shows how to d
 ## Expression parser with recursion
 
 ```kotlin
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() }

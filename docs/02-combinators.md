@@ -13,8 +13,8 @@ Use the core DSL combinators to assemble multiple pieces into one parser.
 ## Combining option and repetition
 
 ```kotlin
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val sign = (+'+' + +'-').optional map { it.a ?: '+' }
 val unsigned = +Regex("[0-9]+") map { it.value.toInt() }

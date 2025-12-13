@@ -16,8 +16,8 @@ While building parsers, you typically work with simple types like `Parser<Int>` 
 The `map` combinator keeps your types simple by passing only the parsed value:
 
 ```kotlin
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() }
 
@@ -33,9 +33,9 @@ This is ideal when you don't need position information and want to keep your cod
 When you need position information, use `mapEx`. It receives both the `ParseContext` and the full `ParseResult`:
 
 ```kotlin
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.text
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.text
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*")
 
@@ -56,9 +56,9 @@ Notice that even though we access position information, the result type is still
 Position information is particularly useful for generating helpful error messages:
 
 ```kotlin
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 data class Located<T>(val value: T, val line: Int, val column: Int)
 
@@ -82,9 +82,9 @@ val result = keywordWithLocation.parseAllOrThrow("hello")
 You can also extract the original matched text using the `text()` extension:
 
 ```kotlin
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.text
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.text
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+")
 

@@ -18,12 +18,12 @@ Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator AP
 
 ## Quick Start
 
-The API lives under `mirrg.xarpite.parser` and its `parsers` helpers. Operator overloads keep grammars short while remaining explicit about what is kept or ignored.
+The API lives under `io.github.mirrgieriana.xarpite.xarpeg` and its `parsers` helpers. Operator overloads keep grammars short while remaining explicit about what is kept or ignored.
 
 ```kotlin
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 // Simple arithmetic expression parser.
 val expr: Parser<Int> = object {

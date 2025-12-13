@@ -5,9 +5,9 @@ This step walks through creating the smallest parser, running it, and turning in
 ## Minimal sample
 
 ```kotlin
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value }
 val number = +Regex("[0-9]+") map { it.value.toInt() }
