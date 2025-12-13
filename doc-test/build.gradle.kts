@@ -176,6 +176,15 @@ tasks.register("generateSrc") {
                         val outputFile = generatedSrc.file("${packageName.replace(".", "/")}/Test.kt").asFile
                         outputFile.parentFile.mkdirs()
                         outputFile.writeText(fileContent)
+                        println(
+                            buildString {
+                                appendLine("===== Doc-test block before (${relativePath}#$index) =====")
+                                appendLine(block)
+                                appendLine("===== Doc-test block after (${outputFile.absolutePath}) =====")
+                                appendLine(fileContent)
+                                appendLine("===== End =====")
+                            }
+                        )
                         println("Generated: ${outputFile.absolutePath}")
                     }
                 } else {
