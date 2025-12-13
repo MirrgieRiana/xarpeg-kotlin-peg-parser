@@ -210,6 +210,12 @@ tr:hover {
   border-bottom-color: transparent;
 }
 
+.header-nav a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.9em;
+  margin-left: 0.35rem;
+}
+
 /* Feature highlights */
 .feature-list {
   display: grid;
