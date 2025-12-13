@@ -95,8 +95,7 @@ tasks.register("generateSrc") {
                                     braceCount -= declLine.count { it == '}' }
                                     j++
                                     if (braceCount > 0) continue
-                                    if (j >= lines.size) break
-                                    val nextLine = lines[j]
+                                    val nextLine = lines.getOrNull(j) ?: break
                                     if (nextLine.isBlank()) {
                                         val nextNonBlank = lines.asSequence()
                                             .drop(j + 1)
@@ -128,8 +127,8 @@ tasks.register("generateSrc") {
                             throw GradleException("Code block $relativePath#$index contains top-level statements alongside main(); move them into main.")
                         }
 
-                        val pathHashSegment = sanitizeSegment(relativePath.hashCode().toUInt().toString(36))
-                        val packageName = (relativePath.split('/') + pathHashSegment + index.toString())
+                        val disambiguationSegment = sanitizeSegment(relativePath.replace("/", "_").replace(".", "_"))
+                        val packageName = (relativePath.split('/') + disambiguationSegment + index.toString())
                             .map(::sanitizeSegment)
                             .joinToString(".")
 
