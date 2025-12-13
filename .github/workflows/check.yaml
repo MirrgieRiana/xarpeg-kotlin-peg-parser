@@ -27,6 +27,23 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+  sample-java-run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
     - name: Build java-run sample distribution
       working-directory: samples/java-run
       run: |
@@ -53,6 +70,23 @@ jobs:
           exit 1
         fi
 
+  sample-interpreter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
     - name: Build interpreter sample distribution
       working-directory: samples/interpreter
       run: |
@@ -78,6 +112,23 @@ jobs:
           echo "  Got: $OUTPUT"
           exit 1
         fi
+
+  sample-online-parser:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
 
     - name: Build online-parser sample
       working-directory: samples/online-parser
