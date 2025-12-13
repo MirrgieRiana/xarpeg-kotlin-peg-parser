@@ -25,8 +25,8 @@ private object ExpressionGrammar {
         }
     }
 
-    val expression: Parser<Double> by lazy {
-        whitespace * leftAssociative(product, whitespace * (+'+' + +'-') * whitespace) { a, op, b ->
+    private val expression: Parser<Double> by lazy {
+         leftAssociative(product, whitespace * (+'+' + +'-') * whitespace) { a, op, b ->
             when (op) {
                 '+' -> a + b
                 '-' -> a - b
@@ -34,12 +34,14 @@ private object ExpressionGrammar {
             }
         } * whitespace
     }
+
+    val root = whitespace * expression * whitespace
 }
 
 @JsExport
 fun parseExpression(input: String): String =
     try {
-        val result = ExpressionGrammar.expression.parseAllOrThrow(input)
+        val result = ExpressionGrammar.root.parseAllOrThrow(input)
         result.toString()
     } catch (e: Exception) {
         "Error: ${e.message}"
