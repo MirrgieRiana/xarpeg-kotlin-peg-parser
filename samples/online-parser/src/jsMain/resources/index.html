@@ -106,7 +106,7 @@
 
         <div class="section">
             <label for="input">Input</label>
-            <textarea id="input">2*(3+4)+5</textarea>
+            <textarea id="input"></textarea>
         </div>
 
         <div class="section">
@@ -136,10 +136,11 @@
         button.addEventListener("click", updateOutput);
         input.addEventListener("input", updateOutput);
 
-        // Only update output on page load if input is not empty
-        if (input.value.trim() !== "") {
-            updateOutput();
+        // Set default input value only if input is empty on page load
+        if (input.value.trim() === "") {
+            input.value = "2*(3+4)+5";
         }
+        updateOutput();
     </script>
 </body>
 </html>
