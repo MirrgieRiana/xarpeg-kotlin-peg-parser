@@ -69,6 +69,10 @@
             gap: 0.4rem;
             margin-bottom: 1.5rem;
         }
+        .muted-text { margin: 0; color: var(--muted); }
+        .muted-list { margin: 0.2rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+        .muted-list li { margin: 0.2rem 0; }
+        .link-row { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: flex-end; }
         .section-header {
             display: flex;
             align-items: center;
@@ -117,15 +121,31 @@
         }
     </style>
 </head>
-<body>
-    <main>
-        <h1>Online Parser Sample</h1>
-        <p class="lead">Try editing the input to see the parser output update live.</p>
+    <body>
+        <main>
+            <h1>Online Parser Sample</h1>
+            <p class="lead">This is the hosted sample from the Xarpeg documentation. It runs the arithmetic expression parser from the “Expressions” guide as Kotlin/JS so you can try the grammar without building the project.</p>
 
-        <div class="section">
-            <label for="input">Input</label>
-            <textarea id="input"></textarea>
-        </div>
+            <div class="section">
+                <div class="section-header">
+                    <label>About this sample</label>
+                    <div class="link-row">
+                        <a class="source" href="https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/03-expressions.html" target="_blank" rel="noopener noreferrer">Read the guide</a>
+                        <a class="source" href="https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/index.html" target="_blank" rel="noopener noreferrer">Documentation home</a>
+                    </div>
+                </div>
+                <p class="muted-text">The parser evaluates a simple arithmetic grammar with operator precedence and ignored whitespace, mirroring the code shown in the guide.</p>
+                <ul class="muted-list">
+                    <li>Enter expressions using <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and parentheses.</li>
+                    <li>See the evaluated result update as you type, or read the error message when parsing fails.</li>
+                    <li>Use this page as a quick playground without running Gradle locally.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <label for="input">Input</label>
+                <textarea id="input"></textarea>
+            </div>
 
         <div class="section">
             <div class="section-header">
@@ -135,9 +155,10 @@
             <textarea id="output" readonly></textarea>
         </div>
 
-        <div class="section">
-            <label>Grammar (PEG)</label>
-            <pre class="code-block"><code>Expression  &lt;- _ Product (('+' / '-') _ Product)*
+            <div class="section">
+                <label>Grammar (PEG)</label>
+                <p class="muted-text">This is the same grammar presented in the “Expressions” documentation chapter.</p>
+                <pre class="code-block"><code>Expression  &lt;- _ Product (('+' / '-') _ Product)*
 Product     &lt;- Factor (('*' / '/') _ Factor)*
 Factor      &lt;- Number / '(' _ Expression _ ')'
 Number      &lt;- [0-9]+ ('.' [0-9]+)?
