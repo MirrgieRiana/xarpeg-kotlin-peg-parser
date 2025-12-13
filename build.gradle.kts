@@ -114,11 +114,10 @@ tasks.register("generateTuples") {
         outputDirParsers.mkdirs()
         
         // Matches package declarations including dotted names, backtick identifiers, and trailing line comments
-        val packageRegex = Regex("^\\s*package\\s+([\\w.`]+(?:\\s*\\.\\s*[\\w.`]+)*)(?:\\s*//.*)?\\s*$")
-        val packageSearchLimit = 10
+        val packageRegex = Regex("^\\s*package\\s+((?:[\\w]+|`[^`]+`)(?:\\s*\\.\\s*(?:[\\w]+|`[^`]+`))*)(?:\\s*//.*)?\\s*$")
+        val packageSearchLimit = 10 // Package declarations should appear near the top; limit scanning for efficiency
         fun packageLineOf(file: File) = file.useLines { lines ->
-            lines.take(packageSearchLimit).firstNotNullOfOrNull { line -> packageRegex.find(line)?.groupValues?.getOrNull(1) }
-                ?.let { "package $it" }
+            lines.take(packageSearchLimit).firstNotNullOfOrNull { line -> packageRegex.find(line)?.value?.trim() }
         } ?: throw GradleException("Package declaration not found in ${file.absolutePath}")
 
         // Generate Tuples.kt programmatically
