@@ -119,8 +119,6 @@ tasks.register("generateSrc") {
                         }
                     }
 
-                    imports.addAll(defaultImports)
-
                     val packageName = relativePath.split('/').joinToString(".") { segment ->
                         val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_")
                         val normalized = sanitized.ifEmpty { "_" }
