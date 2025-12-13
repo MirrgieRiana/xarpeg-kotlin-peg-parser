@@ -21,13 +21,16 @@ tasks.register("generateSrc") {
 
     doLast {
         generatedSrc.asFile.deleteRecursively()
-        val kotlinBlockRegex = Regex("""```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+        val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
         val projectDirFile = project.rootProject.projectDir
         val sourceFiles = (listOf(project.rootProject.file("README.md")) + project.rootProject.fileTree("docs") { include("**/*.md") }.files)
             .map { sourceFile ->
                 val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
                 relativePath to sourceFile
             }
+
+        fun String.isGradleDslBlock(): Boolean =
+            contains("repositories {") || contains("dependencies {") || contains("plugins {")
 
         sourceFiles
             .sortedBy { it.first }
@@ -45,7 +48,7 @@ tasks.register("generateSrc") {
 
                     val blockBodies = codeBlocks.mapIndexed { index, block ->
                         val lines = block.lines()
-                        val isGradleDsl = block.contains("repositories {") || block.contains("dependencies {") || block.contains("plugins {")
+                        val isGradleDsl = block.isGradleDslBlock()
 
                         lines.forEach { line ->
                             val trimmed = line.trim()
@@ -87,7 +90,7 @@ tasks.register("generateSrc") {
                                     braceCount += declLine.count { it == '{' }
                                     braceCount -= declLine.count { it == '}' }
                                     j++
-                                    if (braceCount <= 0 && declLine.trim().isNotEmpty()) break
+                                    if (braceCount == 0 && declLine.trim().isNotEmpty()) break
                                 }
                                 sharedDeclarations.addAll(declLines)
                                 sharedDeclarations.add("")
@@ -127,8 +130,9 @@ tasks.register("generateSrc") {
                     imports.addAll(defaultImports)
 
                     val packageName = relativePath.split('/').joinToString(".") { segment ->
-                        val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_").ifEmpty { "_" }
-                        if (sanitized.first().isDigit()) "_$sanitized" else sanitized
+                        val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_")
+                        val normalized = sanitized.ifEmpty { "_" }
+                        if (normalized.first().isDigit()) "_$normalized" else normalized
                     }
 
                     val fileContent = buildString {
