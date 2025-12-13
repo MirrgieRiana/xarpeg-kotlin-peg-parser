@@ -80,9 +80,15 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     moduleName.set("xarpeg-kotlin-peg-parser")
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
     
-    // Suppress native source sets to avoid Kotlin/Native download issues
-    dokkaSourceSets.configureEach {
-        if (name.contains("linuxX64", ignoreCase = true) || name.contains("mingwX64", ignoreCase = true)) {
+    // Only include JVM source set (and its dependency commonMain)
+    dokkaSourceSets {
+        named("jsMain") {
+            suppress.set(true)
+        }
+        named("linuxX64Main") {
+            suppress.set(true)
+        }
+        named("mingwX64Main") {
             suppress.set(true)
         }
     }
