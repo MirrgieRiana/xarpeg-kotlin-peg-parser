@@ -7,6 +7,9 @@ import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
 import io.github.mirrgieriana.xarpite.xarpeg.Tuple2
 import io.github.mirrgieriana.xarpite.xarpeg.Tuple5
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple6
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple7
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple8
 import io.github.mirrgieriana.xarpite.xarpeg.UnmatchedInputParseException
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
@@ -96,6 +99,36 @@ class ParserTest {
             assertUnmatchedInput { parser.parseAllOrThrow("abfff") }
             assertUnmatchedInput { parser.parseAllOrThrow("abcff") }
             assertUnmatchedInput { parser.parseAllOrThrow("abcdf") }
+        }
+
+        // Tuple6
+        run {
+            val parser = +'a' * +'b' * +'c' * +'d' * +'e' * +'f'
+            assertEquals(
+                Tuple6('a', 'b', 'c', 'd', 'e', 'f'),
+                parser.parseAllOrThrow("abcdef"),
+            )
+            assertUnmatchedInput { parser.parseAllOrThrow("abcdeg") }
+        }
+
+        // Tuple7
+        run {
+            val parser = +'a' * +'b' * +'c' * +'d' * +'e' * +'f' * +'g'
+            assertEquals(
+                Tuple7('a', 'b', 'c', 'd', 'e', 'f', 'g'),
+                parser.parseAllOrThrow("abcdefg"),
+            )
+            assertUnmatchedInput { parser.parseAllOrThrow("abcdefh") }
+        }
+
+        // Tuple8
+        run {
+            val parser = +'a' * +'b' * +'c' * +'d' * +'e' * +'f' * +'g' * +'h'
+            assertEquals(
+                Tuple8('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'),
+                parser.parseAllOrThrow("abcdefgh"),
+            )
+            assertUnmatchedInput { parser.parseAllOrThrow("abcdefgi") }
         }
 
         // Tuple0同士の結合でも副作用は適用される
