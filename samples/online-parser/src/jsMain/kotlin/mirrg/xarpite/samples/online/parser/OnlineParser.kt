@@ -32,7 +32,7 @@ private object ExpressionGrammar {
                 '-' -> a - b
                 else -> a
             }
-        }
+        } * whitespace
     }
 }
 
