@@ -53,8 +53,7 @@ val templateStringParser: Parser<String> = object {
 
     // A complete template string: "..." with any number of elements
     val templateString: Parser<String> =
-        -'"' * templateElement.zeroOrMore * -'"' map { value ->
-            val elements = value
+        -'"' * templateElement.zeroOrMore * -'"' map { elements ->
             elements.joinToString("") { element ->
                 when (element) {
                     is StringPart -> element.text
@@ -118,8 +117,7 @@ object TemplateWithNestedStrings {
     val templateElement = expressionPart + stringPart
 
     val templateString: Parser<String> by lazy {
-        -'"' * templateElement.zeroOrMore * -'"' map { value ->
-            val elements = value
+        -'"' * templateElement.zeroOrMore * -'"' map { elements ->
             elements.joinToString("") { element ->
                 when (element) {
                     is StringPart -> element.text
