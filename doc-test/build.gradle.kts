@@ -53,6 +53,28 @@ tasks.register("generateSrc") {
             return false
         }
 
+        fun parseDeclarationBlock(lines: List<String>, startIndex: Int): Pair<List<String>, Int> {
+            var braceCount = 0
+            val declLines = mutableListOf<String>()
+            var j = startIndex
+            while (j < lines.size) {
+                val declLine = lines[j]
+                declLines.add(declLine)
+                braceCount += declLine.count { it == '{' }
+                braceCount -= declLine.count { it == '}' }
+                j++
+                if (braceCount > 0) continue
+                val nextLine = lines.getOrNull(j) ?: break
+                if (nextLine.isBlank()) {
+                    declLines.add(nextLine)
+                    j++
+                    if (!hasIndentedContentAfter(lines, j)) break else continue
+                }
+                if (!nextLine.isIndented()) break
+            }
+            return declLines to j
+        }
+
         sourceFiles
             .sortedBy { it.first }
             .forEach { (relativePath, sourceFile) ->
@@ -97,29 +119,10 @@ tasks.register("generateSrc") {
                                 if (isMainDeclaration) {
                                     hasMain = true
                                 }
-                                var braceCount = 0
-                                val declLines = mutableListOf<String>()
-                                var j = i
-                                while (j < lines.size) {
-                                    val declLine = lines[j]
-                                    declLines.add(declLine)
-                                    braceCount += declLine.count { it == '{' }
-                                    braceCount -= declLine.count { it == '}' }
-                                    j++
-                                    if (braceCount > 0) continue
-                                    val nextLine = lines.getOrNull(j) ?: break
-                                    if (nextLine.isBlank()) {
-                                        val continueAfterBlank = hasIndentedContentAfter(lines, j + 1)
-                                        declLines.add(nextLine)
-                                        j++
-                                        if (!continueAfterBlank) break else continue
-                                    }
-                                    val isNextIndented = nextLine.isIndented()
-                                    if (!isNextIndented) break
-                                }
+                                val (declLines, nextIndex) = parseDeclarationBlock(lines, i)
                                 declarations.addAll(declLines)
                                 declarations.add("")
-                                i = j
+                                i = nextIndex
                                 continue
                             } else {
                                 val contentLine = if (isGradleDsl && trimmed.isNotEmpty()) "// $line" else line
@@ -130,11 +133,16 @@ tasks.register("generateSrc") {
 
                         val hasExecutableStatements = statements.any { line ->
                             val trimmedLine = line.trim()
-                            trimmedLine.isNotEmpty() && !trimmedLine.startsWith("//")
+                            trimmedLine.isNotEmpty() &&
+                                !trimmedLine.startsWith("//") &&
+                                !trimmedLine.startsWith("const val ") &&
+                                !trimmedLine.startsWith("val ") &&
+                                !trimmedLine.startsWith("var ") &&
+                                !trimmedLine.startsWith("fun ")
                         }
 
                         if (hasMain && hasExecutableStatements) {
-                            throw GradleException("Code block at index $index in file $relativePath contains executable top-level statements together with main(); wrap those statements inside main() or another function.")
+                            throw GradleException("Code block at index $index in file $relativePath contains executable top-level statements together with main(); wrap calls like println/parseAllOrThrow or assignments inside main() or another function.")
                         }
 
                         val basePackageSegment = sanitizeSegment(relativePath.replace("/", "_").replace(".", "_"))
@@ -175,19 +183,23 @@ tasks.register("generateSrc") {
                 }
             }
 
-        if (generatedPackageNames.isNotEmpty()) {
-            val mainFile = generatedSrc.file("Main.kt").asFile
-            mainFile.parentFile.mkdirs()
-            val mainContent = buildString {
-                appendLine("fun main() {")
-                generatedPackageNames.forEach { packageName ->
-                    appendLine("    println(\"--- Running $packageName.main ---\")")
-                    appendLine("    $packageName.main()")
-                    appendLine()
+            if (generatedPackageNames.isNotEmpty()) {
+                val mainFile = generatedSrc.file("Main.kt").asFile
+                mainFile.parentFile.mkdirs()
+                val mainContent = buildString {
+                    appendLine("fun main() {")
+                    generatedPackageNames.forEach { packageName ->
+                        appendLine("    try {")
+                        appendLine("        println(\"--- Running $packageName.main ---\")")
+                        appendLine("        $packageName.main()")
+                        appendLine("    } catch (e: Throwable) {")
+                        appendLine("        e.printStackTrace()")
+                        appendLine("    }")
+                        appendLine()
+                    }
+                    appendLine("}")
                 }
-                appendLine("}")
-            }
-            mainFile.writeText(mainContent)
+                mainFile.writeText(mainContent)
             println("Generated runner: ${mainFile.absolutePath}")
         }
     }
