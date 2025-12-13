@@ -113,9 +113,10 @@ tasks.register("generateTuples") {
         outputDir.asFile.mkdirs()
         outputDirParsers.asFile.mkdirs()
         
+        val packageRegex = Regex("^\\s*package\\s+")
         fun packageLineOf(file: File) = file.useLines { lines ->
-            lines.firstOrNull { it.startsWith("package ") }
-        } ?: throw GradleException("Package declaration not found in $file")
+            lines.firstOrNull { line -> packageRegex.containsMatchIn(line) }
+        } ?: throw GradleException("Package declaration not found in ${file.absolutePath}")
 
         // Generate Tuples.kt programmatically
         val typeParams = listOf("A", "B", "C", "D", "E")
