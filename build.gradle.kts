@@ -1,10 +1,4 @@
-import groovy.json.JsonOutput
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 
 plugins {
     kotlin("multiplatform") version "2.2.20"
@@ -87,33 +81,18 @@ val kotlinPluginVersion by lazy {
     kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
 }
 
-abstract class WriteKotlinMetadata : DefaultTask() {
-    @get:Input
-    abstract val kotlinVersion: Property<String>
+tasks.register("writeKotlinMetadata") {
+    val outputFile = layout.buildDirectory.file("maven/metadata/kotlin.json")
+    inputs.property("kotlinVersion", kotlinPluginVersion)
+    outputs.file(outputFile)
 
-    @get:OutputFile
-    abstract val outputFile: RegularFileProperty
-
-    @TaskAction
-    fun write() {
-        val json = JsonOutput.toJson(
-            linkedMapOf(
-                "schemaVersion" to 1,
-                "label" to "Kotlin",
-                "message" to kotlinVersion.get(),
-                "color" to "blue",
-            )
-        )
+    doLast {
+        val json = """{"schemaVersion":1,"label":"Kotlin","message":"$kotlinPluginVersion","color":"blue"}"""
         outputFile.get().asFile.apply {
             parentFile.mkdirs()
             writeText(json)
         }
     }
-}
-
-tasks.register<WriteKotlinMetadata>("writeKotlinMetadata") {
-    kotlinVersion.set(kotlinPluginVersion)
-    outputFile.set(layout.buildDirectory.file("maven/metadata/kotlin.json"))
 }
 
 // Dokka configuration for KDoc generation
