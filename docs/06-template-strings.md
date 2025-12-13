@@ -102,6 +102,7 @@ You can extend this pattern to handle nested template strings (strings inside ex
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parsers.*
 
+// Re-declared so this snippet remains self-contained for doc-test
 sealed class TemplateElement
 data class StringPart(val text: String) : TemplateElement()
 data class ExpressionPart(val value: Int) : TemplateElement()
