@@ -3,15 +3,18 @@ name: check
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - '**'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - '**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.changed_files > 0) || (github.event_name == 'push' && github.event.head_commit && (toJson(github.event.head_commit.added) != '[]' || toJson(github.event.head_commit.modified) != '[]' || toJson(github.event.head_commit.removed) != '[]')) }}
 
     steps:
     - uses: actions/checkout@v4
@@ -32,7 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.changed_files > 0) || (github.event_name == 'push' && github.event.head_commit && (toJson(github.event.head_commit.added) != '[]' || toJson(github.event.head_commit.modified) != '[]' || toJson(github.event.head_commit.removed) != '[]')) }}
 
     steps:
     - uses: actions/checkout@v4
@@ -76,7 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.changed_files > 0) || (github.event_name == 'push' && github.event.head_commit && (toJson(github.event.head_commit.added) != '[]' || toJson(github.event.head_commit.modified) != '[]' || toJson(github.event.head_commit.removed) != '[]')) }}
 
     steps:
     - uses: actions/checkout@v4
@@ -120,7 +121,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.changed_files > 0) || (github.event_name == 'push' && github.event.head_commit && (toJson(github.event.head_commit.added) != '[]' || toJson(github.event.head_commit.modified) != '[]' || toJson(github.event.head_commit.removed) != '[]')) }}
 
     steps:
     - uses: actions/checkout@v4
