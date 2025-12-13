@@ -1,3 +1,4 @@
+
 plugins {
     kotlin("multiplatform") version "2.2.20"
     id("maven-publish")
@@ -62,6 +63,24 @@ publishing {
         maven {
             name = "local"
             url = uri(layout.buildDirectory.dir("maven"))
+        }
+    }
+}
+
+tasks.register("writeKotlinMetadata") {
+    val kotlinVersion = providers.provider {
+        kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
+    }
+    val outputFile = layout.buildDirectory.file("maven/metadata/kotlin.json")
+    inputs.property("kotlinVersion", kotlinVersion)
+    outputs.file(outputFile)
+
+    doLast {
+        val versionEscaped = kotlinVersion.get().replace("\"", "\\\"")
+        val json = """{"schemaVersion":1,"label":"Kotlin","message":"$versionEscaped","color":"blue"}"""
+        outputFile.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText(json)
         }
     }
 }

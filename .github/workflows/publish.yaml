@@ -65,6 +65,10 @@ jobs:
         working-directory: main
         run: ./gradlew publish
 
+      - name: Write Kotlin metadata
+        working-directory: main
+        run: ./gradlew writeKotlinMetadata
+
       - name: Sync artifacts to maven branch
         run: |
           mkdir -p maven/maven
