@@ -6,7 +6,7 @@
     <img src="https://img.shields.io/github/v/release/MirrgieRiana/xarpeg-kotlin-peg-parser" alt="GitHub Release">
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
   </a>
 </div>
 
