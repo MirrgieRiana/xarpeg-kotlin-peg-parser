@@ -17,7 +17,7 @@ private object ExpressionGrammar {
         number + (-'(' * whitespace * parser { expression } * whitespace * -')')
     }
 
-    private val product = leftAssociative(factor, (+'*' + +'/') * whitespace) { a, op, b ->
+    private val product = leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { a, op, b ->
         when (op) {
             '*' -> a * b
             '/' -> a / b
@@ -26,7 +26,7 @@ private object ExpressionGrammar {
     }
 
     val expression: Parser<Double> by lazy {
-        whitespace * leftAssociative(product, (+'+' + +'-') * whitespace) { a, op, b ->
+        whitespace * leftAssociative(product, whitespace * (+'+' + +'-') * whitespace) { a, op, b ->
             when (op) {
                 '+' -> a + b
                 '-' -> a - b

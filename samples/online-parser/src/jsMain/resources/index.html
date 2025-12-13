@@ -159,8 +159,8 @@
             <div class="section">
                 <label>Grammar (PEG)</label>
                 <p class="muted-text">This is the same grammar presented in the “Expressions” documentation chapter.</p>
-                <pre class="code-block"><code>Expression  &lt;- _ Product (('+' / '-') _ Product)*
-Product     &lt;- Factor (('*' / '/') _ Factor)*
+                <pre class="code-block"><code>Expression  &lt;- _ Product (_ ('+' / '-') _ Product)*
+Product     &lt;- Factor (_ ('*' / '/') _ Factor)*
 Factor      &lt;- Number / '(' _ Expression _ ')'
 Number      &lt;- [0-9]+ ('.' [0-9]+)?
 _           &lt;- [ \t\r\n]*</code></pre>
