@@ -20,12 +20,10 @@
     
     <nav class="header-nav" style="margin-top: 1.5rem;">
       <a href="{{ '/' | relative_url }}" class="btn">Home</a>
-      {% unless page.url contains '/docs/' and page.url != '/docs/index.html' %}
       <a href="{{ '/docs/' | relative_url }}" class="btn">Tutorial</a>
-      {% endunless %}
       <a href="{{ '/online-parser/' | relative_url }}" class="btn">Online Parser Sample</a>
       <a href="{{ '/kdoc/' | relative_url }}" class="btn">KDoc</a>
-      <a href="https://github.com/{{ site.repository }}" class="btn" target="_blank">GitHub</a>
+      <a href="https://github.com/{{ site.repository }}" class="btn" target="_blank" rel="noopener noreferrer">GitHub</a>
     </nav>
   </header>
 
