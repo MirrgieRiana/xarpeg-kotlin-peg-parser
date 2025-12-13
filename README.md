@@ -2,6 +2,10 @@
 
 **Xarpeg: Kotlin PEG Parser - Lightweight PEG-style parser combinators for Kotlin Multiplatform**
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg" alt="Xarpeg logo" width="180">
+</p>
+
 Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator API. It targets JVM, JS (Node.js), and Native (Linux x64, Windows x64), works directly on raw input strings (no tokenizer), and ships with opt-in caching to keep backtracking predictable.
 
 ---
