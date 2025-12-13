@@ -17,8 +17,7 @@ With PEG parsers that work character-by-character, you can define rules that nat
 Here's a full example that parses template strings with embedded arithmetic expressions:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 // Define the result types
@@ -83,7 +82,7 @@ The Kotlin string literals above double each quote mark that should appear in th
 The key to this parser is the `stringPart` regex:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val stringPartRegexParser = +Regex("""[^"$]+|\$(?!\()""")
@@ -105,8 +104,7 @@ You can extend this pattern to handle nested template strings (strings inside ex
 
 ```kotlin
 
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 // Re-declared so this snippet remains self-contained for doc-test

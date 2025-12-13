@@ -32,6 +32,9 @@ tasks.register("generateSrc") {
                 relativePath to sourceFile
             }
 
+        fun String.isGradleDslBlock(): Boolean =
+            contains("repositories {") || contains("dependencies {") || contains("plugins {")
+
         fun sanitizeSegment(segment: String): String {
             val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_")
             val normalized = sanitized.ifEmpty { "_" }
@@ -136,8 +139,12 @@ tasks.register("generateSrc") {
                         }
 
                         if (!hasMain) {
-                            println("Skipped (no fun main): ${relativePath}#$index")
-                            return@forEach
+                            if (block.isGradleDslBlock()) {
+                                println("Skipped (gradle block without fun main): ${relativePath}#$index")
+                                return@forEach
+                            } else {
+                                throw GradleException("Code block at index $index in file $relativePath is missing fun main; add main() or mark as Gradle DSL.")
+                            }
                         }
 
                         if (hasExecutableStatements) {
