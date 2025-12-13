@@ -28,7 +28,7 @@ import mirrg.xarpite.parser.parsers.*
 // Simple arithmetic expression parser.
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { match -> match.value.toInt() }
-    val brackets: Parser<Int> by lazy { (-'(' * parser { root } * -')') map { (_, value, _) -> value } }
+    val brackets: Parser<Int> by lazy { (-'(' * parser { root } * -')') map { value -> value } }
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
