@@ -2,9 +2,11 @@
   <a href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/actions/workflows/check.yaml">
     <img src="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/actions/workflows/check.yaml/badge.svg" alt="CI Status">
   </a>
+  &nbsp;
   <a href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases/latest">
     <img src="https://img.shields.io/github/v/release/MirrgieRiana/xarpeg-kotlin-peg-parser" alt="GitHub Release">
   </a>
+  &nbsp;
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
   </a>
