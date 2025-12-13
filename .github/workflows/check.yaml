@@ -27,6 +27,32 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Build java-run sample distribution
+      working-directory: samples/java-run
+      run: |
+        # Build the executable distribution using Gradle
+        ./gradlew installDist --console=plain --info --stacktrace
+
+    - name: Run java-run sample and verify output
+      working-directory: samples/java-run
+      run: |
+        # Run the sample using java command directly
+        OUTPUT=$(java -cp "build/install/java-run/lib/*" mirrg.xarpite.samples.java_run.MainKt)
+        echo "Sample output: $OUTPUT"
+        
+        # Expected output
+        EXPECTED="2*(3+4)+5 = 19"
+        
+        # Verify the output matches expected
+        if [ "$OUTPUT" = "$EXPECTED" ]; then
+          echo "✓ Output matches expected: $EXPECTED"
+        else
+          echo "✗ Output mismatch!"
+          echo "  Expected: $EXPECTED"
+          echo "  Got: $OUTPUT"
+          exit 1
+        fi
+
     - name: Build interpreter sample distribution
       working-directory: samples/interpreter
       run: |
@@ -52,3 +78,9 @@ jobs:
           echo "  Got: $OUTPUT"
           exit 1
         fi
+
+    - name: Build online-parser sample
+      working-directory: samples/online-parser
+      run: |
+        # Build the online parser sample
+        ./gradlew build --console=plain --info --stacktrace
