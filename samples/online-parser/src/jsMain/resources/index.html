@@ -136,7 +136,10 @@
         button.addEventListener("click", updateOutput);
         input.addEventListener("input", updateOutput);
 
-        updateOutput();
+        // Only update output on page load if input is not empty
+        if (input.value.trim() !== "") {
+            updateOutput();
+        }
     </script>
 </body>
 </html>
