@@ -1,7 +1,7 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
 
 fun String.normalize() = this.replace("\r\n", "\n").replace("\r", "\n")
 

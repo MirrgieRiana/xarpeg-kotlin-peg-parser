@@ -1,8 +1,8 @@
-package mirrg.xarpite.parser
+package io.github.mirrgieriana.xarpite.xarpeg
 
 import mirrg.kotlin.helium.truncate
 import mirrg.xarpite.escapeJsonString
-import mirrg.xarpite.parser.parsers.normalize
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.normalize
 
 fun interface Parser<out T : Any> {
     fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>?

@@ -1,13 +1,13 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.Tuple0
-import mirrg.xarpite.parser.Tuple1
-import mirrg.xarpite.parser.Tuple2
-import mirrg.xarpite.parser.Tuple3
-import mirrg.xarpite.parser.Tuple4
-import mirrg.xarpite.parser.Tuple5
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple2
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple3
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple4
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple5
 import kotlin.jvm.JvmName
 
 // Parser to Tuple1Parser

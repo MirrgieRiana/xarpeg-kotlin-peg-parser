@@ -1,8 +1,8 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
-import mirrg.xarpite.parser.ParseContext
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
 
 class OrParser<out T : Any>(val parsers: List<Parser<T>>) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {

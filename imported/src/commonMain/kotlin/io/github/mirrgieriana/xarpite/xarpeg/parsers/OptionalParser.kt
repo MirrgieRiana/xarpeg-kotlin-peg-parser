@@ -1,9 +1,9 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
-import mirrg.xarpite.parser.ParseContext
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.Tuple1
+import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
 
 class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple1<T?>> {

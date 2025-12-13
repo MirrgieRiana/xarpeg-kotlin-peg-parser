@@ -1,8 +1,8 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
-import mirrg.xarpite.parser.ParseContext
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
 
 infix fun <I : Any, O : Any> Parser<I>.map(function: (I) -> O) = Parser { context, start ->
     val result = context.parseOrNull(this, start) ?: return@Parser null

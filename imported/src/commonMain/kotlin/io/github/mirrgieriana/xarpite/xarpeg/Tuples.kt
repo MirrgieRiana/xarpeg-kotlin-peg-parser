@@ -1,4 +1,4 @@
-package mirrg.xarpite.parser
+package io.github.mirrgieriana.xarpite.xarpeg
 
 object Tuple0
 data class Tuple1<out A>(val a: A)
