@@ -96,22 +96,22 @@ tasks.register("generateTuples") {
     description = "Generates tuple source files and verifies they match imported files"
     group = "build"
     
-    val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg")
-    val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers")
+    val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg").asFile
+    val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers").asFile
     
     val tuplesKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Tuples.kt")
     val tupleParserKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers/TupleParser.kt")
     
-    val generatedTuplesKt = outputDir.file("Tuples.kt").asFile
-    val generatedTupleParserKt = outputDirParsers.file("TupleParser.kt").asFile
+    val generatedTuplesKt = outputDir.resolve("Tuples.kt")
+    val generatedTupleParserKt = outputDirParsers.resolve("TupleParser.kt")
     
     doLast {
         // Configuration: Maximum tuple size to generate
         val maxTupleSize = 5
         
         // Create output directories
-        outputDir.asFile.mkdirs()
-        outputDirParsers.asFile.mkdirs()
+        outputDir.mkdirs()
+        outputDirParsers.mkdirs()
         
         val packageRegex = Regex("^\\s*package\\s+")
         fun packageLineOf(file: File) = file.useLines { lines ->
