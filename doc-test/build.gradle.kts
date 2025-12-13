@@ -98,9 +98,13 @@ tasks.register("generateSrc") {
                                     if (j >= lines.size) break
                                     val nextLine = lines[j]
                                     if (nextLine.isBlank()) {
+                                        val nextNonBlank = lines.asSequence()
+                                            .drop(j + 1)
+                                            .firstOrNull { it.isNotBlank() }
+                                        val continueAfterBlank = nextNonBlank?.let { it.startsWith(" ") || it.startsWith("\t") } ?: false
                                         declLines.add(nextLine)
                                         j++
-                                        break
+                                        if (!continueAfterBlank) break else continue
                                     }
                                     val isNextIndented = nextLine.startsWith(" ") || nextLine.startsWith("\t")
                                     if (!isNextIndented) break
@@ -124,7 +128,8 @@ tasks.register("generateSrc") {
                             throw GradleException("Code block $relativePath#$index contains top-level statements alongside main(); move them into main.")
                         }
 
-                        val packageName = (relativePath.split('/') + index.toString())
+                        val pathHashSegment = sanitizeSegment(relativePath.hashCode().toUInt().toString(36))
+                        val packageName = (relativePath.split('/') + pathHashSegment + index.toString())
                             .map(::sanitizeSegment)
                             .joinToString(".")
 
