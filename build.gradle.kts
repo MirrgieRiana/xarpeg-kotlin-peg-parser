@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 
 plugins {
     kotlin("multiplatform") version "2.2.20"
@@ -87,7 +86,8 @@ tasks.register("writeKotlinMetadata") {
     outputs.file(outputFile)
 
     doLast {
-        val json = """{"schemaVersion":1,"label":"Kotlin","message":"$kotlinPluginVersion","color":"blue"}"""
+        val versionEscaped = kotlinPluginVersion.replace("\"", "\\\"")
+        val json = """{"schemaVersion":1,"label":"Kotlin","message":"$versionEscaped","color":"blue"}"""
         outputFile.get().asFile.apply {
             parentFile.mkdirs()
             writeText(json)
