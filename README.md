@@ -241,3 +241,7 @@ Xarpeg is distributed under the MIT License. See the [LICENSE](https://github.co
 ## About
 
 This library began as a parser component inside the Xarpite project and was extracted into a standalone, reusable PEG-style parser toolkit for Kotlin Multiplatform.
+
+---
+
+The repository logo uses [Monaspace](https://github.com/githubnext/monaspace).
