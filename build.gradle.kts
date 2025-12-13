@@ -85,9 +85,6 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
         configureEach {
             suppress.set(true)
         }
-        named("jvmMain") {
-            suppress.set(false)
-        }
         named("commonMain") {
             suppress.set(false)
         }
