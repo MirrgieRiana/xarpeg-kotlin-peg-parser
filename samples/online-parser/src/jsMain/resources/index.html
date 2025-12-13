@@ -17,6 +17,10 @@
             --textarea-bg: #fbfdff;
             --button-text: #ffffff;
             --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+            --code-border: #0b1221;
+            --code-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
         * { box-sizing: border-box; }
         body {
@@ -97,6 +101,20 @@
             padding-bottom: 0.08rem;
         }
         .source:hover { color: var(--accent-strong-hover); }
+        .code-block {
+            margin: 0.4rem 0 0;
+            padding: 1rem;
+            border-radius: 12px;
+            background: var(--code-bg);
+            color: var(--code-text);
+            border: 1px solid var(--code-border);
+            box-shadow: var(--code-shadow);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +133,15 @@
                 <button id="parse">Parse</button>
             </div>
             <textarea id="output" readonly></textarea>
+        </div>
+
+        <div class="section">
+            <label>Grammar (PEG)</label>
+            <pre class="code-block"><code>Expression  &lt;- _ Product (('+' / '-') _ Product)*
+Product     &lt;- Factor (('*' / '/') _ Factor)*
+Factor      &lt;- Number / '(' _ Expression _ ')'
+Number      &lt;- [0-9]+ ('.' [0-9]+)?
+_           &lt;- [ \t\r\n]*</code></pre>
         </div>
 
         <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser" target="_blank" rel="noopener noreferrer">
