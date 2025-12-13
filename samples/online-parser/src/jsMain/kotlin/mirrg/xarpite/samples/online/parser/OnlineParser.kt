@@ -9,20 +9,15 @@ import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 private object ExpressionGrammar {
-    private val whitespace = -Regex("\\s*")
+    private val whitespace = -Regex("[ \\t\\r\\n]*")
 
-    private fun <T : Any> token(parser: Parser<T>): Parser<T> =
-        whitespace * parser * whitespace
+    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { it.value.toDouble() }
 
-    private val number = token(+Regex("[0-9]+(?:\\.[0-9]+)?")) map { it.value.toDouble() }
-
-    private val grouped: Parser<Double> by lazy {
-        token(-'(' * parser { expression } * -')')
+    private val factor: Parser<Double> by lazy {
+        number + (-'(' * whitespace * parser { expression } * whitespace * -')')
     }
 
-    private val factor: Parser<Double> = number + grouped
-
-    private val product = leftAssociative(factor, token(+'*' + +'/')) { a, op, b ->
+    private val product = leftAssociative(factor, (+'*' + +'/') * whitespace) { a, op, b ->
         when (op) {
             '*' -> a * b
             '/' -> a / b
@@ -30,11 +25,13 @@ private object ExpressionGrammar {
         }
     }
 
-    val expression: Parser<Double> = leftAssociative(product, token(+'+' + +'-')) { a, op, b ->
-        when (op) {
-            '+' -> a + b
-            '-' -> a - b
-            else -> a
+    val expression: Parser<Double> by lazy {
+        whitespace * leftAssociative(product, (+'+' + +'-') * whitespace) { a, op, b ->
+            when (op) {
+                '+' -> a + b
+                '-' -> a - b
+                else -> a
+            }
         }
     }
 }
