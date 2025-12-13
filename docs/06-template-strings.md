@@ -102,6 +102,11 @@ You can extend this pattern to handle nested template strings (strings inside ex
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parsers.*
 
+// Re-declared so this snippet remains self-contained for doc-test
+sealed class TemplateElement
+data class StringPart(val text: String) : TemplateElement()
+data class ExpressionPart(val value: Int) : TemplateElement()
+
 object TemplateWithNestedStrings {
     val number = +Regex("[0-9]+") map { it.value.toInt() }
     val grouped: Parser<Int> by lazy { (-'(' * parser { sum } * -')') map { value -> value } }

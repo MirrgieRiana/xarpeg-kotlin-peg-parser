@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.JavaExec
+
 plugins {
     kotlin("jvm")
 }
@@ -23,6 +25,7 @@ tasks.register("generateSrc") {
         generatedSrc.asFile.deleteRecursively()
         val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
         val projectDirFile = project.rootProject.projectDir
+        val generatedPackageNames = mutableListOf<String>()
         val sourceFiles = (listOf(project.rootProject.file("README.md")) + project.rootProject.fileTree("docs") { include("**/*.md") }.files)
             .map { sourceFile ->
                 val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
@@ -32,37 +35,65 @@ tasks.register("generateSrc") {
         fun String.isGradleDslBlock(): Boolean =
             contains("repositories {") || contains("dependencies {") || contains("plugins {")
 
+        fun sanitizeSegment(segment: String): String {
+            val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_")
+            val normalized = sanitized.ifEmpty { "_" }
+            return if (normalized.first().isDigit()) "_$normalized" else normalized
+        }
+
+        fun String.isIndented(): Boolean = startsWith(" ") || startsWith("\t")
+
+        fun hasIndentedContentAfter(lines: List<String>, startIndex: Int): Boolean {
+            var idx = startIndex
+            while (idx < lines.size) {
+                val candidate = lines[idx]
+                if (candidate.isNotBlank()) return candidate.isIndented()
+                idx++
+            }
+            return false
+        }
+
+        fun parseDeclarationBlock(lines: List<String>, startIndex: Int): Pair<List<String>, Int> {
+            var braceCount = 0
+            val declLines = mutableListOf<String>()
+            var j = startIndex
+            while (j < lines.size) {
+                val declLine = lines[j]
+                declLines.add(declLine)
+                braceCount += declLine.count { it == '{' }
+                braceCount -= declLine.count { it == '}' }
+                j++
+                if (braceCount > 0) continue
+                val nextLine = lines.getOrNull(j) ?: break
+                if (nextLine.isBlank()) {
+                    declLines.add(nextLine)
+                    j++
+                    if (!hasIndentedContentAfter(lines, j)) break else continue
+                }
+                if (!nextLine.isIndented()) break
+            }
+            return declLines to j
+        }
+
         sourceFiles
             .sortedBy { it.first }
             .forEach { (relativePath, sourceFile) ->
                 val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
                 if (codeBlocks.isNotEmpty()) {
-                    val defaultImports = listOf(
-                        "import mirrg.xarpite.parser.Parser",
-                        "import mirrg.xarpite.parser.parseAllOrThrow",
-                        "import mirrg.xarpite.parser.parsers.*"
-                    )
-
-                    val imports = linkedSetOf<String>().apply { addAll(defaultImports) }
-                    val sharedDeclarations = mutableListOf<String>()
-
-                    val blockBodies = codeBlocks.mapIndexed { index, block ->
+                    codeBlocks.forEachIndexed { index, block ->
                         val lines = block.lines()
                         val isGradleDsl = block.isGradleDslBlock()
 
-                        lines.forEach { line ->
-                            val trimmed = line.trim()
-                            if (trimmed.startsWith("import ")) {
-                                imports.add(trimmed)
-                            }
-                        }
-
-                        val statementLines = mutableListOf<String>()
+                        val imports = mutableListOf<String>()
+                        val declarations = mutableListOf<String>()
+                        val statements = mutableListOf<String>()
+                        var hasMain = false
 
                         var i = 0
                         while (i < lines.size) {
                             val line = lines[i]
                             val trimmed = line.trim()
+                            val isMainDeclaration = trimmed.startsWith("fun main(")
                             val isNamedObject = trimmed.startsWith("object ") &&
                                 !trimmed.startsWith("object {") &&
                                 !trimmed.startsWith("object:") &&
@@ -72,82 +103,114 @@ tasks.register("generateSrc") {
                                 trimmed.startsWith("class ") ||
                                 trimmed.startsWith("interface ") ||
                                 trimmed.startsWith("enum ") ||
+                                trimmed.startsWith("const val ") ||
+                                trimmed.startsWith("val ") ||
+                                trimmed.startsWith("var ") ||
+                                trimmed.startsWith("fun ") ||
                                 isNamedObject
 
                             if (trimmed.startsWith("import ")) {
+                                imports.add(trimmed)
                                 i++
                                 continue
                             }
 
                             if (isDeclaration) {
-                                var braceCount = 0
-                                val declLines = mutableListOf<String>()
-                                var j = i
-                                while (j < lines.size) {
-                                    val declLine = lines[j]
-                                    declLines.add(declLine)
-                                    braceCount += declLine.count { it == '{' }
-                                    braceCount -= declLine.count { it == '}' }
-                                    j++
-                                    if (braceCount == 0 && declLine.trim().isNotEmpty()) break
+                                if (isMainDeclaration) {
+                                    hasMain = true
                                 }
-                                sharedDeclarations.addAll(declLines)
-                                sharedDeclarations.add("")
-                                i = j
+                                val (declLines, nextIndex) = parseDeclarationBlock(lines, i)
+                                declarations.addAll(declLines)
+                                declarations.add("")
+                                i = nextIndex
+                                continue
                             } else {
                                 val contentLine = if (isGradleDsl && trimmed.isNotEmpty()) "// $line" else line
-                                statementLines.add(contentLine)
+                                statements.add(contentLine)
                                 i++
                             }
                         }
 
-                        buildString {
-                            appendLine("private object Block_$index {")
-                            val effectiveStatements = statementLines.dropLastWhile { it.isEmpty() }
-                            if (effectiveStatements.isNotEmpty()) {
-                                appendLine("    init {")
-                                effectiveStatements.forEach { line ->
+                        val hasExecutableStatements = statements.any { line ->
+                            val trimmedLine = line.trim()
+                            trimmedLine.isNotEmpty() &&
+                                !trimmedLine.startsWith("//") &&
+                                !trimmedLine.startsWith("const val ") &&
+                                !trimmedLine.startsWith("val ") &&
+                                !trimmedLine.startsWith("var ") &&
+                                !trimmedLine.startsWith("fun ")
+                        }
+
+                        if (hasMain && hasExecutableStatements) {
+                            throw GradleException("Code block at index $index in file $relativePath contains executable top-level statements together with main(); wrap calls like println/parseAllOrThrow or assignments inside main() or another function.")
+                        }
+
+                        val basePackageSegment = sanitizeSegment(relativePath.replace("/", "_").replace(".", "_"))
+                        val packageName = listOf(basePackageSegment, sanitizeSegment(index.toString()))
+                            .joinToString(".")
+
+                        generatedPackageNames.add(packageName)
+
+                        val fileContent = buildString {
+                            appendLine("@file:Suppress(\"unused\", \"UNCHECKED_CAST\", \"CANNOT_INFER_PARAMETER_TYPE\")")
+                            appendLine("package $packageName")
+                            appendLine()
+                            imports.forEach { appendLine(it) }
+                            if (imports.isNotEmpty()) appendLine()
+                            declarations.dropLastWhile { it.isEmpty() }.forEach { line ->
+                                appendLine(line)
+                            }
+                            if (declarations.isNotEmpty()) appendLine()
+                            if (!hasMain) {
+                                appendLine("fun main() {")
+                                statements.dropLastWhile { it.isEmpty() }.forEach { line ->
                                     if (line.isNotEmpty()) {
-                                        appendLine("        $line")
+                                        appendLine("    $line")
                                     } else {
                                         appendLine()
                                     }
                                 }
-                                appendLine("    }")
+                                appendLine("}")
                             }
-                            appendLine("}")
                         }
+                        val outputFile = generatedSrc.file("${packageName.replace(".", "/")}/Test.kt").asFile
+                        outputFile.parentFile.mkdirs()
+                        outputFile.writeText(fileContent)
+                        println(
+                            buildString {
+                                appendLine("===== Doc-test block before (${relativePath}#$index) =====")
+                                appendLine(block)
+                                appendLine("===== Doc-test block after (${outputFile.absolutePath}) =====")
+                                appendLine(fileContent)
+                                appendLine("===== End =====")
+                            }
+                        )
+                        println("Generated: ${outputFile.absolutePath}")
                     }
-
-                    val packageName = relativePath.split('/').joinToString(".") { segment ->
-                        val sanitized = segment.replace(Regex("[^A-Za-z0-9]"), "_")
-                        val normalized = sanitized.ifEmpty { "_" }
-                        if (normalized.first().isDigit()) "_$normalized" else normalized
-                    }
-
-                    val fileContent = buildString {
-                        appendLine("@file:Suppress(\"unused\", \"UNCHECKED_CAST\", \"CANNOT_INFER_PARAMETER_TYPE\")")
-                        appendLine("package $packageName")
-                        appendLine()
-                        imports.forEach { appendLine(it) }
-                        if (imports.isNotEmpty()) appendLine()
-                        sharedDeclarations.dropLastWhile { it.isEmpty() }.forEach { line ->
-                            appendLine(line)
-                        }
-                        if (sharedDeclarations.isNotEmpty()) appendLine()
-                        blockBodies.forEachIndexed { idx, body ->
-                            append(body)
-                            if (idx != blockBodies.lastIndex) appendLine()
-                        }
-                    }
-                    val outputFile = generatedSrc.file("${packageName.replace(".", "/")}/Test.kt").asFile
-                    outputFile.parentFile.mkdirs()
-                    outputFile.writeText(fileContent)
-                    println("Generated: ${outputFile.absolutePath}")
                 } else {
                     println("Skipped (no Kotlin blocks): ${relativePath}")
                 }
             }
+
+            if (generatedPackageNames.isNotEmpty()) {
+                val mainFile = generatedSrc.file("Main.kt").asFile
+                mainFile.parentFile.mkdirs()
+                val mainContent = buildString {
+                    appendLine("fun main() {")
+                    generatedPackageNames.forEach { packageName ->
+                        appendLine("    try {")
+                        appendLine("        println(\"--- Running $packageName.main ---\")")
+                        appendLine("        $packageName.main()")
+                        appendLine("    } catch (e: Throwable) {")
+                        appendLine("        e.printStackTrace()")
+                        appendLine("    }")
+                        appendLine()
+                    }
+                    appendLine("}")
+                }
+                mainFile.writeText(mainContent)
+            println("Generated runner: ${mainFile.absolutePath}")
+        }
     }
 }
 
@@ -159,4 +222,14 @@ sourceSets {
     named("main") {
         kotlin.srcDir(generatedSrc)
     }
+}
+
+val runDocSamples = tasks.register<JavaExec>("runDocSamples") {
+    dependsOn("compileKotlin")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("MainKt")
+}
+
+tasks.named("check") {
+    dependsOn(runDocSamples)
 }
