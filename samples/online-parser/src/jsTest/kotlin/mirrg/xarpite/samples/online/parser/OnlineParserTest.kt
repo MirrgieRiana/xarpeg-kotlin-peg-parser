@@ -17,16 +17,16 @@ class OnlineParserTest {
 
     @Test
     fun parsesExpressionWithLeadingWhitespace() {
-        assertEquals("3.0", parseExpression(" 1+2"))
+        assertEquals(3.0, parseExpression(" 1+2").toDouble())
     }
 
     @Test
     fun parsesExpressionWithTrailingWhitespace() {
-        assertEquals("3.0", parseExpression("1+2 "))
+        assertEquals(3.0, parseExpression("1+2 ").toDouble())
     }
 
     @Test
     fun parsesExpressionWithBothLeadingAndTrailingWhitespace() {
-        assertEquals("3.0", parseExpression(" 1+2 "))
+        assertEquals(3.0, parseExpression(" 1+2 ").toDouble())
     }
 }
