@@ -1,4 +1,4 @@
-package mirrg.xarpite
+package io.github.mirrgieriana.xarpite.xarpeg
 
 fun String.escapeJsonString(): String {
     val builder = StringBuilder(length)

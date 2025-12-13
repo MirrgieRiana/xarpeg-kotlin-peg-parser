@@ -1,4 +1,4 @@
-package mirrg.xarpite.parser.parsers
+package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult

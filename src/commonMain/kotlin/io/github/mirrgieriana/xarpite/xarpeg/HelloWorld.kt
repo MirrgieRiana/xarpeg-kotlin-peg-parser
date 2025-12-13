@@ -1,4 +1,4 @@
-package mirrg.xarpite.peg
+package io.github.mirrgieriana.xarpite.xarpeg
 
 /**
  * A simple hello world function for demonstration purposes.

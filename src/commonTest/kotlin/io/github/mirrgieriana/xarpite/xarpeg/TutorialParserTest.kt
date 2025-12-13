@@ -1,4 +1,4 @@
-package mirrg.xarpite.peg
+package io.github.mirrgieriana.xarpite.xarpeg
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

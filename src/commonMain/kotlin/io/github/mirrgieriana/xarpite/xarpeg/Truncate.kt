@@ -1,4 +1,4 @@
-package mirrg.kotlin.helium
+package io.github.mirrgieriana.xarpite.xarpeg
 
 fun String.truncate(maxLength: Int, ellipsis: String = "..."): String {
     if (maxLength < 0) return ""

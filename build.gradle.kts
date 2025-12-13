@@ -29,7 +29,7 @@ kotlin {
     linuxX64 {
         binaries {
             executable {
-                entryPoint = "mirrg.xarpite.peg.main"
+                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
             }
         }
     }
@@ -38,7 +38,7 @@ kotlin {
     mingwX64 {
         binaries {
             executable {
-                entryPoint = "mirrg.xarpite.peg.main"
+                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
             }
         }
     }
@@ -96,11 +96,11 @@ tasks.register("generateTuples") {
     description = "Generates tuple source files and verifies they match imported files"
     group = "build"
     
-    val outputDir = layout.buildDirectory.dir("generated/tuples/mirrg/xarpite/parser")
-    val outputDirParsers = layout.buildDirectory.dir("generated/tuples/mirrg/xarpite/parser/parsers")
+    val outputDir = layout.buildDirectory.dir("generated/tuples/io/github/mirrgieriana/xarpite/xarpeg")
+    val outputDirParsers = layout.buildDirectory.dir("generated/tuples/io/github/mirrgieriana/xarpite/xarpeg/parsers")
     
-    val tuplesKt = file("imported/src/commonMain/kotlin/mirrg/xarpite/parser/Tuples.kt")
-    val tupleParserKt = file("imported/src/commonMain/kotlin/mirrg/xarpite/parser/parsers/TupleParser.kt")
+    val tuplesKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Tuples.kt")
+    val tupleParserKt = file("imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers/TupleParser.kt")
     
     val generatedTuplesKt = outputDir.get().file("Tuples.kt").asFile
     val generatedTupleParserKt = outputDirParsers.get().file("TupleParser.kt").asFile
@@ -116,7 +116,7 @@ tasks.register("generateTuples") {
         // Generate Tuples.kt programmatically
         val typeParams = listOf("A", "B", "C", "D", "E")
         val tuplesContent = buildString {
-            appendLine("package mirrg.xarpite.parser")
+            appendLine("package io.github.mirrgieriana.xarpite.xarpeg")
             appendLine()
             appendLine("object Tuple0")
             for (n in 1..maxTupleSize) {
@@ -131,13 +131,13 @@ tasks.register("generateTuples") {
         
         // Generate TupleParser.kt programmatically
         val tupleParserContent = buildString {
-            appendLine("package mirrg.xarpite.parser.parsers")
+            appendLine("package io.github.mirrgieriana.xarpite.xarpeg.parsers")
             appendLine()
-            appendLine("import mirrg.xarpite.parser.ParseResult")
-            appendLine("import mirrg.xarpite.parser.Parser")
-            appendLine("import mirrg.xarpite.parser.Tuple0")
+            appendLine("import io.github.mirrgieriana.xarpite.xarpeg.ParseResult")
+            appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Parser")
+            appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Tuple0")
             for (n in 1..maxTupleSize) {
-                appendLine("import mirrg.xarpite.parser.Tuple$n")
+                appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Tuple$n")
             }
             appendLine("import kotlin.jvm.JvmName")
             appendLine()
@@ -254,14 +254,14 @@ tasks.register("generateTuples") {
         // Verify Tuples.kt
         val expectedTuplesContent = tuplesKt.readText()
         if (tuplesContent != expectedTuplesContent) {
-            throw GradleException("Generated Tuples.kt does not match imported/src/commonMain/kotlin/mirrg/xarpite/parser/Tuples.kt")
+            throw GradleException("Generated Tuples.kt does not match imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Tuples.kt")
         }
         println("Verified: Tuples.kt matches imported file")
         
         // Verify TupleParser.kt
         val expectedTupleParserContent = tupleParserKt.readText()
         if (tupleParserContent != expectedTupleParserContent) {
-            throw GradleException("Generated TupleParser.kt does not match imported/src/commonMain/kotlin/mirrg/xarpite/parser/parsers/TupleParser.kt")
+            throw GradleException("Generated TupleParser.kt does not match imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers/TupleParser.kt")
         }
         println("Verified: TupleParser.kt matches imported file")
         

@@ -1,4 +1,4 @@
-package mirrg.xarpite.parser
+package io.github.mirrgieriana.xarpite.xarpeg
 
 data class MatrixPosition(val row: Int, val column: Int)
 

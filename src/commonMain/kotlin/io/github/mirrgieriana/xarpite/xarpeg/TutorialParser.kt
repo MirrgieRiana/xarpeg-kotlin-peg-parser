@@ -1,4 +1,4 @@
-package mirrg.xarpite.peg
+package io.github.mirrgieriana.xarpite.xarpeg
 
 data class ParseResult<T>(val value: T, val rest: String)
 
