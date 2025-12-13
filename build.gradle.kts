@@ -34,6 +34,15 @@ kotlin {
         }
     }
 
+    // Native target for Windows x64
+    mingwX64 {
+        binaries {
+            executable {
+                entryPoint = "mirrg.xarpite.peg.main"
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir("imported/src/commonMain/kotlin")
@@ -52,6 +61,8 @@ kotlin {
         val jsTest by getting
         val linuxX64Main by getting
         val linuxX64Test by getting
+        val mingwX64Main by getting
+        val mingwX64Test by getting
     }
 }
 
@@ -69,9 +80,9 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     moduleName.set("xarpeg-kotlin-peg-parser")
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
     
-    // Suppress linuxX64 source set to avoid Kotlin/Native download issues
+    // Suppress native source sets to avoid Kotlin/Native download issues
     dokkaSourceSets.configureEach {
-        if (name.contains("linuxX64", ignoreCase = true)) {
+        if (name.contains("linuxX64", ignoreCase = true) || name.contains("mingwX64", ignoreCase = true)) {
             suppress.set(true)
         }
     }
