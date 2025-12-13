@@ -1,6 +1,6 @@
 # Step 4: Errors and runtime behavior
 
-Finish by checking how parsers handle full consumption, exceptions, and memoization cache settings.
+Review how parsers handle full consumption, exceptions, and memoization cache settings.
 
 ## Consume the entire input
 
@@ -9,7 +9,7 @@ Finish by checking how parsers handle full consumption, exceptions, and memoizat
 - Nothing matches at the start: `UnmatchedInputParseException`
 - A prefix matches but trailing input remains: `ExtraCharactersParseException`
 
-If a `map` throws, that branch simply fails, which lets you embed validation inside transformations.
+If a `map` throws, the exception bubbles up and aborts parsing; validate before mapping or catch and wrap errors when you need to recover.
 
 ## Cache on or off
 
