@@ -80,16 +80,16 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     moduleName.set("xarpeg-kotlin-peg-parser")
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
     
-    // Only include JVM source set (and its dependency commonMain)
+    // Whitelist: Only process JVM source set by name
     dokkaSourceSets {
-        named("jsMain") {
+        configureEach {
             suppress.set(true)
         }
-        named("linuxX64Main") {
-            suppress.set(true)
+        named("jvmMain") {
+            suppress.set(false)
         }
-        named("mingwX64Main") {
-            suppress.set(true)
+        named("commonMain") {
+            suppress.set(false)
         }
     }
 }
