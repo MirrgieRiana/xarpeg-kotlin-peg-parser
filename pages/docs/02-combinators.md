@@ -44,5 +44,40 @@ fun main() {
 Results from `*` arrive as `TupleX`, so destructure in `map { (a, b, c) -> … }` to build the desired type.  
 Drop delimiters or unneeded values with `-parser` to keep tuple arity small.
 
+## Input boundary matchers
+
+Use `startOfInput` and `endOfInput` to assert position at input boundaries:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+// Match only at the beginning of input
+val mustStartAtBeginning = startOfInput * +"hello"
+
+// Reject trailing characters
+val noTrailingGarbage = +"hello" * endOfInput
+
+// Match exact input with no prefix or suffix
+val exactMatch = startOfInput * +"hello" * endOfInput
+
+fun main() {
+    // These succeed
+    noTrailingGarbage.parseAllOrThrow("hello")
+    exactMatch.parseAllOrThrow("hello")
+    
+    // These fail with UnmatchedInputParseException
+    // val parser1 = startOfInput * +"hello"
+    // parser1.parseOrNull(ParseContext("  hello", true), 2)  // not at start
+    // 
+    // val parser2 = +"hello" * endOfInput
+    // parser2.parseOrNull(ParseContext("hello!", true), 0)   // not at end
+}
+```
+
+Both parsers return `Tuple0` and consume no input, so they compose cleanly: `Tuple0 * X = X`.
+
+> **Note**: `parseAllOrThrow` already enforces that the entire input is consumed, so `endOfInput` is mainly useful when you need this check as part of a larger grammar or when using `parseOrNull` directly.
+
 Next, handle recursion and associativity to build expression parsers with less code.  
 → [Step 3: Handle expressions and recursion](03-expressions.md)
