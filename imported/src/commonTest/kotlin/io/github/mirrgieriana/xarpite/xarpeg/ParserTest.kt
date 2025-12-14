@@ -222,7 +222,7 @@ class ParserTest {
     fun delegationParser() {
         val parser = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
-            val brackets: Parser<Int> = -'(' * ref { root } * -')'
+            val brackets: Parser<Int> = -'(' * ref { root } * -')' map { value -> value }
             val factor = number + brackets
             val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
             val add = leftAssociative(mul, -'+') { a, _, b -> a + b }

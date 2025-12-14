@@ -106,8 +106,8 @@ class ParserAdditionalTest {
     fun referenceParserAllowsMutualRecursion() {
         val language = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
-            val term: Parser<Int> =
-                number + (-'(' * ref { expr } * -')')
+            val grouped: Parser<Int> = -'(' * ref { expr } * -')' map { value -> value }
+            val term: Parser<Int> = number + grouped
             val expr: Parser<Int> =
                 leftAssociative(term, -'+') { a, _, b -> a + b }
         }
