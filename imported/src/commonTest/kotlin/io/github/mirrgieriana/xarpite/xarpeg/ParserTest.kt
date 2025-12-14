@@ -222,7 +222,7 @@ class ParserTest {
     fun delegationParser() {
         val parser = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
-            val brackets: Parser<Int> by lazy { -'(' * ref { root } * -')' }
+            val brackets: Parser<Int> = -'(' * ref { root } * -')'
             val factor = number + brackets
             val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
             val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -249,7 +249,7 @@ class ParserTest {
             val aa = -"aa" map { 2 }
 
             // 入力されたaを分割する全パターンを試そうとするパーサー
-            val root: Parser<Int> by lazy {
+            val root: Parser<Int> = ref {
                 or(
                     // bの位置で確定で失敗し、次の選択肢に進む
                     // bより前に自分自身が居るので、rootが評価される度にrootが合計2回呼ばれる

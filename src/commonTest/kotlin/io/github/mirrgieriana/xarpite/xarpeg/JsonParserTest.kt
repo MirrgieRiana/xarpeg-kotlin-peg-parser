@@ -107,25 +107,27 @@ class JsonParserTest {
             +"null" map { JsonValue.JsonNull }
 
         // JSON array parser (recursive)
-        private val jsonArray: Parser<JsonValue.JsonArray> by lazy {
-            val element = ref { jsonValue }.trimmed()
-            val elements = element.commaSeparated()
-            -'[' * -ws * elements * -ws * -']' map { values ->
-                JsonValue.JsonArray(values)
+        private val jsonArray: Parser<JsonValue.JsonArray> =
+            ref {
+                val element = ref { jsonValue }.trimmed()
+                val elements = element.commaSeparated()
+                -'[' * -ws * elements * -ws * -']' map { values ->
+                    JsonValue.JsonArray(values)
+                }
             }
-        }
 
         // JSON object parser (recursive)
-        private val jsonObject: Parser<JsonValue.JsonObject> by lazy {
-            val key = jsonString.trimmed() map { it.value }
-            val pair = key * -':' * -ws * ref { jsonValue }.trimmed() map { (k, v) ->
-                k to v
+        private val jsonObject: Parser<JsonValue.JsonObject> =
+            ref {
+                val key = jsonString.trimmed() map { it.value }
+                val pair = key * -':' * -ws * ref { jsonValue }.trimmed() map { (k, v) ->
+                    k to v
+                }
+                val pairs = pair.commaSeparated()
+                -'{' * -ws * pairs * -ws * -'}' map { properties ->
+                    JsonValue.JsonObject(properties.toMap())
+                }
             }
-            val pairs = pair.commaSeparated()
-            -'{' * -ws * pairs * -ws * -'}' map { properties ->
-                JsonValue.JsonObject(properties.toMap())
-            }
-        }
 
         // Main JSON value parser (combines all types)
         val jsonValue: Parser<JsonValue> =

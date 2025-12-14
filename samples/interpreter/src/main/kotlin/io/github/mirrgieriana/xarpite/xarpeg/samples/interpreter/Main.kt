@@ -39,16 +39,16 @@ private object ArithmeticParser {
     }
     
     // Forward declaration for recursive grammar
-    val expr: Parser<LazyValue> by lazy { sum }
+    val expr: Parser<LazyValue> = ref { sum }
     
     // Parse a grouped expression with parentheses
-    val grouped: Parser<LazyValue> by lazy { -'(' * parser { expr } * -')' }
+    val grouped: Parser<LazyValue> = -'(' * parser { expr } * -')'
     
     // Primary expression: number or grouped
     val primary: Parser<LazyValue> = number + grouped
     
     // Multiplication and division (higher precedence)
-    val product: Parser<LazyValue> by lazy {
+    val product: Parser<LazyValue> =
         leftAssociative(primary, (+'*' mapEx { _, r -> OperatorInfo(r.start, '*') }) + (+'/' mapEx { _, r -> OperatorInfo(r.start, '/') })) { a, op, b ->
             when (op.op) {
                 '*' -> LazyValue(op.position) { a.compute() * b.compute() }
@@ -67,10 +67,9 @@ private object ArithmeticParser {
                 else -> error("Unknown operator: ${op.op}")
             }
         }
-    }
     
     // Addition and subtraction (lower precedence)
-    val sum: Parser<LazyValue> by lazy {
+    val sum: Parser<LazyValue> =
         leftAssociative(product, +'+' + +'-') { a, op, b ->
             when (op) {
                 '+' -> LazyValue(a.position) { a.compute() + b.compute() }
@@ -78,7 +77,6 @@ private object ArithmeticParser {
                 else -> error("Unknown operator: $op")
             }
         }
-    }
 }
 
 /**
