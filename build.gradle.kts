@@ -27,22 +27,10 @@ kotlin {
     }
 
     // Native target for Linux x64
-    linuxX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
-            }
-        }
-    }
+    linuxX64()
 
     // Native target for Windows x64
-    mingwX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
-            }
-        }
-    }
+    mingwX64()
 
     sourceSets {
         val commonMain by getting {
