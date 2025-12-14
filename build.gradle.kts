@@ -18,7 +18,9 @@ fun Project.readGitSha(): String? = runCatching {
         .directory(rootDir)
         .redirectErrorStream(true)
         .start()
-    process.inputStream.bufferedReader().use { it.readText() }.trim().takeIf(::isValidGitSha)
+    val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
+    process.waitFor()
+    output.takeIf(::isValidGitSha)
 }.getOrNull()
 
 fun Project.determineVersion(): String {
