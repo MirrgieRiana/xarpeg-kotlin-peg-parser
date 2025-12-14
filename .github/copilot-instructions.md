@@ -34,6 +34,15 @@ If you encounter an error while running a Gradle task that says access to a spec
 
 https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/settings/copilot/coding_agent/allowlist
 
+## Keep Code, Tests, and Documentation Synchronized
+
+When making changes to the codebase, you must always ensure that code, tests, and documentation are edited correspondingly:
+
+* If you modify code behavior, update the related tests to reflect the changes
+* If you add or change functionality, update the relevant documentation
+* If you update documentation, ensure the code and tests match the documented behavior
+* Never leave code, tests, and documentation in an inconsistent state
+
 ## Declaration of Compliance with this Instructions
 
 If you comply with the contents of this file, you must declare that you comply with this file when posting your first message in a conversation.
