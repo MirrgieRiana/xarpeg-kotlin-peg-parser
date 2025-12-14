@@ -6,7 +6,15 @@ import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.zeroOrMore
 import io.github.mirrgieriana.xarpite.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
