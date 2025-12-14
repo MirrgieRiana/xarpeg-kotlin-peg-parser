@@ -6,17 +6,17 @@
 /* Modern, elegant enhancements */
 
 :root {
-  --primary-color: #ffb300;
-  --secondary-color: #ff8f00;
-  --accent-color: #ffd54f;
-  --text-color: #1a0f00; /* Contrast ~17.8:1 vs #fff8e1 (var(--code-bg), AAA) */
-  --muted-text-color: #5c4730;
-  --code-bg: #fff8e1;
-  --border-color: #f0c67f;
-  --link-color: #ffb300;
-  --link-hover: #ff6f00;
-  --header-bg-start: #f5f0e6;
-  --header-bg-end: #e3d7c6;
+  --primary-color: #4a6fa5;
+  --secondary-color: #3b556e;
+  --accent-color: #9bb6d6;
+  --text-color: #1f2a3d;
+  --muted-text-color: #4b5563;
+  --code-bg: #f6f8fb;
+  --border-color: #d6dde8;
+  --link-color: #4a6fa5;
+  --link-hover: #2f4f73;
+  --header-bg-start: #f1f5fa;
+  --header-bg-end: #e3eaf3;
 }
 
 /* Enhanced typography */
@@ -85,7 +85,7 @@ code {
   border-radius: 3px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.9em;
-  color: #e83e8c;
+  color: #5a6fa5;
 }
 
 pre code {
@@ -140,7 +140,7 @@ td {
 }
 
 tr:hover {
-  background: rgba(255, 179, 0, 0.08);
+  background: rgba(155, 182, 214, 0.18);
 }
 
 /* Navigation enhancements */
@@ -203,7 +203,7 @@ tr:hover {
   gap: 1rem;
   margin: 2rem 0;
   padding: 1.5rem;
-  background: rgba(255, 179, 0, 0.5);
+  background: rgba(155, 182, 214, 0.25);
   border-radius: 8px;
   border-left: 4px solid var(--accent-color);
 }
@@ -410,8 +410,8 @@ nav a:contains("Previous"):hover::before {
     --text-color: #e6edf3;
     --code-bg: #161b22;
     --border-color: #30363d;
-    --header-bg-start: #1d2530;
-    --header-bg-end: #2e3a4a;
+    --header-bg-start: #131a24;
+    --header-bg-end: #1d2734;
   }
   
   body {
@@ -429,6 +429,6 @@ nav a:contains("Previous"):hover::before {
   
   code {
     background: var(--code-bg);
-    color: #f47067;
+    color: #a8c1f0;
   }
 }
