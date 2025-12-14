@@ -109,7 +109,7 @@ class JsonParserTest {
         // JSON array parser (recursive)
         private val jsonArray: Parser<JsonValue.JsonArray> =
             ref {
-                val element = ref { jsonValue }.trimmed()
+                val element = jsonValue.trimmed()
                 val elements = element.commaSeparated()
                 -'[' * -ws * elements * -ws * -']' map { values ->
                     JsonValue.JsonArray(values)
@@ -120,7 +120,7 @@ class JsonParserTest {
         private val jsonObject: Parser<JsonValue.JsonObject> =
             ref {
                 val key = jsonString.trimmed() map { it.value }
-                val pair = key * -':' * -ws * ref { jsonValue }.trimmed() map { (k, v) ->
+                val pair = key * -':' * -ws * jsonValue.trimmed() map { (k, v) ->
                     k to v
                 }
                 val pairs = pair.commaSeparated()
