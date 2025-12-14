@@ -60,7 +60,7 @@ Key points in the example:
 - `-parser` (for example, `-'('`) ignores the matched token and yields `Tuple0`, so you can drop delimiters.
 - `*` sequences parsers and returns tuples (`Tuple0..Tuple16`), preserving the parts you care about.
 - `leftAssociative`/`rightAssociative` build operator chains without manual recursion.
-- `ref { }` creates a forward reference for recursive grammars; use with `by lazy` for mutually recursive parsers.
+- `ref { }` creates a forward reference for recursive grammars, enabling references to the property itself or properties declared below it. Properties using `ref` should have explicit type declarations for type resolution.
 - `parseAllOrThrow` requires the entire input to be consumed; it throws on unmatched input or trailing characters.
 
 > 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) below for a complete step-by-step guide!
@@ -125,7 +125,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
 - **Mapping**: `parser map { ... }` transforms the parsed value; `parser mapEx { ctx, result -> ... }` provides access to context and position.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
-- **Recursion**: `ref { ... }` creates forward references for self-referential grammars. In some situations with complex recursive parsers, wrapping the variable definition with `by lazy` may be needed if initialization errors occur.
+- **Recursion**: `ref { ... }` creates forward references for self-referential grammars. When defining parsers with `ref`, use explicit type declarations to help with type resolution. Note that `by lazy` should generally be avoided for recursive parsers as it can cause infinite recursion; however, in rare cases where initialization errors occur that cannot be resolved otherwise, `by lazy` may be used as a workaround.
 
 ---
 
