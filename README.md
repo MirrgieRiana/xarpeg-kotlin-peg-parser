@@ -23,7 +23,7 @@ Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator AP
 
 - **Kotlin Multiplatform** - JVM, JS (IR/Node.js), and Native (Linux x64, Linux ARM64, Windows x64)
 - **Operator-based DSL** - Unary `+` builds parsers from literals/regex, binary `+` expresses alternatives, `*` sequences tuples, `!` is negative lookahead, `-` ignores tokens
-- **Tuple-centric results** - Sequence results are `Tuple0..Tuple5` so you can explicitly keep or drop intermediate values
+- **Tuple-centric results** - Sequence results are `Tuple0..Tuple16` so you can explicitly keep or drop intermediate values
 - **Built-in cache** - Memoizes `(parser, position)` by default; toggle per parse call
 - **No tokenizer** - Consume the source `String` directly with character, string, or regex parsers
 
@@ -41,7 +41,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 // Simple arithmetic expression parser.
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { match -> match.value.toInt() }
-    val brackets: Parser<Int> by lazy { (-'(' * ref { root } * -')') map { value -> value } }
+    val brackets: Parser<Int> by lazy { -'(' * ref { root } * -')' map { value -> value } }
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -58,8 +58,9 @@ Key points in the example:
 - The wildcard `parsers.*` import brings all operator overloads (`+`, `-`, `*`, `!`, `map`, etc.) into scope.
 - `+'a'`, `+"abc"`, and `+Regex("...")` create parsers for characters, strings, and regex matches (`MatchResult`)—map them to the shape you need.
 - `-parser` (for example, `-'('`) ignores the matched token and yields `Tuple0`, so you can drop delimiters.
-- `*` sequences parsers and returns tuples (`Tuple1..Tuple5`), preserving the parts you care about.
+- `*` sequences parsers and returns tuples (`Tuple0..Tuple16`), preserving the parts you care about.
 - `leftAssociative`/`rightAssociative` build operator chains without manual recursion.
+- `ref { }` creates a forward reference for recursive grammars; use with `by lazy` for mutually recursive parsers.
 - `parseAllOrThrow` requires the entire input to be consumed; it throws on unmatched input or trailing characters.
 
 > 💡 **Want to learn more?** Check out the [Tutorial section](#-tutorial---learn-step-by-step) below for a complete step-by-step guide!
@@ -79,7 +80,7 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
    Master sequences, choices, repetition, and other core patterns to build complex grammars.
 
 3. **🔁 [Expressions & Recursion](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/03-expressions.html)** - Handle recursive grammars  
-   Learn to use `parser {}` / `by lazy` and leverage associativity helpers for expression parsing.
+   Learn to use `ref { }` / `by lazy` and leverage associativity helpers for expression parsing.
 
 4. **⚙️ [Runtime Behavior](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/04-runtime.html)** - Understand errors and performance  
    Deep dive into exceptions, full consumption requirements, and cache control.
@@ -118,13 +119,13 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 
 - **Parser<T>**: `fun interface` with `parseOrNull(context, start)`; parse helpers pass a `ParseContext` that handles caching.
 - **Total parsing**: `parseAllOrThrow(src, useCache = true)` returns the parsed value or throws `UnmatchedInputParseException` (no match at start) / `ExtraCharactersParseException` (trailing input).
-- **Sequences and tuples**: `*` chains parsers and returns `Tuple0..Tuple5`. Ignored pieces (`-parser`) collapse out of the tuple.
+- **Sequences and tuples**: `*` chains parsers and returns `Tuple0..Tuple16`. Ignored pieces (`-parser`) collapse out of the tuple.
 - **Alternatives**: `parserA + parserB` (or `or(...)`) tries options in order.
 - **Repetition**: `parser.zeroOrMore`, `parser.oneOrMore`, or `parser.list(min, max)` collect results into `List<T>`.
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
-- **Mapping**: `parser map { ... }` transforms the parsed value.
+- **Mapping**: `parser map { ... }` transforms the parsed value; `parser mapEx { ctx, result -> ... }` provides access to context and position.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
-- **Recursion**: `parser { ... }` (reference) or `by lazy` fields allow self-referential grammars.
+- **Recursion**: `ref { ... }` creates forward references, use with `by lazy` for mutually recursive parsers.
 
 ---
 
