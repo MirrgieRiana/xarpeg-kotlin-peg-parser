@@ -60,8 +60,9 @@ jobs:
             cat README.md
           } > site-src/index.md
           # Copy documentation with front matter
-          find docs -name '*.md' -print0 | while IFS= read -r -d '' file; do
-            dest="site-src/$file"
+          find pages/docs -name '*.md' -print0 | while IFS= read -r -d '' file; do
+            relative="${file#pages/}"
+            dest="site-src/$relative"
             mkdir -p "$(dirname "$dest")"
             {
               echo '---'

@@ -6,15 +6,17 @@
 /* Modern, elegant enhancements */
 
 :root {
-  --primary-color: #ffb300;
-  --secondary-color: #ff8f00;
-  --accent-color: #ffd54f;
-  --text-color: #1a0f00; /* Contrast ~17.8:1 vs #fff8e1 (var(--code-bg), AAA) */
-  --muted-text-color: #5c4730;
-  --code-bg: #fff8e1;
-  --border-color: #f0c67f;
-  --link-color: #ffb300;
-  --link-hover: #ff6f00;
+  --primary-color: #b06000;
+  --secondary-color: #8f4f00;
+  --accent-color: #f2b46d;
+  --text-color: #2d1b0f;
+  --muted-text-color: #5d3b23;
+  --code-bg: #fff7ef;
+  --border-color: #e6c9a8;
+  --link-color: #cf7b00;
+  --link-hover: #a16000;
+  --header-bg-start: #fff8f0;
+  --header-bg-end: #ffe6cc;
 }
 
 /* Enhanced typography */
@@ -83,7 +85,7 @@ code {
   border-radius: 3px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.9em;
-  color: #e83e8c;
+  color: #a55a07;
 }
 
 pre code {
@@ -99,7 +101,7 @@ blockquote {
   margin-left: 0;
   color: var(--muted-text-color);
   font-style: italic;
-  background: rgba(255, 213, 79, 0.12);
+  background: rgba(207, 123, 0, 0.08);
   padding: 1rem 1.5rem;
   border-radius: 0 6px 6px 0;
 }
@@ -138,12 +140,12 @@ td {
 }
 
 tr:hover {
-  background: rgba(255, 179, 0, 0.08);
+  background: rgba(207, 123, 0, 0.1);
 }
 
 /* Navigation enhancements */
 .page-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(135deg, var(--header-bg-start) 0%, var(--header-bg-end) 100%);
   padding: 3rem 1rem;
 }
 
@@ -201,7 +203,7 @@ tr:hover {
   gap: 1rem;
   margin: 2rem 0;
   padding: 1.5rem;
-  background: linear-gradient(to right, rgba(255, 179, 0, 0.08), rgba(255, 213, 79, 0.12));
+  background: #fff2e4;
   border-radius: 8px;
   border-left: 4px solid var(--accent-color);
 }
@@ -212,6 +214,7 @@ tr:hover {
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
   transition: all 0.2s ease;
+  color: var(--text-color);
 }
 
 .doc-nav-item:hover {
@@ -297,12 +300,12 @@ html {
 /* Selection color */
 ::selection {
   background: var(--accent-color);
-  color: white;
+  color: var(--text-color);
 }
 
 ::-moz-selection {
   background: var(--accent-color);
-  color: white;
+  color: var(--text-color);
 }
 
 /* Additional modern enhancements */
@@ -405,18 +408,22 @@ nav a:contains("Previous"):hover::before {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-color: #e6edf3;
-    --code-bg: #161b22;
-    --border-color: #30363d;
+    --text-color: #f1e5d8;
+    --code-bg: #1a120c;
+    --border-color: #3b2a1b;
+    --header-bg-start: #1a120c;
+    --header-bg-end: #24170d;
+    --link-color: #cf7b00;
+    --link-hover: #d28400;
   }
   
   body {
-    background: #0d1117;
+    background: #0f0b08;
     color: var(--text-color);
   }
   
   .feature-item, .doc-nav-item {
-    background: #161b22;
+    background: #18110c;
   }
   
   pre {
@@ -425,6 +432,6 @@ nav a:contains("Previous"):hover::before {
   
   code {
     background: var(--code-bg);
-    color: #f47067;
+    color: #f2c58b;
   }
 }
