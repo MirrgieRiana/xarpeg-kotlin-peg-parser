@@ -1,0 +1,73 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg-kotlin-peg-parser/2.1.0/xarpeg-kotlin-peg-parser-2.1.0.module",
+    "group": "io.github.mirrgieriana.xarpite",
+    "module": "xarpeg-kotlin-peg-parser",
+    "version": "2.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-linuxArm64Main-2.1.0.klib",
+          "url": "xarpeg-kotlin-peg-parser-linuxarm64-2.1.0.klib",
+          "size": 192165,
+          "sha512": "5274ada07b1d2f560b3736590a3942a06ac2db01e27ae36c36c9862f7c347816d2ef3fe6a8bc5ed673577b93c49547bdb62c09651ae31efc677db0ce4dd1b8a6",
+          "sha256": "138b10354e430b6b8082102a6d17c14d94cdea13a62bc0c28f3fa3f55c03276c",
+          "sha1": "3324092dfe173e8e947744150174b50f13593ff1",
+          "md5": "f76d89a160a808aa06eaecc3bbec449c"
+        }
+      ]
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-linuxarm64-2.1.0-sources.jar",
+          "url": "xarpeg-kotlin-peg-parser-linuxarm64-2.1.0-sources.jar",
+          "size": 17377,
+          "sha512": "da48f24c34f6055592264ab228555d1a1205269081c9cedbfb6ffcfefe834237bb2839a334576ac08b7f41a59bfb712beda6d229243d8d464108a71560f0a471",
+          "sha256": "fa1190f3efbaf80cbcce1a0fa952b1ec806812c13d84f151a03e1e62d31a1841",
+          "sha1": "539c6cc91c47d379dc44d9a01a46267b017280a0",
+          "md5": "5af78d8e7dd3fb7ded999b9fe2a4378d"
+        }
+      ]
+    }
+  ]
+}
