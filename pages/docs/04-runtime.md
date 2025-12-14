@@ -25,7 +25,7 @@ Disable with `parseAllOrThrow(input, useCache = false)` if you want lower memory
 
 - Reproduce failures with small inputs and confirm how `optional` or `zeroOrMore` rewind.
 - When unsure about shapes and types, lean on IDE KDoc and completion.
-- For more examples, see the tests in [imported/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt).
+- For more examples, see the tests in [src/importedTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/importedTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt).
 
 ---
 

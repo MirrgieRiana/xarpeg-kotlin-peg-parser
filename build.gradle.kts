@@ -72,12 +72,12 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            kotlin.srcDir("imported/src/commonMain/kotlin")
+            kotlin.srcDir("src/importedMain/kotlin")
             kotlin.srcDir("src/generated/kotlin")
         }
 
         val commonTest by getting {
-            kotlin.srcDir("imported/src/commonTest/kotlin")
+            kotlin.srcDir("src/importedTest/kotlin")
             dependencies {
                 implementation(kotlin("test"))
             }
@@ -94,7 +94,8 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     filter {
         exclude("**/build/**")
         exclude("**/generated/**")
-        exclude("**/imported/**")
+        exclude("src/importedMain/**")
+        exclude("src/importedTest/**")
     }
 }
 
@@ -202,8 +203,8 @@ detekt {
         "src/jvmTest/kotlin",
         "src/jsMain/kotlin",
         "src/jsTest/kotlin",
-        "imported/src/commonMain/kotlin",
-        "imported/src/commonTest/kotlin"
+        "src/importedMain/kotlin",
+        "src/importedTest/kotlin"
     )
 }
 
