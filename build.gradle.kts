@@ -37,12 +37,16 @@ tasks.register("propagateRepoName") {
         "samples/online-parser/src/jsMain/resources/index.html"
     ).map { projectDir.resolve(it) }
 
+    val replacementPattern = Regex("MirrgieRiana/xarpeg-kotlin-peg-parser|xarpeg-kotlin-peg-parser")
+
     doLast {
         targets.forEach { file ->
+            if (!file.isFile) return@forEach
+
             val original = file.readText()
-            val updated = original
-                .replace("MirrgieRiana/xarpeg-kotlin-peg-parser", repoPathValue)
-                .replace("xarpeg-kotlin-peg-parser", repoNameValue)
+            val updated = replacementPattern.replace(original) { match ->
+                if (match.value.contains("/")) repoPathValue else repoNameValue
+            }
             if (updated != original) {
                 file.writeText(updated)
                 println("Updated ${file.relativeTo(projectDir)}")
