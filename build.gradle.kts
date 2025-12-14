@@ -8,13 +8,9 @@ plugins {
 group = "io.github.mirrgieriana.xarpite"
 version = System.getenv("VERSION") ?: "1.0.0-SNAPSHOT"
 
-val repositoryName = providers.gradleProperty("repositoryName")
-
 repositories {
     mavenCentral()
 }
-
-// No repository metadata propagation needed; URLs are fixed in docs and samples.
 
 kotlin {
     // JVM target
@@ -90,7 +86,7 @@ tasks.register("writeKotlinMetadata") {
 
 // Dokka configuration for KDoc generation
 tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
-    moduleName.set(repositoryName)
+    moduleName.set(providers.gradleProperty("repositoryName"))
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
     
     // Whitelist: Only process JVM source set by name
