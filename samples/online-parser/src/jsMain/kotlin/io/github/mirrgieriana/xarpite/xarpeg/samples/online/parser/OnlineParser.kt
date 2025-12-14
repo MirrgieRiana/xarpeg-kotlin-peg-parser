@@ -113,6 +113,23 @@ private object ExpressionGrammar {
     // Function call counter to prevent infinite recursion
     var functionCallCount = 0
     private const val MAX_FUNCTION_CALLS = 100
+    
+    // Helper function for left-associative binary operator aggregation
+    // Takes a term parser and operators that return (left, ctx) -> result functions
+    private fun leftAssociativeBinaryOp(
+        term: Parser<(EvaluationContext) -> Value>,
+        operators: Parser<(Value, EvaluationContext) -> Value>
+    ): Parser<(EvaluationContext) -> Value> {
+        return (term * operators.zeroOrMore) map { (first, rest) ->
+            { ctx: EvaluationContext ->
+                var result = first(ctx)
+                for (opFunc in rest) {
+                    result = opFunc(result, ctx)
+                }
+                result
+            }
+        }
+    }
 
     // Variable reference
     private val variableRef: Parser<(EvaluationContext) -> Value> = identifier map { name ->
@@ -213,105 +230,83 @@ private object ExpressionGrammar {
 
     private val factor: Parser<(EvaluationContext) -> Value> = primary
 
-    private val product: Parser<(EvaluationContext) -> Value> by lazy {
-        // Multiplication operator parser
-        val multiplyOp = (whitespace * +'*' * whitespace * factor) mapEx { parseCtx, result ->
-            val (_, rightParser: (EvaluationContext) -> Value) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
-                val rightVal = rightParser(ctx)
-                if (left !is Value.NumberValue) throw EvaluationException("Left operand of * must be a number", ctx, ctx.sourceCode)
-                if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of * must be a number", ctx, ctx.sourceCode)
-                Value.NumberValue(left.value * rightVal.value)
-            }
-            opFunc
+    // Multiplication operator parser
+    private val multiplyOp = (whitespace * +'*' * whitespace * factor) mapEx { parseCtx, result ->
+        val (_, rightParser: (EvaluationContext) -> Value) = result.value
+        val opText = result.text(parseCtx)
+        val opPosition = SourcePosition(result.start, result.end, opText)
+        val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
+            val rightVal = rightParser(ctx)
+            if (left !is Value.NumberValue) throw EvaluationException("Left operand of * must be a number", ctx, ctx.sourceCode)
+            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of * must be a number", ctx, ctx.sourceCode)
+            Value.NumberValue(left.value * rightVal.value)
         }
-        
-        // Division operator parser
-        val divideOp = (whitespace * +'/' * whitespace * factor) mapEx { parseCtx, result ->
-            val (_, rightParser: (EvaluationContext) -> Value) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
-                val rightVal = rightParser(ctx)
-                if (left !is Value.NumberValue) throw EvaluationException("Left operand of / must be a number", ctx, ctx.sourceCode)
-                if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of / must be a number", ctx, ctx.sourceCode)
-                if (rightVal.value == 0.0) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", opPosition))
-                    throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
-                }
-                Value.NumberValue(left.value / rightVal.value)
-            }
-            opFunc
-        }
-        
-        val restItem = multiplyOp + divideOp
-        
-        (factor * restItem.zeroOrMore) map { (first, rest) ->
-            { ctx: EvaluationContext ->
-                var result = first(ctx)
-                for (opFunc in rest) {
-                    result = opFunc(result, ctx)
-                }
-                result
-            }
-        }
+        opFunc
     }
+    
+    // Division operator parser
+    private val divideOp = (whitespace * +'/' * whitespace * factor) mapEx { parseCtx, result ->
+        val (_, rightParser: (EvaluationContext) -> Value) = result.value
+        val opText = result.text(parseCtx)
+        val opPosition = SourcePosition(result.start, result.end, opText)
+        val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
+            val rightVal = rightParser(ctx)
+            if (left !is Value.NumberValue) throw EvaluationException("Left operand of / must be a number", ctx, ctx.sourceCode)
+            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of / must be a number", ctx, ctx.sourceCode)
+            if (rightVal.value == 0.0) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", opPosition))
+                throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
+            }
+            Value.NumberValue(left.value / rightVal.value)
+        }
+        opFunc
+    }
+    
+    private val product: Parser<(EvaluationContext) -> Value> = 
+        leftAssociativeBinaryOp(factor, multiplyOp + divideOp)
 
-    private val sum: Parser<(EvaluationContext) -> Value> by lazy {
-        // Addition operator parser
-        val addOp = (whitespace * +'+' * whitespace * product) mapEx { parseCtx, result ->
-            val (_, rightParser: (EvaluationContext) -> Value) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
-                val rightVal = rightParser(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
-                    throw EvaluationException("Left operand of + must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
-                    throw EvaluationException("Right operand of + must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.NumberValue(left.value + rightVal.value)
+    // Addition operator parser
+    private val addOp = (whitespace * +'+' * whitespace * product) mapEx { parseCtx, result ->
+        val (_, rightParser: (EvaluationContext) -> Value) = result.value
+        val opText = result.text(parseCtx)
+        val opPosition = SourcePosition(result.start, result.end, opText)
+        val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
+            val rightVal = rightParser(ctx)
+            if (left !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
+                throw EvaluationException("Left operand of + must be a number", newCtx, ctx.sourceCode)
             }
-            opFunc
-        }
-        
-        // Subtraction operator parser
-        val subtractOp = (whitespace * +'-' * whitespace * product) mapEx { parseCtx, result ->
-            val (_, rightParser: (EvaluationContext) -> Value) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
-                val rightVal = rightParser(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
-                    throw EvaluationException("Left operand of - must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
-                    throw EvaluationException("Right operand of - must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.NumberValue(left.value - rightVal.value)
+            if (rightVal !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
+                throw EvaluationException("Right operand of + must be a number", newCtx, ctx.sourceCode)
             }
-            opFunc
+            Value.NumberValue(left.value + rightVal.value)
         }
-        
-        val restItem = addOp + subtractOp
-        
-        (product * restItem.zeroOrMore) map { (first, rest) ->
-            { ctx: EvaluationContext ->
-                var result = first(ctx)
-                for (opFunc in rest) {
-                    result = opFunc(result, ctx)
-                }
-                result
-            }
-        }
+        opFunc
     }
+    
+    // Subtraction operator parser
+    private val subtractOp = (whitespace * +'-' * whitespace * product) mapEx { parseCtx, result ->
+        val (_, rightParser: (EvaluationContext) -> Value) = result.value
+        val opText = result.text(parseCtx)
+        val opPosition = SourcePosition(result.start, result.end, opText)
+        val opFunc: (Value, EvaluationContext) -> Value = { left, ctx ->
+            val rightVal = rightParser(ctx)
+            if (left !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
+                throw EvaluationException("Left operand of - must be a number", newCtx, ctx.sourceCode)
+            }
+            if (rightVal !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
+                throw EvaluationException("Right operand of - must be a number", newCtx, ctx.sourceCode)
+            }
+            Value.NumberValue(left.value - rightVal.value)
+        }
+        opFunc
+    }
+    
+    private val sum: Parser<(EvaluationContext) -> Value> = 
+        leftAssociativeBinaryOp(product, addOp + subtractOp)
 
     // Ordering comparison operators: <, <=, >, >=
     private val orderingComparison: Parser<(EvaluationContext) -> Value> by lazy {
