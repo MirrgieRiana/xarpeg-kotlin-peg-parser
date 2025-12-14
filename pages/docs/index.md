@@ -15,7 +15,7 @@ When adding the library to your project, replace `<latest-version>` with the ver
   → [Step 1: Quickstart](01-quickstart.html)
 - **Step 2 – Combine parsers:** sequences, choices, repetition, and other core patterns  
   → [Step 2: Combinators](02-combinators.html)
-- **Step 3 – Handle expressions and recursion:** using `parser {}` / `by lazy` plus associativity helpers  
+- **Step 3 – Handle expressions and recursion:** using `ref { }` / `by lazy` plus associativity helpers  
   → [Step 3: Expressions](03-expressions.html)
 - **Step 4 – Errors and runtime behavior:** exceptions, full consumption, cache on/off  
   → [Step 4: Runtime](04-runtime.html)
