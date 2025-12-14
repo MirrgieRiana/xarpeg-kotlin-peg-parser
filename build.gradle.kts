@@ -84,12 +84,14 @@ kotlin {
 
 // ktlint configuration
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.0.1")
+    version.set("1.3.1")
     android.set(false)
     outputColorName.set("RED")
 
     filter {
         exclude("**/build/**")
+        exclude("**/generated/**")
+        exclude("**/imported/**")
     }
 }
 
