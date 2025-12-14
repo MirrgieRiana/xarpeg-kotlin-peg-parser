@@ -124,6 +124,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
 - **Mapping**: `parser map { ... }` transforms the parsed value; `parser mapEx { ctx, result -> ... }` provides access to context and position.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
+- **Input boundaries**: `startOfInput` and `endOfInput` match at position boundaries without consuming input.
 - **Recursion**: `ref { ... }` creates forward references for self-referential grammars. Properties using `ref` should have explicit type declarations. Avoid `by lazy` for recursive parsers as it causes infinite recursion; only use it as a last resort for resolving rare initialization errors in non-recursive contexts.
 
 ---
