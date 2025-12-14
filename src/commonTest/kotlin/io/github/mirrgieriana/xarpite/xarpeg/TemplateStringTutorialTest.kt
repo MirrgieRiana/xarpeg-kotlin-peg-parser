@@ -4,7 +4,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
@@ -26,7 +26,7 @@ class TemplateStringTutorialTest {
     val templateStringParser: Parser<String> = object {
         // Expression parser (reusing from earlier tutorials)
         val number = +Regex("[0-9]+") map { it.value.toInt() }
-        val grouped: Parser<Int> by lazy { -'(' * parser { sum } * -')' }
+        val grouped: Parser<Int> by lazy { -'(' * ref { sum } * -')' }
         val factor: Parser<Int> = number + grouped
         val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
         val sum: Parser<Int> = leftAssociative(product, -'+') { a, _, b -> a + b }

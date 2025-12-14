@@ -17,7 +17,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -58,7 +58,7 @@ class ImportedParserCoverageTest {
     @Test
     fun referenceParserInvokesGetterOnlyOnce() {
         var invoked = 0
-        val delegating = parser {
+        val delegating = ref {
             invoked++
             +'x'
         }

@@ -12,7 +12,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.fail
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -107,7 +107,7 @@ class ParserAdditionalTest {
         val language = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
             val term: Parser<Int> by lazy {
-                number + (-'(' * parser { expr } * -')')
+                number + (-'(' * ref { expr } * -')')
             }
             val expr: Parser<Int> by lazy {
                 leftAssociative(term, -'+') { a, _, b -> a + b }

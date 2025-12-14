@@ -4,7 +4,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
@@ -108,7 +108,7 @@ class JsonParserTest {
 
         // JSON array parser (recursive)
         private val jsonArray: Parser<JsonValue.JsonArray> by lazy {
-            val element = parser { jsonValue }.trimmed()
+            val element = ref { jsonValue }.trimmed()
             val elements = element.commaSeparated()
             -'[' * -ws * elements * -ws * -']' map { values ->
                 JsonValue.JsonArray(values)
@@ -118,7 +118,7 @@ class JsonParserTest {
         // JSON object parser (recursive)
         private val jsonObject: Parser<JsonValue.JsonObject> by lazy {
             val key = jsonString.trimmed() map { it.value }
-            val pair = key * -':' * -ws * parser { jsonValue }.trimmed() map { (k, v) ->
+            val pair = key * -':' * -ws * ref { jsonValue }.trimmed() map { (k, v) ->
                 k to v
             }
             val pairs = pair.commaSeparated()
