@@ -21,19 +21,13 @@ tasks.register("propagateRepoName") {
     description = "Propagates repository name/path from gradle.properties into documentation and site assets."
     group = "help"
 
-    val repoPathValue = repoPath.get()
-    val repoNameValue = repoName.get()
     val projectDir = layout.projectDirectory.asFile
-    val replacementPattern = Regex("${Regex.escape(defaultRepoPath)}|${Regex.escape(defaultRepoName)}")
-    val replacementsRequired = repoPathValue != defaultRepoPath || repoNameValue != defaultRepoName
+    val replacementPattern = Regex(
+        "(?<![\\w-])${Regex.escape(defaultRepoPath)}(?![\\w-])|(?<![\\w-])${Regex.escape(defaultRepoName)}(?![\\w-])"
+    )
 
-    fun needsReplacement(content: String): Boolean =
-        replacementsRequired &&
-            ((repoPathValue != defaultRepoPath && content.contains(defaultRepoPath)) ||
-                (repoNameValue != defaultRepoName && content.contains(defaultRepoName)))
-
-    inputs.property("repoPath", repoPathValue)
-    inputs.property("repoName", repoNameValue)
+    inputs.property("repoPath") { repoPath.get() }
+    inputs.property("repoName") { repoName.get() }
 
     val targets = listOf(
         "README.md",
@@ -47,14 +41,15 @@ tasks.register("propagateRepoName") {
     ).map { projectDir.resolve(it) }
 
     outputs.files(targets)
-    outputs.upToDateWhen {
-        if (!replacementsRequired) return@upToDateWhen true
-        targets.none { file ->
-            file.isFile && needsReplacement(file.readText())
-        }
-    }
 
     doLast {
+        val repoPathValue = repoPath.get()
+        val repoNameValue = repoName.get()
+        val replacementsRequired = repoPathValue != defaultRepoPath || repoNameValue != defaultRepoName
+
+        fun needsReplacement(content: String): Boolean =
+            replacementsRequired && replacementPattern.containsMatchIn(content)
+
         targets.forEach { file ->
             if (!file.isFile) return@forEach
 
@@ -63,9 +58,6 @@ tasks.register("propagateRepoName") {
 
             val updated = replacementPattern.replace(original) { match ->
                 if (match.value.contains("/")) repoPathValue else repoNameValue
-            }
-            if (needsReplacement(updated)) {
-                error("Repository placeholders still present in ${file.relativeTo(projectDir)}")
             }
             if (updated != original) {
                 file.writeText(updated)
