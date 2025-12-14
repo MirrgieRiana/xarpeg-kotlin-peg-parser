@@ -433,7 +433,12 @@ func2(10, 10)</code>
             </div>
 
             <div class="section">
-                <label>Grammar (PEG)</label>
+                <div class="section-header">
+                    <label>Grammar (PEG)</label>
+                    <div class="link-row">
+                        <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/samples/online/parser/OnlineParser.kt">View Source Code</a>
+                    </div>
+                </div>
                 <p class="muted-text">This grammar includes arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls.</p>
                 <pre class="code-block"><code>Expression      &lt;- _ Assignment _
 Assignment      &lt;- (Identifier _ '=' _ Assignment) / Ternary
