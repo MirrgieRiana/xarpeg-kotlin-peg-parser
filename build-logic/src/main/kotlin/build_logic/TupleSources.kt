@@ -1,4 +1,4 @@
-package buildlogic
+package build_logic
 
 fun getTupleSrc(maxElementCount: Int): String {
     val typeParams = (0 until maxElementCount).map { index -> ('A'.code + index).toChar().toString() }

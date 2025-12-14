@@ -1,6 +1,6 @@
 
-import buildlogic.getTupleParserSrc
-import buildlogic.getTupleSrc
+import build_logic.getTupleParserSrc
+import build_logic.getTupleSrc
 
 plugins {
     kotlin("multiplatform") version "2.2.20"
