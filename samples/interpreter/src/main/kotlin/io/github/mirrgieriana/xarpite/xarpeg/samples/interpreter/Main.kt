@@ -1,8 +1,8 @@
 package io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter
 
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 /**
  * A simple arithmetic interpreter that evaluates expressions with +, -, *, / and parentheses.
@@ -42,7 +42,7 @@ private object ArithmeticParser {
     val expr: Parser<LazyValue> by lazy { sum }
     
     // Parse a grouped expression with parentheses
-    val grouped: Parser<LazyValue> by lazy { -'(' * parser { expr } * -')' }
+    val grouped: Parser<LazyValue> by lazy { -'(' * ref { expr } * -')' }
     
     // Primary expression: number or grouped
     val primary: Parser<LazyValue> = number + grouped
