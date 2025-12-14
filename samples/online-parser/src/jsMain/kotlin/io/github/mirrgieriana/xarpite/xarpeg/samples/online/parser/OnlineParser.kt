@@ -48,6 +48,7 @@ private object ExpressionGrammar {
     }
 
     // Lambda parameter list: (param1, param2) or ()
+    // The alternative (whitespace map { emptyList() }) handles empty parameter lists: ()
     private val paramList: Parser<List<String>> = 
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
@@ -69,6 +70,7 @@ private object ExpressionGrammar {
     }
 
     // Argument list for function calls: (arg1, arg2) or ()
+    // The alternative (whitespace map { emptyList() }) handles empty argument lists: ()
     private val argList: Parser<List<() -> Value>> by lazy {
         -'(' * whitespace * (exprList + (whitespace map { emptyList<() -> Value>() })) * whitespace * -')'
     }
@@ -161,7 +163,8 @@ private object ExpressionGrammar {
 @JsExport
 fun parseExpression(input: String): String =
     try {
-        // Reset variables for each evaluation
+        // Reset variables for each evaluation to ensure each call is independent
+        // This is intentional for the online demo - each expression is evaluated in isolation
         ExpressionGrammar.variables.clear()
         val resultParser = ExpressionGrammar.root.parseAllOrThrow(input)
         val result = resultParser()
