@@ -35,6 +35,9 @@ kotlin {
     // Native target for Linux x64
     linuxX64()
 
+    // Native target for Linux ARM64
+    linuxArm64()
+
     // Native target for Windows x64
     mingwX64()
 

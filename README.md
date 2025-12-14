@@ -15,13 +15,13 @@
 
 **Lightweight PEG-style parser combinators for Kotlin Multiplatform**
 
-Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator API. It targets JVM, JS (Node.js), and Native (Linux x64, Windows x64), works directly on raw input strings (no tokenizer), and ships with opt-in caching to keep backtracking predictable.
+Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator API. It targets JVM, JS (Node.js), and Native (Linux x64, Linux ARM64, Windows x64), works directly on raw input strings (no tokenizer), and ships with opt-in caching to keep backtracking predictable.
 
 ---
 
 ## Features
 
-- **Kotlin Multiplatform** - JVM, JS (IR/Node.js), and Native (Linux x64, Windows x64)
+- **Kotlin Multiplatform** - JVM, JS (IR/Node.js), and Native (Linux x64, Linux ARM64, Windows x64)
 - **Operator-based DSL** - Unary `+` builds parsers from literals/regex, binary `+` expresses alternatives, `*` sequences tuples, `!` is negative lookahead, `-` ignores tokens
 - **Tuple-centric results** - Sequence results are `Tuple0..Tuple5` so you can explicitly keep or drop intermediate values
 - **Built-in cache** - Memoizes `(parser, position)` by default; toggle per parse call
