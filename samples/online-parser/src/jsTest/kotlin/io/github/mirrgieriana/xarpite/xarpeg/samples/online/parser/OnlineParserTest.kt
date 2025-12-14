@@ -465,4 +465,42 @@ class OnlineParserTest {
         assertTrue(result.startsWith("Error"))
         assertTrue(result.contains("line"))
     }
+
+    // Variable scoping tests
+    @Test
+    fun functionCallDoesNotOverwriteCallerVariablesWithSameArgumentName() {
+        // Test that calling a function with an argument name that matches a caller's variable
+        // doesn't destroy the caller's variable value
+        val result = parseExpression("outer = (a) -> inner(10) + a\ninner = (a) -> a * 2\nouter(5)")
+        assertEquals("25", result)  // inner returns 20, outer should still have a=5, so 20 + 5 = 25
+    }
+
+    @Test
+    fun nestedFunctionCallsPreserveVariableScopes() {
+        // Test more complex nested function calls with same parameter names
+        val result = parseExpression("f = (x) -> g(x + 1) + x\ng = (x) -> h(x * 2) + x\nh = (x) -> x - 5\nf(2)")
+        // f(2): calls g(3), which calls h(6), which returns 1
+        // g gets h's result (1) and adds x=3: 1 + 3 = 4
+        // f gets g's result (4) and adds x=2: 4 + 2 = 6
+        assertEquals("6", result)
+    }
+
+    @Test
+    fun recursiveFunctionPreservesVariableScope() {
+        // Test that recursive calls properly maintain separate variable scopes
+        val result = parseExpression("sum = (n, acc) -> n <= 0 ? acc : sum(n - 1, acc + n)\nsum(5, 0)")
+        assertEquals("15", result)  // 5 + 4 + 3 + 2 + 1 = 15
+    }
+
+    @Test
+    fun errorStackTraceShowsCorrectCallStack() {
+        // Test the HTML example: func1 = (a, b) -> a / b, func2 = (a, b) -> func1(a + b, a - b), func2(10, 10)
+        // This should show a proper call stack with func2 calling func1
+        val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("func1"))
+        assertTrue(result.contains("func2"))
+    }
 }

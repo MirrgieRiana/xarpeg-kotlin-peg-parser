@@ -11,13 +11,36 @@ import io.github.mirrgieriana.xarpite.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
-// Evaluation context that holds call stack information
+// Variable table with inheritance (parent scope lookup)
+data class VariableTable(
+    val variables: MutableMap<String, Value> = mutableMapOf(),
+    val parent: VariableTable? = null
+) {
+    fun get(name: String): Value? {
+        return variables[name] ?: parent?.get(name)
+    }
+    
+    fun set(name: String, value: Value) {
+        variables[name] = value
+    }
+    
+    fun createChild(): VariableTable {
+        return VariableTable(mutableMapOf(), this)
+    }
+}
+
+// Evaluation context that holds call stack information and variable scope
 data class EvaluationContext(
     val callStack: List<CallFrame> = emptyList(),
-    val sourceCode: String? = null
+    val sourceCode: String? = null,
+    val variableTable: VariableTable = VariableTable()
 ) {
     fun pushFrame(functionName: String, callPosition: SourcePosition): EvaluationContext {
         return copy(callStack = callStack + CallFrame(functionName, callPosition))
+    }
+    
+    fun withNewScope(): EvaluationContext {
+        return copy(variableTable = variableTable.createChild())
     }
 }
 
@@ -88,9 +111,6 @@ private object ExpressionGrammar {
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value }
 
     private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) }
-
-    // Variable table for storing values
-    val variables = mutableMapOf<String, Value>()
     
     // Function call counter to prevent infinite recursion
     var functionCallCount = 0
@@ -99,7 +119,7 @@ private object ExpressionGrammar {
     // Variable reference
     private val variableRef: Parser<(EvaluationContext) -> Value> = identifier map { name ->
         { ctx -> 
-            variables[name] ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
+            ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
         }
     }
 
@@ -148,7 +168,7 @@ private object ExpressionGrammar {
             val callText = result.text(parseCtx)
             val callPosition = SourcePosition(result.start, result.end, callText)
             val evalFunc: (EvaluationContext) -> Value = { ctx: EvaluationContext ->
-                val func = variables[name] ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
+                val func = ctx.variableTable.get(name) ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
                 when (func) {
                     is Value.LambdaValue -> {
                         if (args.size != func.params.size) {
@@ -168,26 +188,17 @@ private object ExpressionGrammar {
                             )
                         }
                         
-                        // Push call frame onto the stack
-                        val newContext = ctx.pushFrame(name, callPosition)
+                        // Create a new scope for the function call
+                        // Push call frame onto the stack and create new variable scope
+                        val newContext = ctx.pushFrame(name, callPosition).withNewScope()
                         
-                        // Save current variables
-                        val savedVariables = variables.toMutableMap()
-                        try {
-                            // Use current variables (dynamic scoping) to enable recursion
-                            // Just add parameters on top of current scope
-                            func.params.zip(args).forEach { (param, argParser) ->
-                                variables[param] = argParser(ctx)
-                            }
-                            func.body(newContext)
-                        } catch (e: EvaluationException) {
-                            // Re-throw with updated context
-                            throw e
-                        } finally {
-                            // Restore variables
-                            variables.clear()
-                            variables.putAll(savedVariables)
+                        // Evaluate arguments in the caller's context and bind to parameters in the new scope
+                        func.params.zip(args).forEach { (param, argParser) ->
+                            newContext.variableTable.set(param, argParser(ctx))
                         }
+                        
+                        // Execute function body in the new context
+                        func.body(newContext)
                     }
                     else -> throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
                 }
@@ -305,7 +316,7 @@ private object ExpressionGrammar {
         ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueParser) ->
             val evalFunc: (EvaluationContext) -> Value = { ctx: EvaluationContext ->
                 val value = valueParser(ctx)
-                variables[name] = value
+                ctx.variableTable.set(name, value)
                 value
             }
             evalFunc
@@ -321,11 +332,10 @@ private object ExpressionGrammar {
 @JsExport
 fun parseExpression(input: String): String {
     return try {
-        // Reset variables and function call counter for each evaluation to ensure each call is independent
-        ExpressionGrammar.variables.clear()
+        // Reset function call counter for each evaluation to ensure each call is independent
         ExpressionGrammar.functionCallCount = 0
         
-        // Create initial evaluation context with empty call stack and source code
+        // Create initial evaluation context with empty call stack, source code, and fresh variable table
         val initialContext = EvaluationContext(sourceCode = input)
         
         // Try to parse as a single expression first
