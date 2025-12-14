@@ -1,8 +1,11 @@
 # `by lazy` 削除による影響の調査結果
+# Investigation Results: Removing `by lazy` from Parser Definitions
 
-## 概要
+## 概要 / Overview
 
 文法定義コードから `val parser = by lazy { ... }` を削除し、通常の代入 `val parser = ...` に変更した場合の影響を調査しました。
+
+This document investigates what happens when `val parser = by lazy { ... }` is replaced with normal assignment `val parser = ...` in grammar definition code.
 
 ## 実施内容
 
