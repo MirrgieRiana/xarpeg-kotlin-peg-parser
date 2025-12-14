@@ -26,6 +26,12 @@ kotlin {
         nodejs()
     }
 
+    // WASM target for JavaScript
+    wasmJs {
+        binaries.executable()
+        nodejs()
+    }
+
     // Native target for Linux x64
     linuxX64 {
         binaries {
