@@ -33,7 +33,7 @@ Want to see a real-world parser in action? Check out the full JSON parser implem
 This example demonstrates:
 - Parsing strings with escape sequences (`\"`, `\\`, `\n`, `\uXXXX`, etc.)
 - Handling numbers in various formats (integers, decimals, scientific notation)
-- Building recursive parsers for arrays and objects using `by lazy` and `parser {}`
+- Building recursive parsers for arrays and objects using `by lazy` and `ref { }`
 - Separating list items with custom separator parsers
 - Comprehensive unit tests showing the parser in action
 
