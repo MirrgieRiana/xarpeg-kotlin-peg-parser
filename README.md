@@ -98,11 +98,11 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 
 ---
 
-## 🎮 Try the Online Parser Demo
+## 🎮 Try the Online Parser Sample
 
 Want to see Xarpeg in action? Try the **Online Parser Sample** — a live, interactive demonstration built with Xarpeg that runs directly in your browser.
 
-**[🚀 Launch Online Parser Demo](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/)**
+**[🚀 Launch Online Parser Sample](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/)**
 
 This sample showcases what you can build with Xarpeg:
 - Real-time parsing with instant feedback
