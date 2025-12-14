@@ -92,7 +92,7 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 
 ### Additional Resources
 
-- **[Complete Tutorial Guide](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/index.html)** — Entry point for all tutorial content
+- **[Complete Tutorial Guide](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/)** — Entry point for all tutorial content
 - **[GitHub Pages](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser)** — Published documentation site
 - **[GitHub Repository](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/)** — Source code and issue tracking
 
