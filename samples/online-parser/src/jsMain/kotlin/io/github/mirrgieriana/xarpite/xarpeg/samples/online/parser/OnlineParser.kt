@@ -365,6 +365,7 @@ private object ExpressionGrammar {
                 result
             }
         }
+    }
 
     // Ternary operator: condition ? trueExpr : falseExpr
     private val ternary: Parser<(EvaluationContext) -> Value> by lazy {
