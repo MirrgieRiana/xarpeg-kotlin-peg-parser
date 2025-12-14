@@ -15,6 +15,8 @@
   --border-color: #f0c67f;
   --link-color: #ffb300;
   --link-hover: #ff6f00;
+  --header-bg-start: #f5f0e6;
+  --header-bg-end: #e3d7c6;
 }
 
 /* Enhanced typography */
@@ -143,7 +145,7 @@ tr:hover {
 
 /* Navigation enhancements */
 .page-header {
-  background: linear-gradient(135deg, #f5f0e6 0%, #e3d7c6 100%);
+  background: linear-gradient(135deg, var(--header-bg-start) 0%, var(--header-bg-end) 100%);
   padding: 3rem 1rem;
 }
 
@@ -408,15 +410,13 @@ nav a:contains("Previous"):hover::before {
     --text-color: #e6edf3;
     --code-bg: #161b22;
     --border-color: #30363d;
+    --header-bg-start: #1d2530;
+    --header-bg-end: #2e3a4a;
   }
   
   body {
     background: #0d1117;
     color: var(--text-color);
-  }
-
-  .page-header {
-    background: linear-gradient(135deg, #1d2530 0%, #2e3a4a 100%);
   }
   
   .feature-item, .doc-nav-item {
