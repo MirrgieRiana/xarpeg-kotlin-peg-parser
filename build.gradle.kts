@@ -65,8 +65,6 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 
     filter {
         exclude("**/build/**")
-        exclude("**/imported/**")
-        exclude { element -> element.file.path.contains("/generated/") }
     }
 }
 
