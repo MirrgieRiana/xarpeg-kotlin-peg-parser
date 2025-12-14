@@ -234,34 +234,39 @@ private object ExpressionGrammar {
 
     private val factor: Parser<Expression> = primary
 
+    // Helper function to create arithmetic operator with type checking
+    private fun arithmeticOp(
+        opSymbol: String,
+        opName: String,
+        operation: (Double, Double) -> Double,
+        additionalCheck: ((Value.NumberValue, EvaluationContext, SourcePosition) -> Unit)? = null
+    ): (Expression, SourcePosition) -> BinaryOperator = { rightExpr, opPosition ->
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) throw EvaluationException("Left operand of $opSymbol must be a number", ctx, ctx.sourceCode)
+            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of $opSymbol must be a number", ctx, ctx.sourceCode)
+            additionalCheck?.invoke(rightVal, ctx, opPosition)
+            Value.NumberValue(operation(left.value, rightVal.value))
+        }
+    }
+
     // Multiplication operator parser
     private val multiplyOp = (whitespace * +'*' * whitespace * factor) mapEx { parseCtx, result ->
         val (_, rightExpr: Expression) = result.value
-        val opText = result.text(parseCtx)
-        val opPosition = SourcePosition(result.start, result.end, opText)
-        BinaryOperator { left, ctx ->
-            val rightVal = rightExpr.evaluate(ctx)
-            if (left !is Value.NumberValue) throw EvaluationException("Left operand of * must be a number", ctx, ctx.sourceCode)
-            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of * must be a number", ctx, ctx.sourceCode)
-            Value.NumberValue(left.value * rightVal.value)
-        }
+        val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+        arithmeticOp("*", "multiplication", Double::times)(rightExpr, opPosition)
     }
     
     // Division operator parser
     private val divideOp = (whitespace * +'/' * whitespace * factor) mapEx { parseCtx, result ->
         val (_, rightExpr: Expression) = result.value
-        val opText = result.text(parseCtx)
-        val opPosition = SourcePosition(result.start, result.end, opText)
-        BinaryOperator { left, ctx ->
-            val rightVal = rightExpr.evaluate(ctx)
-            if (left !is Value.NumberValue) throw EvaluationException("Left operand of / must be a number", ctx, ctx.sourceCode)
-            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of / must be a number", ctx, ctx.sourceCode)
+        val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+        arithmeticOp("/", "division", Double::div, additionalCheck = { rightVal, ctx, opPos ->
             if (rightVal.value == 0.0) {
-                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", opPosition))
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", opPos))
                 throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
             }
-            Value.NumberValue(left.value / rightVal.value)
-        }
+        })(rightExpr, opPosition)
     }
     
     private val product: Parser<Expression> = 
@@ -270,121 +275,67 @@ private object ExpressionGrammar {
     // Addition operator parser
     private val addOp = (whitespace * +'+' * whitespace * product) mapEx { parseCtx, result ->
         val (_, rightExpr: Expression) = result.value
-        val opText = result.text(parseCtx)
-        val opPosition = SourcePosition(result.start, result.end, opText)
-        BinaryOperator { left, ctx ->
-            val rightVal = rightExpr.evaluate(ctx)
-            if (left !is Value.NumberValue) {
-                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
-                throw EvaluationException("Left operand of + must be a number", newCtx, ctx.sourceCode)
-            }
-            if (rightVal !is Value.NumberValue) {
-                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
-                throw EvaluationException("Right operand of + must be a number", newCtx, ctx.sourceCode)
-            }
-            Value.NumberValue(left.value + rightVal.value)
-        }
+        val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+        arithmeticOp("+", "addition", Double::plus)(rightExpr, opPosition)
     }
     
     // Subtraction operator parser
     private val subtractOp = (whitespace * +'-' * whitespace * product) mapEx { parseCtx, result ->
         val (_, rightExpr: Expression) = result.value
-        val opText = result.text(parseCtx)
-        val opPosition = SourcePosition(result.start, result.end, opText)
-        BinaryOperator { left, ctx ->
-            val rightVal = rightExpr.evaluate(ctx)
-            if (left !is Value.NumberValue) {
-                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
-                throw EvaluationException("Left operand of - must be a number", newCtx, ctx.sourceCode)
-            }
-            if (rightVal !is Value.NumberValue) {
-                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
-                throw EvaluationException("Right operand of - must be a number", newCtx, ctx.sourceCode)
-            }
-            Value.NumberValue(left.value - rightVal.value)
-        }
+        val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+        arithmeticOp("-", "subtraction", Double::minus)(rightExpr, opPosition)
     }
     
     private val sum: Parser<Expression> = 
         leftAssociativeBinaryOp(product, addOp + subtractOp)
+
+    // Helper function to create comparison operator with type checking
+    private fun comparisonOp(
+        opSymbol: String,
+        comparison: (Double, Double) -> Boolean
+    ): (Expression, SourcePosition) -> BinaryOperator = { rightExpr, opPosition ->
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$opSymbol operator", opPosition))
+                throw EvaluationException("Left operand of $opSymbol must be a number", newCtx, ctx.sourceCode)
+            }
+            if (rightVal !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$opSymbol operator", opPosition))
+                throw EvaluationException("Right operand of $opSymbol must be a number", newCtx, ctx.sourceCode)
+            }
+            Value.BooleanValue(comparison(left.value, rightVal.value))
+        }
+    }
 
     // Ordering comparison operators: <, <=, >, >=
     private val orderingComparison: Parser<Expression> = run {
         // Less than or equal operator parser (must come before < to match correctly)
         val lessEqualOp = (whitespace * +"<=" * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightExpr: Expression) = result.value
-            
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            BinaryOperator { left, ctx ->
-                val rightVal = rightExpr.evaluate(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("<= operator", opPosition))
-                    throw EvaluationException("Left operand of <= must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("<= operator", opPosition))
-                    throw EvaluationException("Right operand of <= must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.BooleanValue(left.value <= rightVal.value)
-            }
+            val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+            comparisonOp("<=") { l, r -> l <= r }(rightExpr, opPosition)
         }
         
         // Greater than or equal operator parser (must come before > to match correctly)
         val greaterEqualOp = (whitespace * +">=" * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightExpr: Expression) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            BinaryOperator { left, ctx ->
-                val rightVal = rightExpr.evaluate(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame(">= operator", opPosition))
-                    throw EvaluationException("Left operand of >= must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame(">= operator", opPosition))
-                    throw EvaluationException("Right operand of >= must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.BooleanValue(left.value >= rightVal.value)
-            }
+            val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+            comparisonOp(">=") { l, r -> l >= r }(rightExpr, opPosition)
         }
         
         // Less than operator parser
         val lessOp = (whitespace * +'<' * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightExpr: Expression) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            BinaryOperator { left, ctx ->
-                val rightVal = rightExpr.evaluate(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("< operator", opPosition))
-                    throw EvaluationException("Left operand of < must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("< operator", opPosition))
-                    throw EvaluationException("Right operand of < must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.BooleanValue(left.value < rightVal.value)
-            }
+            val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+            comparisonOp("<") { l, r -> l < r }(rightExpr, opPosition)
         }
         
         // Greater than operator parser
         val greaterOp = (whitespace * +'>' * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightExpr: Expression) = result.value
-            val opText = result.text(parseCtx)
-            val opPosition = SourcePosition(result.start, result.end, opText)
-            BinaryOperator { left, ctx ->
-                val rightVal = rightExpr.evaluate(ctx)
-                if (left !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("> operator", opPosition))
-                    throw EvaluationException("Left operand of > must be a number", newCtx, ctx.sourceCode)
-                }
-                if (rightVal !is Value.NumberValue) {
-                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("> operator", opPosition))
-                    throw EvaluationException("Right operand of > must be a number", newCtx, ctx.sourceCode)
-                }
-                Value.BooleanValue(left.value > rightVal.value)
-            }
+            val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
+            comparisonOp(">") { l, r -> l > r }(rightExpr, opPosition)
         }
         
         val restItem = lessEqualOp + greaterEqualOp + lessOp + greaterOp
