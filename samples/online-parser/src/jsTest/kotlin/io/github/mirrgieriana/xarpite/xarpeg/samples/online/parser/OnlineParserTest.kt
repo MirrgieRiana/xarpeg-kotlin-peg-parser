@@ -80,9 +80,10 @@ class OnlineParserTest {
     }
 
     @Test
-    fun showsStackTraceInError() {
+    fun showsErrorMessageForDivisionByZero() {
         val result = parseExpression("1 / 0")
-        assertTrue(result.contains("Stack trace"))
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
     }
 
     // Lambda expression tests

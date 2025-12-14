@@ -364,17 +364,9 @@ fun parseExpression(input: String): String {
         if (e.context != null && e.context.callStack.isNotEmpty()) {
             e.formatWithCallStack()
         } else {
-            val stackTrace = e.stackTraceToString()
-                .lines()
-                .take(10)  // Limit stack trace to 10 lines
-                .joinToString("\n")
-            "Error: ${e.message}\n\nStack trace:\n$stackTrace"
+            "Error: ${e.message}"
         }
     } catch (e: Exception) {
-        val stackTrace = e.stackTraceToString()
-            .lines()
-            .take(10)  // Limit stack trace to 10 lines
-            .joinToString("\n")
-        "Error: ${e.message}\n\nStack trace:\n$stackTrace"
+        "Error: ${e.message}"
     }
 }
