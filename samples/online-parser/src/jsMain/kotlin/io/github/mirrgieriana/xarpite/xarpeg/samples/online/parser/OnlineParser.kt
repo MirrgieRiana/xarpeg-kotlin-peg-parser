@@ -284,7 +284,6 @@ private object ExpressionGrammar {
                 Value.BooleanValue(result)
             }
         }
-    
 
     // Ternary operator: condition ? trueExpr : falseExpr
     private val ternary: Parser<(EvaluationContext) -> Value> by lazy {
