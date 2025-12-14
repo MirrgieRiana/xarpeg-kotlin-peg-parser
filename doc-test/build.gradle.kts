@@ -18,7 +18,7 @@ tasks.register("generateSrc") {
     description = "Extracts Kotlin code blocks from README.md and docs into doc-test sources"
     group = "documentation"
 
-    inputs.files(project.rootProject.file("README.md"), project.rootProject.fileTree("docs") { include("**/*.md") })
+    inputs.files(project.rootProject.file("README.md"), project.rootProject.fileTree("pages/docs") { include("**/*.md") })
     outputs.dir(generatedSrc)
 
     doLast {
@@ -26,7 +26,7 @@ tasks.register("generateSrc") {
         val kotlinBlockRegex = Regex("""^[ \t]*```kotlin\s*(?:\r?\n)?(.*?)(?:\r?\n)?[ \t]*```""", setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
         val projectDirFile = project.rootProject.projectDir
         val generatedPackageNames = mutableListOf<String>()
-        val sourceFiles = (listOf(project.rootProject.file("README.md")) + project.rootProject.fileTree("docs") { include("**/*.md") }.files)
+        val sourceFiles = (listOf(project.rootProject.file("README.md")) + project.rootProject.fileTree("pages/docs") { include("**/*.md") }.files)
             .map { sourceFile ->
                 val relativePath = sourceFile.relativeTo(projectDirFile).path.replace('\\', '/')
                 relativePath to sourceFile
