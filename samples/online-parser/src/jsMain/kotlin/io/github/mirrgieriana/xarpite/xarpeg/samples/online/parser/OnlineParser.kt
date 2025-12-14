@@ -29,6 +29,11 @@ data class VariableTable(
     }
 }
 
+// Expression interface that evaluates to a Value in a given context
+fun interface Expression {
+    fun evaluate(ctx: EvaluationContext): Value
+}
+
 // Evaluation context that holds call stack information and variable scope
 data class EvaluationContext(
     val callStack: List<CallFrame> = emptyList(),
@@ -67,7 +72,7 @@ sealed class Value {
     }
     data class LambdaValue(
         val params: List<String>,
-        val body: (EvaluationContext) -> Value,
+        val body: Expression,
         val capturedVars: MutableMap<String, Value>,
         val name: String? = null,
         val definitionPosition: SourcePosition? = null
@@ -108,22 +113,39 @@ private object ExpressionGrammar {
     // Identifier: alphanumeric and _, but first character cannot be a digit
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value }
 
-    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { LiteralExpression(Value.NumberValue(it.value.toDouble())) }
+    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) }
+    
+    // Function call counter to prevent infinite recursion
+    var functionCallCount = 0
+    private const val MAX_FUNCTION_CALLS = 100
+    
+    // Binary operator function interface
+    fun interface BinaryOperator {
+        fun apply(left: Value, ctx: EvaluationContext): Value
+    }
     
     // Helper function for left-associative binary operator aggregation
-    // Takes a term parser and operators that create binary expressions
+    // Takes a term parser and operators
     private fun leftAssociativeBinaryOp(
         term: Parser<Expression>,
-        operators: Parser<(Expression) -> Expression>
+        operators: Parser<BinaryOperator>
     ): Parser<Expression> {
         return (term * operators.zeroOrMore) map { (first, rest) ->
-            rest.fold(first) { acc, opFunc -> opFunc(acc) }
+            Expression { ctx ->
+                var result = first.evaluate(ctx)
+                for (opFunc in rest) {
+                    result = opFunc.apply(result, ctx)
+                }
+                result
+            }
         }
     }
 
     // Variable reference
     private val variableRef: Parser<Expression> = identifier map { name ->
-        VariableExpression(name)
+        Expression { ctx -> 
+            ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
+        }
     }
 
     // Helper to parse comma-separated list of identifiers
@@ -140,10 +162,14 @@ private object ExpressionGrammar {
     // Lambda expression: (param1, param2, ...) -> body
     private val lambda: Parser<Expression> =
         ((paramList * whitespace * -Regex("->") * whitespace * ref { expression }) mapEx { parseCtx, result ->
-            val (params, bodyExpr: Expression) = result.value
+            val (params, bodyParser) = result.value
             val lambdaText = result.text(parseCtx)
             val position = SourcePosition(result.start, result.end, lambdaText)
-            LambdaDefinitionExpression(params, bodyExpr, position)
+            Expression { ctx ->
+                // Don't capture variables - use dynamic scoping to allow recursion
+                // The lambda will see whatever is in scope when it's called
+                Value.LambdaValue(params, bodyParser, mutableMapOf(), definitionPosition = position)
+            }
         })
 
     // Helper to parse comma-separated list of expressions
@@ -163,12 +189,47 @@ private object ExpressionGrammar {
             val (name, args) = result.value
             val callText = result.text(parseCtx)
             val callPosition = SourcePosition(result.start, result.end, callText)
-            FunctionCallExpression(name, args, callPosition, parseCtx.src)
+            Expression { ctx ->
+                val func = ctx.variableTable.get(name) ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
+                when (func) {
+                    is Value.LambdaValue -> {
+                        if (args.size != func.params.size) {
+                            throw EvaluationException(
+                                "Function $name expects ${func.params.size} arguments, but got ${args.size}",
+                                ctx,
+                                parseCtx.src
+                            )
+                        }
+                        // Check function call limit before making the call
+                        functionCallCount++
+                        if (functionCallCount >= MAX_FUNCTION_CALLS) {
+                            throw EvaluationException(
+                                "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
+                                ctx,
+                                parseCtx.src
+                            )
+                        }
+                        
+                        // Create a new scope for the function call
+                        // Push call frame onto the stack and create new variable scope
+                        val newContext = ctx.pushFrame(name, callPosition).withNewScope()
+                        
+                        // Evaluate arguments in the caller's context and bind to parameters in the new scope
+                        func.params.zip(args).forEach { (param, argExpr) ->
+                            newContext.variableTable.set(param, argExpr.evaluate(ctx))
+                        }
+                        
+                        // Execute function body in the new context
+                        func.body.evaluate(newContext)
+                    }
+                    else -> throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
+                }
+            }
         })
 
     // Primary expression: number, variable reference, function call, lambda, or grouped expression
     private val primary: Parser<Expression> =
-        lambda + functionCall + variableRef + number + 
+        lambda + functionCall + variableRef + (number map { v -> Expression { _ -> v } }) + 
             (-'(' * whitespace * ref { expression } * whitespace * -')')
 
     private val factor: Parser<Expression> = primary
@@ -178,10 +239,12 @@ private object ExpressionGrammar {
         val (_, rightExpr: Expression) = result.value
         val opText = result.text(parseCtx)
         val opPosition = SourcePosition(result.start, result.end, opText)
-        val opFunc: (Expression) -> Expression = { leftExpr ->
-            MultiplyExpression(leftExpr, rightExpr, opPosition)
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) throw EvaluationException("Left operand of * must be a number", ctx, ctx.sourceCode)
+            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of * must be a number", ctx, ctx.sourceCode)
+            Value.NumberValue(left.value * rightVal.value)
         }
-        opFunc
     }
     
     // Division operator parser
@@ -189,10 +252,16 @@ private object ExpressionGrammar {
         val (_, rightExpr: Expression) = result.value
         val opText = result.text(parseCtx)
         val opPosition = SourcePosition(result.start, result.end, opText)
-        val opFunc: (Expression) -> Expression = { leftExpr ->
-            DivideExpression(leftExpr, rightExpr, opPosition)
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) throw EvaluationException("Left operand of / must be a number", ctx, ctx.sourceCode)
+            if (rightVal !is Value.NumberValue) throw EvaluationException("Right operand of / must be a number", ctx, ctx.sourceCode)
+            if (rightVal.value == 0.0) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", opPosition))
+                throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
+            }
+            Value.NumberValue(left.value / rightVal.value)
         }
-        opFunc
     }
     
     private val product: Parser<Expression> = 
@@ -203,10 +272,18 @@ private object ExpressionGrammar {
         val (_, rightExpr: Expression) = result.value
         val opText = result.text(parseCtx)
         val opPosition = SourcePosition(result.start, result.end, opText)
-        val opFunc: (Expression) -> Expression = { leftExpr ->
-            AddExpression(leftExpr, rightExpr, opPosition)
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
+                throw EvaluationException("Left operand of + must be a number", newCtx, ctx.sourceCode)
+            }
+            if (rightVal !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("+ operator", opPosition))
+                throw EvaluationException("Right operand of + must be a number", newCtx, ctx.sourceCode)
+            }
+            Value.NumberValue(left.value + rightVal.value)
         }
-        opFunc
     }
     
     // Subtraction operator parser
@@ -214,10 +291,18 @@ private object ExpressionGrammar {
         val (_, rightExpr: Expression) = result.value
         val opText = result.text(parseCtx)
         val opPosition = SourcePosition(result.start, result.end, opText)
-        val opFunc: (Expression) -> Expression = { leftExpr ->
-            SubtractExpression(leftExpr, rightExpr, opPosition)
+        BinaryOperator { left, ctx ->
+            val rightVal = rightExpr.evaluate(ctx)
+            if (left !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
+                throw EvaluationException("Left operand of - must be a number", newCtx, ctx.sourceCode)
+            }
+            if (rightVal !is Value.NumberValue) {
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("- operator", opPosition))
+                throw EvaluationException("Right operand of - must be a number", newCtx, ctx.sourceCode)
+            }
+            Value.NumberValue(left.value - rightVal.value)
         }
-        opFunc
     }
     
     private val sum: Parser<Expression> = 
@@ -228,12 +313,21 @@ private object ExpressionGrammar {
         // Less than or equal operator parser (must come before < to match correctly)
         val lessEqualOp = (whitespace * +"<=" * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightExpr: Expression) = result.value
+            
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                LessOrEqualExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                if (left !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("<= operator", opPosition))
+                    throw EvaluationException("Left operand of <= must be a number", newCtx, ctx.sourceCode)
+                }
+                if (rightVal !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("<= operator", opPosition))
+                    throw EvaluationException("Right operand of <= must be a number", newCtx, ctx.sourceCode)
+                }
+                Value.BooleanValue(left.value <= rightVal.value)
             }
-            opFunc
         }
         
         // Greater than or equal operator parser (must come before > to match correctly)
@@ -241,10 +335,18 @@ private object ExpressionGrammar {
             val (_, rightExpr: Expression) = result.value
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                GreaterOrEqualExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                if (left !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame(">= operator", opPosition))
+                    throw EvaluationException("Left operand of >= must be a number", newCtx, ctx.sourceCode)
+                }
+                if (rightVal !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame(">= operator", opPosition))
+                    throw EvaluationException("Right operand of >= must be a number", newCtx, ctx.sourceCode)
+                }
+                Value.BooleanValue(left.value >= rightVal.value)
             }
-            opFunc
         }
         
         // Less than operator parser
@@ -252,10 +354,18 @@ private object ExpressionGrammar {
             val (_, rightExpr: Expression) = result.value
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                LessThanExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                if (left !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("< operator", opPosition))
+                    throw EvaluationException("Left operand of < must be a number", newCtx, ctx.sourceCode)
+                }
+                if (rightVal !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("< operator", opPosition))
+                    throw EvaluationException("Right operand of < must be a number", newCtx, ctx.sourceCode)
+                }
+                Value.BooleanValue(left.value < rightVal.value)
             }
-            opFunc
         }
         
         // Greater than operator parser
@@ -263,14 +373,33 @@ private object ExpressionGrammar {
             val (_, rightExpr: Expression) = result.value
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                GreaterThanExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                if (left !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("> operator", opPosition))
+                    throw EvaluationException("Left operand of > must be a number", newCtx, ctx.sourceCode)
+                }
+                if (rightVal !is Value.NumberValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("> operator", opPosition))
+                    throw EvaluationException("Right operand of > must be a number", newCtx, ctx.sourceCode)
+                }
+                Value.BooleanValue(left.value > rightVal.value)
             }
-            opFunc
         }
         
-        leftAssociativeBinaryOp(sum, lessEqualOp + greaterEqualOp + lessOp + greaterOp)
+        val restItem = lessEqualOp + greaterEqualOp + lessOp + greaterOp
+        
+        (sum * restItem.zeroOrMore) map { (first, rest) ->
+            Expression { ctx ->
+                var result = first.evaluate(ctx)
+                for (opFunc in rest) {
+                    result = opFunc.apply(result, ctx)
+                }
+                result
+            }
+        }
     }
+
     // Equality comparison operators: ==, !=
     private val equalityComparison: Parser<Expression> = run {
         // Equality operator parser
@@ -278,10 +407,18 @@ private object ExpressionGrammar {
             val (_, rightExpr: Expression) = result.value
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                EqualExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                val compareResult = when {
+                    left is Value.NumberValue && rightVal is Value.NumberValue -> left.value == rightVal.value
+                    left is Value.BooleanValue && rightVal is Value.BooleanValue -> left.value == rightVal.value
+                    else -> {
+                        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("== operator", opPosition))
+                        throw EvaluationException("Operands of == must be both numbers or both booleans", newCtx, ctx.sourceCode)
+                    }
+                }
+                Value.BooleanValue(compareResult)
             }
-            opFunc
         }
         
         // Inequality operator parser
@@ -289,13 +426,31 @@ private object ExpressionGrammar {
             val (_, rightExpr: Expression) = result.value
             val opText = result.text(parseCtx)
             val opPosition = SourcePosition(result.start, result.end, opText)
-            val opFunc: (Expression) -> Expression = { leftExpr ->
-                NotEqualExpression(leftExpr, rightExpr, opPosition)
+            BinaryOperator { left, ctx ->
+                val rightVal = rightExpr.evaluate(ctx)
+                val compareResult = when {
+                    left is Value.NumberValue && rightVal is Value.NumberValue -> left.value != rightVal.value
+                    left is Value.BooleanValue && rightVal is Value.BooleanValue -> left.value != rightVal.value
+                    else -> {
+                        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("!= operator", opPosition))
+                        throw EvaluationException("Operands of != must be both numbers or both booleans", newCtx, ctx.sourceCode)
+                    }
+                }
+                Value.BooleanValue(compareResult)
             }
-            opFunc
         }
         
-        leftAssociativeBinaryOp(orderingComparison, equalOp + notEqualOp)
+        val restItem = equalOp + notEqualOp
+        
+        (orderingComparison * restItem.zeroOrMore) map { (first, rest) ->
+            Expression { ctx ->
+                var result = first.evaluate(ctx)
+                for (opFunc in rest) {
+                    result = opFunc.apply(result, ctx)
+                }
+                result
+            }
+        }
     }
 
     // Ternary operator: condition ? trueExpr : falseExpr
@@ -304,31 +459,42 @@ private object ExpressionGrammar {
             ref { equalityComparison } * whitespace * -':' * whitespace *
             ref { equalityComparison }
         ((ternaryExpr mapEx { parseCtx, result ->
-            val (cond: Expression, trueExpr: Expression, falseExpr: Expression) = result.value
+            val (cond, trueExpr, falseExpr) = result.value
             val ternaryText = result.text(parseCtx)
             val ternaryPosition = SourcePosition(result.start, result.end, ternaryText)
-            TernaryExpression(cond, trueExpr, falseExpr, ternaryPosition)
+            Expression { ctx ->
+                val condVal = cond.evaluate(ctx)
+                if (condVal !is Value.BooleanValue) {
+                    val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("ternary operator", ternaryPosition))
+                    throw EvaluationException("Condition in ternary operator must be a boolean", newCtx, ctx.sourceCode)
+                }
+                if (condVal.value) trueExpr.evaluate(ctx) else falseExpr.evaluate(ctx)
+            }
         }) + equalityComparison)
     }
 
     // Assignment: variable = expression
     private val assignment: Parser<Expression> = run {
-        ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueExpr: Expression) ->
-            AssignmentExpression(name, valueExpr)
+        ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueExpr) ->
+            Expression { ctx ->
+                val value = valueExpr.evaluate(ctx)
+                ctx.variableTable.set(name, value)
+                value
+            }
         }) + ternary
     }
 
     // Root expression parser
-    internal val expression: Parser<Expression> = assignment
+    val expression: Parser<Expression> = assignment
 
-    internal val root = whitespace * expression * whitespace
+    val root = whitespace * expression * whitespace
 }
 
 @JsExport
 fun parseExpression(input: String): String {
     return try {
         // Reset function call counter for each evaluation to ensure each call is independent
-        FunctionCallExpression.functionCallCount = 0
+        ExpressionGrammar.functionCallCount = 0
         
         // Create initial evaluation context with empty call stack, source code, and fresh variable table
         val initialContext = EvaluationContext(sourceCode = input)
