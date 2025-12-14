@@ -39,7 +39,7 @@ private object ArithmeticParser {
     }
     
     // Forward declaration for recursive grammar
-    val expr: Parser<LazyValue> = sum
+    val expr: Parser<LazyValue> = parser { sum }
     
     // Parse a grouped expression with parentheses
     val grouped: Parser<LazyValue> = -'(' * parser { expr } * -')'

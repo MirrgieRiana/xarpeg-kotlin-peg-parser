@@ -158,3 +158,43 @@ private val expression: Parser<Int> = object {
 - 定義順序を気にする必要がなくなる
 
 という利点があります。
+
+## 更新: `parser { }` を使用した解決方法
+
+### 調査の続き
+
+`DelegationParser` 内の `by lazy` を維持しつつ、パーサーフィールド定義から `by lazy` を削除し、前方参照や再帰参照には `parser { }` を使用する方法を検証しました。
+
+### 変更内容
+
+1. **`DelegationParser` の `by lazy` を維持**: `DelegationParser` クラス内の `by lazy` は維持し、遅延評価を保持
+2. **パーサーフィールド定義から `by lazy` を削除**: すべてのパーサーフィールド定義から `by lazy` を削除
+3. **前方参照に `parser { }` を使用**: 後で定義されるパーサーや自己参照には `parser { }` でラップ
+
+### 修正例
+
+**修正前**:
+```kotlin
+val expr: Parser<LazyValue> = sum  // ← コンパイルエラー
+```
+
+**修正後**:
+```kotlin
+val expr: Parser<LazyValue> = parser { sum }  // ← parser { } でラップすることで遅延評価
+```
+
+### 結果
+
+**すべてのテストが成功**:
+- コンパイルエラーなし
+- 実行時エラーなし
+- すべてのサンプルプログラムが正常に動作
+
+### 結論
+
+理論通り、`DelegationParser` 内の `by lazy` と、前方参照・再帰参照での `parser { }` の組み合わせで十分機能します。パーサーフィールド定義自体に `by lazy` を使用する必要はありません。
+
+**重要なポイント**:
+- `DelegationParser` の `by lazy` は必須（遅延評価のため）
+- パーサーフィールドの `by lazy` は不要（`parser { }` で代替可能）
+- 前方参照・自己参照には必ず `parser { }` を使用する
