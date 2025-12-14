@@ -1,31 +1,22 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
-import kotlin.coroutines.cancellation.CancellationException
-import io.github.mirrgieriana.xarpite.xarpeg.ExtraCharactersParseException
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
-import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
-import io.github.mirrgieriana.xarpite.xarpeg.Tuple2
-import io.github.mirrgieriana.xarpite.xarpeg.Tuple5
-import io.github.mirrgieriana.xarpite.xarpeg.Tuple16
-import io.github.mirrgieriana.xarpite.xarpeg.UnmatchedInputParseException
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fail
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.list
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.nothing
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unit
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.zeroOrMore
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -66,14 +57,14 @@ class ParserTest {
 
     @Test
     fun unitParser() {
-        val parser = unit(1)
+        val parser = fixed(1)
         assertEquals(1, parser.parseAllOrThrow("")) // 空文字で成功
         assertExtraCharacters { parser.parseAllOrThrow("a") } // 何も消費しない
     }
 
     @Test
     fun nothingParser() {
-        val parser = nothing
+        val parser = fail
         assertUnmatchedInput { parser.parseAllOrThrow("") } // 何を与えても失敗
         assertUnmatchedInput { parser.parseAllOrThrow("a") } // 何を与えても失敗
     }
@@ -231,7 +222,7 @@ class ParserTest {
     fun delegationParser() {
         val parser = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
-            val brackets: Parser<Int> by lazy { -'(' * parser { root } * -')' }
+            val brackets: Parser<Int> by lazy { -'(' * ref { root } * -')' }
             val factor = number + brackets
             val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
             val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -263,11 +254,11 @@ class ParserTest {
                     // bの位置で確定で失敗し、次の選択肢に進む
                     // bより前に自分自身が居るので、rootが評価される度にrootが合計2回呼ばれる
                     // これにより入力されたaの長さに対して指数関数的に計算時間が伸びる
-                    a * parser { root } * -"b" map { it.a + it.b },
-                    aa * parser { root } map { it.a + it.b },
+                    a * ref { root } * -"b" map { it.a + it.b },
+                    aa * ref { root } map { it.a + it.b },
 
                     // 成功ケース用の終端
-                    unit(0),
+                    fixed(0),
                 )
             }
         }

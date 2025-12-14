@@ -41,7 +41,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 // Simple arithmetic expression parser.
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { match -> match.value.toInt() }
-    val brackets: Parser<Int> by lazy { (-'(' * parser { root } * -')') map { value -> value } }
+    val brackets: Parser<Int> by lazy { (-'(' * ref { root } * -')') map { value -> value } }
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -124,7 +124,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
 - **Mapping**: `parser map { ... }` transforms the parsed value.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
-- **Recursion**: `parser { ... }` (delegation) or `by lazy` fields allow self-referential grammars.
+- **Recursion**: `parser { ... }` (reference) or `by lazy` fields allow self-referential grammars.
 
 ---
 
@@ -136,7 +136,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 
 ### Error Handling
 
-- `UnmatchedInputParseException` — nothing matched at the current position.
+- `UnmatchedInputParseException` — No parser matched at the current position.
 - `ExtraCharactersParseException` — parsing succeeded but did not consume all input (reports the trailing position).
 
 ---

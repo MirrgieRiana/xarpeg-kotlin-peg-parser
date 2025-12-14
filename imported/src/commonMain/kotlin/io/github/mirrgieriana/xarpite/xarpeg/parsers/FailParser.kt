@@ -4,10 +4,10 @@ import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
 
-object NothingParser : Parser<Nothing> {
+object FailParser : Parser<Nothing> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Nothing>? {
         return null
     }
 }
 
-val nothing get() = NothingParser
+val fail get() = FailParser

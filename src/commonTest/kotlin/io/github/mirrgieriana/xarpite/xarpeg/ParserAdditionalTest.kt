@@ -8,17 +8,17 @@ import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.nothing
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fail
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unit
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.zeroOrMore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,14 +48,14 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun unitParserRejectsConsumedInput() {
-        val parser = unit("ok")
+    fun fixedParserRejectsConsumedInput() {
+        val parser = fixed("ok")
         assertExtraCharacters { parser.parseAllOrThrow("x") }
     }
 
     @Test
-    fun nothingParserRejectsAnyInput() {
-        val parser = nothing
+    fun failParserRejectsAnyInput() {
+        val parser = fail
         assertUnmatchedInput { parser.parseAllOrThrow("") }
         assertUnmatchedInput { parser.parseAllOrThrow("anything") }
     }
@@ -103,11 +103,11 @@ class ParserAdditionalTest {
     }
 
     @Test
-    fun delegationParserAllowsMutualRecursion() {
+    fun referenceParserAllowsMutualRecursion() {
         val language = object {
             val number = +Regex("[0-9]+") map { it.value.toInt() }
             val term: Parser<Int> by lazy {
-                number + (-'(' * parser { expr } * -')')
+                number + (-'(' * ref { expr } * -')')
             }
             val expr: Parser<Int> by lazy {
                 leftAssociative(term, -'+') { a, _, b -> a + b }

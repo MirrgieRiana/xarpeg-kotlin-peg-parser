@@ -17,14 +17,14 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.toParser
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unit
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.zeroOrMore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -56,9 +56,9 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun delegationParserInvokesGetterOnlyOnce() {
+    fun referenceParserInvokesGetterOnlyOnce() {
         var invoked = 0
-        val delegating = parser {
+        val delegating = ref {
             invoked++
             +'x'
         }
@@ -188,8 +188,8 @@ class ImportedParserCoverageTest {
     }
 
     @Test
-    fun unitParserDoesNotAdvanceIndex() {
-        val parser = unit("ok")
+    fun fixedParserDoesNotAdvanceIndex() {
+        val parser = fixed("ok")
         val context = ParseContext("zzz", useCache = true)
 
         val result = parser.parseOrNull(context, 2)

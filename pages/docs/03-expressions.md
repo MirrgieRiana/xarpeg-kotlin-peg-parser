@@ -15,7 +15,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() }
-    val paren: Parser<Int> by lazy { (-'(' * parser { root } * -')') map { value -> value } }
+    val paren: Parser<Int> by lazy { (-'(' * ref { root } * -')') map { value -> value } }
     val factor = number + paren
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
