@@ -172,5 +172,4 @@ Each addition is a localized change to the relevant parser, not a redesign of th
 
 ---
 
-Return to the guide hub for the complete tutorial path.  
 ← [index.md](index.md)
