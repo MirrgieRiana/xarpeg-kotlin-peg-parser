@@ -43,14 +43,13 @@ When making changes to the codebase, you must always ensure that code, tests, an
 * If you update documentation, ensure the code and tests match the documented behavior
 * Never leave code, tests, and documentation in an inconsistent state
 
-## Commit Frequently and Divide Work into Short Steps
+## Commit frequently
 
-To ensure progress is saved and tracked effectively:
+To ensure steady progress, you must:
 
-* Make commits at intervals of approximately once every 5 minutes at most
-* Divide your work into reasonably short steps with this commit frequency in mind
-* Each commit should represent a meaningful unit of progress
-* Use the `report_progress` tool to commit changes regularly throughout your work
+- **Commit at least once every five minutes.**
+- Divide your work into short steps based on this frequency.
+- Each commit should represent a meaningful chunk of work.
 
 ## Declaration of Compliance with this Instructions
 
