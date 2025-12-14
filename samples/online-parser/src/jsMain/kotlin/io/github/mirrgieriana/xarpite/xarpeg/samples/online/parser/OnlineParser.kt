@@ -139,7 +139,7 @@ private object ExpressionGrammar {
     }
 
     // Helper to parse comma-separated list of identifiers
-    private val identifierList: Parser<List<String>> by lazy {
+    private val identifierList: Parser<List<String>> = run {
         val restItem = whitespace * -',' * whitespace * identifier
         (identifier * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
@@ -150,7 +150,7 @@ private object ExpressionGrammar {
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
     // Lambda expression: (param1, param2, ...) -> body
-    private val lambda: Parser<(EvaluationContext) -> Value> by lazy {
+    private val lambda: Parser<(EvaluationContext) -> Value> =
         ((paramList * whitespace * -Regex("->") * whitespace * ref { expression }) mapEx { parseCtx, result ->
             val (params, bodyParser) = result.value
             val lambdaText = result.text(parseCtx)
@@ -162,22 +162,20 @@ private object ExpressionGrammar {
             }
             evalFunc
         })
-    }
 
     // Helper to parse comma-separated list of expressions
-    private val exprList: Parser<List<(EvaluationContext) -> Value>> by lazy {
+    private val exprList: Parser<List<(EvaluationContext) -> Value>> = run {
         val restItem = whitespace * -',' * whitespace * ref { expression }
         (ref { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
 
     // Argument list for function calls: (arg1, arg2) or ()
     // The alternative (whitespace map { emptyList() }) handles empty argument lists: ()
-    private val argList: Parser<List<(EvaluationContext) -> Value>> by lazy {
+    private val argList: Parser<List<(EvaluationContext) -> Value>> =
         -'(' * whitespace * (exprList + (whitespace map { emptyList<(EvaluationContext) -> Value>() })) * whitespace * -')'
-    }
 
     // Function call: identifier(arg1, arg2, ...)
-    private val functionCall: Parser<(EvaluationContext) -> Value> by lazy {
+    private val functionCall: Parser<(EvaluationContext) -> Value> =
         ((identifier * whitespace * argList) mapEx { parseCtx, result ->
             val (name, args) = result.value
             val callText = result.text(parseCtx)
@@ -220,13 +218,11 @@ private object ExpressionGrammar {
             }
             evalFunc
         })
-    }
 
     // Primary expression: number, variable reference, function call, lambda, or grouped expression
-    private val primary: Parser<(EvaluationContext) -> Value> by lazy {
+    private val primary: Parser<(EvaluationContext) -> Value> =
         lambda + functionCall + variableRef + (number map { v -> { _: EvaluationContext -> v } }) + 
             (-'(' * whitespace * ref { expression } * whitespace * -')')
-    }
 
     private val factor: Parser<(EvaluationContext) -> Value> = primary
 
@@ -309,7 +305,7 @@ private object ExpressionGrammar {
         leftAssociativeBinaryOp(product, addOp + subtractOp)
 
     // Ordering comparison operators: <, <=, >, >=
-    private val orderingComparison: Parser<(EvaluationContext) -> Value> by lazy {
+    private val orderingComparison: Parser<(EvaluationContext) -> Value> = run {
         // Less than or equal operator parser (must come before < to match correctly)
         val lessEqualOp = (whitespace * +"<=" * whitespace * sum) mapEx { parseCtx, result ->
             val (_, rightParser: (EvaluationContext) -> Value) = result.value
@@ -405,7 +401,7 @@ private object ExpressionGrammar {
     }
 
     // Equality comparison operators: ==, !=
-    private val equalityComparison: Parser<(EvaluationContext) -> Value> by lazy {
+    private val equalityComparison: Parser<(EvaluationContext) -> Value> = run {
         // Equality operator parser
         val equalOp = (whitespace * +"==" * whitespace * orderingComparison) mapEx { parseCtx, result ->
             val (_, rightParser: (EvaluationContext) -> Value) = result.value
@@ -460,7 +456,7 @@ private object ExpressionGrammar {
     }
 
     // Ternary operator: condition ? trueExpr : falseExpr
-    private val ternary: Parser<(EvaluationContext) -> Value> by lazy {
+    private val ternary: Parser<(EvaluationContext) -> Value> = run {
         val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
             ref { equalityComparison } * whitespace * -':' * whitespace *
             ref { equalityComparison }
@@ -481,7 +477,7 @@ private object ExpressionGrammar {
     }
 
     // Assignment: variable = expression
-    private val assignment: Parser<(EvaluationContext) -> Value> by lazy {
+    private val assignment: Parser<(EvaluationContext) -> Value> = run {
         ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueParser) ->
             val evalFunc: (EvaluationContext) -> Value = { ctx: EvaluationContext ->
                 val value = valueParser(ctx)
