@@ -2,9 +2,9 @@
 
 package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -38,8 +38,8 @@ private object ExpressionGrammar {
     var functionCallCount = 0
     private const val MAX_FUNCTION_CALLS = 100
 
-    // Forward declarations
-    val expression: Parser<() -> Value> by lazy { assignment }
+    // Forward declaration - this references assignment which is defined at the end
+    val expression: Parser<() -> Value> = ref { assignment }
 
     // Variable reference
     private val variableRef: Parser<() -> Value> = identifier map { name ->
@@ -49,7 +49,7 @@ private object ExpressionGrammar {
     }
 
     // Helper to parse comma-separated list of identifiers
-    private val identifierList: Parser<List<String>> by lazy {
+    private val identifierList: Parser<List<String>> = run {
         val restItem = whitespace * -',' * whitespace * identifier
         (identifier * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
@@ -60,30 +60,28 @@ private object ExpressionGrammar {
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
     // Lambda expression: (param1, param2, ...) -> body
-    private val lambda: Parser<() -> Value> by lazy {
-        (paramList * whitespace * -Regex("->") * whitespace * parser { expression }) map { (params, bodyParser) ->
+    private val lambda: Parser<() -> Value> =
+        (paramList * whitespace * -Regex("->") * whitespace * ref { expression }) map { (params, bodyParser) ->
             {
                 // Don't capture variables - use dynamic scoping to allow recursion
                 // The lambda will see whatever is in scope when it's called
                 Value.LambdaValue(params, bodyParser, mutableMapOf())
             }
         }
-    }
 
     // Helper to parse comma-separated list of expressions
-    private val exprList: Parser<List<() -> Value>> by lazy {
-        val restItem = whitespace * -',' * whitespace * parser { expression }
-        (parser { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
+    private val exprList: Parser<List<() -> Value>> = run {
+        val restItem = whitespace * -',' * whitespace * ref { expression }
+        (ref { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
 
     // Argument list for function calls: (arg1, arg2) or ()
     // The alternative (whitespace map { emptyList() }) handles empty argument lists: ()
-    private val argList: Parser<List<() -> Value>> by lazy {
+    private val argList: Parser<List<() -> Value>> =
         -'(' * whitespace * (exprList + (whitespace map { emptyList<() -> Value>() })) * whitespace * -')'
-    }
 
     // Function call: identifier(arg1, arg2, ...)
-    private val functionCall: Parser<() -> Value> by lazy {
+    private val functionCall: Parser<() -> Value> = run {
         (identifier * whitespace * argList) map { (name, args) ->
             {
                 val func = variables[name] ?: throw EvaluationException("Undefined function: $name")
@@ -119,12 +117,11 @@ private object ExpressionGrammar {
     }
 
     // Primary expression: number, variable reference, function call, lambda, or grouped expression
-    private val primary: Parser<() -> Value> by lazy {
+    private val primary: Parser<() -> Value> =
         lambda + functionCall + variableRef + (number map { v -> { v } }) + 
-            (-'(' * whitespace * parser { expression } * whitespace * -')')
-    }
+            (-'(' * whitespace * ref { expression } * whitespace * -')')
 
-    private val factor: Parser<() -> Value> by lazy { primary }
+    private val factor: Parser<() -> Value> = primary
 
     private val product: Parser<() -> Value> = leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { a, op, b ->
         {
@@ -179,41 +176,39 @@ private object ExpressionGrammar {
     }
 
     // Equality comparison operators: ==, !=
-    private val equalityComparison: Parser<() -> Value> by lazy {
-        leftAssociative(
-            orderingComparison,
-            whitespace * (+Regex("==|!=") map { it.value }) * whitespace
-        ) { a, op, b ->
-            {
-                val aVal = a()
-                val bVal = b()
-                val result = when (op) {
-                    "==" -> {
-                        when {
-                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value == bVal.value
-                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value == bVal.value
-                            else -> throw EvaluationException("Operands of == must be both numbers or both booleans")
-                        }
+    private val equalityComparison: Parser<() -> Value> = leftAssociative(
+        orderingComparison,
+        whitespace * (+Regex("==|!=") map { it.value }) * whitespace
+    ) { a, op, b ->
+        {
+            val aVal = a()
+            val bVal = b()
+            val result = when (op) {
+                "==" -> {
+                    when {
+                        aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value == bVal.value
+                        aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value == bVal.value
+                        else -> throw EvaluationException("Operands of == must be both numbers or both booleans")
                     }
-                    "!=" -> {
-                        when {
-                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value != bVal.value
-                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value != bVal.value
-                            else -> throw EvaluationException("Operands of != must be both numbers or both booleans")
-                        }
-                    }
-                    else -> throw EvaluationException("Unknown comparison operator: $op")
                 }
-                Value.BooleanValue(result)
+                "!=" -> {
+                    when {
+                        aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value != bVal.value
+                        aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value != bVal.value
+                        else -> throw EvaluationException("Operands of != must be both numbers or both booleans")
+                    }
+                }
+                else -> throw EvaluationException("Unknown comparison operator: $op")
             }
+            Value.BooleanValue(result)
         }
     }
 
     // Ternary operator: condition ? trueExpr : falseExpr
-    private val ternary: Parser<() -> Value> by lazy {
-        val ternaryExpr = parser { equalityComparison } * whitespace * -'?' * whitespace *
-            parser { equalityComparison } * whitespace * -':' * whitespace *
-            parser { equalityComparison }
+    private val ternary: Parser<() -> Value> = run {
+        val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
+            ref { equalityComparison } * whitespace * -':' * whitespace *
+            ref { equalityComparison }
         (ternaryExpr map { (cond, trueExpr, falseExpr) ->
             {
                 val condVal = cond()
@@ -224,8 +219,8 @@ private object ExpressionGrammar {
     }
 
     // Assignment: variable = expression
-    private val assignment: Parser<() -> Value> by lazy {
-        ((identifier * whitespace * -'=' * whitespace * parser { expression }) map { (name, valueParser) ->
+    private val assignment: Parser<() -> Value> = run {
+        ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueParser) ->
             {
                 val value = valueParser()
                 variables[name] = value

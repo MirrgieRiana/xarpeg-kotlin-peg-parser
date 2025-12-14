@@ -27,17 +27,21 @@ fun main() {
 }
 ```
 
-- Resolve forward references with `ref { ... }`, which creates a lazy reference to another parser.
+- **Use `ref { }` for forward references**: When a property needs to reference itself or properties declared below it, wrap the reference with `ref { }` to enable lazy reference resolution.
+- **Add explicit type declarations**: Properties that use `ref` should have explicit type declarations (like `Parser<Int>`) to help with type resolution.
+- **Avoid `by lazy` for recursive parsers**: Using `by lazy` on recursive parser properties causes infinite recursion and should be avoided.
 - `leftAssociative` / `rightAssociative` take a term parser, an operator parser, and a combiner, saving you from hand-written recursive descent.
 - Operators are ordinary parsers, so handling whitespace or multi-character operators works the same way.
 
-## When you might need `by lazy`
+## Important: Avoid `by lazy` for recursive parsers
 
-In most cases, `ref { ... }` is sufficient for recursive parsers. However, in some situations involving complex recursive definitions, you may encounter initialization errors. If this happens, wrapping the variable definition with `by lazy` can resolve the issue by deferring the initialization:
+**Do not use `by lazy` for recursive parsers** as it causes infinite recursion. The `ref { }` mechanism already handles lazy evaluation internally, making `by lazy` unnecessary and problematic.
+
+However, in rare situations (not related to recursion), you may encounter unreasonable initialization errors. In these exceptional cases only, `by lazy` can be used as a last resort workaround:
 
     val paren: Parser<Int> by lazy { (-'(' * ref { root } * -')') map { value -> value } }
 
-This is an advanced workaround and is rarely needed in typical parser definitions.
+This is an advanced workaround that should only be used when you encounter specific initialization errors, not as a standard pattern for recursive parsers.
 
 ## Extending the pattern
 
