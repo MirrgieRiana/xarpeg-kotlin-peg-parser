@@ -206,14 +206,7 @@ For **full multiplatform validation** (JVM, JS, Linux x64, Windows x64):
 
 Note: Native builds download Kotlin/Native toolchains from JetBrains (several hundred MB); ensure outbound network access when running Native tasks.
 
-### Running the Sample
-
-A small Hello World app is available for quick verification:
-
-```bash
-./gradlew jvmJar
-java -cp build/libs/xarpeg-kotlin-peg-parser-jvm-<latest-version>.jar mirrg.xarpite.peg.HelloWorldKt # replace with the version shown on Releases
-```
+### Running the Samples
 
 A standalone Gradle sample that consumes the library via its Maven coordinate lives under `samples/minimal-jvm-sample`:
 

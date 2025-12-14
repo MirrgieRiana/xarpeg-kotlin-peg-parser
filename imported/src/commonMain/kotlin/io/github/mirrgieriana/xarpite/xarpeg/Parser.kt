@@ -1,8 +1,8 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
+import io.github.mirrgieriana.xarpite.xarpeg.impl.escapeJsonString
+import io.github.mirrgieriana.xarpite.xarpeg.impl.truncate
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.normalize
-import io.github.mirrgieriana.xarpite.xarpeg.truncate
-import io.github.mirrgieriana.xarpite.xarpeg.escapeJsonString
 
 fun interface Parser<out T : Any> {
     fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>?

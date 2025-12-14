@@ -1,6 +1,30 @@
-package io.github.mirrgieriana.xarpite.xarpeg
+package io.github.mirrgieriana.xarpite.xarpeg.impl
 
-fun String.escapeJsonString(): String {
+internal data class MatrixPosition(val row: Int, val column: Int)
+
+internal fun createIndexToPositionConverter(src: String): (Int) -> MatrixPosition {
+    val lineStartIndices = mutableListOf(0)
+    src.forEachIndexed { index, char ->
+        if (char == '\n') lineStartIndices.add(index + 1)
+    }
+
+    return { index ->
+        require(index in 0..src.length) { "index ($index) is out of range for src of length ${src.length}" }
+
+        val lineIndex = lineStartIndices.binarySearch(index).let { if (it >= 0) it else -it - 2 }
+        val lineStart = lineStartIndices[lineIndex]
+        MatrixPosition(row = lineIndex + 1, column = index - lineStart + 1)
+    }
+}
+
+internal fun String.truncate(maxLength: Int, ellipsis: String = "..."): String {
+    if (maxLength < 0) return ""
+    if (this.length <= maxLength) return this
+    if (maxLength <= ellipsis.length) return this.take(maxLength)
+    return this.take(maxLength - ellipsis.length) + ellipsis
+}
+
+internal fun String.escapeJsonString(): String {
     val builder = StringBuilder(length)
     for (ch in this) {
         when (ch) {
