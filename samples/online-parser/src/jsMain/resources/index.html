@@ -315,7 +315,7 @@
                 </div>
                 <a class="hero-link" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser">View on GitHub</a>
             </div>
-            <p class="lead">This hosted sample from the <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser">Xarpeg Kotlin PEG Parser</a> documentation runs an expression parser with support for arithmetic operations, variables, lambda expressions, and function calls.</p>
+            <p class="lead">This hosted sample from the <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser">Xarpeg Kotlin PEG Parser</a> documentation runs an expression parser with support for arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls.</p>
 
             <div class="section">
                 <label for="input">Input</label>
@@ -378,6 +378,30 @@ pi * 2</code>
                         <code class="example-code">my_var_123 = 42
 my_var_123 + 8</code>
                     </div>
+                    <div class="example-card" data-example="5 > 3">
+                        <p class="example-title">Comparison Operator</p>
+                        <code class="example-code">5 > 3</code>
+                    </div>
+                    <div class="example-card" data-example="x = 10&#10;y = 20&#10;x == y">
+                        <p class="example-title">Equality Check</p>
+                        <code class="example-code">x = 10
+y = 20
+x == y</code>
+                    </div>
+                    <div class="example-card" data-example="5 > 3 ? 100 : 200">
+                        <p class="example-title">Ternary Operator</p>
+                        <code class="example-code">5 > 3 ? 100 : 200</code>
+                    </div>
+                    <div class="example-card" data-example="x = 15&#10;x >= 10 ? 1 : 0">
+                        <p class="example-title">Conditional Expression</p>
+                        <code class="example-code">x = 15
+x >= 10 ? 1 : 0</code>
+                    </div>
+                    <div class="example-card" data-example="factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)&#10;factorial(5)">
+                        <p class="example-title">Recursive Factorial</p>
+                        <code class="example-code">factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)
+factorial(5)</code>
+                    </div>
                 </div>
             </div>
 
@@ -388,31 +412,37 @@ my_var_123 + 8</code>
                         <a class="source" href="https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/">Documentation home</a>
                     </div>
                 </div>
-                <p class="muted-text">The parser evaluates expressions with arithmetic operations, variables, lambda expressions, and function calls. Stack traces are shown for runtime errors.</p>
+                <p class="muted-text">The parser evaluates expressions with arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls. Stack traces are shown for runtime errors.</p>
                 <ul class="muted-list">
                     <li>Enter expressions using <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and parentheses.</li>
+                    <li>Compare values: <code>5 > 3</code>, <code>10 == 10</code>, <code>x != y</code>, <code>a &lt;= b</code></li>
+                    <li>Use ternary operator: <code>condition ? valueIfTrue : valueIfFalse</code></li>
                     <li>Assign variables: <code>x = 10</code></li>
                     <li>Define lambdas: <code>add = (a, b) -&gt; a + b</code></li>
                     <li>Call functions: <code>add(5, 3)</code></li>
                     <li>Identifiers can use letters, digits, and underscore (but cannot start with a digit).</li>
+                    <li>Comparison operators return boolean values (<code>true</code>/<code>false</code>) with strict type checking.</li>
                     <li>See the evaluated result or read error messages with stack traces.</li>
                 </ul>
             </div>
 
             <div class="section">
                 <label>Grammar (PEG)</label>
-                <p class="muted-text">This grammar includes arithmetic operations, variables, lambda expressions, and function calls.</p>
-                <pre class="code-block"><code>Expression   &lt;- _ Assignment _
-Assignment   &lt;- (Identifier _ '=' _ Assignment) / Sum
-Sum          &lt;- Product (_ ('+' / '-') _ Product)*
-Product      &lt;- Factor (_ ('*' / '/') _ Factor)*
-Factor       &lt;- Lambda / FunctionCall / Variable / Number / '(' _ Expression _ ')'
-Lambda       &lt;- '(' _ (Identifier _ (',' _ Identifier _)*)? ')' _ '-&gt;' _ Expression
-FunctionCall &lt;- Identifier _ '(' _ (Expression _ (',' _ Expression _)*)? ')'
-Variable     &lt;- Identifier
-Identifier   &lt;- [a-zA-Z_][a-zA-Z0-9_]*
-Number       &lt;- [0-9]+ ('.' [0-9]+)?
-_            &lt;- [ \t\r\n]*</code></pre>
+                <p class="muted-text">This grammar includes arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls.</p>
+                <pre class="code-block"><code>Expression      &lt;- _ Assignment _
+Assignment      &lt;- (Identifier _ '=' _ Assignment) / Ternary
+Ternary         &lt;- (Equality _ '?' _ Equality _ ':' _ Equality) / Equality
+Equality        &lt;- Ordering (_ ('==' / '!=') _ Ordering)*
+Ordering        &lt;- Sum (_ ('&lt;=' / '&gt;=' / '&lt;' / '&gt;') _ Sum)*
+Sum             &lt;- Product (_ ('+' / '-') _ Product)*
+Product         &lt;- Factor (_ ('*' / '/') _ Factor)*
+Factor          &lt;- Lambda / FunctionCall / Variable / Number / '(' _ Expression _ ')'
+Lambda          &lt;- '(' _ (Identifier _ (',' _ Identifier _)*)? ')' _ '-&gt;' _ Expression
+FunctionCall    &lt;- Identifier _ '(' _ (Expression _ (',' _ Expression _)*)? ')'
+Variable        &lt;- Identifier
+Identifier      &lt;- [a-zA-Z_][a-zA-Z0-9_]*
+Number          &lt;- [0-9]+ ('.' [0-9]+)?
+_               &lt;- [ \t\r\n]*</code></pre>
         </div>
     </main>
 

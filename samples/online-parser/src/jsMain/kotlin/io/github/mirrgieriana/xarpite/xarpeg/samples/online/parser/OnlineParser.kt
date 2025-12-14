@@ -13,6 +13,9 @@ sealed class Value {
     data class NumberValue(val value: Double) : Value() {
         override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
     }
+    data class BooleanValue(val value: Boolean) : Value() {
+        override fun toString() = value.toString()
+    }
     data class LambdaValue(val params: List<String>, val body: () -> Value, val capturedVars: MutableMap<String, Value>) : Value() {
         override fun toString() = "<lambda(${params.joinToString(", ")})>"
     }
@@ -30,6 +33,10 @@ private object ExpressionGrammar {
 
     // Variable table for storing values
     val variables = mutableMapOf<String, Value>()
+    
+    // Function call counter to prevent infinite recursion
+    var functionCallCount = 0
+    private const val MAX_FUNCTION_CALLS = 100
 
     // Variable reference
     private val variableRef: Parser<() -> Value> = identifier map { name ->
@@ -53,9 +60,9 @@ private object ExpressionGrammar {
     private val lambda: Parser<() -> Value> = 
         (paramList * whitespace * -Regex("->") * whitespace * ref { expression }) map { (params, bodyParser) ->
             {
-                // Capture current variable state
-                val capturedVariables = variables.toMutableMap()
-                Value.LambdaValue(params, bodyParser, capturedVariables)
+                // Don't capture variables - use dynamic scoping to allow recursion
+                // The lambda will see whatever is in scope when it's called
+                Value.LambdaValue(params, bodyParser, mutableMapOf())
             }
         }
 
@@ -80,12 +87,16 @@ private object ExpressionGrammar {
                         if (args.size != func.params.size) {
                             throw EvaluationException("Function $name expects ${func.params.size} arguments, but got ${args.size}")
                         }
+                        // Check function call limit before making the call
+                        functionCallCount++
+                        if (functionCallCount >= MAX_FUNCTION_CALLS) {
+                            throw EvaluationException("Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded")
+                        }
                         // Save current variables
                         val savedVariables = variables.toMutableMap()
                         try {
-                            // Restore captured variables and add parameters
-                            variables.clear()
-                            variables.putAll(func.capturedVars)
+                            // Use current variables (dynamic scoping) to enable recursion
+                            // Just add parameters on top of current scope
                             func.params.zip(args).forEach { (param, argParser) ->
                                 variables[param] = argParser()
                             }
@@ -139,6 +150,71 @@ private object ExpressionGrammar {
         }
     }
 
+    // Ordering comparison operators: <, <=, >, >=
+    private val orderingComparison: Parser<() -> Value> = leftAssociative(
+        sum,
+        whitespace * (+Regex("<=|>=|<|>") map { it.value }) * whitespace
+    ) { a, op, b ->
+        {
+            val aVal = a()
+            val bVal = b()
+            if (aVal !is Value.NumberValue) throw EvaluationException("Left operand of $op must be a number")
+            if (bVal !is Value.NumberValue) throw EvaluationException("Right operand of $op must be a number")
+            val result = when (op) {
+                "<" -> aVal.value < bVal.value
+                "<=" -> aVal.value <= bVal.value
+                ">" -> aVal.value > bVal.value
+                ">=" -> aVal.value >= bVal.value
+                else -> throw EvaluationException("Unknown comparison operator: $op")
+            }
+            Value.BooleanValue(result)
+        }
+    }
+
+    // Equality comparison operators: ==, !=
+    private val equalityComparison: Parser<() -> Value> =
+        leftAssociative(
+            orderingComparison,
+            whitespace * (+Regex("==|!=") map { it.value }) * whitespace
+        ) { a, op, b ->
+            {
+                val aVal = a()
+                val bVal = b()
+                val result = when (op) {
+                    "==" -> {
+                        when {
+                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value == bVal.value
+                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value == bVal.value
+                            else -> throw EvaluationException("Operands of == must be both numbers or both booleans")
+                        }
+                    }
+                    "!=" -> {
+                        when {
+                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value != bVal.value
+                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value != bVal.value
+                            else -> throw EvaluationException("Operands of != must be both numbers or both booleans")
+                        }
+                    }
+                    else -> throw EvaluationException("Unknown comparison operator: $op")
+                }
+                Value.BooleanValue(result)
+            }
+        }
+
+    // Ternary operator: condition ? trueExpr : falseExpr
+    private val ternary: Parser<() -> Value> = run {
+        val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
+            ref { equalityComparison } * whitespace * -':' * whitespace *
+            ref { equalityComparison }
+        (ternaryExpr map { (cond, trueExpr, falseExpr) ->
+            {
+                val condVal = cond()
+                if (condVal !is Value.BooleanValue) throw EvaluationException("Condition in ternary operator must be a boolean")
+                if (condVal.value) trueExpr() else falseExpr()
+            }
+        }) + equalityComparison
+    }
+
     // Assignment: variable = expression
     private val assignment: Parser<() -> Value> =
         ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueParser) ->
@@ -147,7 +223,7 @@ private object ExpressionGrammar {
                 variables[name] = value
                 value
             }
-        }) + sum
+        }) + ternary
 
     // Forward declaration for recursive grammar
     val expression: Parser<() -> Value> = assignment
@@ -158,8 +234,9 @@ private object ExpressionGrammar {
 @JsExport
 fun parseExpression(input: String): String {
     return try {
-        // Reset variables for each evaluation to ensure each call is independent
+        // Reset variables and function call counter for each evaluation to ensure each call is independent
         ExpressionGrammar.variables.clear()
+        ExpressionGrammar.functionCallCount = 0
         
         // Try to parse as a single expression first
         // If parsing succeeds, evaluate and return the result
