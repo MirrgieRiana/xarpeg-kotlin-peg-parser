@@ -1,8 +1,8 @@
 package io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter
 
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import mirrg.xarpite.parser.Parser
+import mirrg.xarpite.parser.parseAllOrThrow
+import mirrg.xarpite.parser.parsers.*
 
 /**
  * A simple arithmetic interpreter that evaluates expressions with +, -, *, / and parentheses.
@@ -38,46 +38,47 @@ private object ArithmeticParser {
         LazyValue(result.start) { value }
     }
     
-    // Parse a grouped expression with parentheses - using ref for forward reference
-    val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')' map { it }
+    // Forward declaration for recursive grammar
+    val expr: Parser<LazyValue> by lazy { sum }
+    
+    // Parse a grouped expression with parentheses
+    val grouped: Parser<LazyValue> by lazy { -'(' * parser { expr } * -')' }
     
     // Primary expression: number or grouped
     val primary: Parser<LazyValue> = number + grouped
     
     // Multiplication and division (higher precedence)
-    val product: Parser<LazyValue> = leftAssociative(
-        primary,
-        (+'*' mapEx { _, r -> OperatorInfo(r.start, '*') }) + (+'/' mapEx { _, r -> OperatorInfo(r.start, '/') })
-    ) { a, op, b ->
-        when (op.op) {
-            '*' -> LazyValue(op.position) { a.compute() * b.compute() }
-            '/' -> LazyValue(op.position) {
-                val divisor = b.compute()
-                if (divisor == 0) {
-                    throw DivisionByZeroException(
-                        "Division by zero",
-                        op.position,
-                        0, // Will be filled in by caller
-                        0  // Will be filled in by caller
-                    )
+    val product: Parser<LazyValue> by lazy {
+        leftAssociative(primary, (+'*' mapEx { _, r -> OperatorInfo(r.start, '*') }) + (+'/' mapEx { _, r -> OperatorInfo(r.start, '/') })) { a, op, b ->
+            when (op.op) {
+                '*' -> LazyValue(op.position) { a.compute() * b.compute() }
+                '/' -> LazyValue(op.position) {
+                    val divisor = b.compute()
+                    if (divisor == 0) {
+                        throw DivisionByZeroException(
+                            "Division by zero",
+                            op.position,
+                            0, // Will be filled in by caller
+                            0  // Will be filled in by caller
+                        )
+                    }
+                    a.compute() / divisor
                 }
-                a.compute() / divisor
+                else -> error("Unknown operator: ${op.op}")
             }
-            else -> error("Unknown operator: ${op.op}")
         }
     }
     
     // Addition and subtraction (lower precedence)
-    val sum: Parser<LazyValue> = leftAssociative(product, +'+' + +'-') { a, op, b ->
-        when (op) {
-            '+' -> LazyValue(a.position) { a.compute() + b.compute() }
-            '-' -> LazyValue(a.position) { a.compute() - b.compute() }
-            else -> error("Unknown operator: $op")
+    val sum: Parser<LazyValue> by lazy {
+        leftAssociative(product, +'+' + +'-') { a, op, b ->
+            when (op) {
+                '+' -> LazyValue(a.position) { a.compute() + b.compute() }
+                '-' -> LazyValue(a.position) { a.compute() - b.compute() }
+                else -> error("Unknown operator: $op")
+            }
         }
     }
-    
-    // Forward declaration for recursive grammar - expr references sum which is defined below grouped
-    val expr: Parser<LazyValue> = sum
 }
 
 /**
