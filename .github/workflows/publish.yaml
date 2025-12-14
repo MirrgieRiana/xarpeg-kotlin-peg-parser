@@ -72,9 +72,9 @@ jobs:
       - name: Sync artifacts to maven branch
         run: |
           mkdir -p maven/maven
-          rsync -av --delete --exclude '.git/' --exclude 'metadata/' main/build/maven/ maven/maven/
+          rsync -av --delete --exclude '.git/' main/build/maven/ maven/maven/
           mkdir -p maven/metadata
-          rsync -av --delete main/build/maven/metadata/ maven/metadata/
+          rsync -av --delete main/build/metadata/ maven/metadata/
 
       - name: Commit and push artifacts
         working-directory: maven

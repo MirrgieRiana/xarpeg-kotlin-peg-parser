@@ -111,7 +111,7 @@ tasks.register("writeKotlinMetadata") {
     val kotlinVersion = providers.provider {
         kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
     }
-    val outputFile = layout.buildDirectory.file("maven/metadata/kotlin.json")
+    val outputFile = layout.buildDirectory.file("metadata/kotlin.json")
     inputs.property("kotlinVersion", kotlinVersion)
     outputs.file(outputFile)
 
