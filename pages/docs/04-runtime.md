@@ -11,7 +11,7 @@ Review how parsers handle full consumption, exceptions, and memoization cache se
 
 `parseAllOrThrow` verifies that the input is matched from start to end and throws informative exceptions when it is not:
 
-- Nothing matches at the start: `UnmatchedInputParseException`
+- No parser matches at the start: `UnmatchedInputParseException`
 - A prefix matches but trailing input remains: `ExtraCharactersParseException`
 
 If a `map` throws, the exception bubbles up and aborts parsing; validate before mapping or catch and wrap errors when you need to recover.

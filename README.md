@@ -108,7 +108,7 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
 - **Mapping**: `parser map { ... }` transforms the parsed value.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
-- **Recursion**: `parser { ... }` (delegation) or `by lazy` fields allow self-referential grammars.
+- **Recursion**: `parser { ... }` (reference) or `by lazy` fields allow self-referential grammars.
 
 ---
 
@@ -120,7 +120,7 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 
 ### Error Handling
 
-- `UnmatchedInputParseException` — nothing matched at the current position.
+- `UnmatchedInputParseException` — no parser matched at the current position.
 - `ExtraCharactersParseException` — parsing succeeded but did not consume all input (reports the trailing position).
 
 ---
