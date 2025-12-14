@@ -39,7 +39,7 @@ private object ArithmeticParser {
     }
     
     // Parse a grouped expression with parentheses
-    val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
+    val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')' map { value -> value }
     
     // Primary expression: number or grouped
     val primary: Parser<LazyValue> = number + grouped
