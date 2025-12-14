@@ -6,9 +6,10 @@ plugins {
 }
 
 group = "io.github.mirrgieriana.xarpite"
-version = System.getenv("VERSION")
+val resolvedVersion = System.getenv("VERSION")
     ?: System.getenv("GITHUB_SHA")?.let { "0.0.0-${it.take(7)}-SNAPSHOT" }
     ?: "0.0.0-latest"
+version = resolvedVersion
 
 repositories {
     mavenCentral()
