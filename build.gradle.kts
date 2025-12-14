@@ -6,8 +6,9 @@ plugins {
     kotlin("multiplatform") version "2.2.20"
     id("maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
-    id("build-logic")
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("build-logic")
 }
 
 group = "io.github.mirrgieriana.xarpite"
@@ -81,6 +82,19 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+    }
+}
+
+// ktlint configuration
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("1.3.1")
+    android.set(false)
+    outputColorName.set("RED")
+
+    filter {
+        exclude("**/build/**")
+        exclude("**/generated/**")
+        exclude("**/imported/**")
     }
 }
 
