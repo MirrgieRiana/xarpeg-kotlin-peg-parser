@@ -27,13 +27,13 @@ fun main() {
 }
 ```
 
-- Resolve self-reference with `ref { ... }` or `parser { ... }`.
+- Resolve self-reference with `ref { ... }`.
 - `leftAssociative` / `rightAssociative` take a term parser, an operator parser, and a combiner, saving you from hand-written recursive descent.
 - Operators are ordinary parsers, so handling whitespace or multi-character operators works the same way.
 
 ## When you might need `by lazy`
 
-In most cases, `ref { ... }` or `parser { ... }` are sufficient for recursive parsers. However, in some situations involving complex recursive definitions, you may encounter initialization errors. If this happens, wrapping the variable definition with `by lazy` can resolve the issue by deferring the initialization:
+In most cases, `ref { ... }` is sufficient for recursive parsers. However, in some situations involving complex recursive definitions, you may encounter initialization errors. If this happens, wrapping the variable definition with `by lazy` can resolve the issue by deferring the initialization:
 
     val paren: Parser<Int> by lazy { (-'(' * ref { root } * -')') map { value -> value } }
 

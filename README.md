@@ -79,7 +79,7 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
    Master sequences, choices, repetition, and other core patterns to build complex grammars.
 
 3. **🔁 [Expressions & Recursion](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/03-expressions.html)** - Handle recursive grammars  
-   Learn to use `ref {}` / `parser {}` and leverage associativity helpers for expression parsing.
+   Learn to use `ref {}` and leverage associativity helpers for expression parsing.
 
 4. **⚙️ [Runtime Behavior](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/04-runtime.html)** - Understand errors and performance  
    Deep dive into exceptions, full consumption requirements, and cache control.
@@ -124,7 +124,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 - **Optional**: `parser.optional` yields `Tuple1<T?>` without consuming input on absence.
 - **Mapping**: `parser map { ... }` transforms the parsed value.
 - **Lookahead**: `!parser` succeeds only when the inner parser fails (does not consume input).
-- **Recursion**: `ref { ... }` or `parser { ... }` (reference) allow self-referential grammars. In some situations with complex recursive parsers, wrapping the variable definition with `by lazy` may be needed if initialization errors occur.
+- **Recursion**: `ref { ... }` allows self-referential grammars. In some situations with complex recursive parsers, wrapping the variable definition with `by lazy` may be needed if initialization errors occur.
 
 ---
 

@@ -249,7 +249,7 @@ class ParserTest {
             val aa = -"aa" map { 2 }
 
             // 入力されたaを分割する全パターンを試そうとするパーサー
-            val root: Parser<Int> = ref {
+            val root: Parser<Int> = run {
                 or(
                     // bの位置で確定で失敗し、次の選択肢に進む
                     // bより前に自分自身が居るので、rootが評価される度にrootが合計2回呼ばれる
