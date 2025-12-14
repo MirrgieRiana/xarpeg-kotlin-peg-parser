@@ -1,5 +1,5 @@
 [versions]
-xarpeg = "1.0.5"
+xarpeg = "2.0.0"
 
 [libraries]
 xarpeg = { group = "io.github.mirrgieriana.xarpite", name = "xarpeg-kotlin-peg-parser", version.ref = "xarpeg" }

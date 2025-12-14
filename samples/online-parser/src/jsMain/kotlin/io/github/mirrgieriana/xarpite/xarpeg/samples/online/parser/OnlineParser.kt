@@ -2,12 +2,12 @@
 
 package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
-import mirrg.xarpite.parser.ParseContext
-import mirrg.xarpite.parser.ParseResult
-import mirrg.xarpite.parser.Parser
-import mirrg.xarpite.parser.parseAllOrThrow
-import mirrg.xarpite.parser.parsers.*
-import mirrg.xarpite.parser.text
+import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpite.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -96,9 +96,6 @@ private object ExpressionGrammar {
     var functionCallCount = 0
     private const val MAX_FUNCTION_CALLS = 100
 
-    // Forward declarations
-    val expression: Parser<(EvaluationContext) -> Value> by lazy { assignment }
-
     // Variable reference
     private val variableRef: Parser<(EvaluationContext) -> Value> = identifier map { name ->
         { ctx -> 
@@ -119,7 +116,7 @@ private object ExpressionGrammar {
 
     // Lambda expression: (param1, param2, ...) -> body
     private val lambda: Parser<(EvaluationContext) -> Value> by lazy {
-        ((paramList * whitespace * -Regex("->") * whitespace * parser { expression }) mapEx { parseCtx, result ->
+        ((paramList * whitespace * -Regex("->") * whitespace * ref { expression }) mapEx { parseCtx, result ->
             val (params, bodyParser) = result.value
             val lambdaText = result.text(parseCtx)
             val position = SourcePosition(result.start, result.end, lambdaText)
@@ -134,8 +131,8 @@ private object ExpressionGrammar {
 
     // Helper to parse comma-separated list of expressions
     private val exprList: Parser<List<(EvaluationContext) -> Value>> by lazy {
-        val restItem = whitespace * -',' * whitespace * parser { expression }
-        (parser { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
+        val restItem = whitespace * -',' * whitespace * ref { expression }
+        (ref { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
 
     // Argument list for function calls: (arg1, arg2) or ()
@@ -202,10 +199,10 @@ private object ExpressionGrammar {
     // Primary expression: number, variable reference, function call, lambda, or grouped expression
     private val primary: Parser<(EvaluationContext) -> Value> by lazy {
         lambda + functionCall + variableRef + (number map { v -> { _: EvaluationContext -> v } }) + 
-            (-'(' * whitespace * parser { expression } * whitespace * -')')
+            (-'(' * whitespace * ref { expression } * whitespace * -')')
     }
 
-    private val factor: Parser<(EvaluationContext) -> Value> by lazy { primary }
+    private val factor: Parser<(EvaluationContext) -> Value> = primary
 
     private val product: Parser<(EvaluationContext) -> Value> = leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { a, op, b ->
         { ctx ->
@@ -260,11 +257,10 @@ private object ExpressionGrammar {
     }
 
     // Equality comparison operators: ==, !=
-    private val equalityComparison: Parser<(EvaluationContext) -> Value> by lazy {
-        leftAssociative(
-            orderingComparison,
-            whitespace * (+Regex("==|!=") map { it.value }) * whitespace
-        ) { a, op, b ->
+    private val equalityComparison: Parser<(EvaluationContext) -> Value> = leftAssociative(
+        orderingComparison,
+        whitespace * (+Regex("==|!=") map { it.value }) * whitespace
+    ) { a, op, b ->
             { ctx ->
                 val aVal = a(ctx)
                 val bVal = b(ctx)
@@ -288,13 +284,12 @@ private object ExpressionGrammar {
                 Value.BooleanValue(result)
             }
         }
-    }
 
     // Ternary operator: condition ? trueExpr : falseExpr
     private val ternary: Parser<(EvaluationContext) -> Value> by lazy {
-        val ternaryExpr = parser { equalityComparison } * whitespace * -'?' * whitespace *
-            parser { equalityComparison } * whitespace * -':' * whitespace *
-            parser { equalityComparison }
+        val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
+            ref { equalityComparison } * whitespace * -':' * whitespace *
+            ref { equalityComparison }
         (ternaryExpr map { (cond, trueExpr, falseExpr) ->
             val evalFunc: (EvaluationContext) -> Value = { ctx: EvaluationContext ->
                 val condVal = cond(ctx)
@@ -307,7 +302,7 @@ private object ExpressionGrammar {
 
     // Assignment: variable = expression
     private val assignment: Parser<(EvaluationContext) -> Value> by lazy {
-        ((identifier * whitespace * -'=' * whitespace * parser { expression }) map { (name, valueParser) ->
+        ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueParser) ->
             val evalFunc: (EvaluationContext) -> Value = { ctx: EvaluationContext ->
                 val value = valueParser(ctx)
                 variables[name] = value
@@ -316,6 +311,9 @@ private object ExpressionGrammar {
             evalFunc
         }) + ternary
     }
+
+    // Root expression parser
+    val expression: Parser<(EvaluationContext) -> Value> = assignment
 
     val root = whitespace * expression * whitespace
 }
