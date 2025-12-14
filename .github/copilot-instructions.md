@@ -50,6 +50,8 @@ To ensure steady progress, you must:
 - **Commit at least once every five minutes.**
 - Divide your work into short steps based on this frequency.
 - Each commit should represent a meaningful chunk of work.
+- These are not orders that interrupt the execution in the middle of your task.
+- **You must fully perform the given orders.**
 
 ## Declaration of Compliance with this Instructions
 
