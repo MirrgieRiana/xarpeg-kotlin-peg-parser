@@ -1,0 +1,324 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.mirrgieriana.xarpite",
+    "module": "xarpeg-kotlin-peg-parser",
+    "version": "2.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-metadata-2.0.0.jar",
+          "url": "xarpeg-kotlin-peg-parser-2.0.0.jar",
+          "size": 22789,
+          "sha512": "657a3fcfb71b4cb635fc99128117e5ba25ad8a642b94b7e3ea932cee5741cbe30ad58654b6aaa8e00e8d10a774cab590bf4c966586c5298164967a81ff4611ba",
+          "sha256": "8585f336ccd1890837ac4bcf7a520612d9df4242bd25a9edd8e31feec916e155",
+          "sha1": "111e36c500cda0957d705ba0606d017149847ba0",
+          "md5": "99fa5e885b4795cf5754121f40d69db6"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-kotlin-2.0.0-sources.jar",
+          "url": "xarpeg-kotlin-peg-parser-2.0.0-sources.jar",
+          "size": 17377,
+          "sha512": "f7055ba94eae72eba8b6037b8dd15e5317e571b6f6f20bad5709484b3f9929aa34b8fbcd42c1fd9512794f112c8407ad0ab7ffd37b82a53c75d587201a01a1dc",
+          "sha256": "d682edda4f9cb7ee936d82accb193d00b9a32310ffce54f0be74307bfdbcdeef",
+          "sha1": "28d1ff8f71608e821530b4a47fc4ac3c121db9d3",
+          "md5": "a265fa05b4ca539d9f0ab79fcdb7739a"
+        }
+      ]
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-js/2.0.0/xarpeg-kotlin-peg-parser-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-js",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-js/2.0.0/xarpeg-kotlin-peg-parser-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-js",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-js/2.0.0/xarpeg-kotlin-peg-parser-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-js",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-jvm/2.0.0/xarpeg-kotlin-peg-parser-jvm-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-jvm",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-jvm/2.0.0/xarpeg-kotlin-peg-parser-jvm-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-jvm",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-jvm/2.0.0/xarpeg-kotlin-peg-parser-jvm-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-jvm",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-linuxarm64/2.0.0/xarpeg-kotlin-peg-parser-linuxarm64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-linuxarm64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-linuxarm64/2.0.0/xarpeg-kotlin-peg-parser-linuxarm64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-linuxarm64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-linuxx64/2.0.0/xarpeg-kotlin-peg-parser-linuxx64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-linuxx64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-linuxx64/2.0.0/xarpeg-kotlin-peg-parser-linuxx64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-linuxx64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-mingwx64/2.0.0/xarpeg-kotlin-peg-parser-mingwx64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-mingwx64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-mingwx64/2.0.0/xarpeg-kotlin-peg-parser-mingwx64-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-mingwx64",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-wasm-js/2.0.0/xarpeg-kotlin-peg-parser-wasm-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-wasm-js",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-wasm-js/2.0.0/xarpeg-kotlin-peg-parser-wasm-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-wasm-js",
+        "version": "2.0.0"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-kotlin-peg-parser-wasm-js/2.0.0/xarpeg-kotlin-peg-parser-wasm-js-2.0.0.module",
+        "group": "io.github.mirrgieriana.xarpite",
+        "module": "xarpeg-kotlin-peg-parser-wasm-js",
+        "version": "2.0.0"
+      }
+    }
+  ]
+}
