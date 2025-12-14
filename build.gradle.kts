@@ -6,7 +6,29 @@ plugins {
 }
 
 group = "io.github.mirrgieriana.xarpite"
-version = System.getenv("VERSION") ?: "1.0.0-SNAPSHOT"
+val SHORT_SHA_LENGTH = 7
+val MAX_SHA_LENGTH = 40
+val gitShaRegex = Regex("^[0-9a-fA-F]{${SHORT_SHA_LENGTH},${MAX_SHA_LENGTH}}$")
+
+fun isValidGitSha(sha: String): Boolean = gitShaRegex.matches(sha)
+
+fun Project.readGitSha(): String? = runCatching {
+    val process = ProcessBuilder("git", "rev-parse", "HEAD")
+        .directory(rootDir)
+        .redirectErrorStream(true)
+        .start()
+    val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
+    process.waitFor()
+    output.takeIf(::isValidGitSha)
+}.getOrNull()
+
+fun Project.determineVersion(): String {
+    System.getenv("VERSION")?.let { return it }
+    val sanitizedSha = readGitSha()
+    return sanitizedSha?.let { "latest-commit-${it.take(SHORT_SHA_LENGTH)}" } ?: "latest"
+}
+
+version = project.determineVersion()
 
 repositories {
     mavenCentral()
