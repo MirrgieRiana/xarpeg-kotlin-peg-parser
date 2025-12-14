@@ -33,7 +33,7 @@ data class ExpressionPart(val value: Int) : TemplateElement()
 val templateStringParser: Parser<String> = object {
     // Expression parser (reusing from earlier tutorials)
     val number = +Regex("[0-9]+") map { it.value.toInt() }
-    val grouped: Parser<Int> = (-'(' * ref { sum } * -')') map { value -> value }
+    val grouped: Parser<Int> = -'(' * ref { sum } * -')' map { value -> value }
     val factor: Parser<Int> = number + grouped
     val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val sum: Parser<Int> = leftAssociative(product, -'+') { a, _, b -> a + b }
@@ -119,7 +119,7 @@ data class ExpressionPart(val value: Int) : TemplateElement()
 
 object TemplateWithNestedStrings {
     val number = +Regex("[0-9]+") map { it.value.toInt() }
-    val grouped: Parser<Int> = (-'(' * ref { sum } * -')') map { value -> value }
+    val grouped: Parser<Int> = -'(' * ref { sum } * -')' map { value -> value }
 
     val stringPart: Parser<TemplateElement> =
         +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) }

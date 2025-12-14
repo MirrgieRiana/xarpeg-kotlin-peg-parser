@@ -15,7 +15,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() }
-    val paren: Parser<Int> = (-'(' * ref { root } * -')') map { value -> value }
+    val paren: Parser<Int> = -'(' * ref { root } * -')' map { value -> value }
     val factor = number + paren
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
@@ -27,7 +27,7 @@ fun main() {
 }
 ```
 
-- Resolve self-reference with `ref { ... }`.
+- Resolve forward references with `ref { ... }`, which creates a lazy reference to another parser.
 - `leftAssociative` / `rightAssociative` take a term parser, an operator parser, and a combiner, saving you from hand-written recursive descent.
 - Operators are ordinary parsers, so handling whitespace or multi-character operators works the same way.
 
