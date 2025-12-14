@@ -3,6 +3,7 @@ plugins {
     kotlin("multiplatform") version "2.2.20"
     id("maven-publish")
     id("org.jetbrains.dokka") version "2.0.0"
+    id("build-logic")
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
