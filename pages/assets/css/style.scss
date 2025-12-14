@@ -235,7 +235,7 @@ tr:hover {
   border-bottom-color: transparent;
 }
 
-.header-nav a[target="_blank"]::after {
+.header-nav a.external-link::after {
   content: " ↗";
   font-size: 0.9em;
   margin-left: 0.35rem;
