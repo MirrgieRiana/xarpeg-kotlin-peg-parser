@@ -491,4 +491,16 @@ class OnlineParserTest {
         val result = parseExpression("sum = (n, acc) -> n <= 0 ? acc : sum(n - 1, acc + n)\nsum(5, 0)")
         assertEquals("15", result)  // 5 + 4 + 3 + 2 + 1 = 15
     }
+
+    @Test
+    fun errorStackTraceShowsCorrectCallStack() {
+        // Test the HTML example: func1 = (a, b) -> a / b, func2 = (a, b) -> func1(a + b, a - b), func2(10, 10)
+        // This should show a proper call stack with func2 calling func1
+        val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("func1"))
+        assertTrue(result.contains("func2"))
+    }
 }
