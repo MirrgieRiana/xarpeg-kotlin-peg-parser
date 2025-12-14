@@ -403,4 +403,37 @@ class OnlineParserTest {
         assertTrue(result.startsWith("Error"))
         assertTrue(result.contains("must be both numbers or both booleans"))
     }
+
+    // Recursive function tests
+    @Test
+    fun parsesRecursiveFactorial() {
+        val result = parseExpression("factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)")
+        assertEquals("120", result)
+    }
+
+    @Test
+    fun parsesRecursiveFactorialSmallNumber() {
+        val result = parseExpression("fact = (n) -> n <= 1 ? 1 : n * fact(n - 1)\nfact(3)")
+        assertEquals("6", result)
+    }
+
+    @Test
+    fun parsesRecursiveFactorialZero() {
+        val result = parseExpression("factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(0)")
+        assertEquals("1", result)
+    }
+
+    @Test
+    fun showsErrorWhenFunctionCallLimitExceeded() {
+        // Create an infinite recursion that will hit the limit
+        val result = parseExpression("infinite = (n) -> infinite(n + 1)\ninfinite(0)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Maximum function call limit"))
+    }
+
+    @Test
+    fun parsesRecursiveFibonacci() {
+        val result = parseExpression("fib = (n) -> n <= 1 ? n : fib(n - 1) + fib(n - 2)\nfib(7)")
+        assertEquals("13", result)
+    }
 }

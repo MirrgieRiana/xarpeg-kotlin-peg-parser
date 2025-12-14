@@ -33,6 +33,10 @@ private object ExpressionGrammar {
 
     // Variable table for storing values
     val variables = mutableMapOf<String, Value>()
+    
+    // Function call counter to prevent infinite recursion
+    var functionCallCount = 0
+    private const val MAX_FUNCTION_CALLS = 100
 
     // Forward declarations
     val expression: Parser<() -> Value> by lazy { assignment }
@@ -59,9 +63,9 @@ private object ExpressionGrammar {
     private val lambda: Parser<() -> Value> by lazy {
         (paramList * whitespace * -Regex("->") * whitespace * parser { expression }) map { (params, bodyParser) ->
             {
-                // Capture current variable state
-                val capturedVariables = variables.toMutableMap()
-                Value.LambdaValue(params, bodyParser, capturedVariables)
+                // Don't capture variables - use dynamic scoping to allow recursion
+                // The lambda will see whatever is in scope when it's called
+                Value.LambdaValue(params, bodyParser, mutableMapOf())
             }
         }
     }
@@ -88,12 +92,16 @@ private object ExpressionGrammar {
                         if (args.size != func.params.size) {
                             throw EvaluationException("Function $name expects ${func.params.size} arguments, but got ${args.size}")
                         }
+                        // Check function call limit before making the call
+                        functionCallCount++
+                        if (functionCallCount >= MAX_FUNCTION_CALLS) {
+                            throw EvaluationException("Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded")
+                        }
                         // Save current variables
                         val savedVariables = variables.toMutableMap()
                         try {
-                            // Restore captured variables and add parameters
-                            variables.clear()
-                            variables.putAll(func.capturedVars)
+                            // Use current variables (dynamic scoping) to enable recursion
+                            // Just add parameters on top of current scope
                             func.params.zip(args).forEach { (param, argParser) ->
                                 variables[param] = argParser()
                             }
@@ -232,8 +240,9 @@ private object ExpressionGrammar {
 @JsExport
 fun parseExpression(input: String): String {
     return try {
-        // Reset variables for each evaluation to ensure each call is independent
+        // Reset variables and function call counter for each evaluation to ensure each call is independent
         ExpressionGrammar.variables.clear()
+        ExpressionGrammar.functionCallCount = 0
         
         // Try to parse as a single expression first
         // If parsing succeeds, evaluate and return the result
