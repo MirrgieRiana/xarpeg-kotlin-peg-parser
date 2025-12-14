@@ -109,7 +109,7 @@ tasks.register("generateTuples") {
     
     val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg").asFile
     val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers").asFile
-    
+
     val generatedTuplesKt = outputDir.resolve("Tuples.kt")
     val generatedTupleParserKt = outputDirParsers.resolve("TupleParser.kt")
     
@@ -258,7 +258,7 @@ tasks.register("generateTuples") {
         }
         generatedTupleParserKt.writeText(tupleParserContent)
         println("Generated: ${generatedTupleParserKt.absolutePath}")
-        
+
         println("All tuple files generated successfully!")
     }
 }

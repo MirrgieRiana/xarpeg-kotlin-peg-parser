@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalJsExport::class)
 
-package mirrg.xarpite.samples.online.parser
+package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow

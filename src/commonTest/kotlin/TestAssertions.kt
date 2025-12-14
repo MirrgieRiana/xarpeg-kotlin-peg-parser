@@ -1,3 +1,5 @@
+package io.github.mirrgieriana.xarpite.xarpeg
+
 import io.github.mirrgieriana.xarpite.xarpeg.ExtraCharactersParseException
 import io.github.mirrgieriana.xarpite.xarpeg.UnmatchedInputParseException
 import kotlin.test.fail

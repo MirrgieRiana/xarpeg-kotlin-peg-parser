@@ -1,4 +1,4 @@
-package mirrg.xarpite.samples.java_run
+package io.github.mirrgieriana.xarpite.xarpeg.samples.java_run
 
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow

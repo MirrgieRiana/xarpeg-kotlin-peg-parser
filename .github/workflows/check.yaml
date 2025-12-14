@@ -60,7 +60,7 @@ jobs:
       working-directory: samples/minimal-jvm-sample
       run: |
         # Run the sample using java command directly
-        OUTPUT=$(java -cp "build/install/minimal-jvm-sample/lib/*" mirrg.xarpite.samples.java_run.MainKt)
+        OUTPUT=$(java -cp "build/install/minimal-jvm-sample/lib/*" io.github.mirrgieriana.xarpite.xarpeg.samples.java_run.MainKt)
         echo "Sample output: $OUTPUT"
         
         # Expected output
@@ -100,7 +100,7 @@ jobs:
       working-directory: samples/interpreter
       run: |
         # Run the sample using java command directly
-        OUTPUT=$(java -cp "build/install/interpreter/lib/*" mirrg.xarpite.samples.interpreter.MainKt -e "2+3*4")
+        OUTPUT=$(java -cp "build/install/interpreter/lib/*" io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter.MainKt -e "2+3*4")
         echo "Sample output: $OUTPUT"
         
         # Expected output

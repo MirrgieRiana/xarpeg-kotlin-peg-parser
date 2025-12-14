@@ -1,4 +1,4 @@
-package mirrg.xarpite.samples.online.parser
+package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

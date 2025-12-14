@@ -1,4 +1,4 @@
-package mirrg.xarpite.samples.interpreter
+package io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter
 
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -52,7 +52,7 @@ class InterpreterTest {
             "java",
             "-cp",
             classPath,
-            "mirrg.xarpite.samples.interpreter.MainKt",
+            "io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter.MainKt",
             "-e",
             expression
         )

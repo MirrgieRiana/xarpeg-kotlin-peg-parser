@@ -1,4 +1,4 @@
-package mirrg.xarpite.samples.interpreter
+package io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter
 
 import mirrg.xarpite.parser.Parser
 import mirrg.xarpite.parser.parseAllOrThrow

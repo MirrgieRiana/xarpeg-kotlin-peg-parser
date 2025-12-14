@@ -1,3 +1,5 @@
+package io.github.mirrgieriana.xarpite.xarpeg
+
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
