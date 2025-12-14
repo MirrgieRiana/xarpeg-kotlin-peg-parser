@@ -9,8 +9,12 @@ group = "io.github.mirrgieriana.xarpite"
 val SHORT_SHA_LENGTH = 7
 
 fun determineVersion(): String {
+    val githubSha = System.getenv("GITHUB_SHA")
+    val sanitizedSha = githubSha?.takeIf { sha ->
+        sha.length >= SHORT_SHA_LENGTH && sha.all { it.isDigit() || it.lowercaseChar() in 'a'..'f' }
+    }
     return System.getenv("VERSION")
-        ?: System.getenv("GITHUB_SHA")?.let { "0.0.0-${it.take(SHORT_SHA_LENGTH)}-SNAPSHOT" }
+        ?: sanitizedSha?.let { "0.0.0-${it.take(SHORT_SHA_LENGTH)}-SNAPSHOT" }
         ?: "0.0.0-latest"
 }
 
