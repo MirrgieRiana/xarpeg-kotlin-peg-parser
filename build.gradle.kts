@@ -1,5 +1,8 @@
 
 plugins {
+    kotlin("multiplatform") version "2.2.20"
+    id("maven-publish")
+    id("org.jetbrains.dokka") version "2.0.0"
     id("root-conventions")
 }
 
