@@ -98,6 +98,22 @@ Ready to build powerful parsers? Follow our structured tutorial guide to master 
 
 ---
 
+## 🎮 Try the Online Parser Demo
+
+Want to see Xarpeg in action? Try the **Online Parser Sample** — a live, interactive demonstration built with Xarpeg that runs directly in your browser.
+
+**[🚀 Launch Online Parser Demo](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/)**
+
+This sample showcases what you can build with Xarpeg:
+- Real-time parsing with instant feedback
+- Interactive expression evaluation
+- Client-side parsing with Kotlin/JS
+- Practical demonstration of the library's capabilities
+
+The Online Parser Sample is a working example of Xarpeg powering a complete browser-based application, demonstrating the library's versatility and performance in real-world scenarios.
+
+---
+
 ## Core Concepts & Combinators
 
 - **Parser<T>**: `fun interface` with `parseOrNull(context, start)`; parse helpers pass a `ParseContext` that handles caching.
