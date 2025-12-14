@@ -8,10 +8,12 @@ plugins {
 group = "io.github.mirrgieriana.xarpite"
 version = System.getenv("VERSION") ?: "1.0.0-SNAPSHOT"
 
-val defaultRepoPath = "MirrgieRiana/xarpeg-kotlin-peg-parser"
-val defaultRepoName = "xarpeg-kotlin-peg-parser"
-val repoPath = providers.gradleProperty("repoPath").orElse(defaultRepoPath)
-val repoName = providers.gradleProperty("repoName").orElse(repoPath.map { it.substringAfter('/') })
+val defaultOwnerName = "MirrgieRiana"
+val defaultRepositoryName = "xarpeg-kotlin-peg-parser"
+val ownerName = providers.gradleProperty("ownerName").orElse(defaultOwnerName)
+val repositoryName = providers.gradleProperty("repositoryName").orElse(defaultRepositoryName)
+val repoPath = ownerName.zip(repositoryName) { owner, repo -> "$owner/$repo" }
+val repoName = repositoryName
 
 repositories {
     mavenCentral()
@@ -23,8 +25,8 @@ tasks.register("propagateRepoName") {
 
     val projectDir = layout.projectDirectory.asFile
     // Match the default repo path/name only when they are not embedded in longer tokens
-    val repoPathPattern = Regex("(?<![\\w-])${Regex.escape(defaultRepoPath)}(?![\\w-])")
-    val repoNamePattern = Regex("(?<![\\w-])${Regex.escape(defaultRepoName)}(?![\\w-])")
+    val repoPathPattern = Regex("(?<![\\w-])${Regex.escape("$defaultOwnerName/$defaultRepositoryName")}(?![\\w-])")
+    val repoNamePattern = Regex("(?<![\\w-])${Regex.escape(defaultRepositoryName)}(?![\\w-])")
 
     inputs.property("repoPath") { repoPath.get() }
     inputs.property("repoName") { repoName.get() }
@@ -43,12 +45,12 @@ tasks.register("propagateRepoName") {
     doLast {
         val repoPathValue = repoPath.get()
         val repoNameValue = repoName.get()
-        val replacementsRequired = repoPathValue != defaultRepoPath || repoNameValue != defaultRepoName
+        val replacementsRequired = repoPathValue != "$defaultOwnerName/$defaultRepositoryName" || repoNameValue != defaultRepositoryName
 
         fun needsReplacement(content: String): Boolean =
             replacementsRequired && (
-                (repoPathValue != defaultRepoPath && repoPathPattern.containsMatchIn(content)) ||
-                    (repoNameValue != defaultRepoName && repoNamePattern.containsMatchIn(content))
+                (repoPathValue != "$defaultOwnerName/$defaultRepositoryName" && repoPathPattern.containsMatchIn(content)) ||
+                    (repoNameValue != defaultRepositoryName && repoNamePattern.containsMatchIn(content))
             )
 
         targets.forEach { file ->
