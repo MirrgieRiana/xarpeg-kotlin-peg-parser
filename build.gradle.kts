@@ -26,20 +26,23 @@ kotlin {
         nodejs()
     }
 
-    // Native target for Linux x64
-    linuxX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+    // Native targets (enabled only when property is set)
+    if (project.findProperty("enableNativeTargets") == "true") {
+        // Native target for Linux x64
+        linuxX64 {
+            binaries {
+                executable {
+                    entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+                }
             }
         }
-    }
 
-    // Native target for Windows x64
-    mingwX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+        // Native target for Windows x64
+        mingwX64 {
+            binaries {
+                executable {
+                    entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+                }
             }
         }
     }
