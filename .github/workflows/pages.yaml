@@ -25,21 +25,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-
-      - name: Build online parser sample
-        run: |
-          cd samples/online-parser
-          ./gradlew build --console=plain --info --stacktrace
-
       - name: Set up JDK
         uses: actions/setup-java@v4.5.0
         with:
           distribution: temurin
           java-version: '17'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build online parser sample
+        run: |
+          cd samples/online-parser
+          ./gradlew build --console=plain --info --stacktrace
+
       # dokkaHtml is the available Dokka task for this project (no dokkaHtmlMultiplatform task is registered)
       - name: Generate KDoc
-        run: ./gradlew dokkaHtml --no-daemon --stacktrace
+        run: ./gradlew dokkaHtml --stacktrace
         env:
           GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m"
 
