@@ -16,8 +16,8 @@ fun determineVersion(): String {
     val githubSha = System.getenv("GITHUB_SHA")
     val sanitizedSha = githubSha?.takeIf(::isValidGitSha)
     return System.getenv("VERSION")
-        ?: sanitizedSha?.let { "0.0.0-${it.take(SHORT_SHA_LENGTH)}-SNAPSHOT" }
-        ?: "0.0.0-latest"
+        ?: sanitizedSha?.let { "latest-commit-${it.take(SHORT_SHA_LENGTH)}" }
+        ?: "latest"
 }
 
 version = determineVersion()
