@@ -100,6 +100,19 @@ tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
             suppress.set(false)
         }
     }
+
+    doLast {
+        val iconUrl = "https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg"
+        val iconRegex = Regex("""(\.\./)*images/logo-icon\.svg""")
+        outputDirectory.get().asFile
+            .walkTopDown()
+            .filter { it.isFile && (it.extension == "html" || it.name == "logo-styles.css") }
+            .forEach { file ->
+                val original = file.readText()
+                val replaced = iconRegex.replace(original, iconUrl)
+                if (replaced != original) file.writeText(replaced)
+            }
+    }
 }
 
 // Tuple generator task
