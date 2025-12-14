@@ -66,6 +66,12 @@ a:hover {
   border-bottom-color: var(--link-hover);
 }
 
+a.external-link::after {
+  content: " ↗";
+  font-size: 0.9em;
+  margin-left: 0.35rem;
+}
+
 /* Beautiful code blocks */
 pre {
   background: var(--code-bg);

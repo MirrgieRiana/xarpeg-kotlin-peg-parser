@@ -7,7 +7,7 @@ title: Xarpeg: Kotlin PEG Parser Guide
 
 This guide is split into themed subpages so you can learn step by step. For API signatures, rely on IDE completion and KDoc.
 
-When adding the library to your project, replace `<latest-version>` with the version shown on [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
+When adding the library to your project, replace `<latest-version>` with the version shown on [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases){: .external-link }.
 
 ## Reading path (hub)
 
@@ -28,7 +28,7 @@ When adding the library to your project, replace `<latest-version>` with the ver
 
 Want to see a real-world parser in action? Check out the full JSON parser implementation that handles all JSON data types including strings with escape sequences, numbers, booleans, null, arrays, and nested objects with recursion.
 
-→ [src/commonTest/kotlin/JsonParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt)
+→ [src/commonTest/kotlin/JsonParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt){: .external-link }
 
 This example demonstrates:
 - Parsing strings with escape sequences (`\"`, `\\`, `\n`, `\uXXXX`, etc.)
@@ -39,6 +39,6 @@ This example demonstrates:
 
 ## When you want more detail
 
-- For observed behavior, the tests in [imported/src/commonTest/kotlin/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/ParserTest.kt) are a quick reference.
-- For implementation details, browse [imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg).
+- For observed behavior, the tests in [imported/src/commonTest/kotlin/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/imported/src/commonTest/kotlin/ParserTest.kt){: .external-link } are a quick reference.
+- For implementation details, browse [imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/imported/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg){: .external-link }.
 - For return types and signatures, rely on IDE KDoc and code completion.
