@@ -13,6 +13,9 @@ sealed class Value {
     data class NumberValue(val value: Double) : Value() {
         override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
     }
+    data class BooleanValue(val value: Boolean) : Value() {
+        override fun toString() = value.toString()
+    }
     data class LambdaValue(val params: List<String>, val body: () -> Value, val capturedVars: MutableMap<String, Value>) : Value() {
         override fun toString() = "<lambda(${params.joinToString(", ")})>"
     }
@@ -146,6 +149,69 @@ private object ExpressionGrammar {
         }
     }
 
+    // Ordering comparison operators: <, <=, >, >=
+    private val orderingComparison: Parser<() -> Value> = leftAssociative(
+        sum,
+        whitespace * (+Regex("<=|>=|<|>") map { it.value }) * whitespace
+    ) { a, op, b ->
+        {
+            val aVal = a()
+            val bVal = b()
+            if (aVal !is Value.NumberValue) throw EvaluationException("Left operand of $op must be a number")
+            if (bVal !is Value.NumberValue) throw EvaluationException("Right operand of $op must be a number")
+            val result = when (op) {
+                "<" -> aVal.value < bVal.value
+                "<=" -> aVal.value <= bVal.value
+                ">" -> aVal.value > bVal.value
+                ">=" -> aVal.value >= bVal.value
+                else -> throw EvaluationException("Unknown comparison operator: $op")
+            }
+            Value.BooleanValue(result)
+        }
+    }
+
+    // Equality comparison operators: ==, !=
+    private val equalityComparison: Parser<() -> Value> by lazy {
+        leftAssociative(
+            orderingComparison,
+            whitespace * (+Regex("==|!=") map { it.value }) * whitespace
+        ) { a, op, b ->
+            {
+                val aVal = a()
+                val bVal = b()
+                val result = when (op) {
+                    "==" -> {
+                        when {
+                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value == bVal.value
+                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value == bVal.value
+                            else -> throw EvaluationException("Operands of == must be both numbers or both booleans")
+                        }
+                    }
+                    "!=" -> {
+                        when {
+                            aVal is Value.NumberValue && bVal is Value.NumberValue -> aVal.value != bVal.value
+                            aVal is Value.BooleanValue && bVal is Value.BooleanValue -> aVal.value != bVal.value
+                            else -> throw EvaluationException("Operands of != must be both numbers or both booleans")
+                        }
+                    }
+                    else -> throw EvaluationException("Unknown comparison operator: $op")
+                }
+                Value.BooleanValue(result)
+            }
+        }
+    }
+
+    // Ternary operator: condition ? trueExpr : falseExpr
+    private val ternary: Parser<() -> Value> by lazy {
+        ((parser { equalityComparison } * whitespace * -'?' * whitespace * parser { equalityComparison } * whitespace * -':' * whitespace * parser { equalityComparison }) map { (cond, trueExpr, falseExpr) ->
+            {
+                val condVal = cond()
+                if (condVal !is Value.BooleanValue) throw EvaluationException("Condition in ternary operator must be a boolean")
+                if (condVal.value) trueExpr() else falseExpr()
+            }
+        }) + equalityComparison
+    }
+
     // Assignment: variable = expression
     private val assignment: Parser<() -> Value> by lazy {
         ((identifier * whitespace * -'=' * whitespace * parser { expression }) map { (name, valueParser) ->
@@ -154,7 +220,7 @@ private object ExpressionGrammar {
                 variables[name] = value
                 value
             }
-        }) + sum
+        }) + ternary
     }
 
     val root = whitespace * expression * whitespace
