@@ -8,7 +8,9 @@ plugins {
 group = "io.github.mirrgieriana.xarpite"
 version = System.getenv("VERSION") ?: "1.0.0-SNAPSHOT"
 
-val repoPath = providers.gradleProperty("repoPath").orElse("MirrgieRiana/xarpeg-kotlin-peg-parser")
+val defaultRepoPath = "MirrgieRiana/xarpeg-kotlin-peg-parser"
+val defaultRepoName = "xarpeg-kotlin-peg-parser"
+val repoPath = providers.gradleProperty("repoPath").orElse(defaultRepoPath)
 val repoName = providers.gradleProperty("repoName").orElse(repoPath.map { it.substringAfter('/') })
 
 repositories {
@@ -22,6 +24,11 @@ tasks.register("propagateRepoName") {
     val repoPathValue = repoPath.get()
     val repoNameValue = repoName.get()
     val projectDir = layout.projectDirectory.asFile
+    val replacementPattern = Regex("MirrgieRiana/xarpeg-kotlin-peg-parser|xarpeg-kotlin-peg-parser")
+
+    fun needsReplacement(content: String): Boolean =
+        (repoPathValue != defaultRepoPath && content.contains(defaultRepoPath)) ||
+            (repoNameValue != defaultRepoName && content.contains(defaultRepoName))
 
     inputs.property("repoPath", repoPathValue)
     inputs.property("repoName", repoNameValue)
@@ -37,21 +44,37 @@ tasks.register("propagateRepoName") {
         "samples/online-parser/src/jsMain/resources/index.html"
     ).map { projectDir.resolve(it) }
 
-    val replacementPattern = Regex("MirrgieRiana/xarpeg-kotlin-peg-parser|xarpeg-kotlin-peg-parser")
+    outputs.files(targets)
+    outputs.upToDateWhen {
+        targets.none { file ->
+            file.isFile && needsReplacement(file.readText())
+        }
+    }
 
     doLast {
         targets.forEach { file ->
             if (!file.isFile) return@forEach
 
             val original = file.readText()
+            if (!needsReplacement(original)) return@forEach
+
             val updated = replacementPattern.replace(original) { match ->
                 if (match.value.contains("/")) repoPathValue else repoNameValue
+            }
+            if (needsReplacement(updated)) {
+                error("Repository placeholders still present in ${file.relativeTo(projectDir)}")
             }
             if (updated != original) {
                 file.writeText(updated)
                 println("Updated ${file.relativeTo(projectDir)}")
             }
         }
+    }
+}
+
+project(":doc-test") {
+    tasks.matching { it.name == "generateSrc" }.configureEach {
+        dependsOn(rootProject.tasks.named("propagateRepoName"))
     }
 }
 
