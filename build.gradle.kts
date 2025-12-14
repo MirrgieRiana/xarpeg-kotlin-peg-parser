@@ -12,6 +12,10 @@ repositories {
     mavenCentral()
 }
 
+val enableNativeTargets by lazy {
+    providers.gradleProperty("enableNativeTargets").map { it.toBoolean() }.getOrElse(false)
+}
+
 kotlin {
     // JVM target
     jvm {
@@ -26,20 +30,22 @@ kotlin {
         nodejs()
     }
 
-    // Native target for Linux x64
-    linuxX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+    if (enableNativeTargets) {
+        // Native target for Linux x64
+        linuxX64 {
+            binaries {
+                executable {
+                    entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+                }
             }
         }
-    }
 
-    // Native target for Windows x64
-    mingwX64 {
-        binaries {
-            executable {
-                entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+        // Native target for Windows x64
+        mingwX64 {
+            binaries {
+                executable {
+                    entryPoint = "io.github.mirrgieriana.xarpite.xarpeg.main"
+                }
             }
         }
     }
