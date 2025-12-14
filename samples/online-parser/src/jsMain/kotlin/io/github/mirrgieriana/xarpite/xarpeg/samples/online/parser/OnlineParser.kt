@@ -62,18 +62,16 @@ class EvaluationException(
 ) : Exception(message, cause) {
     fun formatWithCallStack(): String {
         val sb = StringBuilder()
-        sb.append("Error: $message\n")
+        sb.append("Error: $message")
         
         if (context != null && context.callStack.isNotEmpty()) {
-            sb.append("\nCall stack:\n")
-            context.callStack.asReversed().forEachIndexed { index, frame ->
+            context.callStack.asReversed().forEach { frame ->
                 val location = if (sourceCode != null) {
                     frame.position.formatLineColumn(sourceCode)
                 } else {
                     "position ${frame.position.start}-${frame.position.end}"
                 }
-                sb.append("  ${index + 1}. ${frame.functionName} at $location\n")
-                sb.append("     Code: ${frame.position.text}\n")
+                sb.append("\n  at $location: ${frame.position.text}")
             }
         }
         

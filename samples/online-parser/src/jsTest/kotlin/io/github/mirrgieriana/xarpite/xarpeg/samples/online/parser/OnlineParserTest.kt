@@ -444,7 +444,7 @@ class OnlineParserTest {
         // Create a function that causes error in deep recursion
         val result = parseExpression("crash = (n) -> n <= 0 ? 1 / 0 : crash(n - 1)\ncrash(3)")
         assertTrue(result.startsWith("Error"))
-        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("at line"))
         assertTrue(result.contains("crash"))
     }
 
@@ -453,7 +453,7 @@ class OnlineParserTest {
         // Create nested function calls that cause an error
         val result = parseExpression("f = (x) -> g(x)\ng = (x) -> 1 / 0\nf(5)")
         assertTrue(result.startsWith("Error"))
-        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("at line"))
         // Both functions should appear in the stack
         assertTrue(result.contains("f"))
         assertTrue(result.contains("g"))
