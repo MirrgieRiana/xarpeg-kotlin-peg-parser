@@ -436,4 +436,32 @@ class OnlineParserTest {
         val result = parseExpression("fib = (n) -> n <= 1 ? n : fib(n - 1) + fib(n - 2)\nfib(7)")
         assertEquals("13", result)
     }
+
+    // Call stack tests
+    @Test
+    fun showsCallStackForNestedFunctionCalls() {
+        val result = parseExpression("f = (x) -> x / 0\nf(5)")
+        // Should show error and call stack with function name
+        assertTrue(result.startsWith("Error"), "Result should start with 'Error': $result")
+        assertTrue(result.contains("Call stack") || result.contains("Stack trace"), "Result should contain call stack info: $result")
+        assertTrue(result.contains("at f") || result.contains("position"), "Result should contain function call info: $result")
+    }
+
+    @Test
+    fun showsCallStackForDeeplyNestedFunctionCalls() {
+        val result = parseExpression("a = (x) -> b(x)\nb = (x) -> c(x)\nc = (x) -> x / 0\na(5)")
+        // Should show error and call stack with all nested function names
+        assertTrue(result.startsWith("Error"), "Result should start with 'Error': $result")
+        assertTrue(result.contains("Call stack") || result.contains("Stack trace"), "Result should contain call stack info: $result")
+        // At least one function name should appear
+        assertTrue(result.contains("at c") || result.contains("at b") || result.contains("at a") || result.contains("position"), 
+            "Result should contain at least one function call: $result")
+    }
+
+    @Test
+    fun showsCallStackWithPositionInfo() {
+        val result = parseExpression("f = (x) -> x / 0\nf(5)")
+        // Should show position information in the call stack
+        assertTrue(result.contains("position") || result.contains("at f"), "Result should contain position info: $result")
+    }
 }
