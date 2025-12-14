@@ -161,14 +161,40 @@ private object ExpressionGrammar {
 }
 
 @JsExport
-fun parseExpression(input: String): String =
-    try {
+fun parseExpression(input: String): String {
+    return try {
         // Reset variables for each evaluation to ensure each call is independent
-        // This is intentional for the online demo - each expression is evaluated in isolation
         ExpressionGrammar.variables.clear()
-        val resultParser = ExpressionGrammar.root.parseAllOrThrow(input)
-        val result = resultParser()
-        result.toString()
+        
+        // Try to parse as a single expression first
+        // If parsing succeeds, evaluate and return the result
+        try {
+            val resultParser = ExpressionGrammar.root.parseAllOrThrow(input)
+            val result = resultParser()
+            return result.toString()
+        } catch (e: Exception) {
+            // If single expression fails, try as multi-line program
+            // Split input into lines and evaluate each line
+            val lines = input.lines().filter { it.trim().isNotEmpty() }
+            if (lines.isEmpty()) {
+                return ""
+            }
+            
+            // If there's only one line, rethrow the original error
+            if (lines.size == 1) {
+                throw e
+            }
+            
+            val results = mutableListOf<Value>()
+            for (line in lines) {
+                val lineParser = ExpressionGrammar.root.parseAllOrThrow(line)
+                val lineResult = lineParser()
+                results.add(lineResult)
+            }
+            
+            // Return the last result
+            return results.last().toString()
+        }
     } catch (e: EvaluationException) {
         val stackTrace = e.stackTraceToString()
             .lines()
@@ -182,3 +208,4 @@ fun parseExpression(input: String): String =
             .joinToString("\n")
         "Error: ${e.message}\n\nStack trace:\n$stackTrace"
     }
+}

@@ -352,25 +352,30 @@
                         <p class="example-title">Lambda Function</p>
                         <code class="example-code">add = (a, b) -> a + b</code>
                     </div>
-                    <div class="example-card" data-example="double = (x) -> x * 2">
+                    <div class="example-card" data-example="double = (x) -> x * 2&#10;double(7)">
                         <p class="example-title">Single Parameter Lambda</p>
-                        <code class="example-code">double = (x) -> x * 2</code>
+                        <code class="example-code">double = (x) -> x * 2
+double(7)</code>
                     </div>
-                    <div class="example-card" data-example="result = (10 + 5) * 2 - 8">
+                    <div class="example-card" data-example="result = (10 + 5) * 2 - 8&#10;result">
                         <p class="example-title">Complex Expression</p>
-                        <code class="example-code">result = (10 + 5) * 2 - 8</code>
+                        <code class="example-code">result = (10 + 5) * 2 - 8
+result</code>
                     </div>
-                    <div class="example-card" data-example="calc = (x, y) -> (x + y) * 2">
+                    <div class="example-card" data-example="calc = (x, y) -> (x + y) * 2&#10;calc(3, 5)">
                         <p class="example-title">Multi-param Lambda</p>
-                        <code class="example-code">calc = (x, y) -> (x + y) * 2</code>
+                        <code class="example-code">calc = (x, y) -> (x + y) * 2
+calc(3, 5)</code>
                     </div>
-                    <div class="example-card" data-example="pi = 3.14159">
+                    <div class="example-card" data-example="pi = 3.14159&#10;pi * 2">
                         <p class="example-title">Decimal Numbers</p>
-                        <code class="example-code">pi = 3.14159</code>
+                        <code class="example-code">pi = 3.14159
+pi * 2</code>
                     </div>
-                    <div class="example-card" data-example="my_var_123 = 42">
+                    <div class="example-card" data-example="my_var_123 = 42&#10;my_var_123 + 8">
                         <p class="example-title">Identifier with Numbers</p>
-                        <code class="example-code">my_var_123 = 42</code>
+                        <code class="example-code">my_var_123 = 42
+my_var_123 + 8</code>
                     </div>
                 </div>
             </div>
@@ -396,17 +401,17 @@
             <div class="section">
                 <label>Grammar (PEG)</label>
                 <p class="muted-text">This grammar includes arithmetic operations, variables, lambda expressions, and function calls.</p>
-                <pre class="code-block"><code>Expression  &lt;- _ Assignment _
-Assignment  &lt;- (Identifier _ '=' _ Assignment) / Sum
-Sum         &lt;- Product (_ ('+' / '-') _ Product)*
-Product     &lt;- Factor (_ ('*' / '/') _ Factor)*
-Factor      &lt;- Lambda / FunctionCall / Variable / Number / '(' _ Expression _ ')'
-Lambda      &lt;- '(' _ (Identifier _ (',' _ Identifier _)*)? ')' _ '-&gt;' _ Expression
-FunctionCall&lt;- Identifier _ '(' _ (Expression _ (',' _ Expression _)*)? ')'
-Variable    &lt;- Identifier
-Identifier  &lt;- [a-zA-Z_][a-zA-Z0-9_]*
-Number      &lt;- [0-9]+ ('.' [0-9]+)?
-_           &lt;- [ \t\r\n]*</code></pre>
+                <pre class="code-block"><code>Expression   &lt;- _ Assignment _
+Assignment   &lt;- (Identifier _ '=' _ Assignment) / Sum
+Sum          &lt;- Product (_ ('+' / '-') _ Product)*
+Product      &lt;- Factor (_ ('*' / '/') _ Factor)*
+Factor       &lt;- Lambda / FunctionCall / Variable / Number / '(' _ Expression _ ')'
+Lambda       &lt;- '(' _ (Identifier _ (',' _ Identifier _)*)? ')' _ '-&gt;' _ Expression
+FunctionCall &lt;- Identifier _ '(' _ (Expression _ (',' _ Expression _)*)? ')'
+Variable     &lt;- Identifier
+Identifier   &lt;- [a-zA-Z_][a-zA-Z0-9_]*
+Number       &lt;- [0-9]+ ('.' [0-9]+)?
+_            &lt;- [ \t\r\n]*</code></pre>
         </div>
     </main>
 
@@ -467,8 +472,6 @@ _           &lt;- [ \t\r\n]*</code></pre>
             updateUrlQuery();
             updateOutput();
             input.focus();
-            // Scroll to input
-            input.scrollIntoView({ behavior: "smooth", block: "center" });
         };
 
         // Event listeners
