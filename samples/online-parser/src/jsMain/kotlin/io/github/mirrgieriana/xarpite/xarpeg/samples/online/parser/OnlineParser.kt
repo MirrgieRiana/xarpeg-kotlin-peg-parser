@@ -295,10 +295,10 @@ private object ExpressionGrammar {
                         throw EvaluationException("Right operand of $op must be a number", newCtx, ctx.sourceCode)
                     }
                     val compareResult = when (op) {
-                        "<" -> (result as Value.NumberValue).value < (rightVal as Value.NumberValue).value
-                        "<=" -> (result as Value.NumberValue).value <= (rightVal as Value.NumberValue).value
-                        ">" -> (result as Value.NumberValue).value > (rightVal as Value.NumberValue).value
-                        ">=" -> (result as Value.NumberValue).value >= (rightVal as Value.NumberValue).value
+                        "<" -> result.value < rightVal.value
+                        "<=" -> result.value <= rightVal.value
+                        ">" -> result.value > rightVal.value
+                        ">=" -> result.value >= rightVal.value
                         else -> {
                             val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$op operator", opPosition))
                             throw EvaluationException("Unknown comparison operator: $op", newCtx, ctx.sourceCode)
