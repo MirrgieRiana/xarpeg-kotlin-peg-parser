@@ -2,5 +2,5 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
-rootProject.name = "xarpeg-kotlin-peg-parser"
+rootProject.name = providers.gradleProperty("repositoryName").get()
 include("doc-test")
