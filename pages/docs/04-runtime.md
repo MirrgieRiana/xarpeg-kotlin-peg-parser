@@ -33,4 +33,4 @@ Next, learn how to work with parsing positions using `mapEx` to extract location
 → [Step 5: Working with parsing positions](05-positions.md)
 
 Or return to the guide hub for more patterns and advanced features.  
-← [docs/index.md](index.md)
+← [index.md](index.md)
