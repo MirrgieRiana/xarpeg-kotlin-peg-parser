@@ -169,7 +169,3 @@ This approach scales well to more complex scenarios like:
 - Different string quote styles (`"..."`, `'...'`, `"""..."""`)
 
 Each addition is a localized change to the relevant parser, not a redesign of the entire token vocabulary.
-
----
-
-← [index.md](index.md)

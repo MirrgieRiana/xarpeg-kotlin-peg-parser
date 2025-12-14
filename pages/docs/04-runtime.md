@@ -31,4 +31,3 @@ Disable with `parseAllOrThrow(input, useCache = false)` if you want lower memory
 
 Next, learn how to work with parsing positions using `mapEx` to extract location information when you need it.  
 → [Step 5: Working with parsing positions](05-positions.md)
-← [index.md](index.md)
