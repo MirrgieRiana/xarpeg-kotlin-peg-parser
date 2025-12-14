@@ -32,7 +32,7 @@ private object ExpressionGrammar {
     val variables = mutableMapOf<String, Value>()
 
     // Forward declarations
-    val expression: Parser<() -> Value> = ref { assignment }
+    val expression: Parser<() -> Value> by lazy { assignment }
 
     // Variable reference
     private val variableRef: Parser<() -> Value> = identifier map { name ->
@@ -42,7 +42,7 @@ private object ExpressionGrammar {
     }
 
     // Helper to parse comma-separated list of identifiers
-    private val identifierList: Parser<List<String>> = ref {
+    private val identifierList: Parser<List<String>> by lazy {
         val restItem = whitespace * -',' * whitespace * identifier
         (identifier * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
@@ -53,7 +53,7 @@ private object ExpressionGrammar {
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
     // Lambda expression: (param1, param2, ...) -> body
-    private val lambda: Parser<() -> Value> = ref {
+    private val lambda: Parser<() -> Value> by lazy {
         (paramList * whitespace * -Regex("->") * whitespace * parser { expression }) map { (params, bodyParser) ->
             {
                 // Capture current variable state
@@ -64,19 +64,19 @@ private object ExpressionGrammar {
     }
 
     // Helper to parse comma-separated list of expressions
-    private val exprList: Parser<List<() -> Value>> = ref {
+    private val exprList: Parser<List<() -> Value>> by lazy {
         val restItem = whitespace * -',' * whitespace * parser { expression }
         (parser { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
     }
 
     // Argument list for function calls: (arg1, arg2) or ()
     // The alternative (whitespace map { emptyList() }) handles empty argument lists: ()
-    private val argList: Parser<List<() -> Value>> = ref {
+    private val argList: Parser<List<() -> Value>> by lazy {
         -'(' * whitespace * (exprList + (whitespace map { emptyList<() -> Value>() })) * whitespace * -')'
     }
 
     // Function call: identifier(arg1, arg2, ...)
-    private val functionCall: Parser<() -> Value> = ref {
+    private val functionCall: Parser<() -> Value> by lazy {
         (identifier * whitespace * argList) map { (name, args) ->
             {
                 val func = variables[name] ?: throw EvaluationException("Undefined function: $name")
@@ -108,12 +108,12 @@ private object ExpressionGrammar {
     }
 
     // Primary expression: number, variable reference, function call, lambda, or grouped expression
-    private val primary: Parser<() -> Value> = ref {
+    private val primary: Parser<() -> Value> by lazy {
         lambda + functionCall + variableRef + (number map { v -> { v } }) + 
             (-'(' * whitespace * parser { expression } * whitespace * -')')
     }
 
-    private val factor: Parser<() -> Value> = ref { primary }
+    private val factor: Parser<() -> Value> by lazy { primary }
 
     private val product: Parser<() -> Value> = leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { a, op, b ->
         {
@@ -147,7 +147,7 @@ private object ExpressionGrammar {
     }
 
     // Assignment: variable = expression
-    private val assignment: Parser<() -> Value> = ref {
+    private val assignment: Parser<() -> Value> by lazy {
         ((identifier * whitespace * -'=' * whitespace * parser { expression }) map { (name, valueParser) ->
             {
                 val value = valueParser()
