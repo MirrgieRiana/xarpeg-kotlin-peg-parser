@@ -10,11 +10,14 @@ fun interface Parser<out T : Any> {
 
 class ParseContext(val src: String, val useCache: Boolean) {
     private val cache = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
+    var errorPosition: Int = 0
+    val suggestedParsers = mutableSetOf<Parser<*>>()
+
     fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
-        return if (useCache) {
+        val result = if (useCache) {
             val key = Pair(parser, start)
             if (key in cache) {
-                cache[key] as ParseResult<T>?
+                return cache[key] as ParseResult<T>?
             } else {
                 val result = parser.parseOrNull(this, start)
                 cache[key] = result
@@ -23,6 +26,14 @@ class ParseContext(val src: String, val useCache: Boolean) {
         } else {
             parser.parseOrNull(this, start)
         }
+        if (result == null && start >= errorPosition) {
+            if (start > errorPosition) {
+                errorPosition = start
+                suggestedParsers.clear()
+            }
+            suggestedParsers += parser
+        }
+        return result
     }
 }
 
