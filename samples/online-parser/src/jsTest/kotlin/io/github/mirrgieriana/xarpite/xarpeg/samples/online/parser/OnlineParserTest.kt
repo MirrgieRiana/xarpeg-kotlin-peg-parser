@@ -80,9 +80,10 @@ class OnlineParserTest {
     }
 
     @Test
-    fun showsStackTraceInError() {
+    fun showsErrorMessageForDivisionByZero() {
         val result = parseExpression("1 / 0")
-        assertTrue(result.contains("Stack trace"))
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
     }
 
     // Lambda expression tests
@@ -443,7 +444,7 @@ class OnlineParserTest {
         // Create a function that causes error in deep recursion
         val result = parseExpression("crash = (n) -> n <= 0 ? 1 / 0 : crash(n - 1)\ncrash(3)")
         assertTrue(result.startsWith("Error"))
-        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("at line"))
         assertTrue(result.contains("crash"))
     }
 
@@ -452,7 +453,7 @@ class OnlineParserTest {
         // Create nested function calls that cause an error
         val result = parseExpression("f = (x) -> g(x)\ng = (x) -> 1 / 0\nf(5)")
         assertTrue(result.startsWith("Error"))
-        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("at line"))
         // Both functions should appear in the stack
         assertTrue(result.contains("f"))
         assertTrue(result.contains("g"))
@@ -499,7 +500,7 @@ class OnlineParserTest {
         val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
         assertTrue(result.startsWith("Error"))
         assertTrue(result.contains("Division by zero"))
-        assertTrue(result.contains("Call stack"))
+        assertTrue(result.contains("at line"))
         assertTrue(result.contains("func1"))
         assertTrue(result.contains("func2"))
     }
