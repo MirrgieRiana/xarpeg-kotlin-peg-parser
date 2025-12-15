@@ -3,6 +3,7 @@ package io.github.mirrgieriana.xarpite.xarpeg.parsers
 import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.impl.escapeDoubleQuote
 import io.github.mirrgieriana.xarpite.xarpeg.isNative
 
 class CharParser(val char: Char) : Parser<Char> {
@@ -11,6 +12,8 @@ class CharParser(val char: Char) : Parser<Char> {
         if (context.src[start] != char) return null
         return ParseResult(char, start, start + 1)
     }
+
+    override val name by lazy { "\"" + "$char".escapeDoubleQuote() + "\"" }
 
     companion object {
         val cache = mutableMapOf<Char, CharParser>()

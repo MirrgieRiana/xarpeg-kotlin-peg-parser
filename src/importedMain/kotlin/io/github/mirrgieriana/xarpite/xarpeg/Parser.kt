@@ -6,10 +6,14 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.normalize
 
 fun interface Parser<out T : Any> {
     fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>?
+    val name: String? get() = null
 }
+
+val Parser<*>.nameOrString get() = this.name ?: this.toString()
 
 class ParseContext(val src: String, val useCache: Boolean) {
     private val cache = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
+    var isInNamedParser = false
     var errorPosition: Int = 0
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
@@ -19,14 +23,28 @@ class ParseContext(val src: String, val useCache: Boolean) {
             if (key in cache) {
                 return cache[key] as ParseResult<T>?
             } else {
-                val result = parser.parseOrNull(this, start)
+                val result = if (!isInNamedParser && parser.name != null) {
+                    isInNamedParser = true
+                    val result = parser.parseOrNull(this, start)
+                    isInNamedParser = false
+                    result
+                } else {
+                    parser.parseOrNull(this, start)
+                }
                 cache[key] = result
                 result
             }
         } else {
-            parser.parseOrNull(this, start)
+            if (!isInNamedParser && parser.name != null) {
+                isInNamedParser = true
+                val result = parser.parseOrNull(this, start)
+                isInNamedParser = false
+                result
+            } else {
+                parser.parseOrNull(this, start)
+            }
         }
-        if (result == null && start >= errorPosition) {
+        if (result == null && !isInNamedParser && start >= errorPosition) {
             if (start > errorPosition) {
                 errorPosition = start
                 suggestedParsers.clear()

@@ -10,6 +10,8 @@ class RegexParser(val regex: Regex) : Parser<MatchResult> {
         val matchResult = regex.matchAt(context.src, start) ?: return null
         return ParseResult(matchResult, start, matchResult.range.last + 1)
     }
+
+    override val name by lazy { regex.toString() }
 }
 
 fun Regex.toParser() = RegexParser(this)
