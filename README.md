@@ -147,7 +147,7 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 
 ### Xarpite
 
-**Xarpite** is a practical application built using Xarpeg. It demonstrates how this library can be used in real-world scenarios to parse complex grammars efficiently.
+**[Xarpite](https://github.com/MirrgieRiana/Xarpite)** is a practical application built using Xarpeg. It demonstrates how this library can be used in real-world scenarios to parse complex grammars efficiently.
 
 Xarpite serves as both:
 - A **working example** of the parser library in action
