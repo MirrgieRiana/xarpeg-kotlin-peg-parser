@@ -43,13 +43,13 @@ private object ArithmeticParser {
         val value = result.value.value.toInt()
         LazyValue(result.start) { value }
     }
-    
+
     // Parse a grouped expression with parentheses
     val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
-    
+
     // Primary expression: number or grouped
     val primary: Parser<LazyValue> = number + grouped
-    
+
     // Multiplication and division (higher precedence)
     val product: Parser<LazyValue> = leftAssociative(
         primary,
@@ -72,7 +72,7 @@ private object ArithmeticParser {
             else -> error("Unknown operator: ${op.op}")
         }
     }
-    
+
     // Addition and subtraction (lower precedence)
     val sum: Parser<LazyValue> = leftAssociative(product, +'+' + +'-') { a, op, b ->
         when (op) {
@@ -81,7 +81,7 @@ private object ArithmeticParser {
             else -> error("Unknown operator: $op")
         }
     }
-    
+
     // Root expression
     val expr: Parser<LazyValue> = sum
 }
@@ -94,14 +94,14 @@ fun indexToPosition(text: String, index: Int): Pair<Int, Int> {
     text.forEachIndexed { i, char ->
         if (char == '\n') lineStartIndices.add(i + 1)
     }
-    
-    val lineIndex = lineStartIndices.binarySearch(index).let { 
-        if (it >= 0) it else -it - 2 
+
+    val lineIndex = lineStartIndices.binarySearch(index).let {
+        if (it >= 0) it else -it - 2
     }
     val lineStart = lineStartIndices[lineIndex]
     val line = lineIndex + 1
     val column = index - lineStart + 1
-    
+
     return Pair(line, column)
 }
 
@@ -113,13 +113,13 @@ fun indexToPosition(text: String, index: Int): Pair<Int, Int> {
  */
 fun evaluate(expression: String): Int {
     val lazyResult = ArithmeticParser.expr.parseAllOrThrow(expression)
-    
+
     try {
         return lazyResult.compute()
     } catch (e: DivisionByZeroException) {
         // Convert position to line and column
         val (line, column) = indexToPosition(expression, e.position)
-        
+
         throw DivisionByZeroException(
             e.message ?: "Division by zero",
             e.position,
@@ -135,15 +135,15 @@ fun main(args: Array<String>) {
         println("Example: interpreter -e \"2+3*4\"")
         return
     }
-    
+
     if (args.size < 2) {
         println("Error: No expression provided")
         println("Usage: interpreter -e <expression>")
         return
     }
-    
+
     val expression = args[1]
-    
+
     try {
         val result = evaluate(expression)
         println(result)

@@ -529,7 +529,7 @@ class OnlineParserTest {
         val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
         assertTrue(result.startsWith("Error"))
         assertTrue(result.contains("Division by zero"))
-        // The error should show line 3 for func2 call and line 2 for func1 call  
+        // The error should show line 3 for func2 call and line 2 for func1 call
         assertTrue(result.contains("line 3") || result.contains("line 2"))
     }
 }
