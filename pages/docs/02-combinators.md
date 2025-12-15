@@ -182,6 +182,40 @@ Named parsers compose naturally with all other combinators:
 - Repetition: `namedParser.oneOrMore`
 - Mapping: `namedParser map { ... }`
 
+### Named composite parsers and error messages
+
+When you name a composite parser, it affects which parsers appear in error suggestions. A named composite parser hides its constituent parsers from error messages, showing only the composite name:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+fun main() {
+    val parserA = (+'a') named "letter_a"
+    val parserB = (+'b') named "letter_b"
+    
+    // Named composite - only "ab_sequence" appears in error suggestions
+    val namedComposite = (parserA * parserB) named "ab_sequence"
+    
+    // Unnamed composite - "letter_a" appears in error suggestions
+    val unnamedComposite = parserA * parserB
+    
+    val context1 = ParseContext("c", useCache = true)
+    context1.parseOrNull(namedComposite, 0)
+    println(context1.suggestedParsers.map { it.name }) // ["ab_sequence"]
+    
+    val context2 = ParseContext("c", useCache = true)
+    context2.parseOrNull(unnamedComposite, 0)
+    println(context2.suggestedParsers.map { it.name }) // ["letter_a"]
+}
+```
+
+This behavior helps you control error message granularity:
+- **Name composite parsers** for high-level semantic errors: `"Expected: identifier"` is clearer than `"Expected: letter"`
+- **Leave composites unnamed** for detailed token-level errors when debugging or building new grammars
+
+> **Note**: To get proper named parser handling, call parsers through `context.parseOrNull(parser, start)` rather than `parser.parseOrNull(context, start)`. The former ensures the `isInNamedParser` flag is set correctly.
+
 > **Note**: Naming is optional and primarily benefits error reporting and debugging. It does not affect parsing behavior or performance significantly.
 
 Next, handle recursion and associativity to build expression parsers with less code.  
