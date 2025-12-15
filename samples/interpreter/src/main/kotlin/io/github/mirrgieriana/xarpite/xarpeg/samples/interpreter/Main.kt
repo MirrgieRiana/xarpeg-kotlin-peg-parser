@@ -4,7 +4,6 @@ import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -43,7 +42,7 @@ private object ArithmeticParser {
     val number: Parser<LazyValue> = +Regex("[0-9]+") mapEx { _, result ->
         val value = result.value.value.toInt()
         LazyValue(result.start) { value }
-    } named "number"
+    }
     
     // Parse a grouped expression with parentheses
     val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
