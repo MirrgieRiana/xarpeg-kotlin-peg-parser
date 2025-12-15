@@ -155,8 +155,6 @@ Xarpite serves as both:
 
 The parser component that powers Xarpite was refined over time and eventually extracted into this standalone library to make it reusable across different Kotlin Multiplatform projects.
 
-**Repository:** [github.com/MirrgieRiana/Xarpite](https://github.com/MirrgieRiana/Xarpite)
-
 Exploring the Xarpite source code can provide additional insights into:
 - Structuring larger parser grammars
 - Integrating the parser into a complete application
@@ -252,7 +250,7 @@ Xarpeg is distributed under the MIT License. See the [LICENSE](https://github.co
 
 ## About
 
-This library began as a parser component inside the Xarpite project and was extracted into a standalone, reusable PEG-style parser toolkit for Kotlin Multiplatform.
+This library began as a parser component inside the [Xarpite](https://github.com/MirrgieRiana/Xarpite) project and was extracted into a standalone, reusable PEG-style parser toolkit for Kotlin Multiplatform.
 
 ---
 
