@@ -2,6 +2,8 @@ package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class OnlineParserTest {
@@ -531,5 +533,51 @@ class OnlineParserTest {
         assertTrue(result.contains("Division by zero"))
         // The error should show line 3 for func2 call and line 2 for func1 call  
         assertTrue(result.contains("line 3") || result.contains("line 2"))
+    }
+    
+    @Test
+    fun divisionErrorShowsOperatorRangeWithContext() {
+        // Test that division by zero error shows the operator range with full line context
+        val result = parseExpression("a = 1 + (4 / 0) - 4")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // Should show the line with the problematic range highlighted
+        assertTrue(result.contains("line 1"))
+        // The highlighted range should include the operator and operand(s)
+        assertTrue(result.contains("[") && result.contains("]"))
+        // Should show division operator
+        assertTrue(result.contains("/"))
+    }
+    
+    @Test
+    fun stackTraceShowsHighlightedRange() {
+        // Test that stack trace shows the full source line with highlighted problem range
+        val result = parseExpression("10 / 0")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // Should contain brackets to highlight the problem range
+        assertTrue(result.contains("[") && result.contains("]"))
+        // Should show the division in highlighted form
+        val lines = result.split("\n")
+        val stackLine = lines.find { it.contains("at line") }
+        assertNotNull(stackLine)
+        // The stack trace line should show the operator with highlighting
+        assertTrue(stackLine!!.contains("[") && stackLine.contains("]"))
+    }
+    
+    @Test
+    fun errorRangeDoesNotIncludeLeadingWhitespace() {
+        // Test that the error range starts at the operator, not before it
+        val result = parseExpression("a = 5 / 0")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        val lines = result.split("\n")
+        val stackLine = lines.find { it.contains("at line") }
+        assertNotNull(stackLine)
+        // The highlighted part should start with the operator, not whitespace
+        val highlighted = stackLine!!.substringAfter("[").substringBefore("]")
+        assertTrue(highlighted.startsWith("/") || highlighted.startsWith("/ "))
+        // Should not start with whitespace
+        assertFalse(highlighted.startsWith(" "))
     }
 }
