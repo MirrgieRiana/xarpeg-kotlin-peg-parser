@@ -119,10 +119,10 @@ fun <T : Any> Parser<T>.withPos(): Parser<Token> = this mapEx { ctx, result ->
     Token(result.text(ctx), line, col)
 }
 
-val word = +Regex("[a-z]+") map { it.value }
-val wordWithPos = word.withPos()
-
 fun main() {
+    val word = +Regex("[a-z]+") map { it.value }
+    val wordWithPos = word.withPos()
+    
     val input = "first\nsecond\nthird"
     val context = ParseContext(input, useCache = true)
     
@@ -144,32 +144,25 @@ Combine position tracking with error context for helpful messages:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-data class SyntaxError(
-    val message: String,
-    val line: Int,
-    val column: Int,
-    val expected: List<String>
-)
-
-fun parseWithErrors(input: String): Result<Int> {
+fun main() {
     val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     
-    return try {
-        Result.success(parser.parseAllOrThrow(input))
-    } catch (e: UnmatchedInputParseException) {
-        val pos = e.context.errorPosition
-        val prefix = input.substring(0, pos)
-        val line = prefix.count { it == '\n' } + 1
-        val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-        val expected = e.context.suggestedParsers.mapNotNull { it.name }
-        
-        Result.failure(Exception(
-            "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"
-        ))
+    fun parseWithErrors(input: String): Result<Int> {
+        return try {
+            Result.success(parser.parseAllOrThrow(input))
+        } catch (e: UnmatchedInputParseException) {
+            val pos = e.context.errorPosition
+            val prefix = input.substring(0, pos)
+            val line = prefix.count { it == '\n' } + 1
+            val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
+            val expected = e.context.suggestedParsers.mapNotNull { it.name }
+            
+            Result.failure(Exception(
+                "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"
+            ))
+        }
     }
-}
-
-fun main() {
+    
     val result = parseWithErrors("abc")
     println(result.isFailure)  // => true
 }
@@ -177,28 +170,13 @@ fun main() {
 
 ## Best Practices
 
-**Use `map` by default:**
-```kotlin
-val simple = +Regex("[0-9]+") map { it.value.toInt() }
-```
-Keep types simple when positions aren't needed.
+**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = +Regex("[0-9]+") map { it.value.toInt() }`).
 
-**Use `mapEx` when needed:**
-```kotlin
-val withPosition = parser mapEx { ctx, result ->
-    MyType(result.value, result.start, result.end)
-}
-```
-Extract positions only where required.
+**Use `mapEx` when needed** - Extract positions only where required.
 
-**Isolate position logic:**
-```kotlin
-fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = // ...
-```
-Create reusable helpers for position tracking.
+**Isolate position logic** - Create reusable helpers like `fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>>` for position tracking.
 
-**Remember: positions are always there:**
-You don't need to change your parser's return type throughout your grammar. Extract position information at boundaries where you need it.
+**Remember: positions are always there** - You don't need to change your parser's return type throughout your grammar. Extract position information at boundaries where you need it.
 
 ## Key Takeaways
 

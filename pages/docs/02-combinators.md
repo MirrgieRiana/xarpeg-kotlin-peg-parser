@@ -17,11 +17,11 @@ Try alternatives in order. The first match wins:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val keyword = (+"if" + +"while" + +"for") map { it.value } named "keyword"
+val keyword = (+"if" + +"while" + +"for") named "keyword"
 
 fun main() {
-    keyword.parseAllOrThrow("if")      // ✓ "if"
-    keyword.parseAllOrThrow("while")   // ✓ "while"
+    keyword.parseAllOrThrow("if")      // ✓ matches "if"
+    keyword.parseAllOrThrow("while")   // ✓ matches "while"
 }
 ```
 
@@ -33,15 +33,16 @@ fun main() {
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val sign = (+'+' + +'-').optional map { it.a?.value ?: '+' }
+val sign = ((+'+') map { '+' }) + ((+'-') map { '-' })
+val signOpt = sign.optional map { it.a ?: '+' }
 val unsigned = +Regex("[0-9]+") map { it.value.toInt() }
-val signedInt = sign * unsigned map { (s, value) ->
+val signedInt = signOpt * unsigned map { (s, value) ->
     if (s == '-') -value else value
 }
 
 fun main() {
-    signedInt.parseAllOrThrow("-42")  // => -42
-    signedInt.parseAllOrThrow("99")   // => 99
+    check(signedInt.parseAllOrThrow("-42") == -42)
+    check(signedInt.parseAllOrThrow("99") == 99)
 }
 ```
 

@@ -29,55 +29,47 @@ fun main() {
 
 ## Understanding the Code
 
-**Creating parsers from patterns:**
-```kotlin
-+Regex("[a-zA-Z][a-zA-Z0-9_]*")  // Matches identifiers starting with a letter
-+Regex("[0-9]+")                  // Matches one or more digits
-```
-The unary `+` operator converts literals and regex patterns into parsers.
+**The unary `+` operator** converts literals and regex patterns into parsers:
+- `+Regex("[a-zA-Z][a-zA-Z0-9_]*")` matches identifiers starting with a letter
+- `+Regex("[0-9]+")` matches one or more digits
 
-**Sequencing with `*`:**
-```kotlin
-identifier * -'=' * number  // Match identifier, then '=', then number
-```
-The `*` operator chains parsers in order. Results are packaged into typed tuples.
+**The `*` operator** chains parsers in order (example: `identifier * -'=' * number`). Results are packaged into typed tuples.
 
-**Ignoring tokens with `-`:**
-```kotlin
--'='  // Match the '=' character but drop it from the result
-```
-The unary `-` operator matches a parser but excludes its value from the result tuple.
+**The unary `-` operator** matches a parser but excludes its value from the result tuple (example: `-'='` drops the `=` character).
 
-**Transforming results with `map`:**
-```kotlin
-map { it.value }              // Extract string from MatchResult
-map { it.value.toInt() }      // Convert string to integer
-map { (key, value) -> ... }   // Destructure tuple and transform
-```
-The `map` function transforms parsed values into the types you need.
+**The `map` function** transforms parsed values:
+- `map { it.value }` extracts string from MatchResult
+- `map { it.value.toInt() }` converts string to integer
+- `map { (key, value) -> ... }` destructures tuple and transforms
 
-**Naming parsers:**
-```kotlin
-named "identifier"  // Assign a name for error messages
-```
-Named parsers appear in error messages, making debugging easier.
+**The `named` function** assigns names to parsers for better error messages (example: `named "identifier"`).
 
 ## Running the Parser
 
-**Success case:**
+`parseAllOrThrow` requires the entire input to be consumed:
+
 ```kotlin
-kv.parseAllOrThrow("count=42")    // ✓ Returns ("count", 42)
-kv.parseAllOrThrow("x=100")       // ✓ Returns ("x", 100)
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val kv: Parser<Pair<String, Int>> =
+    identifier * -'=' * number map { (key, value) -> key to value }
+
+fun main() {
+    // Success cases
+    check(kv.parseAllOrThrow("count=42") == ("count" to 42))  // ✓
+    check(kv.parseAllOrThrow("x=100") == ("x" to 100))        // ✓
+    
+    // Error cases would throw exceptions:
+    // kv.parseAllOrThrow("=42")        // ✗ UnmatchedInputParseException
+    // kv.parseAllOrThrow("count")      // ✗ UnmatchedInputParseException
+    // kv.parseAllOrThrow("count=42x")  // ✗ ExtraCharactersParseException
+}
 ```
 
-**Error cases:**
-```kotlin
-kv.parseAllOrThrow("=42")         // ✗ UnmatchedInputParseException
-kv.parseAllOrThrow("count")       // ✗ UnmatchedInputParseException
-kv.parseAllOrThrow("count=42x")   // ✗ ExtraCharactersParseException
-```
-
-`parseAllOrThrow` requires the entire input to be consumed. It throws:
+**Exception types:**
 - `UnmatchedInputParseException` when no parser matches
 - `ExtraCharactersParseException` when trailing input remains
 

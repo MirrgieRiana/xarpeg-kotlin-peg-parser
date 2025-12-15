@@ -81,11 +81,7 @@ fun main() {
 
 ### The Key: Smart Regex Boundaries
 
-```kotlin
-+Regex("""[^"$]+|\$(?!\()""")
-```
-
-This pattern matches:
+The pattern `+Regex("""[^"$]+|\$(?!\()""")` matches:
 - **`[^"$]+`** - One or more characters that are neither `"` nor `$`
 - **`\$(?!\()` - A `$` NOT followed by `(` (negative lookahead)
 
@@ -93,21 +89,13 @@ The regex naturally stops at template boundaries (`$(`) without explicit tokeniz
 
 ### Context Switching
 
-The choice combinator handles context switching:
-
-```kotlin
-val templateElement = expressionPart + stringPart
-```
+The choice combinator `val templateElement = expressionPart + stringPart` handles context switching.
 
 Try to parse an expression first. If that fails (no `$(` found), parse a string part. This naturally alternates between contexts as needed.
 
 ### Recursion
 
-The `grouped` parser uses `ref { sum }` to allow parenthesized sub-expressions:
-
-```kotlin
-val grouped: Parser<Int> = -'(' * ref { sum } * -')'
-```
+The `grouped` parser uses `ref { sum }` (example: `val grouped: Parser<Int> = -'(' * ref { sum } * -')'`) to allow parenthesized sub-expressions.
 
 This enables nested expressions like `$(2*(3+4))`.
 
@@ -178,26 +166,11 @@ Use negative lookahead and character classes to define natural stopping points.
 
 This approach scales well to more complex scenarios:
 
-**Multiple delimiters:**
-```kotlin
-// Support both $(...) and #{...}
-val exprPart1 = -Regex("""\$\(""") * expression * -')'
-val exprPart2 = -Regex("""#\{""") * expression * -'}'
-val expressionPart = exprPart1 + exprPart2
-```
+**Multiple delimiters** - Support both `$(...)` and `#{...}` by creating multiple expression part parsers and combining them.
 
-**Escape sequences:**
-```kotlin
-// Match \$( as literal text
-val stringPart = +Regex("""(?:[^"$\\]|\\.)+|\$(?!\()""")
-```
+**Escape sequences** - Match `\$(` as literal text using patterns like `+Regex("""(?:[^"$\\]|\\.)+|\$(?!\()""")`.
 
-**Different quote styles:**
-```kotlin
-val singleQuoted = -"'" * content * -"'"
-val doubleQuoted = -'"' * content * -'"'
-val templateString = singleQuoted + doubleQuoted
-```
+**Different quote styles** - Support single and double quotes by creating parsers for each style and combining with choice.
 
 Each addition is a localized change to the relevant parser, not a redesign of the entire token vocabulary.
 

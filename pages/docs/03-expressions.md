@@ -43,23 +43,16 @@ fun main() {
 
 ### Forward References with `ref { }`
 
-The `paren` parser needs to reference `root`, which is defined later. Use `ref { }` to create a forward reference:
-
-```kotlin
-val paren: Parser<Int> = -'(' * ref { root } * -')'
-```
+The `paren` parser needs to reference `root`, which is defined later. Use `ref { }` to create a forward reference (example: `val paren: Parser<Int> = -'(' * ref { root } * -')'`).
 
 **Important:** Properties using `ref` need explicit type declarations (`Parser<Int>`) for type resolution.
 
 ### Operator Precedence
 
 Layer parsers from highest to lowest precedence:
-
-```kotlin
-val factor = number + paren           // Highest: numbers and parentheses
-val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }  // Middle: multiplication
-val add = leftAssociative(mul, -'+') { a, _, b -> a + b }     // Lowest: addition
-```
+- `val factor = number + paren` — Highest: numbers and parentheses
+- `val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }` — Middle: multiplication
+- `val add = leftAssociative(mul, -'+') { a, _, b -> a + b }` — Lowest: addition
 
 Each level builds on the previous one, ensuring correct precedence:
 - `5+3*2` parses as `5+(3*2)` not `(5+3)*2`
@@ -67,11 +60,7 @@ Each level builds on the previous one, ensuring correct precedence:
 
 ### Associativity Helpers
 
-`leftAssociative` builds left-associative operator chains:
-
-```kotlin
-leftAssociative(term, operator) { left, op, right -> result }
-```
+`leftAssociative(term, operator) { left, op, right -> result }` builds left-associative operator chains.
 
 This handles expressions like `2+3+4+5` as `((2+3)+4)+5` without explicit recursion.
 
@@ -84,16 +73,9 @@ Similarly, `rightAssociative` groups from the right: `2^3^4` → `2^(3^4)`.
 
 ## Avoiding `by lazy`
 
-**Do NOT use `by lazy` for recursive parsers**—it causes infinite recursion:
+**Do NOT use `by lazy` for recursive parsers**—it causes infinite recursion. The `ref { }` mechanism already handles lazy evaluation.
 
-```kotlin
-// ✗ WRONG - Infinite recursion
-val expr: Parser<Int> by lazy {
-    // This will never work!
-}
-```
-
-The `ref { }` mechanism already handles lazy evaluation. Use `by lazy` only as a last resort for rare initialization errors unrelated to recursion.
+Use `by lazy` only as a last resort for rare initialization errors unrelated to recursion.
 
 ## Multiple Precedence Levels
 
@@ -113,11 +95,13 @@ val expr: Parser<Int> = object {
         repeat(b) { result *= a }
         result
     }
-    val mul = leftAssociative(power, -'*' + -'/') { a, op, b ->
-        if (op.value == "*") a * b else a / b
+    val mulOp = (+'*' map { '*' }) + (+'/') map { '/' }
+    val mul = leftAssociative(power, mulOp) { a, op, b ->
+        if (op == '*') a * b else a / b
     }
-    val add = leftAssociative(mul, -'+' + -'-') { a, op, b ->
-        if (op.value == "+") a + b else a - b
+    val addOp = (+'+' map { '+' }) + (+'-') map { '-' }
+    val add = leftAssociative(mul, addOp) { a, op, b ->
+        if (op == '+') a + b else a - b
     }
     val root = add
 }.root
