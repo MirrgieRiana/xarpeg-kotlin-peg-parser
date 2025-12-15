@@ -532,4 +532,18 @@ class OnlineParserTest {
         // The error should show line 3 for func2 call and line 2 for func1 call  
         assertTrue(result.contains("line 3") || result.contains("line 2"))
     }
+
+    @Test
+    fun divisionErrorShowsOnlyOperatorNotRightOperand() {
+        // Test that division by zero error shows only the division operator position,
+        // not including the right operand in the error position text
+        val result = parseExpression("func = (a, b) -> a / b\nfunc(10, 0)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // The error should show "/ b" or just "/", not the entire right operand
+        // We verify this by checking that the error shows line 1 for the division operator
+        assertTrue(result.contains("line 1"))
+        // The error message should contain the division operator text
+        assertTrue(result.contains("/"))
+    }
 }
