@@ -90,7 +90,7 @@ The key to this parser is the `stringPart` regex:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val stringPartRegexParser = (+Regex("""[^"$]+|\$(?!\()""")) named "string_part"
+val stringPartRegexParser = +Regex("""[^"$]+|\$(?!\()""") named "string_part"
 
 fun main() {
     stringPartRegexParser.parseAllOrThrow("hello")
