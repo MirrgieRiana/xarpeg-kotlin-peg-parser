@@ -256,4 +256,38 @@ class TokenCandidateTest {
         assertTrue(number in context.suggestedParsers) // numberが候補
         assertTrue(identifier in context.suggestedParsers) // identifierが候補
     }
+
+    @Test
+    fun parseAllOrThrow_includesSuggestionsInErrorMessage() {
+        // parseAllOrThrowが失敗した場合、エラーメッセージに候補が含まれる
+        val number = +Regex("[0-9]+") named "number"
+        val identifier = +Regex("[a-zA-Z]+") named "identifier"
+        val expression = number + identifier
+        
+        try {
+            expression.parseAllOrThrow("@invalid")
+            kotlin.test.fail("Expected UnmatchedInputParseException")
+        } catch (e: UnmatchedInputParseException) {
+            // エラーメッセージに候補が含まれていることを確認
+            assertTrue(e.message?.contains("Expected:") == true)
+            assertTrue(e.message?.contains("number") == true)
+            assertTrue(e.message?.contains("identifier") == true)
+            assertEquals(0, e.position) // エラー位置は0
+        }
+    }
+
+    @Test
+    fun parseAllOrThrow_withUnnamedParsers_noSuggestionsInMessage() {
+        // 名前のないパーサーの場合、候補リストは空になる
+        val parser = +'a' + +'b'
+        
+        try {
+            parser.parseAllOrThrow("x")
+            kotlin.test.fail("Expected UnmatchedInputParseException")
+        } catch (e: UnmatchedInputParseException) {
+            // 名前のないパーサーなので"Expected:"は含まれない
+            assertTrue(e.message?.contains("Failed to parse") == true)
+            assertEquals(0, e.position) // エラー位置は0
+        }
+    }
 }

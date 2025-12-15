@@ -68,7 +68,15 @@ class ExtraCharactersParseException(message: String, position: Int) : ParseExcep
 
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useCache: Boolean = true): T {
     val context = ParseContext(src, useCache)
-    val result = this.parseOrNull(context, 0) ?: throw UnmatchedInputParseException("Failed to parse.", 0) // TODO 候補
+    val result = this.parseOrNull(context, 0) ?: run {
+        val expected = context.suggestedParsers.mapNotNull { it.name }.joinToString(", ")
+        val message = if (expected.isNotEmpty()) {
+            "Failed to parse at position ${context.errorPosition}. Expected: $expected"
+        } else {
+            "Failed to parse at position ${context.errorPosition}."
+        }
+        throw UnmatchedInputParseException(message, context.errorPosition)
+    }
     if (result.end != src.length) {
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
         throw ExtraCharactersParseException("""Extra characters found after position ${result.end}: "$string"""", result.end)
