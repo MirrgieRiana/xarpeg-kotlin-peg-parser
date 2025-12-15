@@ -32,7 +32,7 @@ data class ExpressionPart(val value: Int) : TemplateElement()
 
 val templateStringParser: Parser<String> = object {
     // Expression parser (reusing from earlier tutorials)
-    val number = +Regex("[0-9]+") map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
     val factor: Parser<Int> = number + grouped
     val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
@@ -44,7 +44,7 @@ val templateStringParser: Parser<String> = object {
     val stringPart: Parser<TemplateElement> =
         +Regex("""[^"$]+|\$(?!\()""") map { match ->
             StringPart(match.value)
-        }
+        } named "string_part"
 
     // Expression part: $(...)
     val expressionPart: Parser<TemplateElement> =
@@ -90,7 +90,7 @@ The key to this parser is the `stringPart` regex:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val stringPartRegexParser = +Regex("""[^"$]+|\$(?!\()""")
+val stringPartRegexParser = +Regex("""[^"$]+|\$(?!\()""") named "string_part"
 
 fun main() {
     stringPartRegexParser.parseAllOrThrow("hello")
@@ -118,11 +118,11 @@ data class StringPart(val text: String) : TemplateElement()
 data class ExpressionPart(val value: Int) : TemplateElement()
 
 object TemplateWithNestedStrings {
-    val number = +Regex("[0-9]+") map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
 
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) }
+        +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) } named "string_part"
 
     val expressionPart: Parser<TemplateElement> =
         -Regex("""\$\(""") * ref { sum } * -')' map { value ->

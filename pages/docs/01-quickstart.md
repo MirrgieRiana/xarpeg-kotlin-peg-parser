@@ -13,8 +13,8 @@ This step walks through creating the smallest parser, running it, and turning in
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value }
-val number = +Regex("[0-9]+") map { it.value.toInt() }
+val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
