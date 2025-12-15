@@ -285,7 +285,8 @@ private object ExpressionGrammar {
         val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
         val (_, rightExpr: Expression) = result.value
         Pair(opPosition, rightExpr)
-    }) map { (_, pair) -> 
+    }) map { result -> 
+        val (_, pair) = result.value
         val (opPosition, rightExpr) = pair
         arithmeticOp("*", "multiplication", Double::times)(rightExpr, opPosition)
     }
@@ -295,7 +296,8 @@ private object ExpressionGrammar {
         val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
         val (_, rightExpr: Expression) = result.value
         Pair(opPosition, rightExpr)
-    }) map { (_, pair) ->
+    }) map { result ->
+        val (_, pair) = result.value
         val (opPosition, rightExpr) = pair
         arithmeticOp("/", "division", Double::div, additionalCheck = { rightVal, ctx, opPos ->
             if (rightVal.value == 0.0) {
@@ -313,7 +315,8 @@ private object ExpressionGrammar {
         val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
         val (_, rightExpr: Expression) = result.value
         Pair(opPosition, rightExpr)
-    }) map { (_, pair) ->
+    }) map { result ->
+        val (_, pair) = result.value
         val (opPosition, rightExpr) = pair
         arithmeticOp("+", "addition", Double::plus)(rightExpr, opPosition)
     }
@@ -323,7 +326,8 @@ private object ExpressionGrammar {
         val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
         val (_, rightExpr: Expression) = result.value
         Pair(opPosition, rightExpr)
-    }) map { (_, pair) ->
+    }) map { result ->
+        val (_, pair) = result.value
         val (opPosition, rightExpr) = pair
         arithmeticOp("-", "subtraction", Double::minus)(rightExpr, opPosition)
     }
@@ -357,7 +361,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             comparisonOp("<=") { l, r -> l <= r }(rightExpr, opPosition)
         }
@@ -367,7 +372,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             comparisonOp(">=") { l, r -> l >= r }(rightExpr, opPosition)
         }
@@ -377,7 +383,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             comparisonOp("<") { l, r -> l < r }(rightExpr, opPosition)
         }
@@ -387,7 +394,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             comparisonOp(">") { l, r -> l > r }(rightExpr, opPosition)
         }
@@ -412,7 +420,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             BinaryOperator { left, ctx ->
                 val rightVal = rightExpr.evaluate(ctx)
@@ -433,7 +442,8 @@ private object ExpressionGrammar {
             val opPosition = SourcePosition(result.start, result.end, result.text(parseCtx))
             val (_, rightExpr: Expression) = result.value
             Pair(opPosition, rightExpr)
-        }) map { (_, pair) ->
+        }) map { result ->
+            val (_, pair) = result.value
             val (opPosition, rightExpr) = pair
             BinaryOperator { left, ctx ->
                 val rightVal = rightExpr.evaluate(ctx)
