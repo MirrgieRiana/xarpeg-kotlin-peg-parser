@@ -504,4 +504,32 @@ class OnlineParserTest {
         assertTrue(result.contains("func1"))
         assertTrue(result.contains("func2"))
     }
+
+    @Test
+    fun errorOnLine2ShowsCorrectLineNumber() {
+        // Error occurs on the second line
+        val result = parseExpression("x = 10\n1 / 0")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        assertTrue(result.contains("line 2"))
+    }
+
+    @Test
+    fun errorOnLine3ShowsCorrectLineNumber() {
+        // Error occurs on the third line
+        val result = parseExpression("x = 5\ny = 10\nz = x / (y - 10)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        assertTrue(result.contains("line 3"))
+    }
+
+    @Test
+    fun multiLineStackTraceShowsCorrectLineNumbers() {
+        // Test that function calls across multiple lines show correct line numbers
+        val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // The error should show line 3 for func2 call and line 2 for func1 call  
+        assertTrue(result.contains("line 3") || result.contains("line 2"))
+    }
 }

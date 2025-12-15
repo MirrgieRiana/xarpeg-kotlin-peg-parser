@@ -63,7 +63,7 @@ data class CallFrame(val functionName: String, val position: SourcePosition)
 // Represents a position in the source code
 data class SourcePosition(val start: Int, val end: Int, val text: String) {
     fun formatLineColumn(source: String): String {
-        val beforeStart = source.substring(0, start)
+        val beforeStart = source.substring(0, start.coerceAtMost(source.length))
         val line = beforeStart.count { it == '\n' } + 1
         val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
         return "line $line, column $column"
@@ -446,7 +446,22 @@ private object ExpressionGrammar {
     // Root expression parser
     val expression: Parser<Expression> = assignment
 
+    // Multi-statement parser: parses multiple expressions separated by newlines
+    val program: Parser<Expression> = run {
+        val newlineSep = -Regex("[ \\t]*\\r?\\n[ \\t\\r\\n]*")
+        ((expression * (newlineSep * expression).zeroOrMore) map { (first, rest) ->
+            Expression { ctx ->
+                var result = first.evaluate(ctx)
+                for (expr in rest) {
+                    result = expr.evaluate(ctx)
+                }
+                result
+            }
+        })
+    }
+
     val root = whitespace * expression * whitespace
+    val programRoot = whitespace * program * whitespace
 }
 
 @JsExport
@@ -458,35 +473,10 @@ fun parseExpression(input: String): String {
         // Create initial evaluation context with empty call stack, source code, and fresh variable table
         val initialContext = EvaluationContext(sourceCode = input)
         
-        // Try to parse as a single expression first
-        // If parsing succeeds, evaluate and return the result
-        try {
-            val resultExpr = ExpressionGrammar.root.parseAllOrThrow(input)
-            val result = resultExpr.evaluate(initialContext)
-            return result.toString()
-        } catch (e: Exception) {
-            // If single expression fails, try as multi-line program
-            // Split input into lines and evaluate each line
-            val lines = input.lines().filter { it.trim().isNotEmpty() }
-            if (lines.isEmpty()) {
-                return ""
-            }
-            
-            // If there's only one line, rethrow the original error
-            if (lines.size == 1) {
-                throw e
-            }
-            
-            val results = mutableListOf<Value>()
-            for (line in lines) {
-                val lineExpr = ExpressionGrammar.root.parseAllOrThrow(line)
-                val lineResult = lineExpr.evaluate(initialContext)
-                results.add(lineResult)
-            }
-            
-            // Return the last result
-            return results.last().toString()
-        }
+        // Try to parse as a multi-statement program first (handles both single and multiple expressions)
+        val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
+        val result = resultExpr.evaluate(initialContext)
+        result.toString()
     } catch (e: EvaluationException) {
         // Use custom formatting if call stack is available
         if (e.context != null && e.context.callStack.isNotEmpty()) {
