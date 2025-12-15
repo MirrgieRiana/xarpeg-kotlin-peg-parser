@@ -36,7 +36,7 @@ class LazyArithmeticTest {
         private val positionMarker: Parser<() -> Int> =
             +'!' mapEx { context, result ->
                 val position = result.start
-                return@mapEx { throw PositionMarkerException("Position marker at index $position", context , position) }
+                return@mapEx { throw PositionMarkerException("Position marker at index $position", context, position) }
             }
         
         private val primary: Parser<() -> Int> =
