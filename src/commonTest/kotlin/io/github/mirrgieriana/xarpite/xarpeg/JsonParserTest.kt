@@ -54,7 +54,9 @@ class JsonParserTest {
                 if (tuple.a == null) {
                     emptyList()
                 } else {
-                    listOf(tuple.a.a) + tuple.a.b
+                    // Explicit cast for Kotlin 1.9.20 smart cast compatibility
+                    val pair = tuple.a as Tuple2<T, List<T>>
+                    listOf(pair.a) + pair.b
                 }
             }
         }

@@ -144,7 +144,8 @@ class NamedParserTest {
             val digit = (+Regex("[0-9]")) named "digit" map { it.value.toInt() }
             val lparen = -'('
             val rparen = -')'
-            val expr: Parser<Int> = ((digit) + (lparen * ref { expr } * rparen)) named "expression"
+            // Explicit type declaration required for ref in Kotlin 1.9.20
+            val expr: Parser<Int> by lazy { ((digit) + (lparen * ref { expr } * rparen)) named "expression" }
         }
         
         val result1 = grammar.expr.parseAllOrThrow("5")
