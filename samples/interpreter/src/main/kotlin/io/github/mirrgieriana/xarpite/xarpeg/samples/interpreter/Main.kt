@@ -40,10 +40,10 @@ data class OperatorInfo(val position: Int, val op: Char)
 
 private object ArithmeticParser {
     // Parse a number and wrap it in a lazy value
-    val number: Parser<LazyValue> = (+Regex("[0-9]+") mapEx { _, result ->
+    val number: Parser<LazyValue> = +Regex("[0-9]+") mapEx { _, result ->
         val value = result.value.value.toInt()
         LazyValue(result.start) { value }
-    }) named "number"
+    } named "number"
     
     // Parse a grouped expression with parentheses
     val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
