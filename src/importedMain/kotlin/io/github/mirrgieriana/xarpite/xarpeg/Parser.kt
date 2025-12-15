@@ -59,19 +59,19 @@ data class ParseResult<out T : Any>(val value: T, val start: Int, val end: Int)
 
 fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.start, this.end).normalize()
 
-open class ParseException(message: String, val position: Int) : Exception(message)
+open class ParseException(message: String, val context: ParseContext, val position: Int) : Exception(message)
 
 
-class UnmatchedInputParseException(message: String, position: Int) : ParseException(message, position)
+class UnmatchedInputParseException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
 
-class ExtraCharactersParseException(message: String, position: Int) : ParseException(message, position)
+class ExtraCharactersParseException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
 
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useCache: Boolean = true): T {
     val context = ParseContext(src, useCache)
-    val result = this.parseOrNull(context, 0) ?: throw UnmatchedInputParseException("Failed to parse.", 0) // TODO 候補
+    val result = this.parseOrNull(context, 0) ?: throw UnmatchedInputParseException("Failed to parse.", context, 0)
     if (result.end != src.length) {
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
-        throw ExtraCharactersParseException("""Extra characters found after position ${result.end}: "$string"""", result.end)
+        throw ExtraCharactersParseException("""Extra characters found after position ${result.end}: "$string"""", context, result.end)
     }
     return result.value
 }
