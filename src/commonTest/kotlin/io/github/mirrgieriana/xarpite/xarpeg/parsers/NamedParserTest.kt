@@ -95,7 +95,7 @@ class NamedParserTest {
     @Test
     fun multipleNamedParsersInSequence() {
         val digit = (+Regex("[0-9]")) named "digit" map { it.value.toInt() }
-        val operator = (+'+'  + +'-') named "operator" map { it }
+        val operator = (+'+' + +'-') named "operator" map { it }
         val expression = digit * operator * digit
         
         val result = expression.parseAllOrThrow("3+5")
@@ -144,7 +144,7 @@ class NamedParserTest {
             val digit = (+Regex("[0-9]")) named "digit" map { it.value.toInt() }
             val lparen = -'('
             val rparen = -')'
-            val expr: Parser<Int> = (digit + (lparen * ref { expr } * rparen)) named "expression"
+            val expr: Parser<Int> = ((digit) + (lparen * ref { expr } * rparen)) named "expression"
         }
         
         val result1 = grammar.expr.parseAllOrThrow("5")
