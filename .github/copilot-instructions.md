@@ -43,6 +43,27 @@ When making changes to the codebase, you must always ensure that code, tests, an
 * If you update documentation, ensure the code and tests match the documented behavior
 * Never leave code, tests, and documentation in an inconsistent state
 
+### Documentation Code Examples
+
+When writing code examples in documentation (README.md, pages/docs/*.md):
+
+* **Never use `println()` in sample code** - Output statements provide no validation
+* **Always use assertions (`check()`, `require()`)** - These verify correctness and will fail if expectations are not met
+* **Sample code must be contextually relevant** - Each example should reinforce the explanation it accompanies
+* **All code examples must pass doc-test validation** - Invalid examples damage credibility
+
+Good example:
+```kotlin
+val result = parser.parseAllOrThrow("input")
+check(result == expectedValue)  // Validates the result
+```
+
+Bad example:
+```kotlin
+val result = parser.parseAllOrThrow("input")
+println(result)  // Provides no validation
+```
+
 ## Execution
 
 ### Gradle Build

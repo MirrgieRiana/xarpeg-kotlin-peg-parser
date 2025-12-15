@@ -28,7 +28,7 @@ val number = +Regex("[0-9]+") map { it.value.toInt() }
 
 fun main() {
     val result = number.parseAllOrThrow("42")
-    println(result)  // => 42 (just the value)
+    check(result == 42)  // Just the value, no position info
 }
 ```
 
@@ -48,7 +48,7 @@ val identifierWithPosition = identifier mapEx { ctx, result ->
 
 fun main() {
     val result = identifierWithPosition.parseAllOrThrow("hello")
-    println(result)  // => "hello@0-5"
+    check(result == "hello@0-5")  // Includes position info
 }
 ```
 
@@ -72,7 +72,7 @@ val numberWithText = number mapEx { ctx, result ->
 
 fun main() {
     val result = numberWithText.parseAllOrThrow("123")
-    println(result)  // => "Parsed '123' as 123"
+    check(result == "Parsed '123' as 123")  // Matched text extracted
 }
 ```
 
@@ -98,7 +98,7 @@ val keywordWithLocation = keyword.withLocation()
 
 fun main() {
     val result = keywordWithLocation.parseAllOrThrow("hello")
-    println(result)  // => Located(value=hello, line=1, column=1)
+    check(result.value == "hello" && result.line == 1 && result.column == 1)
 }
 ```
 
@@ -128,11 +128,11 @@ fun main() {
     
     // Parse first word
     val result1 = wordWithPos.parseOrNull(context, 0)
-    println(result1?.value)  // => Token(value=first, line=1, col=1)
+    check(result1?.value == Token("first", 1, 1))
     
     // Parse word after first newline
     val result2 = wordWithPos.parseOrNull(context, 6)
-    println(result2?.value)  // => Token(value=second, line=2, col=1)
+    check(result2?.value == Token("second", 2, 1))
 }
 ```
 
@@ -164,7 +164,7 @@ fun main() {
     }
     
     val result = parseWithErrors("abc")
-    println(result.isFailure)  // => true
+    check(result.isFailure)  // Parsing fails as expected
 }
 ```
 

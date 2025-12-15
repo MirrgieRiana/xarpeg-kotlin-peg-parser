@@ -124,11 +124,11 @@ fun main() {
     
     // Match word at start
     val atStart = (startOfInput * word).parseOrNull(context, 0)
-    println(atStart?.value)  // => "hello"
+    check(atStart?.value == "hello")  // Succeeds at position 0
     
     // Fails: position 6 is not at start
     val notAtStart = (startOfInput * word).parseOrNull(context, 6)
-    println(notAtStart)  // => null
+    check(notAtStart == null)  // Fails when not at start
 }
 ```
 
@@ -149,9 +149,10 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 fun main() {
     try {
         identifier.parseAllOrThrow("123abc")
+        error("Should have thrown exception")
     } catch (e: UnmatchedInputParseException) {
-        // Error context will reference "identifier" and "letter"
-        println("Failed: ${e.message}")
+        // Error context references "identifier" and "letter"
+        check(e.message!!.contains("Failed to parse"))
     }
 }
 ```
@@ -176,11 +177,11 @@ fun main() {
     
     val context1 = ParseContext("c", useCache = true)
     context1.parseOrNull(namedComposite, 0)
-    println(context1.suggestedParsers.map { it.name })  // ["ab_sequence"]
+    check(context1.suggestedParsers.map { it.name } == listOf("ab_sequence"))
     
     val context2 = ParseContext("c", useCache = true)
     context2.parseOrNull(unnamedComposite, 0)
-    println(context2.suggestedParsers.map { it.name })  // ["letter_a"]
+    check(context2.suggestedParsers.map { it.name } == listOf("letter_a"))
 }
 ```
 

@@ -49,17 +49,16 @@ fun main() {
     val context = ParseContext("1abc", useCache = true)
     val result = identifier.parseOrNull(context, 0)
     
-    if (result == null) {
-        println("Failed at position ${context.errorPosition}")  // => 0
-        
-        val expected = context.suggestedParsers
-            .mapNotNull { it.name }
-            .distinct()
-            .sorted()
-            .joinToString(", ")
-        
-        println("Expected: $expected")  // => "letter"
-    }
+    check(result == null)  // Parsing fails
+    check(context.errorPosition == 0)  // Failed at position 0
+    
+    val expected = context.suggestedParsers
+        .mapNotNull { it.name }
+        .distinct()
+        .sorted()
+        .joinToString(", ")
+    
+    check(expected == "letter")  // Expected "letter"
 }
 ```
 
@@ -86,13 +85,11 @@ val expr = number * operator * number
 fun main() {
     try {
         expr.parseAllOrThrow("42 + 10")
+        error("Should have thrown exception")
     } catch (e: UnmatchedInputParseException) {
-        val suggestions = e.context.suggestedParsers
-            .mapNotNull { it.name }
-            .joinToString(", ")
-        
-        println("Parse error at position ${e.context.errorPosition}")
-        println("Expected: $suggestions")
+        check(e.context.errorPosition > 0)  // Error position tracked
+        val suggestions = e.context.suggestedParsers.mapNotNull { it.name }
+        check(suggestions.isNotEmpty())  // Has suggestions
     }
 }
 ```
@@ -174,10 +171,9 @@ fun main() {
     val context = ParseContext("123", useCache = true)
     val result = context.parseOrNull(parser, 0)
     
-    if (result == null) {
-        println("Error position: ${context.errorPosition}")
-        println("Suggestions: ${context.suggestedParsers.mapNotNull { it.name }}")
-    }
+    check(result == null)  // Parsing fails
+    check(context.errorPosition == 0)  // Error at position 0
+    check(context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
 }
 ```
 
@@ -195,7 +191,7 @@ fun main() {
     val context = ParseContext("123", useCache = true)
     val result = parser.parseOrNull(context, 0)
     // optional fails but rewinds, allowing number parser to succeed
-    println(result != null)  // => true
+    check(result != null)  // Succeeds
 }
 ```
 

@@ -22,8 +22,7 @@ val kv: Parser<Pair<String, Int>> =
 
 fun main() {
     val result = kv.parseAllOrThrow("count=42")
-    println(result)  // (count, 42)
-    check(result == ("count" to 42))
+    check(result == ("count" to 42))  // Verifies result is (count, 42)
 }
 ```
 

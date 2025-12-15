@@ -142,6 +142,27 @@ Interactive browser-based parser that demonstrates:
 - Performance optimization with caching
 - Complex parsing scenarios in production
 
+### Running the Samples
+
+Try the samples locally to see Xarpeg in action:
+
+**Minimal JVM Sample:**
+```bash
+./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
+cd samples/minimal-jvm-sample && ./gradlew run
+```
+
+**Online Parser Sample:**
+```bash
+cd samples/online-parser && ./gradlew build
+# Open samples/online-parser/build/site/index.html in your browser
+```
+
+**Arithmetic Interpreter:**
+```bash
+cd samples/interpreter && ./gradlew run --args='-e "2*(3+4)"'
+```
+
 ---
 
 ## Installation
