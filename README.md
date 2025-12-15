@@ -25,6 +25,7 @@ Xarpeg (/ˈʃɑrpɛɡ/) provides a compact, operator-driven parser combinator AP
 - **Operator-based DSL** - Unary `+` builds parsers from literals/regex, binary `+` expresses alternatives, `*` sequences tuples, `!` is negative lookahead, `-` ignores tokens
 - **Tuple-centric results** - Sequence results are `Tuple0..Tuple16` so you can explicitly keep or drop intermediate values
 - **Built-in cache** - Memoizes `(parser, position)` by default; toggle per parse call
+- **Token candidates** - Automatically tracks which parsers failed at the furthest position for better error messages
 - **No tokenizer** - Consume the source `String` directly with character, string, or regex parsers
 
 ---
@@ -139,6 +140,32 @@ The Online Parser Sample is a working example of Xarpeg powering a complete brow
 
 - `UnmatchedInputParseException` — No parser matched at the current position.
 - `ExtraCharactersParseException` — parsing succeeded but did not consume all input (reports the trailing position).
+
+#### Token Candidates for Better Error Messages
+
+When parsing fails, Xarpeg automatically tracks which parsers were attempted at the furthest position. This helps you provide informative error messages:
+
+```kotlin
+val number = +Regex("[0-9]+") named "number"
+val identifier = +Regex("[a-zA-Z]+") named "identifier"
+val expression = number + identifier
+
+try {
+    expression.parseAllOrThrow("@invalid")
+} catch (e: UnmatchedInputParseException) {
+    val context = ParseContext("@invalid", useCache = true)
+    context.parseOrNull(expression, 0)
+    
+    val expected = context.suggestedParsers
+        .mapNotNull { it.name }
+        .joinToString(", ")
+    
+    println("Expected: $expected at position ${context.errorPosition}")
+    // Output: "Expected: number, identifier at position 0"
+}
+```
+
+Use the `named` infix function to give parsers user-friendly names that appear in error messages.
 
 ---
 
