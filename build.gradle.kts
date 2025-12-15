@@ -60,7 +60,8 @@ kotlin {
     }
 
     // WASM target for JavaScript
-    // Note: WASM support in Kotlin 1.9.20 doesn't require ExperimentalWasmDsl
+    // Note: Removed @OptIn(ExperimentalWasmDsl) for Kotlin 1.9.20 compatibility
+    // The annotation class doesn't exist in this version, though WASM is experimental
     wasmJs {
         binaries.executable()
         nodejs()
