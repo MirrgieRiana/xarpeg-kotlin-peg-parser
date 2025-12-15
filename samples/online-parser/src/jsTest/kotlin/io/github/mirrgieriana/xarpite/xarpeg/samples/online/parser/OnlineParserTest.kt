@@ -540,11 +540,46 @@ class OnlineParserTest {
         val result = parseExpression("func = (a, b) -> a / b\nfunc(10, 0)")
         assertTrue(result.startsWith("Error"))
         assertTrue(result.contains("Division by zero"))
-        // The error should show just the operator (e.g., " / " with whitespace),
-        // not including the entire right operand.
-        // We verify this by checking that the error shows line 1 for the division operator.
+        // Verify the stack trace shows only "/" in the error position text, not "/ b"
         assertTrue(result.contains("line 1"))
-        // The error message should contain the division operator text
-        assertTrue(result.contains("/"))
+        assertTrue(result.contains(": /"))
+        // Ensure it doesn't include the right operand "b" in the position text
+        val lines = result.split("\n")
+        val stackTraceLine = lines.find { it.contains("at line 1") }
+        assertNotNull(stackTraceLine)
+        // The text after the colon should be just "/" not "/ b" or similar
+        val textPart = stackTraceLine!!.substringAfter(": ")
+        assertEquals("/", textPart.trim())
+    }
+    
+    @Test
+    fun divisionByZeroStackTraceShowsOnlyOperatorSymbol() {
+        // Test that verifies the exact text shown in stack trace for division operator
+        val result = parseExpression("10 / 0")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // Parse the stack trace to verify the position text
+        val lines = result.split("\n")
+        val stackTraceLine = lines.find { it.contains("at line 1") }
+        assertNotNull(stackTraceLine)
+        // Extract the code snippet shown in the stack trace (after ": ")
+        val codeSnippet = stackTraceLine!!.substringAfter(": ")
+        // Should be exactly "/" not "/ 0" or " / 0"
+        assertEquals("/", codeSnippet)
+    }
+    
+    @Test
+    fun multiLineStackTraceShowsOnlyOperatorInPosition() {
+        // Test with the example from HTML to verify operator position in nested calls
+        val result = parseExpression("func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)")
+        assertTrue(result.startsWith("Error"))
+        assertTrue(result.contains("Division by zero"))
+        // Check that the division operator position shows only "/"
+        val lines = result.split("\n")
+        val divisionLine = lines.find { it.contains("at line 1") && it.contains("division") }
+        assertNotNull(divisionLine)
+        val codeSnippet = divisionLine!!.substringAfter(": ")
+        // The position text should be just "/" not "/ b"
+        assertEquals("/", codeSnippet)
     }
 }
