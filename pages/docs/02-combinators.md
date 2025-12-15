@@ -3,188 +3,161 @@ layout: default
 title: Step 2 – Combinators
 ---
 
-# Step 2: Combine parsers
+# Step 2: Combinators
 
-Use the core DSL combinators to assemble multiple pieces into one parser.
+Learn to combine parsers using sequences, choices, repetition, and more to build complex grammars.
 
-## Common operators
+## Core Combinators
 
-- `parserA * parserB` — sequence; results are packed into `TupleX`.
-- `parserA + parserB` — choice (tried in order); the right side is skipped if the left succeeds.
-- `-parser` — match and drop the value, ideal for delimiters or keywords.
-- `parser.optional` — optional; rewinds on failure so later parsers are not blocked.
-- `parser.zeroOrMore` / `oneOrMore` / `list` — repetition helpers that return `List<T>`.
+### Choice with `+`
 
-## Combining option and repetition
+Try alternatives in order. The first match wins:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val sign = (+'+' + +'-').optional map { it.a ?: '+' }
+val keyword = (+"if" + +"while" + +"for") map { it.value } named "keyword"
+
+fun main() {
+    keyword.parseAllOrThrow("if")      // ✓ "if"
+    keyword.parseAllOrThrow("while")   // ✓ "while"
+}
+```
+
+### Optional Parsing
+
+`optional` attempts to match but rewinds on failure. Returns `Tuple1<T?>`:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val sign = (+'+' + +'-').optional map { it.a?.value ?: '+' }
 val unsigned = +Regex("[0-9]+") map { it.value.toInt() }
 val signedInt = sign * unsigned map { (s, value) ->
     if (s == '-') -value else value
 }
 
-val repeatedA = (+'a').oneOrMore map { it.joinToString("") }
-
 fun main() {
-    signedInt.parseAllOrThrow("-42") // => -42
-    signedInt.parseAllOrThrow("99")  // => 99
-    repeatedA.parseAllOrThrow("aaaa") // => "aaaa"
+    signedInt.parseAllOrThrow("-42")  // => -42
+    signedInt.parseAllOrThrow("99")   // => 99
 }
 ```
 
-- `optional` always rewinds, so it will not block what comes after. Its return is `Tuple1`, so use `it.a` or destructure with `map { (value) -> ... }`.
-- Repetition results can be processed immediately with `map`; here we join the characters into a string.
+Use `it.a` to access the optional value, or destructure with `map { (value) -> ... }`.
 
-## Shaping sequence results
+### Repetition
 
-Results from `*` arrive as `TupleX`, so destructure in `map { (a, b, c) -> … }` to build the desired type.  
-Drop delimiters or unneeded values with `-parser` to keep tuple arity small.
-
-## Input boundary matchers
-
-Use `startOfInput` and `endOfInput` to check position boundaries within a larger grammar. These are useful when parsing sub-expressions or when you need boundary checks in the middle of parsing:
+Collect multiple matches into a list:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-// Parse a word that may appear anywhere in the input
+val digits = (+Regex("[0-9]")).oneOrMore map { matches -> 
+    matches.joinToString("") { it.value }
+}
+
+val letters = (+Regex("[a-z]")).zeroOrMore map { matches -> 
+    matches.map { it.value }
+}
+
+fun main() {
+    digits.parseAllOrThrow("123")    // => "123"
+    letters.parseAllOrThrow("abc")   // => ["a", "b", "c"]
+    letters.parseAllOrThrow("")      // => []
+}
+```
+
+- **`.zeroOrMore`** - Matches zero or more times (never fails)
+- **`.oneOrMore`** - Matches one or more times (fails if no match)
+- **`.list(min, max)`** - Matches between `min` and `max` times
+
+## Shaping Results
+
+Sequences with `*` return tuples. Use `-parser` to drop unneeded values:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+// Without dropping: Tuple3<MatchResult, MatchResult, MatchResult>
+val withDelimiters = +'(' * +Regex("[a-z]+") * +')'
+
+// With dropping: MatchResult (just the middle value)
+val cleanResult = -'(' * +Regex("[a-z]+") * -')' map { it.value }
+
+fun main() {
+    cleanResult.parseAllOrThrow("(hello)")  // => "hello"
+}
+```
+
+Destructure tuples in `map` to transform results:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val pair = +Regex("[a-z]+") * -',' * +Regex("[0-9]+") map { (word, num) ->
+    word.value to num.value.toInt()
+}
+
+fun main() {
+    pair.parseAllOrThrow("hello,42")  // => ("hello", 42)
+}
+```
+
+## Input Boundaries
+
+`startOfInput` and `endOfInput` match at position boundaries without consuming input:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
 val word = +Regex("[a-z]+") map { it.value }
-
-// Parse a word only at the start of input
-val wordAtStart = startOfInput * word
-
-// Parse a word only at the end of input
-val wordAtEnd = word * endOfInput
 
 fun main() {
     val context = ParseContext("hello world", useCache = true)
     
-    // wordAtStart succeeds at position 0
-    val result1 = wordAtStart.parseOrNull(context, 0)
-    println(result1?.value) // => "hello"
+    // Match word at start
+    val atStart = (startOfInput * word).parseOrNull(context, 0)
+    println(atStart?.value)  // => "hello"
     
-    // wordAtStart fails at position 6 (not at start)
-    val result2 = wordAtStart.parseOrNull(context, 6)
-    println(result2) // => null
-    
-    // wordAtEnd fails at position 0 (not at end after matching)
-    val result3 = wordAtEnd.parseOrNull(context, 0)
-    println(result3) // => null
-    
-    // wordAtEnd succeeds at position 6 (at end after matching)
-    val result4 = wordAtEnd.parseOrNull(context, 6)
-    println(result4?.value) // => "world"
+    // Fails: position 6 is not at start
+    val notAtStart = (startOfInput * word).parseOrNull(context, 6)
+    println(notAtStart)  // => null
 }
 ```
 
-Both parsers return `Tuple0` and consume no input, so they compose cleanly: `Tuple0 * X = X`.
+**Note:** When using `parseAllOrThrow`, boundary checks are redundant—it already verifies the entire input is consumed. Use these parsers with `parseOrNull` or within sub-grammars.
 
-Here's an example showing how whitespace affects matching with boundary parsers:
+## Naming Parsers
+
+Assign names for better error messages:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val spaces = +Regex("\\s*") map { it.value }
-val word = +Regex("[a-z]+") map { it.value }
-
-// Pattern: optional spaces, then word must be at start and end
-val strictWord = spaces * startOfInput * word * endOfInput * spaces map { it.b }
-
-fun main() {
-    // No whitespace - matches because word is at position 0 and ends at input end
-    val result1 = strictWord.parseAllOrThrow("hello")
-    println("No spaces: $result1") // => "hello"
-    
-    // Leading whitespace - fails because after consuming spaces, not at start
-    try {
-        strictWord.parseAllOrThrow("  hello")
-    } catch (e: UnmatchedInputParseException) {
-        println("Leading spaces: failed (not at start after consuming spaces)")
-    }
-    
-    // Trailing whitespace - fails because after matching word, not at end
-    try {
-        strictWord.parseAllOrThrow("hello  ")
-    } catch (e: UnmatchedInputParseException) {
-        println("Trailing spaces: failed (not at end before consuming trailing spaces)")
-    }
-    
-    // Both leading and trailing - fails
-    try {
-        strictWord.parseAllOrThrow("  hello  ")
-    } catch (e: UnmatchedInputParseException) {
-        println("Both spaces: failed")
-    }
-}
-```
-
-This demonstrates that `startOfInput` and `endOfInput` check the current position, not the original input boundaries. After consuming characters (like whitespace), you're no longer at the start or end.
-
-> **Note**: When using `parseAllOrThrow`, these boundary checks are redundant because it already starts at position 0 and verifies the entire input is consumed. These parsers are most useful with `parseOrNull` or within complex grammars where you parse sub-expressions.
-
-## Naming parsers for better error messages
-
-Use the `named` infix function to assign meaningful names to parsers. Named parsers improve error reporting by providing clearer context when parsing fails:
-
-```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
-
-// Create named parsers for better error messages
 val digit = (+Regex("[0-9]")) named "digit"
 val letter = (+Regex("[a-z]")) named "letter"
-
-// Named parsers work with all combinators
 val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
-    // Success case
-    val result = identifier.parseAllOrThrow("x123")
-    println(result) // Tuple2(Tuple1(MatchResult(value=x)), List(MatchResult(value=1), ...))
-    
-    // When parsing fails, the named parser helps identify what was expected
     try {
         identifier.parseAllOrThrow("123abc")
     } catch (e: UnmatchedInputParseException) {
-        println("Failed: ${e.message}") 
-        // The error context includes information about named parsers
+        // Error context will reference "identifier" and "letter"
+        println("Failed: ${e.message}")
     }
 }
 ```
 
-Parser names are particularly useful when building complex grammars with many alternatives:
+### Named Composite Parsers
 
-```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
-
-fun main() {
-    val keyword = (+"if" + +"while" + +"for") named "keyword"
-    val operator = (+"+" + +"-" + +"*" + +"/") named "operator"
-    val number = (+Regex("[0-9]+")) named "number"
-
-    // When parsing fails, error messages can reference these names
-    val expression = (number * operator * number) named "binary_expression"
-    
-    println(expression.parseAllOrThrow("42+17"))
-}
-```
-
-Named parsers compose naturally with all other combinators:
-- Sequences: `(namedParser * otherParser)`
-- Choices: `(namedParser + otherParser)`
-- Repetition: `namedParser.oneOrMore`
-- Mapping: `namedParser map { ... }`
-
-### Named composite parsers and error messages
-
-When you name a composite parser, it affects which parsers appear in error suggestions. A named composite parser hides its constituent parsers from error messages, showing only the composite name:
+Named composite parsers hide constituent parsers from error suggestions:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -194,29 +167,38 @@ fun main() {
     val parserA = (+'a') named "letter_a"
     val parserB = (+'b') named "letter_b"
     
-    // Named composite - only "ab_sequence" appears in error suggestions
+    // Named composite: only "ab_sequence" in errors
     val namedComposite = (parserA * parserB) named "ab_sequence"
     
-    // Unnamed composite - "letter_a" appears in error suggestions
+    // Unnamed composite: "letter_a" in errors
     val unnamedComposite = parserA * parserB
     
     val context1 = ParseContext("c", useCache = true)
     context1.parseOrNull(namedComposite, 0)
-    println(context1.suggestedParsers.map { it.name }) // ["ab_sequence"]
+    println(context1.suggestedParsers.map { it.name })  // ["ab_sequence"]
     
     val context2 = ParseContext("c", useCache = true)
     context2.parseOrNull(unnamedComposite, 0)
-    println(context2.suggestedParsers.map { it.name }) // ["letter_a"]
+    println(context2.suggestedParsers.map { it.name })  // ["letter_a"]
 }
 ```
 
-This behavior helps you control error message granularity:
-- **Name composite parsers** for high-level semantic errors: `"Expected: identifier"` is clearer than `"Expected: letter"`
-- **Leave composites unnamed** for detailed token-level errors when debugging or building new grammars
+**Best practice:** Name composite parsers for semantic errors ("Expected: identifier") and leave components unnamed for detailed token-level errors during development.
 
-> **Note**: To get proper named parser handling, call parsers through `context.parseOrNull(parser, start)` rather than `parser.parseOrNull(context, start)`. The former ensures the `isInNamedParser` flag is set correctly.
+> **Tip:** Call parsers through `context.parseOrNull(parser, start)` rather than `parser.parseOrNull(context, start)` for proper named parser handling.
 
-> **Note**: Naming is optional and primarily benefits error reporting and debugging. It does not affect parsing behavior or performance significantly.
+## Key Takeaways
 
-Next, handle recursion and associativity to build expression parsers with less code.  
-→ [Step 3: Handle expressions and recursion](03-expressions.md)
+- **`+`** for alternatives (first match wins)
+- **`.optional`** rewinds on failure, returns `Tuple1<T?>`
+- **`.zeroOrMore` / `.oneOrMore`** collect matches into lists
+- **`-parser`** drops values from tuples
+- **Destructuring** in `map` transforms tuple results
+- **`startOfInput` / `endOfInput`** match boundaries
+- **`named`** improves error messages
+
+## Next Steps
+
+Learn how to handle recursive grammars and operator precedence.
+
+→ **[Step 3: Expressions & Recursion](03-expressions.html)**

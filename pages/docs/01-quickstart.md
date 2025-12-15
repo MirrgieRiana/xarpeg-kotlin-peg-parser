@@ -3,11 +3,13 @@ layout: default
 title: Step 1 – Quickstart
 ---
 
-# Step 1: Build your first parser
+# Step 1: Quickstart
 
-This step walks through creating the smallest parser, running it, and turning input into typed values.
+Build your first parser in minutes. This guide walks through a minimal example that demonstrates the core DSL concepts.
 
-## Minimal sample
+## Your First Parser
+
+Let's build a simple key-value parser that matches patterns like `count=42`:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -19,20 +21,77 @@ val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
 fun main() {
-    check(kv.parseAllOrThrow("count=42") == ("count" to 42))
+    val result = kv.parseAllOrThrow("count=42")
+    println(result)  // (count, 42)
+    check(result == ("count" to 42))
 }
 ```
 
-- `+literal` / `+Regex("...")` create parsers that must match at the current position.
-- `identifier` demonstrates an identifier that starts with a letter and may contain letters, digits, and `_`.
-- `*` builds a sequence; the results are packaged into `Tuple` types.
-- `-parser` matches but drops the value, which is handy for delimiters.
-- `map` reshapes the result into any type you need.
+## Understanding the Code
 
-## Run and verify
+**Creating parsers from patterns:**
+```kotlin
++Regex("[a-zA-Z][a-zA-Z0-9_]*")  // Matches identifiers starting with a letter
++Regex("[0-9]+")                  // Matches one or more digits
+```
+The unary `+` operator converts literals and regex patterns into parsers.
 
-1. Place the snippet in any Kotlin entry point or run it as-is.
-2. `parseAllOrThrow` throws if the input is not fully consumed, so you notice bad input immediately.
-3. Use IDE completion and KDoc to inspect each combinator’s types and return shapes.
+**Sequencing with `*`:**
+```kotlin
+identifier * -'=' * number  // Match identifier, then '=', then number
+```
+The `*` operator chains parsers in order. Results are packaged into typed tuples.
 
-Next, expand the composition patterns to build richer grammars.
+**Ignoring tokens with `-`:**
+```kotlin
+-'='  // Match the '=' character but drop it from the result
+```
+The unary `-` operator matches a parser but excludes its value from the result tuple.
+
+**Transforming results with `map`:**
+```kotlin
+map { it.value }              // Extract string from MatchResult
+map { it.value.toInt() }      // Convert string to integer
+map { (key, value) -> ... }   // Destructure tuple and transform
+```
+The `map` function transforms parsed values into the types you need.
+
+**Naming parsers:**
+```kotlin
+named "identifier"  // Assign a name for error messages
+```
+Named parsers appear in error messages, making debugging easier.
+
+## Running the Parser
+
+**Success case:**
+```kotlin
+kv.parseAllOrThrow("count=42")    // ✓ Returns ("count", 42)
+kv.parseAllOrThrow("x=100")       // ✓ Returns ("x", 100)
+```
+
+**Error cases:**
+```kotlin
+kv.parseAllOrThrow("=42")         // ✗ UnmatchedInputParseException
+kv.parseAllOrThrow("count")       // ✗ UnmatchedInputParseException
+kv.parseAllOrThrow("count=42x")   // ✗ ExtraCharactersParseException
+```
+
+`parseAllOrThrow` requires the entire input to be consumed. It throws:
+- `UnmatchedInputParseException` when no parser matches
+- `ExtraCharactersParseException` when trailing input remains
+
+## Key Takeaways
+
+- **Unary `+`** creates parsers from literals, characters, or regex
+- **Binary `*`** sequences parsers and produces tuples
+- **Unary `-`** matches but drops values from results
+- **`map`** transforms parsed values to your domain types
+- **`named`** improves error messages
+- **`parseAllOrThrow`** parses complete input or throws exceptions
+
+## Next Steps
+
+Now that you understand the basics, learn how to combine parsers in more sophisticated ways.
+
+→ **[Step 2: Combinators](02-combinators.html)**

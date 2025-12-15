@@ -1,44 +1,129 @@
 ---
 layout: default
-title: Xarpeg: Kotlin PEG Parser Tutorial
+title: Xarpeg Tutorial - Learn Parser Combinators
 ---
 
-# Xarpeg: Kotlin PEG Parser Tutorial
+# Xarpeg Tutorial
 
-This tutorial is split into themed subpages so you can learn step by step. For API signatures, rely on IDE completion and KDoc.
+Learn to build powerful parsers with Kotlin. This tutorial guides you from basic concepts to advanced techniques, step by step.
 
-When adding the library to your project, replace `<latest-version>` with the version shown on [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
+## Prerequisites
 
-## Reading path (hub)
+- Basic Kotlin knowledge (functions, lambdas, classes)
+- Familiarity with regular expressions (helpful but not required)
+- IDE with Kotlin support for code completion
 
-- **Step 1 – Build your first parser:** minimal DSL example and how to run it  
-  → [Step 1: Quickstart](01-quickstart.html)
-- **Step 2 – Combine parsers:** sequences, choices, repetition, and other core patterns  
-  → [Step 2: Combinators](02-combinators.html)
-- **Step 3 – Handle expressions and recursion:** using `ref { }` plus associativity helpers  
-  → [Step 3: Expressions](03-expressions.html)
-- **Step 4 – Errors and runtime behavior:** exceptions, full consumption, cache on/off  
-  → [Step 4: Runtime](04-runtime.html)
-- **Step 5 – Working with parsing positions:** using `mapEx` to access positions while keeping types simple  
-  → [Step 5: Positions](05-positions.html)
-- **Step 6 – Template strings without tokenization:** handling embedded expressions naturally with PEG parsers  
-  → [Step 6: Template strings](06-template-strings.html)
+## Installation
 
-## Complete example: JSON parser
+Add Xarpeg to your `build.gradle.kts`:
 
-Want to see a real-world parser in action? Check out the full JSON parser implementation that handles all JSON data types including strings with escape sequences, numbers, booleans, null, arrays, and nested objects with recursion.
+```kotlin
+repositories {
+    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+}
 
-→ [src/commonTest/kotlin/JsonParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt)
+dependencies {
+    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
+}
+```
 
-This example demonstrates:
-- Parsing strings with escape sequences (`\"`, `\\`, `\n`, `\uXXXX`, etc.)
-- Handling numbers in various formats (integers, decimals, scientific notation)
-- Building recursive parsers for arrays and objects using `ref { }`
-- Separating list items with custom separator parsers
-- Comprehensive unit tests showing the parser in action
+Find the latest version in [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
 
-## When you want more detail
+---
 
-- For observed behavior, the tests in [src/importedTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/importedTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt) are a quick reference.
-- For implementation details, browse [src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg).
-- For return types and signatures, rely on IDE KDoc and code completion.
+## Tutorial Steps
+
+### 1. [Quickstart](01-quickstart.html)
+Build your first parser in minutes. Learn the basic syntax and run a simple key-value parser.
+
+**What you'll learn:** Creating parsers from literals and regex, sequencing with `*`, ignoring tokens with `-`, transforming results with `map`
+
+---
+
+### 2. [Combinators](02-combinators.html)
+Master the building blocks: sequences, choices, repetition, and optional parsing.
+
+**What you'll learn:** Alternatives with `+`, repetition (`.zeroOrMore`, `.oneOrMore`), optionals, input boundaries, naming parsers for better error messages
+
+---
+
+### 3. [Expressions & Recursion](03-expressions.html)
+Handle recursive grammars and operator precedence for expression parsing.
+
+**What you'll learn:** Forward references with `ref { }`, left/right associativity, building arithmetic parsers, proper type declarations
+
+---
+
+### 4. [Runtime Behavior](04-runtime.html)
+Understand how parsers handle errors, consume input, and use caching.
+
+**What you'll learn:** Exception types, `ParseContext` error tracking, memoization control, debugging techniques
+
+---
+
+### 5. [Parsing Positions](05-positions.html)
+Extract location information for better error messages and source mapping.
+
+**What you'll learn:** Position tracking with `mapEx`, calculating line/column numbers, extracting matched text
+
+---
+
+### 6. [Template Strings](06-template-strings.html)
+Parse complex nested structures without tokenization.
+
+**What you'll learn:** Handling embedded expressions, context switching with PEG, recursive string/expression parsing
+
+---
+
+## Complete Examples
+
+### JSON Parser
+Full implementation handling all JSON types with escape sequences, nested structures, and comprehensive tests.
+
+→ **[View JSON Parser Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/JsonParserTest.kt)**
+
+Features:
+- String escape sequences (`\"`, `\\`, `\n`, `\uXXXX`)
+- Numbers (integers, decimals, scientific notation)
+- Recursive arrays and objects with `ref { }`
+- Custom separator handling
+
+### Arithmetic Interpreter
+Expression parser with evaluation and error reporting including line/column positions.
+
+→ **[View Interpreter Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/interpreter)**
+
+Features:
+- Four arithmetic operations with precedence
+- Parentheses for grouping
+- Division by zero error reporting with positions
+- Command-line interface
+
+### Online Parser Demo
+Interactive browser-based parser demonstrating real-time parsing and evaluation.
+
+→ **[Try Live Demo](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/)** | **[View Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser)**
+
+---
+
+## Additional Resources
+
+### API Documentation
+- **KDoc in IDE** - Use code completion for inline documentation
+- **[Parser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Parser.kt)** - Core interface and helpers
+- **[parsers package](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers)** - Combinator implementations
+
+### Tests
+- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/importedTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt)** - Comprehensive behavior examples
+- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ErrorContextTest.kt)** - Error tracking examples
+
+### Real-World Usage
+- **[Xarpite](https://github.com/MirrgieRiana/Xarpite)** - Production application using Xarpeg for complex grammar parsing
+
+---
+
+## Need Help?
+
+- **[GitHub Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Report bugs or request features
+- **[Main README](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - Quick reference and overview
+- **[Contributing Guide](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/CONTRIBUTING.md)** - Development setup
