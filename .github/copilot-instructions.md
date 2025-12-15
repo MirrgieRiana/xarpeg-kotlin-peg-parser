@@ -14,6 +14,10 @@ In pull requests, you must communicate in the same natural language as the "Orig
 
 When launching the Agent from GitHub to create a pull request, you must initialize the pull request title and initial comment in the same natural language as the user's message.
 
+## Conversational Responses
+
+Before you finish working on a pull request, you must send a response message to the user with a summary of your work.
+
 ## Write documents in English
 
 You must write all project documentation (such as `README.md` and the contents under `docs/`) in English.
