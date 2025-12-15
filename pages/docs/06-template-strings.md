@@ -34,7 +34,7 @@ val templateStringParser: Parser<String> = object {
     // Expression parser (reusing from earlier tutorials)
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
-    val factor: Parser<Int> = (number + grouped) named "factor"
+    val factor: Parser<Int> = number + grouped
     val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val sum: Parser<Int> = leftAssociative(product, -'+') { a, _, b -> a + b }
     val expression = sum
@@ -48,23 +48,23 @@ val templateStringParser: Parser<String> = object {
 
     // Expression part: $(...)
     val expressionPart: Parser<TemplateElement> =
-        (-Regex("""\$\(""") * expression * -')' map { value ->
+        -Regex("""\$\(""") * expression * -')' map { value ->
             ExpressionPart(value)
-        }) named "expression_part"
+        }
 
     // Template elements can be string parts or expression parts
     val templateElement = expressionPart + stringPart
 
     // A complete template string: "..." with any number of elements
     val templateString: Parser<String> =
-        (-'"' * templateElement.zeroOrMore * -'"' map { elements ->
+        -'"' * templateElement.zeroOrMore * -'"' map { elements ->
             elements.joinToString("") { element ->
                 when (element) {
                     is StringPart -> element.text
                     is ExpressionPart -> element.value.toString()
                 }
             }
-        }) named "template_string"
+        }
     
     val root = templateString
 }.root
@@ -125,25 +125,25 @@ object TemplateWithNestedStrings {
         +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) } named "string_part"
 
     val expressionPart: Parser<TemplateElement> =
-        (-Regex("""\$\(""") * ref { sum } * -')' map { value ->
+        -Regex("""\$\(""") * ref { sum } * -')' map { value ->
             ExpressionPart(value)
-        }) named "expression_part"
+        }
 
     val templateElement = expressionPart + stringPart
 
     val templateString: Parser<String> = ref {
-        (-'"' * templateElement.zeroOrMore * -'"' map { elements ->
+        -'"' * templateElement.zeroOrMore * -'"' map { elements ->
             elements.joinToString("") { element ->
                 when (element) {
                     is StringPart -> element.text
                     is ExpressionPart -> element.value.toString()
                 }
             }
-        }) named "template_string"
+        }
     }
 
     // Now expressions can contain template strings
-    val factor: Parser<Int> = (number + grouped + (templateString map { it.length })) named "factor"
+    val factor: Parser<Int> = number + grouped + (templateString map { it.length })
     val sum: Parser<Int> = leftAssociative(factor, -'+') { a, _, b -> a + b }
 }
 

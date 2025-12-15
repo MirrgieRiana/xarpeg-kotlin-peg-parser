@@ -49,7 +49,7 @@ private object ArithmeticParser {
     val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
     
     // Primary expression: number or grouped
-    val primary: Parser<LazyValue> = (number + grouped) named "primary"
+    val primary: Parser<LazyValue> = number + grouped
     
     // Multiplication and division (higher precedence)
     val product: Parser<LazyValue> = leftAssociative(

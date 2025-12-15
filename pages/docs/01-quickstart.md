@@ -16,7 +16,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
-    (identifier * -'=' * number map { (key, value) -> key to value }) named "key_value_pair"
+    identifier * -'=' * number map { (key, value) -> key to value }
 
 fun main() {
     check(kv.parseAllOrThrow("count=42") == ("count" to 42))

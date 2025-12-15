@@ -41,7 +41,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { match -> match.value.toInt() } named "number"
     val brackets: Parser<Int> = -'(' * ref { root } * -')'
-    val factor = (number + brackets) named "factor"
+    val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
     val root = add
