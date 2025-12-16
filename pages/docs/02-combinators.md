@@ -141,13 +141,11 @@ val letter = (+Regex("[a-z]")) named "letter"
 val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
-    try {
-        identifier.parseAllOrThrow("123abc")
-        error("Should have thrown exception")
-    } catch (e: UnmatchedInputParseException) {
-        // Error context references "identifier" and "letter"
-        check(e.message!!.contains("Failed to parse"))
-    }
+    val result = identifier.parseAll("123abc")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.message!!.contains("Failed to parse"))
 }
 ```
 
@@ -169,17 +167,13 @@ fun main() {
     // Unnamed composite: "letter_a" in errors
     val unnamedComposite = parserA * parserB
     
-    try {
-        namedComposite.parseAllOrThrow("c")
-    } catch (e: UnmatchedInputParseException) {
-        check(e.context.suggestedParsers.mapNotNull { it.name }.contains("ab_sequence"))
-    }
+    val result1 = namedComposite.parseAll("c")
+    val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
+    check(exception1?.context?.suggestedParsers?.mapNotNull { it.name }?.contains("ab_sequence") == true)
     
-    try {
-        unnamedComposite.parseAllOrThrow("c")
-    } catch (e: UnmatchedInputParseException) {
-        check(e.context.suggestedParsers.mapNotNull { it.name }.contains("letter_a"))
-    }
+    val result2 = unnamedComposite.parseAll("c")
+    val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
+    check(exception2?.context?.suggestedParsers?.mapNotNull { it.name }?.contains("letter_a") == true)
 }
 ```
 

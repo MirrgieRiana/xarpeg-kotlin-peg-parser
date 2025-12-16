@@ -46,20 +46,19 @@ val digit = (+Regex("[0-9]")) named "digit" map { it.value }
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
-    try {
-        identifier.parseAllOrThrow("1abc")
-    } catch (e: UnmatchedInputParseException) {
-        // Access error context from exception
-        check(e.context.errorPosition == 0)  // Failed at position 0
-        
-        val expected = e.context.suggestedParsers
-            .mapNotNull { it.name }
-            .distinct()
-            .sorted()
-            .joinToString(", ")
-        
-        check(expected == "letter")  // Expected "letter"
-    }
+    val result = identifier.parseAll("1abc")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition == 0)  // Failed at position 0
+    
+    val expected = exception.context.suggestedParsers
+        .mapNotNull { it.name }
+        .distinct()
+        .sorted()
+        .joinToString(", ")
+    
+    check(expected == "letter")  // Expected "letter"
 }
 ```
 
@@ -84,14 +83,13 @@ val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
 fun main() {
-    try {
-        expr.parseAllOrThrow("42 + 10")
-        error("Should have thrown exception")
-    } catch (e: UnmatchedInputParseException) {
-        check(e.context.errorPosition > 0)  // Error position tracked
-        val suggestions = e.context.suggestedParsers.mapNotNull { it.name }
-        check(suggestions.isNotEmpty())  // Has suggestions
-    }
+    val result = expr.parseAll("42 + 10")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition > 0)  // Error position tracked
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    check(suggestions.isNotEmpty())  // Has suggestions
 }
 ```
 
@@ -158,9 +156,9 @@ Validate before mapping or catch and wrap errors when recovery is needed.
 
 ## Debugging Tips
 
-### Inspect Error Details from Exceptions
+### Inspect Error Details from Result
 
-Access error context from parse exceptions:
+Access error context from parse result:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -169,12 +167,12 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = (+Regex("[a-z]+")) named "word"
 
 fun main() {
-    try {
-        parser.parseAllOrThrow("123")
-    } catch (e: UnmatchedInputParseException) {
-        check(e.context.errorPosition == 0)  // Error at position 0
-        check(e.context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
-    }
+    val result = parser.parseAll("123")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition == 0)  // Error at position 0
+    check(exception.context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
 }
 ```
 

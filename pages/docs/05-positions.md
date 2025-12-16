@@ -141,18 +141,21 @@ fun main() {
     val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     
     fun parseWithErrors(input: String): Result<Int> {
-        return try {
-            Result.success(parser.parseAllOrThrow(input))
-        } catch (e: UnmatchedInputParseException) {
-            val pos = e.context.errorPosition
+        val result = parser.parseAll(input)
+        val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+        
+        return if (exception != null) {
+            val pos = exception.context.errorPosition
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-            val expected = e.context.suggestedParsers.mapNotNull { it.name }
+            val expected = exception.context.suggestedParsers.mapNotNull { it.name }
             
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"
             ))
+        } else {
+            result
         }
     }
     
