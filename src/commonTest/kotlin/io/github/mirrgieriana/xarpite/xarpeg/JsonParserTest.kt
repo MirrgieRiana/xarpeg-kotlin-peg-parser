@@ -1,11 +1,9 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
@@ -75,9 +73,9 @@ class JsonParserTest {
             }
             val escape = +'\\' * (
                 escapeQuote + escapeBackslash + escapeSlash +
-                escapeB + escapeF + escapeN + escapeR + escapeT +
-                escapeUnicode
-            ) map { (_, str) -> str }
+                    escapeB + escapeF + escapeN + escapeR + escapeT +
+                    escapeUnicode
+                ) map { (_, str) -> str }
 
             // Regular characters (not backslash or quote)
             val charContent = +Regex("[^\\\\\"]+") map { it.value }
@@ -100,7 +98,7 @@ class JsonParserTest {
         // JSON boolean parser
         private val jsonBoolean: Parser<JsonValue.JsonBoolean> =
             (+"true" map { JsonValue.JsonBoolean(true) }) +
-            (+"false" map { JsonValue.JsonBoolean(false) })
+                (+"false" map { JsonValue.JsonBoolean(false) })
 
         // JSON null parser
         private val jsonNull: Parser<JsonValue.JsonNull> =
@@ -130,11 +128,11 @@ class JsonParserTest {
         // Main JSON value parser (combines all types)
         val jsonValue: Parser<JsonValue> =
             jsonString +
-            jsonNumber +
-            jsonBoolean +
-            jsonNull +
-            jsonArray +
-            jsonObject
+                jsonNumber +
+                jsonBoolean +
+                jsonNull +
+                jsonArray +
+                jsonObject
     }
 
     @Test
@@ -336,6 +334,7 @@ class JsonParserTest {
                 val metadata = result.properties["metadata"] as JsonValue.JsonObject
                 assertEquals(2, metadata.properties.size)
             }
+
             else -> error("Expected JsonObject")
         }
     }

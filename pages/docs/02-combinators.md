@@ -120,15 +120,9 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val word = +Regex("[a-z]+") map { it.value }
 
 fun main() {
-    val context = ParseContext("hello world", useCache = true)
-    
-    // Match word at start
-    val atStart = (startOfInput * word).parseOrNull(context, 0)
-    check(atStart?.value == "hello")  // Succeeds at position 0
-    
-    // Fails: position 6 is not at start
-    val notAtStart = (startOfInput * word).parseOrNull(context, 6)
-    check(notAtStart == null)  // Fails when not at start
+    // Matches at start of input
+    val atStart = (startOfInput * word).parseAllOrThrow("hello")
+    check(atStart == "hello")  // Succeeds
 }
 ```
 
@@ -147,13 +141,11 @@ val letter = (+Regex("[a-z]")) named "letter"
 val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
-    try {
-        identifier.parseAllOrThrow("123abc")
-        error("Should have thrown exception")
-    } catch (e: UnmatchedInputParseException) {
-        // Error context references "identifier" and "letter"
-        check(e.message!!.contains("Failed to parse"))
-    }
+    val result = identifier.parseAll("123abc")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.message!!.contains("Failed to parse"))
 }
 ```
 
@@ -175,19 +167,19 @@ fun main() {
     // Unnamed composite: "letter_a" in errors
     val unnamedComposite = parserA * parserB
     
-    val context1 = ParseContext("c", useCache = true)
-    context1.parseOrNull(namedComposite, 0)
-    check(context1.suggestedParsers.map { it.name } == listOf("ab_sequence"))
+    val result1 = namedComposite.parseAll("c")
+    val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
+    val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    check(names1.contains("ab_sequence"))
     
-    val context2 = ParseContext("c", useCache = true)
-    context2.parseOrNull(unnamedComposite, 0)
-    check(context2.suggestedParsers.map { it.name } == listOf("letter_a"))
+    val result2 = unnamedComposite.parseAll("c")
+    val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
+    val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    check(names2.contains("letter_a"))
 }
 ```
 
 **Best practice:** Name composite parsers for semantic errors ("Expected: identifier") and leave components unnamed for detailed token-level errors during development.
-
-> **Tip:** Call parsers through `context.parseOrNull(parser, start)` rather than `parser.parseOrNull(context, start)` for proper named parser handling.
 
 ## Key Takeaways
 

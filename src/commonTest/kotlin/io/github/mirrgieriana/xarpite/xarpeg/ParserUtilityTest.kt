@@ -1,8 +1,5 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
-import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
-import io.github.mirrgieriana.xarpite.xarpeg.text
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
 import kotlin.test.Test
@@ -12,7 +9,7 @@ class ParserUtilityTest {
 
     @Test
     fun parseResultTextNormalizesNewlines() {
-        val context = ParseContext("line1\r\nline2", useCache = true)
+        val context = ParseContext("line1\r\nline2", useMemoization = true)
         val parser = +"line1\r\nline2"
 
         val result = parser.parseOrNull(context, 0)

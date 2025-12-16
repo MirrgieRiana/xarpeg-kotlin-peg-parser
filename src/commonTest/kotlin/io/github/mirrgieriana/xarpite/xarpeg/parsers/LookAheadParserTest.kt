@@ -2,11 +2,6 @@ package io.github.mirrgieriana.xarpite.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -17,7 +12,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserMatchesWithoutConsuming() {
         val parser = (+'a').lookAhead
-        val context = ParseContext("abc", useCache = true)
+        val context = ParseContext("abc", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -28,7 +23,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserFailsWhenInnerParserFails() {
         val parser = (+'a').lookAhead
-        val context = ParseContext("bcd", useCache = true)
+        val context = ParseContext("bcd", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -54,7 +49,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserDoesNotConsumeInput() {
         val parser = (+'a').lookAhead * +'a' map { tuple -> tuple.b }
-        val context = ParseContext("a", useCache = true)
+        val context = ParseContext("a", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -84,13 +79,13 @@ class LookAheadParserTest {
         val notWordChar = +Regex("[^a-zA-Z0-9_]")
         val ifKeyword = keyword * notWordChar.lookAhead map { tuple -> tuple.a }
 
-        val context1 = ParseContext("if ", useCache = true)
+        val context1 = ParseContext("if ", useMemoization = true)
         val result1 = ifKeyword.parseOrNull(context1, 0)
         assertNotNull(result1)
         assertEquals("if", result1.value)
         assertEquals(2, result1.end)
 
-        val context2 = ParseContext("ifx", useCache = true)
+        val context2 = ParseContext("ifx", useMemoization = true)
         val result2 = ifKeyword.parseOrNull(context2, 0)
         assertNull(result2)
     }

@@ -1,24 +1,19 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
-import io.github.mirrgieriana.xarpite.xarpeg.assertExtraCharacters
-import io.github.mirrgieriana.xarpite.xarpeg.assertUnmatchedInput
-import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
-import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
-import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fail
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.fail
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.or
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.rightAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.zeroOrMore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,7 +58,7 @@ class ParserAdditionalTest {
     @Test
     fun zeroOrMoreStopsBeforeMismatch() {
         val parser = (+'a').zeroOrMore
-        val context = ParseContext("aab", useCache = true)
+        val context = ParseContext("aab", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(listOf('a', 'a'), result.value)
@@ -132,7 +127,7 @@ class ParserAdditionalTest {
     @Test
     fun mapPreservesRange() {
         val parser = (+"hi") map { it.uppercase() }
-        val context = ParseContext("hi!", useCache = true)
+        val context = ParseContext("hi!", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(2, result.end)
@@ -147,7 +142,7 @@ class ParserAdditionalTest {
     @Test
     fun parseAllOrThrowWithoutCacheStillWorks() {
         val parser = (+'a').oneOrMore
-        assertEquals(listOf('a', 'a'), parser.parseAllOrThrow("aa", useCache = false))
+        assertEquals(listOf('a', 'a'), parser.parseAllOrThrow("aa", useMemoization = false))
     }
 
     @Test

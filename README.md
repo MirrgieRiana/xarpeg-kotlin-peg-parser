@@ -110,7 +110,7 @@ Interactive browser-based parser that demonstrates:
 
 ### Parsing Methods
 
-- **`parseAllOrThrow(input, useCache = true)`** - Parse entire input or throw exception
+- **`parseAllOrThrow(input)`** - Parse entire input or throw exception
 - **`parseOrNull(context, start)`** - Attempt parse at position; return `ParseResult<T>?`
 
 ### Error Handling
@@ -121,8 +121,8 @@ Interactive browser-based parser that demonstrates:
 
 ### Performance
 
-- **Memoization** - Enabled by default (`useCache = true`); disable with `useCache = false` for lower memory usage
-- **Backtracking** - Cached results make repeated attempts predictable; alternatives backtrack automatically
+- **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage
+- **Backtracking** - Memoized results make repeated attempts predictable; alternatives backtrack automatically
 
 ---
 

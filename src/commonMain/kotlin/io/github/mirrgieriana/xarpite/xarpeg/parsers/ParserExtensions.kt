@@ -3,10 +3,6 @@ package io.github.mirrgieriana.xarpite.xarpeg.parsers
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.toParser
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.not
 
 // Parser extension properties
 

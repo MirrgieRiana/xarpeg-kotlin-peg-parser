@@ -46,13 +46,13 @@ val digit = (+Regex("[0-9]")) named "digit" map { it.value }
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
-    val context = ParseContext("1abc", useCache = true)
-    val result = identifier.parseOrNull(context, 0)
+    val result = identifier.parseAll("1abc")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
     
-    check(result == null)  // Parsing fails
-    check(context.errorPosition == 0)  // Failed at position 0
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition == 0)  // Failed at position 0
     
-    val expected = context.suggestedParsers
+    val expected = exception.context.suggestedParsers
         .mapNotNull { it.name }
         .distinct()
         .sorted()
@@ -83,14 +83,13 @@ val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
 fun main() {
-    try {
-        expr.parseAllOrThrow("42 + 10")
-        error("Should have thrown exception")
-    } catch (e: UnmatchedInputParseException) {
-        check(e.context.errorPosition > 0)  // Error position tracked
-        val suggestions = e.context.suggestedParsers.mapNotNull { it.name }
-        check(suggestions.isNotEmpty())  // Has suggestions
-    }
+    val result = expr.parseAll("42 + 10")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition > 0)  // Error position tracked
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    check(suggestions.isNotEmpty())  // Has suggestions
 }
 ```
 
@@ -98,7 +97,7 @@ fun main() {
 
 ### Default Behavior
 
-`ParseContext` caches results by default to make backtracking predictable:
+`ParseContext` uses memoization by default to make backtracking predictable:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -107,16 +106,16 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value }
 
 fun main() {
-    // Cache enabled (default)
-    parser.parseAllOrThrow("hello", useCache = true)
+    // Memoization enabled (default)
+    parser.parseAllOrThrow("hello", useMemoization = true)
 }
 ```
 
-Each `(parser, position)` pair is memoized, so repeated attempts at the same position return cached results.
+Each `(parser, position)` pair is memoized, so repeated attempts at the same position return memoized results.
 
-### Disabling Cache
+### Disabling Memoization
 
-Disable caching for lower memory usage when your grammar doesn't backtrack heavily:
+Disable memoization for lower memory usage when your grammar doesn't backtrack heavily:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -125,13 +124,13 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value }
 
 fun main() {
-    parser.parseAllOrThrow("hello", useCache = false)
+    parser.parseAllOrThrow("hello", useMemoization = false)
 }
 ```
 
 **Trade-offs:**
-- **Cache enabled** - Higher memory, predictable performance with heavy backtracking
-- **Cache disabled** - Lower memory, potential performance issues with alternatives
+- **Memoization enabled** - Higher memory, predictable performance with heavy backtracking
+- **Memoization disabled** - Lower memory, potential performance issues with alternatives
 
 ## Error Propagation
 
@@ -157,9 +156,9 @@ Validate before mapping or catch and wrap errors when recovery is needed.
 
 ## Debugging Tips
 
-### Use `parseOrNull` Directly
+### Inspect Error Details from Result
 
-Work with `ParseContext` directly to inspect error details:
+Access error context from parse result:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -168,12 +167,12 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = (+Regex("[a-z]+")) named "word"
 
 fun main() {
-    val context = ParseContext("123", useCache = true)
-    val result = context.parseOrNull(parser, 0)
+    val result = parser.parseAll("123")
+    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
     
-    check(result == null)  // Parsing fails
-    check(context.errorPosition == 0)  // Error at position 0
-    check(context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
+    check(exception != null)  // Parsing fails
+    check(exception.context.errorPosition == 0)  // Error at position 0
+    check(exception.context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
 }
 ```
 
@@ -188,9 +187,8 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = (+Regex("[a-z]+")).optional * +Regex("[0-9]+")
 
 fun main() {
-    val context = ParseContext("123", useCache = true)
-    val result = parser.parseOrNull(context, 0)
     // optional fails but rewinds, allowing number parser to succeed
+    val result = parser.parseAllOrThrow("123")
     check(result != null)  // Succeeds
 }
 ```
@@ -206,7 +204,7 @@ Check the test suite for observed behavior:
 - **`parseAllOrThrow`** requires full consumption, throws on failure
 - **Error context** provides `errorPosition` and `suggestedParsers`
 - **Named parsers** appear in error messages with their assigned names
-- **Memoization** is enabled by default; disable with `useCache = false`
+- **Memoization** is enabled by default; disable with `useMemoization = false`
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
 

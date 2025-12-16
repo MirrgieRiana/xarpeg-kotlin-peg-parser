@@ -27,7 +27,7 @@ class NamedParserTest {
     @Test
     fun namedParserFailsOnMismatch() {
         val parser = (+'a') named "letter_a"
-        val context = ParseContext("b", useCache = true)
+        val context = ParseContext("b", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -107,7 +107,7 @@ class NamedParserTest {
     @Test
     fun namedParserWithLookAhead() {
         val parser = ((+'a') named "letter_a").lookAhead
-        val context = ParseContext("a", useCache = true)
+        val context = ParseContext("a", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -118,11 +118,11 @@ class NamedParserTest {
     @Test
     fun namedParserWithNegativeLookAhead() {
         val parser = ((+'a') named "letter_a").negativeLookAhead
-        val context1 = ParseContext("b", useCache = true)
+        val context1 = ParseContext("b", useMemoization = true)
         val result1 = parser.parseOrNull(context1, 0)
         assertNotNull(result1)
 
-        val context2 = ParseContext("a", useCache = true)
+        val context2 = ParseContext("a", useMemoization = true)
         val result2 = parser.parseOrNull(context2, 0)
         assertNull(result2)
     }
@@ -161,7 +161,7 @@ class NamedParserTest {
         val digit = (+Regex("[0-9]")) named "digit" map { it.value }
         val identifier = letter * (letter + digit).zeroOrMore
 
-        val context = ParseContext("1abc", useCache = true)
+        val context = ParseContext("1abc", useMemoization = true)
         val result = identifier.parseOrNull(context, 0)
 
         assertNull(result)
@@ -175,11 +175,11 @@ class NamedParserTest {
         val parser = (+Regex("[a-z]+")) named "word" map { it.value }
 
         // Test with cache enabled
-        val result1 = parser.parseAllOrThrow("hello", useCache = true)
+        val result1 = parser.parseAllOrThrow("hello", useMemoization = true)
         assertEquals("hello", result1)
 
         // Test with cache disabled
-        val result2 = parser.parseAllOrThrow("world", useCache = false)
+        val result2 = parser.parseAllOrThrow("world", useMemoization = false)
         assertEquals("world", result2)
     }
 
@@ -213,7 +213,7 @@ class NamedParserTest {
 
         // Try to parse with input that doesn't match
         // Important: Call through context.parseOrNull to get proper named parser handling
-        val context = ParseContext("c", useCache = true)
+        val context = ParseContext("c", useMemoization = true)
         val result = context.parseOrNull(composite, 0)
 
         // The parse should fail
@@ -239,7 +239,7 @@ class NamedParserTest {
         val composite = parserA * parserB
 
         // Try to parse with input that doesn't match
-        val context = ParseContext("c", useCache = true)
+        val context = ParseContext("c", useMemoization = true)
         val result = composite.parseOrNull(context, 0)
 
         // The parse should fail
