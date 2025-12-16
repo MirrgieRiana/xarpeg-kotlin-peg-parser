@@ -39,3 +39,8 @@ tasks.test {
 tasks.named("build") {
     dependsOn("ktlintFormat")
 }
+
+// Make ktlint check tasks run after format tasks
+tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
+    mustRunAfter(tasks.matching { it.name.startsWith("runKtlintFormat") })
+}

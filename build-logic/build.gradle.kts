@@ -18,3 +18,8 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 tasks.named("build") {
     dependsOn("ktlintFormat")
 }
+
+// Make ktlint check tasks run after format tasks
+tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
+    mustRunAfter(tasks.matching { it.name.startsWith("runKtlintFormat") })
+}
