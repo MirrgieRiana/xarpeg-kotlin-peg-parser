@@ -15,7 +15,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
  * parser.parseAllOrThrow("hello")  // succeeds
  * ```
  */
-class StartOfInputParser : Parser<Tuple0> {
+object StartOfInputParser : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         if (start != 0) return null
         return ParseResult(Tuple0, start, start)
@@ -25,4 +25,4 @@ class StartOfInputParser : Parser<Tuple0> {
 /**
  * Parser that matches at the start of input.
  */
-val startOfInput = StartOfInputParser()
+val startOfInput = StartOfInputParser

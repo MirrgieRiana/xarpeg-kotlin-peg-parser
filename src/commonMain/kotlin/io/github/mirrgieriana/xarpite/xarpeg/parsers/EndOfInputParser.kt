@@ -16,7 +16,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
  * parser.parseAllOrThrow("hello world")  // fails
  * ```
  */
-class EndOfInputParser : Parser<Tuple0> {
+object EndOfInputParser : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         if (start != context.src.length) return null
         return ParseResult(Tuple0, start, start)
@@ -26,4 +26,4 @@ class EndOfInputParser : Parser<Tuple0> {
 /**
  * Parser that matches at the end of input.
  */
-val endOfInput = EndOfInputParser()
+val endOfInput = EndOfInputParser
