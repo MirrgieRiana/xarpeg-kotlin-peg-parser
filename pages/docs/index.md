@@ -127,3 +127,7 @@ Interactive browser-based parser demonstrating real-time parsing and evaluation.
 - **[GitHub Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Report bugs or request features
 - **[Main README](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - Quick reference and overview
 - **[Contributing Guide](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/CONTRIBUTING.md)** - Development setup
+
+---
+
+<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>

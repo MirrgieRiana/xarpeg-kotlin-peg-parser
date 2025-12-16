@@ -151,3 +151,7 @@ fun main() {
 Learn how parsers handle errors, caching, and provide debugging information.
 
 → **[Step 4: Runtime Behavior](04-runtime.html)**
+
+---
+
+<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>

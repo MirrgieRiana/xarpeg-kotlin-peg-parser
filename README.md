@@ -27,6 +27,11 @@ Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library 
 
 ---
 
+> **⚠️ Important Notice:**  
+> Most natural language descriptions in all documentation (including this README) were written by AI and may contain numerous inaccuracies. Please verify information against the actual source code and test behavior when in doubt.
+
+---
+
 ## Quick Example
 
 Here's a complete arithmetic expression parser in just a few lines:

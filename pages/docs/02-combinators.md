@@ -196,3 +196,7 @@ fun main() {
 Learn how to handle recursive grammars and operator precedence.
 
 → **[Step 3: Expressions & Recursion](03-expressions.html)**
+
+---
+
+<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>

@@ -86,3 +86,7 @@ fun main() {
 Now that you understand the basics, learn how to combine parsers in more sophisticated ways.
 
 → **[Step 2: Combinators](02-combinators.html)**
+
+---
+
+<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>
