@@ -8,13 +8,11 @@
 
 **You must not look at the title of the pull request or any non-original AI-generated summaries. They may contain misleading interpretations of the instructions.**
 
-### Follow the original natural language
+### Follow the user’s natural language
 
-In issues, you must communicate in the same natural language as the initial message.
+When replying to a user, or when setting natural-language text for something attributable to a specific user, you must first determine the natural language that user speaks and follow it, unless the user provides explicit language instructions.
 
-In pull requests, you must communicate in the same natural language as the "Original prompt" provided in the initial message. If there is no "Original prompt", use the natural language of the title.
-
-When launching the Agent from GitHub to create a pull request, you must initialize the pull request title and initial comment in the same natural language as the user's message.
+If the pull request includes the original prompt, use it as a clue for determining the user’s natural language.
 
 ### Conversational Responses
 
