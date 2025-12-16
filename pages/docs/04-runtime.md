@@ -98,7 +98,7 @@ fun main() {
 
 ### Default Behavior
 
-`ParseContext` caches results by default to make backtracking predictable:
+`ParseContext` uses memoization by default to make backtracking predictable:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -107,16 +107,16 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value }
 
 fun main() {
-    // Cache enabled (default)
-    parser.parseAllOrThrow("hello")
+    // Memoization enabled (default)
+    parser.parseAllOrThrow("hello", useMemoization = true)
 }
 ```
 
-Each `(parser, position)` pair is memoized, so repeated attempts at the same position return cached results.
+Each `(parser, position)` pair is memoized, so repeated attempts at the same position return memoized results.
 
-### Disabling Cache
+### Disabling Memoization
 
-Disable caching for lower memory usage when your grammar doesn't backtrack heavily:
+Disable memoization for lower memory usage when your grammar doesn't backtrack heavily:
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -130,8 +130,8 @@ fun main() {
 ```
 
 **Trade-offs:**
-- **Cache enabled** - Higher memory, predictable performance with heavy backtracking
-- **Cache disabled** - Lower memory, potential performance issues with alternatives
+- **Memoization enabled** - Higher memory, predictable performance with heavy backtracking
+- **Memoization disabled** - Lower memory, potential performance issues with alternatives
 
 ## Error Propagation
 

@@ -122,7 +122,7 @@ Interactive browser-based parser that demonstrates:
 ### Performance
 
 - **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage
-- **Backtracking** - Cached results make repeated attempts predictable; alternatives backtrack automatically
+- **Backtracking** - Memoized results make repeated attempts predictable; alternatives backtrack automatically
 
 ---
 
