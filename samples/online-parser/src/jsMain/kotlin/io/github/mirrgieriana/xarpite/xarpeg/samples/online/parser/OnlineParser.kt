@@ -376,12 +376,19 @@ private fun formatParseException(e: ParseException, input: String): String {
     val sb = StringBuilder()
 
     // Extract position information
-    val position = (e as? ParseException)?.position ?: 0
+    val position = e.position
 
-    // Calculate line and column numbers
+    // Calculate line and column numbers in a single pass
     val beforePosition = input.substring(0, position.coerceAtMost(input.length))
-    val line = beforePosition.count { it == '\n' } + 1
-    val column = position - (beforePosition.lastIndexOf('\n') + 1) + 1
+    var line = 1
+    var lastNewlinePos = -1
+    for (i in beforePosition.indices) {
+        if (beforePosition[i] == '\n') {
+            line++
+            lastNewlinePos = i
+        }
+    }
+    val column = position - lastNewlinePos
 
     // Build error message
     sb.append("Error: Syntax error at line $line, column $column")
