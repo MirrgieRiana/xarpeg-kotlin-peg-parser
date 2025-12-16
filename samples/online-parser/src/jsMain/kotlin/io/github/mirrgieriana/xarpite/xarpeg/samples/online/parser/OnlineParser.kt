@@ -393,33 +393,6 @@ private fun formatParseException(e: ParseException, input: String): String {
     // Build error message
     sb.append("Error: Syntax error at line $line, column $column")
 
-    // Try to access suggested parsers through dynamic access
-    // NOTE: This doesn't work due to Kotlin/JS limitations with Exception subclasses
-    // The 'context' property is not accessible because:
-    // 1. ParseException extends Exception (platform type)
-    // 2. Kotlin/JS compiles Exception to JavaScript Error
-    // 3. Constructor properties of exception classes are not properly exported to JS
-    // 4. The JS compiler only sees: constructor(message: String, position: Int)
-    //    instead of: constructor(message: String, context: ParseContext, position: Int)
-    try {
-        val dynamicException = e.asDynamic()
-        val context = dynamicException.context
-        if (context != null && context.suggestedParsers != null) {
-            val suggested = context.suggestedParsers as? Set<*>
-            if (suggested != null && suggested.isNotEmpty()) {
-                val names = suggested.mapNotNull { parser ->
-                    (parser.asDynamic().name as? String)
-                }.distinct().take(5)
-                if (names.isNotEmpty()) {
-                    sb.append("\nExpected: ${names.joinToString(", ")}")
-                }
-            }
-        }
-    } catch (ex: Exception) {
-        // Context access failed - this is expected in Kotlin/JS
-        // due to exception property visibility issues
-    }
-
     // Show the line with error indicator
     val lineStart = beforePosition.lastIndexOf('\n') + 1
     val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
