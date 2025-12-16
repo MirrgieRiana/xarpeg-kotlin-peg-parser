@@ -124,7 +124,7 @@ fun main() {
     val wordWithPos = word.withPos()
     
     val input = "first\nsecond\nthird"
-    val context = ParseContext(input)
+    val context = ParseContext(input, useMemoization = true)
     
     // Parse first word
     val result1 = wordWithPos.parseOrNull(context, 0)

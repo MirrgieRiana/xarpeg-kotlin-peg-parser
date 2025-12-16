@@ -46,7 +46,7 @@ val digit = (+Regex("[0-9]")) named "digit" map { it.value }
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
-    val context = ParseContext("1abc")
+    val context = ParseContext("1abc", useMemoization = true)
     val result = identifier.parseOrNull(context, 0)
     
     check(result == null)  // Parsing fails
@@ -168,7 +168,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = (+Regex("[a-z]+")) named "word"
 
 fun main() {
-    val context = ParseContext("123")
+    val context = ParseContext("123", useMemoization = true)
     val result = context.parseOrNull(parser, 0)
     
     check(result == null)  // Parsing fails
@@ -188,7 +188,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val parser = (+Regex("[a-z]+")).optional * +Regex("[0-9]+")
 
 fun main() {
-    val context = ParseContext("123")
+    val context = ParseContext("123", useMemoization = true)
     val result = parser.parseOrNull(context, 0)
     // optional fails but rewinds, allowing number parser to succeed
     check(result != null)  // Succeeds

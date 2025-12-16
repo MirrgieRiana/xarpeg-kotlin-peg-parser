@@ -11,7 +11,7 @@ fun interface Parser<out T : Any> {
 
 val Parser<*>.nameOrString get() = this.name ?: this.toString()
 
-class ParseContext(val src: String, val useMemoization: Boolean = true) {
+class ParseContext(val src: String, val useMemoization: Boolean) {
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
     var isInNamedParser = false
     var errorPosition: Int = 0

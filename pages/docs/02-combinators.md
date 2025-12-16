@@ -120,7 +120,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val word = +Regex("[a-z]+") map { it.value }
 
 fun main() {
-    val context = ParseContext("hello world")
+    val context = ParseContext("hello world", useMemoization = true)
     
     // Match word at start
     val atStart = (startOfInput * word).parseOrNull(context, 0)
@@ -175,11 +175,11 @@ fun main() {
     // Unnamed composite: "letter_a" in errors
     val unnamedComposite = parserA * parserB
     
-    val context1 = ParseContext("c")
+    val context1 = ParseContext("c", useMemoization = true)
     context1.parseOrNull(namedComposite, 0)
     check(context1.suggestedParsers.map { it.name } == listOf("ab_sequence"))
     
-    val context2 = ParseContext("c")
+    val context2 = ParseContext("c", useMemoization = true)
     context2.parseOrNull(unnamedComposite, 0)
     check(context2.suggestedParsers.map { it.name } == listOf("letter_a"))
 }
