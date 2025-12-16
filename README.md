@@ -27,11 +27,6 @@ Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library 
 
 ---
 
-> **⚠️ Important Notice:**  
-> Most natural language descriptions in all documentation (including this README) were written by AI and may contain numerous inaccuracies. Please verify information against the actual source code and test behavior when in doubt.
-
----
-
 ## Quick Example
 
 Here's a complete arithmetic expression parser in just a few lines:
@@ -219,6 +214,11 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **[Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Sample applications
 - **[Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Bug reports and feature requests
 - **[Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases)** - Version history
+
+---
+
+> **⚠️ Important Notice:**  
+> Most natural language descriptions in all documentation (including this README) were written by AI and may contain numerous inaccuracies. Please verify information against the actual source code and test behavior when in doubt.
 
 ---
 

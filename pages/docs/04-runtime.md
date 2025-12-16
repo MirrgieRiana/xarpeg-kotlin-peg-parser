@@ -213,7 +213,3 @@ Check the test suite for observed behavior:
 Learn how to extract position information for error reporting and source mapping.
 
 → **[Step 5: Parsing Positions](05-positions.html)**
-
----
-
-<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>

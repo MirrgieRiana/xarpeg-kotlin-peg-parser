@@ -188,7 +188,3 @@ fun main() {
 Discover how PEG parsers naturally handle template strings with embedded expressions.
 
 → **[Step 6: Template Strings](06-template-strings.html)**
-
----
-
-<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>

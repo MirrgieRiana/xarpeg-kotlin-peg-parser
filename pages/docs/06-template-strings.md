@@ -200,7 +200,3 @@ You've completed the Xarpeg tutorial! You now know how to:
 - **[Build Something](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - Create your own parser!
 
 → **[Back to Tutorial Index](index.html)**
-
----
-
-<sub>⚠️ This documentation was written by AI and may contain inaccuracies. Please verify against the source code.</sub>
