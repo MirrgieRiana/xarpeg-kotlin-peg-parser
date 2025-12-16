@@ -5,12 +5,20 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
     kotlin("multiplatform")
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
     maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+}
+
+// ktlint configuration
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("1.3.1")
+    android.set(false)
+    outputColorName.set("RED")
 }
 
 group = "mirrg.xarpite.samples"
@@ -59,4 +67,10 @@ val bundleRelease by tasks.registering(Sync::class) {
 
 tasks.named("build") {
     dependsOn(bundleRelease)
+    dependsOn("ktlintFormat")
+}
+
+// Make ktlint check tasks run after format tasks
+tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
+    mustRunAfter(tasks.matching { it.name.startsWith("runKtlintFormat") })
 }
