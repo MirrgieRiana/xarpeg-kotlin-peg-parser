@@ -26,8 +26,11 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
             } else {
                 val result = if (!isInNamedParser && parser.name != null) {
                     isInNamedParser = true
-                    val result = parser.parseOrNull(this, start)
-                    isInNamedParser = false
+                    val result = try {
+                        parser.parseOrNull(this, start)
+                    } finally {
+                        isInNamedParser = false
+                    }
                     result
                 } else {
                     parser.parseOrNull(this, start)
