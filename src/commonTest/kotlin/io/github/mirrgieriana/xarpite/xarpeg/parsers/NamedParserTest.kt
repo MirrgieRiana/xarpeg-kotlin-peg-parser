@@ -13,20 +13,20 @@ class NamedParserTest {
 
     @Test
     fun namedParserHasName() {
-        val parser = (+'a') named "letter_a"
+        val parser = +'a' named "letter_a"
         assertEquals("letter_a", parser.name)
     }
 
     @Test
     fun namedParserParsesSuccessfully() {
-        val parser = (+'a') named "letter_a"
+        val parser = +'a' named "letter_a"
         val result = parser.parseAllOrThrow("a")
         assertEquals('a', result)
     }
 
     @Test
     fun namedParserFailsOnMismatch() {
-        val parser = (+'a') named "letter_a"
+        val parser = +'a' named "letter_a"
         val context = ParseContext("b", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
@@ -34,8 +34,8 @@ class NamedParserTest {
 
     @Test
     fun namedParserInSequence() {
-        val parserA = (+'a') named "letter_a"
-        val parserB = (+'b') named "letter_b"
+        val parserA = +'a' named "letter_a"
+        val parserB = +'b' named "letter_b"
         val combined = parserA * parserB
         val result = combined.parseAllOrThrow("ab")
         assertEquals('a', result.a)
@@ -44,8 +44,8 @@ class NamedParserTest {
 
     @Test
     fun namedParserInChoice() {
-        val parserA = (+'a') named "letter_a"
-        val parserB = (+'b') named "letter_b"
+        val parserA = +'a' named "letter_a"
+        val parserB = +'b' named "letter_b"
         val combined = parserA + parserB
         val result1 = combined.parseAllOrThrow("a")
         assertEquals('a', result1)
@@ -55,21 +55,21 @@ class NamedParserTest {
 
     @Test
     fun namedParserWithMap() {
-        val parser = (+'a') named "letter_a" map { it.uppercaseChar() }
+        val parser = +'a' named "letter_a" map { it.uppercaseChar() }
         val result = parser.parseAllOrThrow("a")
         assertEquals('A', result)
     }
 
     @Test
     fun namedParserWithString() {
-        val parser = (+"hello") named "greeting"
+        val parser = +"hello" named "greeting"
         val result = parser.parseAllOrThrow("hello")
         assertEquals("hello", result)
     }
 
     @Test
     fun namedParserWithRegex() {
-        val parser = (+Regex("[0-9]+")) named "number" map { it.value.toInt() }
+        val parser = +Regex("[0-9]+") named "number" map { it.value.toInt() }
         val result = parser.parseAllOrThrow("123")
         assertEquals(123, result)
     }
@@ -94,7 +94,7 @@ class NamedParserTest {
 
     @Test
     fun multipleNamedParsersInSequence() {
-        val digit = (+Regex("[0-9]")) named "digit" map { it.value.toInt() }
+        val digit = +Regex("[0-9]") named "digit" map { it.value.toInt() }
         val operator = (+'+' + +'-') named "operator" map { it }
         val expression = digit * operator * digit
 
@@ -129,7 +129,7 @@ class NamedParserTest {
 
     @Test
     fun namedParserInComplexGrammar() {
-        val number = (+Regex("[0-9]+")) named "number" map { it.value.toInt() }
+        val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
         val lparen = -'('
         val rparen = -')'
         val expr = lparen * number * rparen
@@ -141,7 +141,7 @@ class NamedParserTest {
     @Test
     fun namedParserWithRecursion() {
         val grammar = object {
-            val digit = (+Regex("[0-9]")) named "digit" map { it.value.toInt() }
+            val digit = +Regex("[0-9]") named "digit" map { it.value.toInt() }
             val lparen = -'('
             val rparen = -')'
             val expr: Parser<Int> = ((digit) + (lparen * ref { expr } * rparen)) named "expression"
@@ -157,8 +157,8 @@ class NamedParserTest {
     @Test
     fun namedParserErrorTracking() {
         // Test that named parsers are tracked correctly for error reporting
-        val letter = (+Regex("[a-z]")) named "letter" map { it.value }
-        val digit = (+Regex("[0-9]")) named "digit" map { it.value }
+        val letter = +Regex("[a-z]") named "letter" map { it.value }
+        val digit = +Regex("[0-9]") named "digit" map { it.value }
         val identifier = letter * (letter + digit).zeroOrMore
 
         val context = ParseContext("1abc", useMemoization = true)
@@ -172,7 +172,7 @@ class NamedParserTest {
 
     @Test
     fun namedParserCaching() {
-        val parser = (+Regex("[a-z]+")) named "word" map { it.value }
+        val parser = +Regex("[a-z]+") named "word" map { it.value }
 
         // Test with cache enabled
         val result1 = parser.parseAllOrThrow("hello", useMemoization = true)
@@ -185,7 +185,7 @@ class NamedParserTest {
 
     @Test
     fun namedParserToString() {
-        val parser = (+'a') named "letter_a"
+        val parser = +'a' named "letter_a"
         // The parser should still have some string representation
         assertNotNull(parser.toString())
     }
@@ -205,8 +205,8 @@ class NamedParserTest {
     @Test
     fun namedCompositeParserHidesConstituentTokens() {
         // Test that when a composite parser is named, its constituent tokens are not enumerated
-        val parserA = (+'a') named "letter_a"
-        val parserB = (+'b') named "letter_b"
+        val parserA = +'a' named "letter_a"
+        val parserB = +'b' named "letter_b"
 
         // Create a composite parser (sequence) and give it a name
         val composite = (parserA * parserB) named "ab_sequence"
@@ -232,8 +232,8 @@ class NamedParserTest {
     @Test
     fun unnamedCompositeParserEnumeratesConstituentTokens() {
         // Test that when a composite parser is NOT named, its constituent tokens ARE enumerated
-        val parserA = (+'a') named "letter_a"
-        val parserB = (+'b') named "letter_b"
+        val parserA = +'a' named "letter_a"
+        val parserB = +'b' named "letter_b"
 
         // Create a composite parser (sequence) WITHOUT a name
         val composite = parserA * parserB

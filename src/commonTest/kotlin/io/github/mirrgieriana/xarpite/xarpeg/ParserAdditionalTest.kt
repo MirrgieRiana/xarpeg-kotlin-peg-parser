@@ -126,7 +126,7 @@ class ParserAdditionalTest {
 
     @Test
     fun mapPreservesRange() {
-        val parser = (+"hi") map { it.uppercase() }
+        val parser = +"hi" map { it.uppercase() }
         val context = ParseContext("hi!", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
@@ -135,7 +135,7 @@ class ParserAdditionalTest {
 
     @Test
     fun mapThrowsArePropagated() {
-        val parser = (+'a') map { error("boom") }
+        val parser = +'a' map { error("boom") }
         assertFails { parser.parseAllOrThrow("a") }
     }
 
