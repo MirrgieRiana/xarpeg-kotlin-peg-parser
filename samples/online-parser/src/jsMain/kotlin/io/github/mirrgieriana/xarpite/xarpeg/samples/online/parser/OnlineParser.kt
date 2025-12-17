@@ -393,33 +393,6 @@ private fun formatParseException(e: ParseException, input: String): String {
     // Build error message
     sb.append("Error: Syntax error at line $line, column $column")
 
-    // Try to add suggested parsers if available
-    try {
-        val dynamicContext = e.asDynamic().context
-        if (dynamicContext != null) {
-            val suggestedParsers = dynamicContext.suggestedParsers
-            if (suggestedParsers != null) {
-                // Convert to a list to iterate
-                val parsersList = mutableListOf<String>()
-                val parsersIterator = suggestedParsers.iterator()
-                while (parsersIterator.hasNext()) {
-                    val parser = parsersIterator.next()
-                    // Access name property directly without asDynamic
-                    val name = parser.name as? String
-                    if (name != null) {
-                        parsersList.add(name)
-                    }
-                }
-                val candidates = parsersList.distinct().take(5)
-                if (candidates.isNotEmpty()) {
-                    sb.append("\nExpected: ${candidates.joinToString(", ")}")
-                }
-            }
-        }
-    } catch (ex: Exception) {
-        // Ignore if context is not accessible
-    }
-
     // Show the line with error indicator
     val lineStart = beforePosition.lastIndexOf('\n') + 1
     val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
