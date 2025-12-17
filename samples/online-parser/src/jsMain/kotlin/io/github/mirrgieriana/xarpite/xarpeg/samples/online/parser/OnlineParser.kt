@@ -382,8 +382,8 @@ private fun formatParseException(e: ParseException, input: String): String {
     val beforePosition = input.substring(0, position.coerceAtMost(input.length))
     var line = 1
     var lastNewlinePos = -1
-    beforePosition.indices.forEach { i ->
-        if (beforePosition[i] == '\n') {
+    beforePosition.forEachIndexed { i, char ->
+        if (char == '\n') {
             line++
             lastNewlinePos = i
         }
