@@ -1,6 +1,7 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
@@ -70,7 +71,7 @@ class JsonParserTest {
             val escapeT = +'t' map { "\t" }
             val escapeUnicode = +'u' * +Regex("[0-9a-fA-F]{4}") map { (_, hex) ->
                 hex.value.toInt(16).toChar().toString()
-            }
+            } named "unicode_hex"
             val escape = +'\\' * (
                 escapeQuote + escapeBackslash + escapeSlash +
                     escapeB + escapeF + escapeN + escapeR + escapeT +
@@ -78,7 +79,7 @@ class JsonParserTest {
                 ) map { (_, str) -> str }
 
             // Regular characters (not backslash or quote)
-            val charContent = +Regex("[^\\\\\"]+") map { it.value }
+            val charContent = +Regex("[^\\\\\"]+") map { it.value } named "string_content"
 
             // String content is a sequence of escape sequences or regular characters
             val stringContent = (escape + charContent).zeroOrMore map { chars ->
@@ -93,7 +94,7 @@ class JsonParserTest {
         private val jsonNumber: Parser<JsonValue.JsonNumber> =
             +Regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][+-]?[0-9]+)?") map { match ->
                 JsonValue.JsonNumber(match.value.toDouble())
-            }
+            } named "number"
 
         // JSON boolean parser
         private val jsonBoolean: Parser<JsonValue.JsonBoolean> =

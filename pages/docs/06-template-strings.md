@@ -46,7 +46,7 @@ val templateStringParser: Parser<String> = object {
 
     // Expression part: $(...)
     val expressionPart: Parser<TemplateElement> =
-        -Regex("""\$\(""") * expression * -')' map { value ->
+        -+"$(" * expression * -')' map { value ->
             ExpressionPart(value)
         }
 
@@ -119,7 +119,7 @@ object TemplateWithNestedStrings {
         +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) } named "string_part"
 
     val expressionPart: Parser<TemplateElement> =
-        -Regex("""\$\(""") * ref { sum } * -')' map { value ->
+        -+"$(" * ref { sum } * -')' map { value ->
             ExpressionPart(value)
         }
 

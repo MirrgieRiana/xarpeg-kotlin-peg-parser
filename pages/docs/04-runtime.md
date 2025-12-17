@@ -41,8 +41,8 @@ Both exceptions provide a `context` property for detailed error information.
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val letter = (+Regex("[a-z]")) named "letter" map { it.value }
-val digit = (+Regex("[0-9]")) named "digit" map { it.value }
+val letter = +Regex("[a-z]") map { it.value } named "letter"
+val digit = +Regex("[0-9]") map { it.value } named "digit"
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
@@ -78,7 +78,7 @@ As parsing proceeds:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")) named "number" map { it.value.toInt() }
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
@@ -103,7 +103,7 @@ fun main() {
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") map { it.value }
+val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // Memoization enabled (default)
@@ -121,7 +121,7 @@ Disable memoization for lower memory usage when your grammar doesn't backtrack h
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") map { it.value }
+val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     parser.parseAllOrThrow("hello", useMemoization = false)
@@ -144,7 +144,7 @@ val divisionByZero = +Regex("[0-9]+") map { value ->
     val n = value.value.toInt()
     if (n == 0) error("Cannot divide by zero")
     100 / n
-}
+} named "number"
 
 fun main() {
     divisionByZero.parseAllOrThrow("10")  // ✓ Returns 10
@@ -164,7 +164,7 @@ Access error context from parse result:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = (+Regex("[a-z]+")) named "word"
+val parser = +Regex("[a-z]+") named "word"
 
 fun main() {
     val result = parser.parseAll("123")
@@ -184,7 +184,7 @@ Confirm how `optional` and `zeroOrMore` rewind on failure:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = (+Regex("[a-z]+")).optional * +Regex("[0-9]+")
+val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") named "digits"
 
 fun main() {
     // optional fails but rewinds, allowing number parser to succeed

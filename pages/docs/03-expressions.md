@@ -95,11 +95,11 @@ val expr: Parser<Int> = object {
         repeat(b) { result *= a }
         result
     }
-    val mulOp = (+'*' map { '*' }) + (+'/') map { '/' }
+    val mulOp = ((+'*') map { '*' }) + ((+'/') map { '/' })
     val mul = leftAssociative(power, mulOp) { a, op, b ->
         if (op == '*') a * b else a / b
     }
-    val addOp = (+'+' map { '+' }) + (+'-') map { '-' }
+    val addOp = ((+'+') map { '+' }) + ((+'-') map { '-' })
     val add = leftAssociative(mul, addOp) { a, op, b ->
         if (op == '+') a + b else a - b
     }

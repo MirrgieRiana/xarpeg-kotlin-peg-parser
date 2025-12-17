@@ -58,6 +58,11 @@ fun main() {
 - `ref { }` enables recursive grammars
 - `leftAssociative` handles operator precedence without manual recursion
 
+**Best practices:**
+- Use `+'x'` for single characters, not `+"x"`
+- Use `+"xyz"` for fixed strings, not `+Regex("xyz")`
+- Always use `named` with `Regex` parsers for better error messages
+
 > 💡 **New to parser combinators?** Start with our [step-by-step tutorial](#-learn-xarpeg-step-by-step)!
 
 ---

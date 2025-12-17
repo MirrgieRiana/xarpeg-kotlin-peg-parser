@@ -81,6 +81,28 @@ fun main() {
 - **`named`** improves error messages
 - **`parseAllOrThrow`** parses complete input or throws exceptions
 
+## Best Practices
+
+When choosing parser types, follow these guidelines for optimal performance and clarity:
+
+**Use Char tokens for single characters:**
+- Good: `+'x'` - efficient character matching
+- Bad: `+"x"` - unnecessary string overhead
+- Bad: `+Regex("x")` - regex overhead for fixed character
+
+**Use String tokens for fixed strings:**
+- Good: `+"xyz"` - efficient string matching  
+- Bad: `+Regex("xyz")` - regex overhead for fixed strings
+
+**Use Regex tokens with `named` for patterns:**
+- Good: `+Regex("[0-9]+") named "number"` - named regex gives clear error messages
+- Bad: `+Regex("[0-9]+")` - unnamed regex gives poor error messages
+
+**Summary:**
+- Single character → use `+'x'`, not `+"x"` or `+Regex("x")`
+- Fixed string → use `+"xyz"`, not `+Regex("xyz")`
+- Pattern/variable content → use `+Regex("...") named "name"`
+
 ## Next Steps
 
 Now that you understand the basics, learn how to combine parsers in more sophisticated ways.

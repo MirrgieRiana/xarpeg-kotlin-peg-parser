@@ -29,7 +29,7 @@ class ParserExtensionsTest {
 
     @Test
     fun capturePropertyInSequence() {
-        val parser = (+"hello").capture * (+" ").ignore * (+"world").capture map { (hello, world) ->
+        val parser = (+"hello").capture * (+' ').ignore * (+"world").capture map { (hello, world) ->
             "$hello-$world"
         }
 
@@ -56,7 +56,7 @@ class ParserExtensionsTest {
 
     @Test
     fun ignorePropertyInSequence() {
-        val parser = (+"hello").capture * (+" ").ignore * (+"world").capture map { (hello, world) ->
+        val parser = (+"hello").capture * (+' ').ignore * (+"world").capture map { (hello, world) ->
             "$hello+$world"
         }
 
@@ -123,7 +123,7 @@ class ParserExtensionsTest {
     fun mixingOperatorsAndProperties() {
         // Mix operators and properties to ensure they work together
         val hello = +"hello"
-        val space = +" "
+        val space = +' '
         val world = +"world"
 
         val parser = -hello * space.ignore * +world map { it.a }
