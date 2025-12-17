@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg-kotlin-peg-parser/3.0.0/xarpeg-kotlin-peg-parser-3.0.0.module",
+    "group": "io.github.mirrgieriana.xarpite",
+    "module": "xarpeg-kotlin-peg-parser",
+    "version": "3.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0.klib",
+          "url": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0.klib",
+          "size": 201657,
+          "sha512": "dde75c19e5523e65e2bcf07cbaa507d4461b7bb28506dc5515b3cfea182a32d850e91a4c2ae23785682d987950739bbadb504023991dc885d4bf7b6c90e8bc46",
+          "sha256": "0dc4722f1f03928ed1f39a45eafdeeb215d9e87705d7c89e6da0c4d716437b7c",
+          "sha1": "1916c3f80663075c18727790e9d17f641b1eaf58",
+          "md5": "7394b2402ed2a63eb4436bdbb53a2dcc"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0.klib",
+          "url": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0.klib",
+          "size": 201657,
+          "sha512": "dde75c19e5523e65e2bcf07cbaa507d4461b7bb28506dc5515b3cfea182a32d850e91a4c2ae23785682d987950739bbadb504023991dc885d4bf7b6c90e8bc46",
+          "sha256": "0dc4722f1f03928ed1f39a45eafdeeb215d9e87705d7c89e6da0c4d716437b7c",
+          "sha1": "1916c3f80663075c18727790e9d17f641b1eaf58",
+          "md5": "7394b2402ed2a63eb4436bdbb53a2dcc"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0-sources.jar",
+          "url": "xarpeg-kotlin-peg-parser-wasm-js-3.0.0-sources.jar",
+          "size": 19658,
+          "sha512": "fa3174675dcf6135ee57b5f70dace811d5bb3664dba3f0ef6e383f521c2fcd89bc6dd9dd3dee16c612f0d450217768406bea9a28e82c26d3022d4a6f4420dd43",
+          "sha256": "78819c20f5c933608552f332dd17ada41f0ccc54c8fbecbbd17a076e42f86f47",
+          "sha1": "78601e392e193aea92bae17472525ce802120863",
+          "md5": "c4901e23f56e4204d78d990d56eb8a2f"
+        }
+      ]
+    }
+  ]
+}
