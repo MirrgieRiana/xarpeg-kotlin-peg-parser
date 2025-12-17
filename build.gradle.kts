@@ -3,11 +3,11 @@ import build_logic.getTupleParserSrc
 import build_logic.getTupleSrc
 
 plugins {
-    kotlin("multiplatform") version "2.2.20"
+    alias(libs.plugins.kotlin.multiplatform)
     id("maven-publish")
-    id("org.jetbrains.dokka") version "2.0.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.ktlint)
     id("build-logic")
 }
 
@@ -85,7 +85,7 @@ kotlin {
 
 // ktlint configuration
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.3.1")
+    version.set(libs.versions.ktlint.asProvider().get())
     android.set(false)
     outputColorName.set("RED")
 }

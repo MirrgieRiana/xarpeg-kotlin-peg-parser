@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl`
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    alias(libs.plugins.ktlint)
 }
 
 repositories {
@@ -9,7 +9,7 @@ repositories {
 
 // ktlint configuration
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.3.1")
+    version.set(libs.versions.ktlint.asProvider().get())
     android.set(false)
     outputColorName.set("RED")
 }
