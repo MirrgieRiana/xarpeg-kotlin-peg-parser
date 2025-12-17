@@ -41,3 +41,5 @@ kotlin-js-store/
 node_modules/
 
 *.tmp
+# Nano editor backup files
+*~
