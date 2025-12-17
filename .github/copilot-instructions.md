@@ -1,29 +1,5 @@
 # Instructions for GitHub Copilot
 
----
-
-## ⚠️ MANDATORY: Read This File First
-
-**Before you start ANY task in this repository, you MUST:**
-
-1. ✅ **Read this entire file** from start to finish
-2. ✅ **Read `CONTRIBUTING.md`** for development workflow
-3. ✅ **Declare compliance** in your FIRST response by stating:
-   
-   > "✅ `.github/copilot-instructions.md` を確認し、このファイルに準拠します。"
-   
-   (Use the language appropriate for your intended recipient as specified in section "Follow the user's natural language")
-
-**This declaration ensures you understand:**
-- The coding standards for this project
-- The testing and documentation requirements
-- The commit frequency requirements (at least once every 5 minutes)
-- All project-specific conventions
-
-**Failure to make this declaration indicates you have not read these instructions.**
-
----
-
 ## Conversation
 
 ### Follow the original prompt
@@ -48,20 +24,7 @@ Before you finish working on a pull request, you must send a response message to
 
 ### Declaration of Compliance with this Instructions
 
-**CRITICAL: You MUST declare compliance in your first message.**
-
-In your very first response of every conversation, you MUST state:
-
-> "✅ `.github/copilot-instructions.md` を確認し、このファイルに準拠します。"
-
-(Adjust the language based on the recipient's language as per "Follow the user's natural language" section)
-
-**This is NOT a personal promise for future sessions.** This declaration:
-- Confirms you have READ this file in the CURRENT session
-- Demonstrates you understand the requirements
-- Serves as a checkpoint that can be verified
-
-**Every new Agent session must make this declaration independently.**
+If you comply with the contents of this file, you must declare that you comply with this file when posting your first message in a conversation.
 
 ## Edit
 
