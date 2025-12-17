@@ -393,6 +393,17 @@ private fun formatParseException(e: ParseException, input: String): String {
     // Build error message
     sb.append("Error: Syntax error at line $line, column $column")
 
+    // Add suggested parsers if available
+    if (e.context.suggestedParsers.isNotEmpty()) {
+        val candidates = e.context.suggestedParsers
+            .mapNotNull { it.name }
+            .distinct()
+            .take(5)
+        if (candidates.isNotEmpty()) {
+            sb.append("\nExpected: ${candidates.joinToString(", ")}")
+        }
+    }
+
     // Show the line with error indicator
     val lineStart = beforePosition.lastIndexOf('\n') + 1
     val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
