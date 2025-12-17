@@ -198,7 +198,20 @@ class OnlineParserTest {
     @Test
     fun showsErrorForMismatchedParentheses() {
         val result = parseExpression("(1 + 2")
-        assertTrue(result.startsWith("Error"))
+        assertTrue(result.startsWith("Error"), "Should start with Error, got: $result")
+        // Verify that closing parenthesis is shown in expected tokens
+        // The formatParseException function shows parser names, which includes quotes around the character
+        // For example: Expected: "*", "/", "+", "-", ")"
+        val hasClosingParen = result.contains("\")\"")
+        if (!hasClosingParen) {
+            // Debug output to see what we actually got
+            println("ERROR MESSAGE:")
+            println(result)
+            println("---")
+            println("Looking for: \")\"")
+            println("Result contains: ${result.lines().find { it.contains("Expected") }}")
+        }
+        assertTrue(hasClosingParen, "Expected closing paren in error message")
     }
 
     @Test
