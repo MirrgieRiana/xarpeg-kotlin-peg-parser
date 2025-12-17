@@ -376,7 +376,7 @@ private fun formatParseException(e: ParseException, input: String): String {
     val sb = StringBuilder()
 
     // Extract position information
-    val position = e.position
+    val position = e.context.errorPosition
 
     // Calculate line and column numbers in a single pass
     val beforePosition = input.substring(0, position.coerceAtMost(input.length))
