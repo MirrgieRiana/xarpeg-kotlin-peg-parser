@@ -4,9 +4,18 @@ import io.github.mirrgieriana.xarpite.xarpeg.impl.escapeDoubleQuote
 import io.github.mirrgieriana.xarpite.xarpeg.impl.truncate
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.normalize
 
-fun interface Parser<out T : Any> {
+// Changed from 'fun interface' to regular 'interface' to avoid Kotlin 1.9.x compiler bug
+// that generates illegal method name "<get-name>" in JVM bytecode
+interface Parser<out T : Any> {
     fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>?
     val name: String? get() = null
+}
+
+// Inline helper function for SAM conversion to maintain lambda syntax compatibility
+inline fun <T : Any> Parser(crossinline block: (ParseContext, Int) -> ParseResult<T>?): Parser<T> {
+    return object : Parser<T> {
+        override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? = block(context, start)
+    }
 }
 
 val Parser<*>.nameOrString get() = this.name ?: this.toString()
