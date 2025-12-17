@@ -3,6 +3,8 @@ package io.github.mirrgieriana.xarpite.xarpeg.parsers
 import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple0
+import io.github.mirrgieriana.xarpite.xarpeg.Tuple1
 import io.github.mirrgieriana.xarpite.xarpeg.impl.escapeDoubleQuote
 import io.github.mirrgieriana.xarpite.xarpeg.isNative
 
@@ -25,7 +27,14 @@ class StringParser(val string: String) : Parser<String> {
     }
 }
 
-fun String.toParser() = if (isNative) StringParser(this) else StringParser.cache.getOrPut(this) { StringParser(this) }
-operator fun String.unaryPlus() = this.toParser()
-operator fun String.unaryMinus() = -+this
-operator fun String.not() = !+this
+fun String.toParser(): Parser<String> = if (isNative) StringParser(this) else StringParser.cache.getOrPut(this) { StringParser(this) }
+val String.token: Parser<String> get() = this.toParser()
+operator fun String.unaryPlus(): Parser<String> = this.toParser()
+
+val String.capture: Parser<Tuple1<String>> get() = this.toParser().capture
+
+val String.ignore: Parser<Tuple0> get() = this.toParser().ignore
+operator fun String.unaryMinus(): Parser<Tuple0> = this.toParser().ignore
+
+val String.not: Parser<Tuple0> get() = this.toParser().not
+operator fun String.not(): Parser<Tuple0> = this.toParser().not

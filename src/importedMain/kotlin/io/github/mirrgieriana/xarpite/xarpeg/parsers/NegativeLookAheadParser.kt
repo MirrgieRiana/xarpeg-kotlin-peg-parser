@@ -13,6 +13,7 @@ class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     }
 }
 
-val Parser<*>.negativeLookAhead get() = NegativeLookAheadParser(this)
+val Parser<*>.negativeLookAhead: Parser<Tuple0> get() = NegativeLookAheadParser(this)
 
-operator fun Parser<*>.not() = NegativeLookAheadParser(this)
+val Parser<*>.not: Parser<Tuple0> get() = this.negativeLookAhead
+operator fun Parser<*>.not(): Parser<Tuple0> = this.not
