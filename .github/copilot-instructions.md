@@ -28,6 +28,10 @@ If you comply with the contents of this file, you must declare that you comply w
 
 ## Edit
 
+## Consistency of Writing Style
+
+Whenever you edit any text in this repository, you must first look for structurally similar sections within the repository and make a best effort to keep the style consistent—code formatting, layout, phrasing, and any other aspects of the writing.
+
 ### Edit Integrity
 
 When you edit a pull request to merge it into the main branch, you must ensure that it passes the `check` workflow.
@@ -100,6 +104,3 @@ To ensure steady progress, you must:
 - These are not orders that interrupt the execution in the middle of your task.
 - **You must fully perform the given orders.**
 
-## Consistency of Writing Style
-
-Whenever you edit any text in this repository, you must first look for structurally similar sections within the repository and make a best effort to keep the style consistent—code formatting, layout, phrasing, and any other aspects of the writing.
