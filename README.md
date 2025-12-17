@@ -104,6 +104,7 @@ Interactive browser-based parser that demonstrates:
 | **Choice** | `parserA + parserB` | Try alternatives; first match wins |
 | **Ignore** | `-parser` | Match but drop result from tuple |
 | **Repetition** | `.zeroOrMore`, `.oneOrMore`, `.list(min, max)` | Collect matches into `List<T>` |
+| **Serial** | `serial(p1, p2, ...)` | Parse multiple different parsers, return `List<T>` (no tuple limit) |
 | **Optional** | `.optional` | Try to match; rewind on failure |
 | **Transform** | `.map { ... }` | Convert parsed value to another type |
 | **Position** | `.mapEx { ctx, result -> ... }` | Access context and position info |

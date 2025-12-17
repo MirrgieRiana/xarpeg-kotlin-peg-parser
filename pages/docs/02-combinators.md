@@ -75,6 +75,33 @@ fun main() {
 - **`.oneOrMore`** - Matches one or more times (fails if no match)
 - **`.list(min, max)`** - Matches between `min` and `max` times
 
+### Serial Parsing
+
+When you need to parse multiple different parsers of the same type in sequence without tuple limits, use `serial`:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val article = +"the" + +"a"
+val adjective = +"quick" + +"lazy"
+val noun = +"fox" + +"dog"
+
+val phrase = serial(article, +" ", adjective, +" ", noun)
+
+fun main() {
+    check(phrase.parseAllOrThrow("the quick fox") == listOf("the", " ", "quick", " ", "fox"))
+    check(phrase.parseAllOrThrow("a lazy dog") == listOf("a", " ", "lazy", " ", "dog"))
+}
+```
+
+`serial` returns a `List<T>` and has no theoretical upper limit, unlike tuple parsers which are limited to 16 elements. Use it when:
+- You have many parsers to combine (especially beyond tuple limits)
+- You need a long natural language phrase with selectable parts
+- You want a list result instead of a tuple
+
+For repeating the same parser, use `.list()` or `.oneOrMore` instead.
+
 ## Shaping Results
 
 Sequences with `*` return tuples. Use `-parser` to drop unneeded values:
