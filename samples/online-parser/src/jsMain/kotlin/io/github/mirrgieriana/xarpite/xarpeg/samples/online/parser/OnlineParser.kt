@@ -3,6 +3,7 @@
 package io.github.mirrgieriana.xarpite.xarpeg.samples.online.parser
 
 import io.github.mirrgieriana.xarpite.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpite.xarpeg.ParseException
 import io.github.mirrgieriana.xarpite.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpite.xarpeg.Parser
 import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
@@ -370,6 +371,57 @@ private object ExpressionGrammar {
     val programRoot = whitespace * program * whitespace
 }
 
+// Format a ParseException with detailed syntax error information
+private fun formatParseException(e: ParseException, input: String): String {
+    val sb = StringBuilder()
+
+    // Extract position information
+    val position = e.position
+
+    // Calculate line and column numbers in a single pass
+    val beforePosition = input.substring(0, position.coerceAtMost(input.length))
+    var line = 1
+    var lastNewlinePos = -1
+    for (i in beforePosition.indices) {
+        if (beforePosition[i] == '\n') {
+            line++
+            lastNewlinePos = i
+        }
+    }
+    val column = position - lastNewlinePos
+
+    // Build error message
+    sb.append("Error: Syntax error at line $line, column $column")
+
+    // Add suggested parsers if available
+    if (e.context.suggestedParsers.isNotEmpty()) {
+        val candidates = e.context.suggestedParsers
+            .mapNotNull { it.name }
+            .distinct()
+            .take(5)
+        if (candidates.isNotEmpty()) {
+            sb.append("\nExpected: ${candidates.joinToString(", ")}")
+        }
+    }
+
+    // Show the line with error indicator
+    val lineStart = beforePosition.lastIndexOf('\n') + 1
+    val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
+    val sourceLine = input.substring(lineStart, lineEnd)
+
+    if (sourceLine.isNotEmpty()) {
+        sb.append("\n")
+        sb.append(sourceLine)
+        sb.append("\n")
+        // Add caret pointing to the error position
+        val caretPosition = position - lineStart
+        sb.append(" ".repeat(caretPosition.coerceAtLeast(0)))
+        sb.append("^")
+    }
+
+    return sb.toString()
+}
+
 @JsExport
 fun parseExpression(input: String): String {
     return try {
@@ -390,6 +442,9 @@ fun parseExpression(input: String): String {
         } else {
             "Error: ${e.message}"
         }
+    } catch (e: ParseException) {
+        // Format parse exceptions with detailed syntax error information
+        formatParseException(e, input)
     } catch (e: Exception) {
         "Error: ${e.message}"
     }
