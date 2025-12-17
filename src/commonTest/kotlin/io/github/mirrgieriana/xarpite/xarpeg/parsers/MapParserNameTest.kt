@@ -10,12 +10,12 @@ class MapParserNameTest {
         val charParser = ')'.toParser()
         assertNotNull(charParser.name)
         assertEquals("\")\"", charParser.name)
-        
+
         val mappedParser = charParser.ignore
         assertNotNull(mappedParser.name, "Mapped parser should preserve the original parser's name")
         assertEquals("\")\"", mappedParser.name)
     }
-    
+
     @Test
     fun unaryMinusPreservesCharParserName() {
         val ignoreParser = -')'

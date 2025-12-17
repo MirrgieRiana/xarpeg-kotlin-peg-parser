@@ -11,15 +11,15 @@ class ParseErrorMessageTest {
         val number = +Regex("[0-9]+")
         val primary = number + (-'(' * number * -')')
         val parser = primary * endOfInput
-        
+
         // Try to parse an incomplete expression
         val result = parser.parseAll("(123")
-        
+
         // Check that the error contains the closing parenthesis
         assertTrue(result.isFailure, "Parse should fail")
         val exception = result.exceptionOrNull() as? ParseException
         assertTrue(exception != null, "Should be a ParseException")
-        
+
         // Print for debugging
         println("Suggested parsers:")
         exception.context.suggestedParsers.forEach {
@@ -29,7 +29,7 @@ class ParseErrorMessageTest {
         exception.context.suggestedParsers.mapNotNull { it.name }.distinct().forEach {
             println("  $it")
         }
-        
+
         // Check that closing paren is in suggested parsers
         val closingParenSuggested = exception.context.suggestedParsers.any { it.name == "\")\"" }
         assertTrue(closingParenSuggested, "Closing parenthesis should be in suggested parsers, got: ${exception.context.suggestedParsers.mapNotNull { it.name }}")
