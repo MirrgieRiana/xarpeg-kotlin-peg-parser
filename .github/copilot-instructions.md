@@ -10,9 +10,13 @@
 
 ### Follow the user’s natural language
 
-When replying to a user, or when setting natural-language text for something attributable to a specific user, you must first determine the natural language that user speaks and follow it, unless the user provides explicit language instructions.
+**In any situation where you write natural-language text—except for commit contents, commit titles, and commit descriptions—you must carefully determine which natural language your intended recipient uses, and you must write in that language.**
 
-If the pull request includes the original prompt, use it as a clue for determining the user’s natural language.
+If you are replying directly to a user, that user is your intended recipient.
+
+If you are acting on an issue or pull request, the user who created that issue or pull request is your intended recipient.
+
+If you are acting in a space created by an AI, the user who provided the original prompt to that AI is your intended recipient.
 
 ### Conversational Responses
 
