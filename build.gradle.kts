@@ -40,6 +40,14 @@ repositories {
     mavenCentral()
 }
 
+// Configure Node.js version for WASM GC support
+// Kotlin 1.9.21 generates WASM with i31ref type (0x71) which is not fully supported
+// in available Node.js versions that work with Kotlin 1.9.21's --experimental-wasm-gc flag
+// Node.js 21.7.0 has improved WASM GC support while still accepting the experimental flag
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().nodeVersion = "21.7.3"
+}
+
 kotlin {
     // JVM target
     jvm {
