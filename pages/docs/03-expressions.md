@@ -25,7 +25,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
     val factor = number + paren
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
@@ -86,7 +86,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
     
     val factor = number + paren
@@ -95,11 +95,11 @@ val expr: Parser<Int> = object {
         repeat(b) { result *= a }
         result
     }
-    val mulOp = ((+'*' named "multiply") map { '*' }) + ((+'/' named "divide") map { '/' })
+    val mulOp = ((+'*') map { '*' } named "multiply") + ((+'/') map { '/' } named "divide")
     val mul = leftAssociative(power, mulOp) { a, op, b ->
         if (op == '*') a * b else a / b
     }
-    val addOp = ((+'+' named "plus") map { '+' }) + ((+'-' named "minus") map { '-' })
+    val addOp = ((+'+') map { '+' } named "plus") + ((+'-') map { '-' } named "minus")
     val add = leftAssociative(mul, addOp) { a, op, b ->
         if (op == '+') a + b else a - b
     }
@@ -121,7 +121,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
     
     // Unary minus

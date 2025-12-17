@@ -24,7 +24,7 @@ The `map` combinator works with just the value, keeping types simple:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     val result = number.parseAllOrThrow("42")
@@ -93,7 +93,7 @@ fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, r
     Located(result.value, line, column)
 }
 
-val keyword = +Regex("[a-z]+") named "keyword" map { it.value }
+val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
 val keywordWithLocation = keyword.withLocation()
 
 fun main() {
@@ -120,7 +120,7 @@ fun <T : Any> Parser<T>.withPos(): Parser<Token> = this mapEx { ctx, result ->
 }
 
 fun main() {
-    val word = +Regex("[a-z]+") named "word" map { it.value }
+    val word = +Regex("[a-z]+") map { it.value } named "word"
     val wordWithPos = word.withPos()
     
     // Parse tracks position in input
@@ -138,7 +138,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 fun main() {
-    val parser = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     
     fun parseWithErrors(input: String): Result<Int> {
         val result = parser.parseAll(input)
@@ -166,7 +166,7 @@ fun main() {
 
 ## Best Practices
 
-**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = +Regex("[0-9]+") named "number" map { it.value.toInt() }`).
+**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = +Regex("[0-9]+") map { it.value.toInt() } named "number"`).
 
 **Use `mapEx` when needed** - Extract positions only where required.
 

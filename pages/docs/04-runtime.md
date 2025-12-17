@@ -17,7 +17,7 @@ Requires the entire input to be consumed:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     number.parseAllOrThrow("123")      // ✓ Returns 123
@@ -41,8 +41,8 @@ Both exceptions provide a `context` property for detailed error information.
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val letter = +Regex("[a-z]") named "letter" map { it.value }
-val digit = +Regex("[0-9]") named "digit" map { it.value }
+val letter = +Regex("[a-z]") map { it.value } named "letter"
+val digit = +Regex("[0-9]") map { it.value } named "digit"
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
@@ -78,8 +78,8 @@ As parsing proceeds:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
-val operator = ((+'*' named "multiply") + (+'+' named "plus")) named "operator"
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val operator = ((+'*') named "multiply" + (+'+') named "plus") named "operator"
 val expr = number * operator * number
 
 fun main() {
@@ -103,7 +103,7 @@ fun main() {
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") named "word" map { it.value }
+val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // Memoization enabled (default)
@@ -121,7 +121,7 @@ Disable memoization for lower memory usage when your grammar doesn't backtrack h
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") named "word" map { it.value }
+val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     parser.parseAllOrThrow("hello", useMemoization = false)
@@ -140,11 +140,11 @@ If a `map` function throws an exception, it bubbles up and aborts parsing:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val divisionByZero = +Regex("[0-9]+") named "number" map { value ->
+val divisionByZero = +Regex("[0-9]+") map { value ->
     val n = value.value.toInt()
     if (n == 0) error("Cannot divide by zero")
     100 / n
-}
+} named "number"
 
 fun main() {
     divisionByZero.parseAllOrThrow("10")  // ✓ Returns 10

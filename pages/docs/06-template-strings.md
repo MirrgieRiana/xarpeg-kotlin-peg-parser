@@ -31,7 +31,7 @@ data class ExpressionPart(val value: Int) : TemplateElement()
 
 val templateStringParser: Parser<String> = object {
     // Expression parser (arithmetic with precedence)
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
     val factor: Parser<Int> = number + grouped
     val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
@@ -40,9 +40,9 @@ val templateStringParser: Parser<String> = object {
 
     // String parts: match everything except $( and closing "
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"$]+|\$(?!\()""") named "string_part" map { match ->
+        +Regex("""[^"$]+|\$(?!\()""") map { match ->
             StringPart(match.value)
-        }
+        } named "string_part"
 
     // Expression part: $(...)
     val expressionPart: Parser<TemplateElement> =
@@ -112,11 +112,11 @@ data class StringPart(val text: String) : TemplateElement()
 data class ExpressionPart(val value: Int) : TemplateElement()
 
 object TemplateWithNestedStrings {
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
 
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"$]+|\$(?!\()""") named "string_part" map { match -> StringPart(match.value) }
+        +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) } named "string_part"
 
     val expressionPart: Parser<TemplateElement> =
         -+"$(" * ref { sum } * -')' map { value ->

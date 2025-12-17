@@ -35,7 +35,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 val sign = ((+'+') map { '+' }) + ((+'-') map { '-' })
 val signOpt = sign.optional map { it.a ?: '+' }
-val unsigned = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+val unsigned = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val signedInt = signOpt * unsigned map { (s, value) ->
     if (s == '-') -value else value
 }
@@ -56,12 +56,12 @@ Collect multiple matches into a list:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") named "digit").oneOrMore map { matches -> 
-    matches.joinToString("") { it.value }
+val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
+    matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") named "letter").zeroOrMore map { matches -> 
-    matches.map { it.value }
+val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches -> 
+    matches
 }
 
 fun main() {
@@ -120,7 +120,7 @@ fun main() {
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val word = +Regex("[a-z]+") named "word" map { it.value }
+val word = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // Matches at start of input

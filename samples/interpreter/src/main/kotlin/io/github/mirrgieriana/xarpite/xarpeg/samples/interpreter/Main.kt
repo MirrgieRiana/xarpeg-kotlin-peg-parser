@@ -39,10 +39,10 @@ data class OperatorInfo(val position: Int, val op: Char)
 
 private object ArithmeticParser {
     // Parse a number and wrap it in a lazy value
-    val number: Parser<LazyValue> = +Regex("[0-9]+") named "number" mapEx { _, result ->
+    val number: Parser<LazyValue> = +Regex("[0-9]+") mapEx { _, result ->
         val value = result.value.value.toInt()
         LazyValue(result.start) { value }
-    }
+    } named "number"
 
     // Parse a grouped expression with parentheses
     val grouped: Parser<LazyValue> = -'(' * ref { expr } * -')'
@@ -53,7 +53,7 @@ private object ArithmeticParser {
     // Multiplication and division (higher precedence)
     val product: Parser<LazyValue> = leftAssociative(
         primary,
-        (+'*' named "multiply" mapEx { _, r -> OperatorInfo(r.start, '*') }) + (+'/' named "divide" mapEx { _, r -> OperatorInfo(r.start, '/') })
+        (+'*' mapEx { _, r -> OperatorInfo(r.start, '*') } named "multiply") + (+'/' mapEx { _, r -> OperatorInfo(r.start, '/') } named "divide")
     ) { a, op, b ->
         when (op.op) {
             '*' -> LazyValue(op.position) { a.compute() * b.compute() }
@@ -74,7 +74,7 @@ private object ArithmeticParser {
     }
 
     // Addition and subtraction (lower precedence)
-    val sum: Parser<LazyValue> = leftAssociative(product, (+'+' named "plus") + (+'-' named "minus")) { a, op, b ->
+    val sum: Parser<LazyValue> = leftAssociative(product, ((+'+') named "plus") + ((+'-') named "minus")) { a, op, b ->
         when (op) {
             '+' -> LazyValue(a.position) { a.compute() + b.compute() }
             '-' -> LazyValue(a.position) { a.compute() - b.compute() }
