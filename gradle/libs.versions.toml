@@ -5,6 +5,7 @@ detekt-plugin = "1.23.7"
 ktlint-plugin = "12.1.2"
 ktlint = "1.3.1"
 xarpeg = "latest"
+java = "17"
 
 [libraries]
 xarpeg = { group = "io.github.mirrgieriana.xarpite", name = "xarpeg-kotlin-peg-parser", version.ref = "xarpeg" }

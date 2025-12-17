@@ -12,13 +12,49 @@ plugins {
 }
 
 group = libs.xarpeg.get().module.group
-version = libs.versions.xarpeg.get()
+
+// Determine version: read from TOML, but can be overridden by CI
+fun Project.determineVersion(): String {
+    // First check if version is set in TOML and not "latest"
+    val tomlVersion = libs.versions.xarpeg.get()
+    if (tomlVersion != "latest") {
+        return tomlVersion
+    }
+
+    // Check if running on CI with a tag
+    val githubRef = System.getenv("GITHUB_REF")
+    if (githubRef != null && githubRef.startsWith("refs/tags/")) {
+        val tagVersion = githubRef.removePrefix("refs/tags/")
+        return tagVersion
+    }
+
+    // Otherwise, get the last tag and add modified suffix
+    val lastTag = runCatching {
+        val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
+            .directory(rootDir)
+            .redirectErrorStream(true)
+            .start()
+        val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
+        process.waitFor()
+        if (process.exitValue() == 0 && output.isNotEmpty()) output else null
+    }.getOrNull()
+
+    return if (lastTag != null) {
+        "$lastTag-modified"
+    } else {
+        "latest"
+    }
+}
+
+version = project.determineVersion()
 
 repositories {
     mavenCentral()
 }
 
 kotlin {
+    jvmToolchain(libs.versions.java.get().toInt())
+
     // JVM target
     jvm {
         testRuns["test"].executionTask.configure {
