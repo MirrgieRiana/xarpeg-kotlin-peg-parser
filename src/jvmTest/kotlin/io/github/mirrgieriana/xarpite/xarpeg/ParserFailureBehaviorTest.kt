@@ -21,7 +21,10 @@ class ParserFailureBehaviorTest {
         println("   エラー位置: ${ex1?.context?.errorPosition}")
         println("   サジェスト:")
         ex1?.context?.suggestedParsers?.forEachIndexed { i, p ->
-            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'")
+            val className = p.javaClass.name
+            val isCombine = className.contains("combine")
+            val label = if (isCombine) " ← combine関数が生成したタプルパーサー" else ""
+            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'$label")
         }
         
         // ケース2: 'a'は成功、'b'で失敗
@@ -45,8 +48,9 @@ class ParserFailureBehaviorTest {
         }
         
         println("\n5. 結論:")
-        println("   タプルパーサー（combine）自体はサジェストに現れず、")
-        println("   実際に失敗した葉のパーサー（CharParser）のみがサジェストに現れる。")
+        println("   タプルパーサー（combine）自体もサジェストに追加される。")
+        println("   しかし、それらは name=null で、formatParseExceptionでフィルタされる。")
+        println("   実際にエラーメッセージに表示されるのは名前付きパーサーのみ。")
     }
     
     @Test
@@ -66,7 +70,14 @@ class ParserFailureBehaviorTest {
         println("   エラー位置: ${ex?.context?.errorPosition}")
         println("   サジェスト:")
         ex?.context?.suggestedParsers?.forEachIndexed { i, p ->
-            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'")
+            val className = p.javaClass.name
+            val label = when {
+                className.contains("CharParser") -> " ← Orの選択肢"
+                className.contains("OrParser") -> " ← Orパーサー自身"
+                className.contains("combine") -> " ← combine関数が生成したタプルパーサー（Or * endOfInput）"
+                else -> ""
+            }
+            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'$label")
         }
         
         println("\n3. Orパーサー自体の名前:")
@@ -76,7 +87,9 @@ class ParserFailureBehaviorTest {
         println("\n4. 結論:")
         println("   Orパーサーは全ての選択肢を試すため、")
         println("   全ての選択肢の葉パーサー（CharParser）がサジェストに現れる。")
-        println("   Orパーサー自体は name=null のため、名前付きパーサーとして認識されない。")
+        println("   Orパーサー自体も name=null でサジェストに入る。")
+        println("   さらに、Orと endOfInput を結合する combine パーサーも name=null でサジェストに入る。")
+        println("   しかし、name=null のパーサーは formatParseException でフィルタされる。")
     }
     
     @Test
@@ -102,7 +115,10 @@ class ParserFailureBehaviorTest {
         val ex1 = result1.exceptionOrNull() as? ParseException
         println("   サジェスト:")
         ex1?.context?.suggestedParsers?.forEachIndexed { i, p ->
-            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'")
+            val className = p.javaClass.name
+            val isCombine = className.contains("combine")
+            val label = if (isCombine) " ← combineパーサー" else ""
+            println("     [$i] ${p.javaClass.simpleName.padEnd(25)} name='${p.name}'$label")
         }
         
         // ')'で失敗
@@ -118,5 +134,7 @@ class ParserFailureBehaviorTest {
         println("   mapで名前を保持しているため、-'('や-')'は名前付きパーサーとして認識される。")
         println("   これにより、その内部のCharParserはサジェストに追加されず、")
         println("   重複が防がれる。")
+        println("   combineパーサー（name=null）もサジェストに入るが、")
+        println("   formatParseExceptionでフィルタされる。")
     }
 }
