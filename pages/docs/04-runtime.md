@@ -48,16 +48,16 @@ val identifier = letter * (letter + digit).zeroOrMore
 fun main() {
     val result = identifier.parseAll("1abc")
     val exception = result.exceptionOrNull() as? UnmatchedInputParseException
-    
+
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Failed at position 0
-    
+
     val expected = exception.context.suggestedParsers
         .mapNotNull { it.name }
         .distinct()
         .sorted()
         .joinToString(", ")
-    
+
     check(expected == "letter")  // Expected "letter"
 }
 ```
@@ -85,7 +85,7 @@ val expr = number * operator * number
 fun main() {
     val result = expr.parseAll("42 + 10")
     val exception = result.exceptionOrNull() as? UnmatchedInputParseException
-    
+
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition > 0)  // Error position tracked
     val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
@@ -169,7 +169,7 @@ val parser = +Regex("[a-z]+") named "word"
 fun main() {
     val result = parser.parseAll("123")
     val exception = result.exceptionOrNull() as? UnmatchedInputParseException
-    
+
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Error at position 0
     check(exception.context.suggestedParsers.any { it.name == "word" })  // Suggests "word"

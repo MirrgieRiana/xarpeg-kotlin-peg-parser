@@ -56,11 +56,11 @@ Collect multiple matches into a list:
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
+val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches ->
     matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches -> 
+val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches ->
     matches
 }
 
@@ -173,7 +173,7 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 fun main() {
     val result = identifier.parseAll("123abc")
     val exception = result.exceptionOrNull() as? UnmatchedInputParseException
-    
+
     check(exception != null)  // Parsing fails
     check(exception.message!!.contains("Failed to parse"))
 }
@@ -190,18 +190,18 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 fun main() {
     val parserA = +'a' named "letter_a"
     val parserB = +'b' named "letter_b"
-    
+
     // Named composite: only "ab_sequence" in errors
     val namedComposite = (parserA * parserB) named "ab_sequence"
-    
+
     // Unnamed composite: "letter_a" in errors
     val unnamedComposite = parserA * parserB
-    
+
     val result1 = namedComposite.parseAll("c")
     val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
     val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
-    
+
     val result2 = unnamedComposite.parseAll("c")
     val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
     val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()

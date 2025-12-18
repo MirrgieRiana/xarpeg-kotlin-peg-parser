@@ -60,7 +60,7 @@ fun main() {
     // Success cases
     check(kv.parseAllOrThrow("count=42") == ("count" to 42))  // ✓
     check(kv.parseAllOrThrow("x=100") == ("x" to 100))        // ✓
-    
+
     // Error cases would throw exceptions:
     // kv.parseAllOrThrow("=42")        // ✗ UnmatchedInputParseException
     // kv.parseAllOrThrow("count")      // ✗ UnmatchedInputParseException
@@ -91,7 +91,7 @@ When choosing parser types, follow these guidelines for optimal performance and 
 - Bad: `+Regex("x")` - regex overhead for fixed character
 
 **Use String tokens for fixed strings:**
-- Good: `+"xyz"` - efficient string matching  
+- Good: `+"xyz"` - efficient string matching
 - Bad: `+Regex("xyz")` - regex overhead for fixed strings
 
 **Use Regex tokens with `named` for patterns:**

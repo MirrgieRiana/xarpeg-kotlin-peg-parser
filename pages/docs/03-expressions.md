@@ -88,9 +88,9 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
-    
+
     val factor = number + paren
-    val power = rightAssociative(factor, -'^') { a, _, b -> 
+    val power = rightAssociative(factor, -'^') { a, _, b ->
         var result = 1
         repeat(b) { result *= a }
         result
@@ -123,10 +123,10 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
-    
+
     // Unary minus
     val unary: Parser<Int> = (-'-' * ref { unary } map { -it }) + number + paren
-    
+
     val mul = leftAssociative(unary, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
     val root = add

@@ -122,7 +122,7 @@ fun <T : Any> Parser<T>.withPos(): Parser<Token> = this mapEx { ctx, result ->
 fun main() {
     val word = +Regex("[a-z]+") map { it.value } named "word"
     val wordWithPos = word.withPos()
-    
+
     // Parse tracks position in input
     val result = wordWithPos.parseAllOrThrow("hello")
     check(result == Token("hello", 1, 1))
@@ -139,18 +139,18 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
 fun main() {
     val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
-    
+
     fun parseWithErrors(input: String): Result<Int> {
         val result = parser.parseAll(input)
         val exception = result.exceptionOrNull() as? UnmatchedInputParseException
-        
+
         return if (exception != null) {
             val pos = exception.context.errorPosition
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
             val expected = exception.context.suggestedParsers.mapNotNull { it.name }
-            
+
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"
             ))
@@ -158,7 +158,7 @@ fun main() {
             result
         }
     }
-    
+
     val result = parseWithErrors("abc")
     check(result.isFailure)  // Parsing fails as expected
 }
