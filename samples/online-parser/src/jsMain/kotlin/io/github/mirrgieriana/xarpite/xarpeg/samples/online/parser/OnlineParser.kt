@@ -398,7 +398,6 @@ private fun formatParseException(e: ParseException, input: String): String {
         val candidates = e.context.suggestedParsers
             .mapNotNull { it.name }
             .distinct()
-            .take(5)
         if (candidates.isNotEmpty()) {
             sb.append("\nExpected: ${candidates.joinToString(", ")}")
         }
