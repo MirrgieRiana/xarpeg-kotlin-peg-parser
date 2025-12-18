@@ -27,10 +27,11 @@ Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library 
 
 ### DSL Highlights
 
-- Operator-driven grammar definitions mirror PEG notation (`+` for choice, `*` for sequence, unary `-` to drop matches), keeping rules short and scannable.
+- Operator-driven grammar definitions use Xarpeg's PEG-style operators (`+` for choice, `*` for sequence, unary `-` to drop matches), so rules stay short and scannable without overloading `+`/`*` as quantifiers.
 - Typed tuples make it obvious which parts of the input you keep or ignore, so you avoid ad-hoc casting later.
 - Helpers like `ref { }`, `leftAssociative`, and `rightAssociative` remove boilerplate for recursive grammars and precedence handling.
-- Works directly on raw strings without tokenizers while `named` parsers keep error messages readable even when delimiters are skipped.
+- Works directly on raw strings without tokenizers.
+- `named` parsers keep error messages readable even when delimiters are skipped.
 
 ---
 
