@@ -65,7 +65,7 @@ jobs:
         run: |
           old=$(cat gradle/libs.versions.toml)
           printf '%s\n' "$old" | perl -lpE 's/^(\s*xarpeg-version\s*=\s*")[^"]*("\s*(?:#.*)?)$/$1.$ENV{VERSION}.$2/ge' > gradle/libs.versions.toml
-          diff <(printf '%s\n' "$old") <(cat gradle/libs.versions.toml) && {
+          [ ! "$old" = "$(cat gradle/libs.versions.toml)" ] || {
             echo "Failed to update version"
             exit 1
           }
