@@ -54,6 +54,13 @@ jobs:
         with:
           build-root-directory: main
 
+      - name: Update version in TOML
+        working-directory: main
+        run: |
+          sed -i 's/xarpeg-version = ".*"/xarpeg-version = "'"$VERSION"'"/' gradle/libs.versions.toml
+          echo "Updated version to $VERSION in gradle/libs.versions.toml"
+          grep xarpeg-version gradle/libs.versions.toml
+
       - name: Prepare local maven repository
         run: |
           mkdir -p main/build/maven
