@@ -17,6 +17,12 @@
 
 Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library for Kotlin. It targets JVM, JS (Node.js), and Native platforms (Linux x64, Linux ARM64, Windows x64), works directly on raw input strings without tokenization, and includes built-in memoization for predictable backtracking performance.
 
+## Repository Overview
+
+- **Library** — Core Kotlin Multiplatform PEG parser implementation lives in [`src`](src), generating typed tuples and combinators for JVM, JS, and Native.
+- **Documentation** — Markdown guides in [`pages/docs`](pages/docs) are turned into the published site, with `doc-test` verifying that every embedded code sample compiles and runs.
+- **Samples** — Runnable examples in [`samples`](samples) (minimal JVM app, online parser, interpreter) demonstrate integration patterns and runtime behavior.
+
 ## Why Xarpeg?
 
 - **🎯 Intuitive DSL** - Operator-based syntax feels natural: `+` for literals/regex/choice, `*` for sequences, `-` to ignore tokens
