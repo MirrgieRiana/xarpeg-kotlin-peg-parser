@@ -1,4 +1,4 @@
-# Instructions for GitHub Copilot
+# General Rules
 
 ## Conversation
 
@@ -39,6 +39,22 @@ If you comply with the contents of this file, you must declare that you comply w
 
 Whenever you edit any text in this repository, you must first look for structurally similar sections within the repository and make a best effort to keep the style consistent—code formatting, layout, phrasing, and any other aspects of the writing.
 
+## Execution
+
+### Commit frequently
+
+To ensure steady progress, you must:
+
+- **Commit at least once every five minutes.**
+- Divide your work into short steps based on this frequency.
+- Each commit should represent a meaningful chunk of work.
+- These are not orders that interrupt the execution in the middle of your task.
+- **You must fully perform the given orders.**
+
+# Repository Instructions
+
+## Edit
+
 ### Edit Integrity
 
 When you edit a pull request to merge it into the main branch, you must ensure that it passes the `check` workflow.
@@ -66,12 +82,14 @@ When writing code examples in documentation (README.md, pages/docs/*.md):
 * **All code examples must pass doc-test validation** - Invalid examples damage credibility
 
 Good example:
+
 ```kotlin
 val result = parser.parseAllOrThrow("input")
 check(result == expectedValue)  // Validates the result
 ```
 
 Bad example:
+
 ```kotlin
 val result = parser.parseAllOrThrow("input")
 println(result)  // Provides no validation
@@ -100,14 +118,3 @@ When you invoke Chrome (for example, to analyze HTML files), specify the followi
 If you encounter an error while running a Gradle task that says access to a specific domain is blocked, your correct response is to suggest adding an allowance for that domain via chat, by providing the following URL:
 
 https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/settings/copilot/coding_agent/allowlist
-
-### Commit frequently
-
-To ensure steady progress, you must:
-
-- **Commit at least once every five minutes.**
-- Divide your work into short steps based on this frequency.
-- Each commit should represent a meaningful chunk of work.
-- These are not orders that interrupt the execution in the middle of your task.
-- **You must fully perform the given orders.**
-
