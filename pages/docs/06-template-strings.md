@@ -63,7 +63,7 @@ val templateStringParser: Parser<String> = object {
                 }
             }
         }
-    
+
     val root = templateString
 }.root
 
