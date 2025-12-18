@@ -9,7 +9,10 @@ hh := {
         listChanged: F
       }
     }
-    serverInfo: {}
+    serverInfo: {
+      version: "0.0.0"
+      name: "banana"
+    }
     instructions: "バナナ"
   })
   "notifications/initialized": in -> E
