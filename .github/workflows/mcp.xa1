@@ -31,4 +31,4 @@ hh := {
   })
 }
 
-IN >> JSONSD | hh(_.method) | h => h ? *h : e[_]({message: "Unsupported"}) >> JSONS
+IN >> JSONSD | hh(_.method) | h => h != N ? *h : e[_]({message: "Unsupported"}) >> JSONS
