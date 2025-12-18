@@ -3,44 +3,24 @@ import build_logic.getTupleParserSrc
 import build_logic.getTupleSrc
 
 plugins {
-    kotlin("multiplatform") version "2.2.20"
+    alias(libs.plugins.kotlin.multiplatform)
     id("maven-publish")
-    id("org.jetbrains.dokka") version "2.0.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.ktlint)
     id("build-logic")
 }
 
-group = "io.github.mirrgieriana.xarpite"
-val SHORT_SHA_LENGTH = 7
-val MAX_SHA_LENGTH = 40
-val gitShaRegex = Regex("^[0-9a-fA-F]{${SHORT_SHA_LENGTH},${MAX_SHA_LENGTH}}$")
-
-fun isValidGitSha(sha: String): Boolean = gitShaRegex.matches(sha)
-
-fun Project.readGitSha(): String? = runCatching {
-    val process = ProcessBuilder("git", "rev-parse", "HEAD")
-        .directory(rootDir)
-        .redirectErrorStream(true)
-        .start()
-    val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
-    process.waitFor()
-    output.takeIf(::isValidGitSha)
-}.getOrNull()
-
-fun Project.determineVersion(): String {
-    System.getenv("VERSION")?.let { return it }
-    val sanitizedSha = readGitSha()
-    return sanitizedSha?.let { "latest-commit-${it.take(SHORT_SHA_LENGTH)}" } ?: "latest"
-}
-
-version = project.determineVersion()
+group = libs.versions.xarpeg.group.get()
+version = libs.versions.xarpeg.version.get()
 
 repositories {
     mavenCentral()
 }
 
 kotlin {
+    jvmToolchain(libs.versions.java.get().toInt())
+
     // JVM target
     jvm {
         testRuns["test"].executionTask.configure {
@@ -85,7 +65,7 @@ kotlin {
 
 // ktlint configuration
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    version.set("1.3.1")
+    version.set(libs.versions.ktlint.asProvider().get())
     android.set(false)
     outputColorName.set("RED")
 }

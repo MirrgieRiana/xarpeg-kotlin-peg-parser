@@ -1,0 +1,18 @@
+[versions]
+kotlin = "2.2.20"
+dokka-plugin = "2.0.0"
+detekt-plugin = "1.23.7"
+ktlint-plugin = "12.1.2"
+ktlint = "1.3.1"
+java = "17"
+
+# Project artifact metadata
+xarpeg-group = "io.github.mirrgieriana.xarpite"
+xarpeg-name = "xarpeg-kotlin-peg-parser"
+xarpeg-version = "latest"
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka-plugin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-plugin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
