@@ -2,6 +2,7 @@ package io.github.mirrgieriana.xarpite.xarpeg
 
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -28,7 +29,7 @@ class LazyArithmeticTest {
             +Regex("[0-9]+") mapEx { _, result ->
                 val value = result.value.value.toInt()
                 return@mapEx { value }
-            }
+            } named "number"
 
         private val positionMarker: Parser<() -> Int> =
             +'!' mapEx { context, result ->

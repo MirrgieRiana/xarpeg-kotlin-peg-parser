@@ -10,6 +10,7 @@ import io.github.mirrgieriana.xarpite.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -155,9 +156,9 @@ private object ExpressionGrammar {
     private val whitespace = -Regex("[ \\t\\r\\n]*")
 
     // Identifier: alphanumeric and _, but first character cannot be a digit
-    private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value }
+    private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
-    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) }
+    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) } named "number"
 
     // Helper function for left-associative binary operator aggregation
     // Takes a term parser and operators that create expressions
