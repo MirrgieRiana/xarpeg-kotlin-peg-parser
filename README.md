@@ -25,6 +25,13 @@ Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library 
 - **⚡ Built-in Memoization** - Automatic caching keeps backtracking predictable; disable for lower memory use
 - **🎨 Type-Safe Results** - Sequences yield `Tuple0..Tuple16` so you explicitly control what's kept or dropped
 
+### DSL Highlights
+
+- Operator-driven grammar definitions mirror PEG notation (`+` for choice, `*` for sequence, unary `-` to drop matches), keeping rules short and scannable.
+- Typed tuples make it obvious which parts of the input you keep or ignore, so you avoid ad-hoc casting later.
+- Helpers like `ref { }`, `leftAssociative`, and `rightAssociative` remove boilerplate for recursive grammars and precedence handling.
+- Works directly on raw strings without tokenizers while `named` parsers keep error messages readable even when delimiters are skipped.
+
 ---
 
 ## Quick Example
