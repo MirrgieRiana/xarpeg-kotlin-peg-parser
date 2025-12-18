@@ -24,6 +24,47 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history to find tags
+
+      - name: Set version from git tags
+        run: |
+          # Determine version based on git tags
+          # Check if HEAD has a version tag
+          HEAD_TAG=$(git tag --points-at HEAD | grep '^v[0-9]' | head -n 1)
+          
+          if [ -n "$HEAD_TAG" ]; then
+            # HEAD has a version tag, use it without 'v'
+            VERSION="${HEAD_TAG#v}"
+            echo "HEAD has version tag: $HEAD_TAG, using version: $VERSION"
+          else
+            # Find the most recent version tag reachable from HEAD
+            # Try git describe first (finds tags in ancestry)
+            LATEST_TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD 2>/dev/null || echo "")
+            
+            if [ -z "$LATEST_TAG" ]; then
+              # If describe failed, try to find tags on main branch ancestors
+              # Get all version tags sorted by version
+              LATEST_TAG=$(git tag -l 'v[0-9]*' --sort=-version:refname --merged HEAD 2>/dev/null | head -n 1)
+            fi
+            
+            if [ -n "$LATEST_TAG" ]; then
+              # Tag found, add suffix to indicate development version
+              VERSION="${LATEST_TAG#v}-dev"
+              echo "Latest version tag found: $LATEST_TAG, using version: $VERSION"
+            else
+              # No tags found, use 'latest'
+              VERSION="latest"
+              echo "No version tags found, using version: $VERSION"
+            fi
+          fi
+          
+          # Update the version in gradle/libs.versions.toml
+          sed -i "s/^xarpeg-version = .*/xarpeg-version = \"$VERSION\"/" gradle/libs.versions.toml
+          
+          # Display the updated version
+          echo "Updated gradle/libs.versions.toml with version: $VERSION"
+          grep "xarpeg-version" gradle/libs.versions.toml
 
       - name: Set up JDK
         uses: actions/setup-java@v4.5.0
