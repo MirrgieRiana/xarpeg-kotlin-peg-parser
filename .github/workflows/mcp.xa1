@@ -2,7 +2,7 @@ r := in, d -> {jsonrpc: "2.0"; id: in.id; result: d}
 e := in, d -> {jsonrpc: "2.0"; id: in.id; error: d}
 
 hh := {
-  "initialize": in -> r[in](
+  "initialize": in -> r[in]({
     protocolVersion: "2024-11-05"
     capabilities: {
       tools: {
@@ -11,7 +11,7 @@ hh := {
     }
     serverInfo: {}
     instructions: "バナナ"
-  )
+  })
   "notifications/initialized": in -> E
   "tools/list": in -> r[in]({
     tools: [
