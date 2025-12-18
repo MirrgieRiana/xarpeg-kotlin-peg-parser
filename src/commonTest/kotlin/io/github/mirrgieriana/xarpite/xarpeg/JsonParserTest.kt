@@ -69,7 +69,7 @@ class JsonParserTest {
             val escapeN = +'n' map { "\n" }
             val escapeR = +'r' map { "\r" }
             val escapeT = +'t' map { "\t" }
-            val escapeUnicode = +'u' * +Regex("[0-9a-fA-F]{4}") named "hex_digits" map { (_, hex) ->
+            val escapeUnicode = +'u' * (+Regex("[0-9a-fA-F]{4}") named "hex_digits") map { (_, hex) ->
                 hex.value.toInt(16).toChar().toString()
             } named "unicode_hex"
             val escape = +'\\' * (

@@ -2,6 +2,7 @@ package io.github.mirrgieriana.xarpite.xarpeg
 
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.map
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
@@ -23,7 +24,7 @@ class TemplateStringTutorialTest {
 
     val templateStringParser: Parser<String> = object {
         // Expression parser (reusing from earlier tutorials)
-        val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+        val number = (+Regex("[0-9]+") named "number") map { it.value.toInt() }
         val grouped: Parser<Int> = -'(' * ref { sum } * -')'
         val factor: Parser<Int> = number + grouped
         val product = leftAssociative(factor, -'*') { a, _, b -> a * b }
@@ -33,13 +34,13 @@ class TemplateStringTutorialTest {
         // String parts: match everything except $( and closing "
         // The key insight: use a regex that stops before template markers
         val stringPart: Parser<TemplateElement> =
-            +Regex("""[^"$]+|\$(?!\()""") named "string_part" map { match ->
+            (+Regex("""[^"$]+|\$(?!\()""") named "string_part") map { match ->
                 StringPart(match.value)
             }
 
         // Expression part: $(...)
         val expressionPart: Parser<TemplateElement> =
-            -Regex("""\$\(""") named "template_start" * expression * -')' map { value ->
+            (-Regex("""\$\(""") named "template_start") * expression * -')' map { value ->
                 ExpressionPart(value)
             }
 
