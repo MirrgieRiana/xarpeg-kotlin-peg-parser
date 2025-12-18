@@ -33,16 +33,18 @@ jobs:
 
       - name: Extract version and tag commit
         run: |
-          tag_commit="$(git -C main rev-list -n 1 "$GITHUB_REF")"
+          tag_name="${GITHUB_REF_NAME}"
+          tag_commit="$(git -C main rev-parse HEAD)"
+          echo "TAG_NAME=$tag_name" >> "$GITHUB_ENV"
           echo "TAG_COMMIT=$tag_commit" >> "$GITHUB_ENV"
-          version="${GITHUB_REF_NAME#v}"
+          version="${tag_name#v}"
           echo "VERSION=$version" >> "$GITHUB_ENV"
 
       - name: Verify tag is on main
         working-directory: main
         run: |
           git fetch origin main
-          if ! git branch --remotes --contains "$TAG_COMMIT" | grep -q "origin/main"; then
+          if ! git merge-base --is-ancestor "$TAG_COMMIT" origin/main; then
             echo "Tag ${GITHUB_REF_NAME:-$GITHUB_REF} is not on main"
             exit 1
           fi
@@ -61,16 +63,14 @@ jobs:
       - name: Update version in TOML
         working-directory: main
         run: |
-          sed -i 's/xarpeg-version = ".*"/xarpeg-version = "'"$VERSION"'"/' gradle/libs.versions.toml
+          sed -i 's/^[ ]*xarpeg-version[ ]*=[ ]*".*"[ ]*$/xarpeg-version = "'"$VERSION"'"/' gradle/libs.versions.toml
           echo "Updated version to $VERSION in gradle/libs.versions.toml"
           grep xarpeg-version gradle/libs.versions.toml
 
       - name: Prepare local maven repository
         run: |
           mkdir -p main/build/maven
-          if [ -d maven/maven ]; then
-            rsync -av --delete --exclude '.git/' maven/ main/build/maven/
-          fi
+          rsync -av --delete --exclude '.git/' maven/ main/build/maven/
 
       - name: Publish artifacts
         working-directory: main
@@ -86,13 +86,11 @@ jobs:
 
       - name: Commit and push artifacts
         working-directory: maven
-        env:
-          VERSION: ${{ github.ref_name }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit --allow-empty -m "$VERSION"
+          git commit --allow-empty -m "$TAG_NAME"
           git push origin HEAD:maven
 
       - name: Create GitHub Release
