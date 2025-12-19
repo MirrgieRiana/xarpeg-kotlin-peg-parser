@@ -40,6 +40,11 @@ class LambdaExpression(private val params: List<String>, private val body: Expre
 
 @JsExport
 class ProgramExpression(private val expressions: List<Expression>) : Expression {
-    override fun evaluate(ctx: EvaluationContext): Value =
-        expressions.fold(Value.NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
+    override fun evaluate(ctx: EvaluationContext): Value {
+        var result: Value = Value.NumberValue(0.0)
+        expressions.forEach { expr ->
+            result = expr.evaluate(ctx)
+        }
+        return result
+    }
 }

@@ -21,11 +21,9 @@ abstract class ComparisonOperatorExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val contextWithFrame = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
-        
-        val leftNum = leftVal.requireNumber(contextWithFrame, operatorSymbol, "Left")
-        val rightNum = rightVal.requireNumber(contextWithFrame, operatorSymbol, "Right")
-        
+        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
+        val leftNum = leftVal.requireNumber(newCtx, operatorSymbol, "Left")
+        val rightNum = rightVal.requireNumber(newCtx, operatorSymbol, "Right")
         return Value.BooleanValue(compare(leftNum, rightNum))
     }
 }

@@ -7,10 +7,6 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Integration tests for the arithmetic interpreter.
- * Tests run the interpreter using java exec to verify the installed distribution works correctly.
- */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InterpreterTest {
 
@@ -19,12 +15,12 @@ class InterpreterTest {
     @BeforeAll
     fun setup() {
         val projectDir = File(System.getProperty("user.dir"))
-        buildDistribution(projectDir)
-        classPath = setupClassPath(projectDir)
-    }
+        val gradlew = if (System.getProperty("os.name").startsWith("Windows")) {
+            File(projectDir, "gradlew.bat")
+        } else {
+            File(projectDir, "gradlew")
+        }
 
-    private fun buildDistribution(projectDir: File) {
-        val gradlew = getGradleWrapper(projectDir)
         val buildProcess = ProcessBuilder(gradlew.absolutePath, "installDist", "--console=plain")
             .directory(projectDir)
             .redirectErrorStream(true)
@@ -35,25 +31,14 @@ class InterpreterTest {
             val output = buildProcess.inputStream.bufferedReader().readText()
             throw AssertionError("Failed to build distribution: $output")
         }
-    }
 
-    private fun getGradleWrapper(projectDir: File): File {
-        val wrapperName = if (System.getProperty("os.name").startsWith("Windows")) {
-            "gradlew.bat"
-        } else {
-            "gradlew"
-        }
-        return File(projectDir, wrapperName)
-    }
-
-    private fun setupClassPath(projectDir: File): String {
         val libDir = File(projectDir, "build/install/interpreter/lib")
         assertTrue(libDir.exists(), "Distribution lib directory should exist: ${libDir.absolutePath}")
 
         val jarFiles = libDir.listFiles { file -> file.extension == "jar" }
             ?: throw AssertionError("No jar files found in ${libDir.absolutePath}")
 
-        return jarFiles.joinToString(File.pathSeparator) { it.absolutePath }
+        classPath = jarFiles.joinToString(File.pathSeparator) { it.absolutePath }
     }
 
     private fun runInterpreter(expression: String): Pair<Int, String> {

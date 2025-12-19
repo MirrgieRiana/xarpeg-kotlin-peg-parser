@@ -23,25 +23,16 @@ abstract class EqualityOperatorExpression(
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
 
-        val areEqual = compareOperands(leftVal, rightVal, ctx)
-        return Value.BooleanValue(compareValues(areEqual))
-    }
-
-    private fun compareOperands(leftVal: Value, rightVal: Value, ctx: EvaluationContext): Boolean {
-        return when {
-            leftVal is Value.NumberValue && rightVal is Value.NumberValue -> 
-                leftVal.value == rightVal.value
-            leftVal is Value.BooleanValue && rightVal is Value.BooleanValue -> 
-                leftVal.value == rightVal.value
+        val compareResult = when {
+            leftVal is Value.NumberValue && rightVal is Value.NumberValue -> leftVal.value == rightVal.value
+            leftVal is Value.BooleanValue && rightVal is Value.BooleanValue -> leftVal.value == rightVal.value
             else -> {
-                val contextWithFrame = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
-                throw EvaluationException(
-                    "Operands of $operatorSymbol must be both numbers or both booleans", 
-                    contextWithFrame, 
-                    ctx.sourceCode
-                )
+                val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
+                throw EvaluationException("Operands of $operatorSymbol must be both numbers or both booleans", newCtx, ctx.sourceCode)
             }
         }
+
+        return Value.BooleanValue(compareValues(compareResult))
     }
 }
 

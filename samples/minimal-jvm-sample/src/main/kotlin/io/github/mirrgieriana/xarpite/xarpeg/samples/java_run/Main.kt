@@ -11,16 +11,14 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
 
-private object ExpressionGrammar {
-    val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+private val expression: Parser<Int> = object {
+    val number = +Regex("[0-9]+") map { match -> match.value.toInt() } named "number"
     val brackets: Parser<Int> = -'(' * ref { root } * -')'
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
     val root = add
-}
-
-private val expression: Parser<Int> = ExpressionGrammar.root
+}.root
 
 fun main() {
     val input = "2*(3+4)+5"

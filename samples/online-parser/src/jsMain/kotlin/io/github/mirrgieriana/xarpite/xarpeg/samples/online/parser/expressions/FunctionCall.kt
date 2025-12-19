@@ -20,43 +20,38 @@ class FunctionCallExpression(
         val func = ctx.variableTable.get(name)
             ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
 
-        if (func !is Value.LambdaValue) {
-            throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
-        }
+        when (func) {
+            is Value.LambdaValue -> {
+                if (args.size != func.params.size) {
+                    throw EvaluationException(
+                        "Function $name expects ${func.params.size} arguments, but got ${args.size}",
+                        ctx,
+                        sourceCode
+                    )
+                }
 
-        validateArguments(func)
-        checkCallLimit()
+                // Check function call limit before making the call
+                functionCallCount++
+                if (functionCallCount >= MAX_FUNCTION_CALLS) {
+                    throw EvaluationException(
+                        "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
+                        ctx,
+                        sourceCode
+                    )
+                }
 
-        val newContext = ctx.pushFrame(name, position).withNewScope()
-        bindArguments(func, newContext, ctx)
+                // Create a new scope for the function call
+                val newContext = ctx.pushFrame(name, position).withNewScope()
 
-        return func.body.evaluate(newContext)
-    }
+                // Evaluate arguments in the caller's context and bind to parameters in the new scope
+                func.params.zip(args).forEach { (param, argExpr) ->
+                    newContext.variableTable.set(param, argExpr.evaluate(ctx))
+                }
 
-    private fun validateArguments(func: Value.LambdaValue) {
-        if (args.size != func.params.size) {
-            throw EvaluationException(
-                "Function $name expects ${func.params.size} arguments, but got ${args.size}",
-                null,
-                sourceCode
-            )
-        }
-    }
-
-    private fun checkCallLimit() {
-        functionCallCount++
-        if (functionCallCount >= MAX_FUNCTION_CALLS) {
-            throw EvaluationException(
-                "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
-                null,
-                sourceCode
-            )
-        }
-    }
-
-    private fun bindArguments(func: Value.LambdaValue, newContext: EvaluationContext, callerContext: EvaluationContext) {
-        func.params.zip(args).forEach { (param, argExpr) ->
-            newContext.variableTable.set(param, argExpr.evaluate(callerContext))
+                // Execute function body in the new context
+                return func.body.evaluate(newContext)
+            }
+            else -> throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
         }
     }
 
