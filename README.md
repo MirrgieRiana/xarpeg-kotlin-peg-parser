@@ -71,14 +71,14 @@ fun main() {
 
 Follow our comprehensive tutorial to master parser combinators:
 
-1. **[Quickstart](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/01-quickstart.html)** - Your first parser in minutes
-2. **[Combinators](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/02-combinators.html)** - Sequences, choices, repetition, and naming
-3. **[Expressions & Recursion](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/03-expressions.html)** - Build recursive grammars with `ref { }`
-4. **[Runtime Behavior](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/04-runtime.html)** - Errors, exceptions, and caching
-5. **[Parsing Positions](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/05-positions.html)** - Extract location information with `mapEx`
-6. **[Template Strings](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/06-template-strings.html)** - Parse embedded expressions naturally
+1. **[Quickstart](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/01-quickstart.html)** - Your first parser in minutes
+2. **[Combinators](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/02-combinators.html)** - Sequences, choices, repetition, and naming
+3. **[Expressions & Recursion](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/03-expressions.html)** - Build recursive grammars with `ref { }`
+4. **[Runtime Behavior](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/04-runtime.html)** - Errors, exceptions, and caching
+5. **[Parsing Positions](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/05-positions.html)** - Extract location information with `mapEx`
+6. **[Template Strings](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/06-template-strings.html)** - Parse embedded expressions naturally
 
-**→ [Start the Tutorial](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/)**
+**→ [Start the Tutorial](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)**
 
 ---
 
@@ -215,7 +215,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## Resources
 
-- **[Documentation](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/)** - Complete tutorial
+- **[Documentation](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)** - Complete tutorial
 - **[API Reference](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg)** - Browse source for KDoc
 - **[Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Sample applications
 - **[Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Bug reports and feature requests

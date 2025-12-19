@@ -5,13 +5,13 @@ show_downloads: false
 
 # Navigation
 header_pages:
-  - docs/index.md
-  - docs/01-quickstart.md
-  - docs/02-combinators.md
-  - docs/03-expressions.md
-  - docs/04-runtime.md
-  - docs/05-positions.md
-  - docs/06-template-strings.md
+  - docs/en/index.md
+  - docs/en/01-quickstart.md
+  - docs/en/02-combinators.md
+  - docs/en/03-expressions.md
+  - docs/en/04-runtime.md
+  - docs/en/05-positions.md
+  - docs/en/06-template-strings.md
 
 # Appearance
 markdown: kramdown

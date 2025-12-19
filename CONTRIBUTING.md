@@ -36,7 +36,7 @@ For **complete verification** before submitting changes, run the full test suite
 
 - `src/commonMain/` - Common Kotlin code for all platforms
 - `src/commonTest/` - Common tests for all platforms
-- `pages/docs/` - Tutorial documentation (published to GitHub Pages)
+- `pages/docs/en/` - Tutorial documentation (published to GitHub Pages)
 - `samples/` - Example applications
 
 ## Code Style
@@ -58,7 +58,7 @@ For **complete verification** before submitting changes, run the full test suite
 
 When modifying user-facing functionality:
 
-1. Update relevant tutorial pages in `pages/docs/`
+1. Update relevant tutorial pages in `pages/docs/en/`
 2. Update examples in README.md if applicable
 3. Ensure code examples compile and run correctly
 4. Add inline KDoc comments for new public APIs
@@ -66,5 +66,5 @@ When modifying user-facing functionality:
 ## Getting Help
 
 - Check existing [Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues) for similar problems
-- Review the [Tutorial](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/) for usage patterns
+- Review the [Tutorial](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/) for usage patterns
 - Open a new issue for bugs or feature requests

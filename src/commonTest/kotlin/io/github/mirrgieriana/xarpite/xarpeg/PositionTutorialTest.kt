@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Tests for examples from the positions tutorial (docs/05-positions.md)
+ * Tests for examples from the positions tutorial (docs/en/05-positions.md)
  */
 class PositionTutorialTest {
 
