@@ -185,7 +185,15 @@ val bundleRelease by tasks.registering(Sync::class) {
     // Generate social image after sync completes
     doLast {
         val outputFile = layout.buildDirectory.dir("site/assets").get().file("social-image.png").asFile
-        val htmlTemplate = project.file("src/jsMain/resources/social-image-template.html")
+        val sourceTemplate = project.file("src/jsMain/resources/social-image-template.html")
+
+        // Create intermediate directory for social image generation
+        val socialImageDir = layout.buildDirectory.dir("socialImage").get().asFile
+        socialImageDir.mkdirs()
+
+        // Copy HTML template to intermediate location
+        val htmlTemplate = File(socialImageDir, "social-image-template.html")
+        sourceTemplate.copyTo(htmlTemplate, overwrite = true)
 
         if (!htmlTemplate.exists()) {
             throw RuntimeException("HTML template not found at ${htmlTemplate.absolutePath}")
@@ -199,6 +207,7 @@ val bundleRelease by tasks.registering(Sync::class) {
             playwrightClasspath = playwrightClasspath
         )
         println("Generated modern social image at ${outputFile.absolutePath}")
+        println("Intermediate HTML template saved at ${htmlTemplate.absolutePath}")
     }
 }
 
