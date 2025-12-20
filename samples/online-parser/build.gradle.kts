@@ -1,3 +1,4 @@
+import build_logic.generateSocialImage
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Sync
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
@@ -52,11 +53,30 @@ kotlin {
     }
 }
 
+val generateSocialImageTask by tasks.registering {
+    group = "build"
+    description = "Generates social image for documentation"
+
+    val outputDir = layout.buildDirectory.dir("site/assets")
+    val outputFile = outputDir.map { it.file("social-image.png").asFile }
+
+    outputs.file(outputFile)
+
+    doLast {
+        generateSocialImage(
+            outputFile = outputFile.get(),
+            title = "Xarpeg",
+            subtitle = "Kotlin PEG Parser"
+        )
+        println("Generated social image at ${outputFile.get().absolutePath}")
+    }
+}
+
 val bundleRelease by tasks.registering(Sync::class) {
     group = "build"
     description = "Bundles the production JS output and resources into build/site."
 
-    dependsOn("compileProductionLibraryKotlinJs", "jsProcessResources", "jsProductionLibraryCompileSync")
+    dependsOn("compileProductionLibraryKotlinJs", "jsProcessResources", "jsProductionLibraryCompileSync", generateSocialImageTask)
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
