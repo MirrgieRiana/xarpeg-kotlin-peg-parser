@@ -216,7 +216,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ## Resources
 
 - **[Documentation](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)** - Complete tutorial
-- **[API Reference](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg)** - Browse source for KDoc
+- **[API Reference](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/kdoc/)** - Browse source for KDoc
 - **[Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Sample applications
 - **[Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Bug reports and feature requests
 - **[Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases)** - Version history
