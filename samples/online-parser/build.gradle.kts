@@ -77,7 +77,7 @@ fun generateSocialImageWithPlaywright(
     // Create a temporary directory for our Java source
     val tempDir = File(System.getProperty("java.io.tmpdir"), "playwright-screenshot-${System.currentTimeMillis()}")
     tempDir.mkdirs()
-    
+
     val scriptFile = File(tempDir, "PlaywrightScreenshot.java")
     scriptFile.writeText("""
         import com.microsoft.playwright.*;
@@ -186,13 +186,13 @@ val bundleRelease by tasks.registering(Sync::class) {
     doLast {
         val outputFile = layout.buildDirectory.dir("site/assets").get().file("social-image.png").asFile
         val htmlTemplate = project.file("src/jsMain/resources/social-image-template.html")
-        
+
         if (!htmlTemplate.exists()) {
             throw RuntimeException("HTML template not found at ${htmlTemplate.absolutePath}")
         }
-        
+
         val playwrightClasspath = configurations.getByName("playwright")
-        
+
         generateSocialImageWithPlaywright(
             htmlTemplate = htmlTemplate,
             outputFile = outputFile,
