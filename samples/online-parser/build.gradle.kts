@@ -97,7 +97,7 @@ fun generateSocialImageWithPlaywright(
                     );
                     
                     BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-                        .setViewportSize($width, $height)
+                        .setViewportSize(1200, 630)
                         .setDeviceScaleFactor(2.0)
                     );
                     
