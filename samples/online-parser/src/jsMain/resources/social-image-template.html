@@ -20,7 +20,7 @@
         .container {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #FFB347 0%, #CF7B00 50%, #A16000 100%);
+            background: linear-gradient(135deg, #FEFDFB 0%, #FFF9F0 100%);
             position: relative;
             display: flex;
             align-items: center;
@@ -33,41 +33,75 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.06;
+            opacity: 0.4;
             background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(45,27,0,0.1) 2px, rgba(45,27,0,0.1) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(45,27,0,0.1) 2px, rgba(45,27,0,0.1) 4px);
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(207, 123, 0, 0.03) 50px, rgba(207, 123, 0, 0.03) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(207, 123, 0, 0.03) 50px, rgba(207, 123, 0, 0.03) 51px);
         }
 
-        /* Decorative geometric shapes */
-        .shape {
+        /* Decorative geometric lines */
+        .line {
             position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, #CF7B00 0%, #A16000 100%);
         }
 
-        .shape-1 {
-            width: 400px;
-            height: 400px;
-            top: -150px;
-            right: -100px;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-        }
-
-        .shape-2 {
+        .line-1 {
             width: 300px;
-            height: 300px;
-            bottom: -100px;
-            left: -50px;
-            background: radial-gradient(circle, rgba(45, 27, 0, 0.1) 0%, rgba(45, 27, 0, 0) 70%);
+            height: 4px;
+            top: 100px;
+            right: 150px;
+            transform: rotate(-15deg);
+            opacity: 0.6;
         }
 
-        .shape-3 {
+        .line-2 {
             width: 200px;
-            height: 200px;
-            top: 100px;
+            height: 3px;
+            bottom: 120px;
             left: 100px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: rotate(25deg);
+            opacity: 0.5;
+        }
+
+        .line-3 {
+            width: 150px;
+            height: 3px;
+            top: 250px;
+            left: 200px;
+            transform: rotate(-45deg);
+            opacity: 0.4;
+        }
+
+        .line-4 {
+            width: 180px;
+            height: 3px;
+            bottom: 200px;
+            right: 250px;
+            transform: rotate(35deg);
+            opacity: 0.5;
+        }
+
+        /* Corner accent frame */
+        .corner-accent {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px solid;
+            border-image: linear-gradient(135deg, #CF7B00, #A16000) 1;
+        }
+
+        .corner-top-left {
+            top: 40px;
+            left: 40px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-bottom-right {
+            bottom: 40px;
+            right: 40px;
+            border-left: none;
+            border-top: none;
         }
 
         /* Safe zone guide (for development, should be within 1200x630 but keeping important content in ~1000x530) */
@@ -95,7 +129,7 @@
             font-size: 96px;
             font-weight: 800;
             color: #2D1B00;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             margin-bottom: 24px;
             letter-spacing: -2px;
         }
@@ -103,8 +137,8 @@
         .subtitle {
             font-size: 48px;
             font-weight: 500;
-            color: rgba(45, 27, 0, 0.95);
-            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            color: rgba(45, 27, 0, 0.85);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
             letter-spacing: 0.5px;
         }
 
@@ -112,13 +146,15 @@
             display: inline-block;
             margin-top: 30px;
             padding: 12px 28px;
-            background: rgba(45, 27, 0, 0.15);
+            background: transparent;
             backdrop-filter: blur(10px);
             border-radius: 50px;
-            border: 2px solid rgba(45, 27, 0, 0.25);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #CF7B00, #A16000) 1;
+            border-image-slice: 1;
             font-size: 24px;
             font-weight: 600;
-            color: #2D1B00;
+            color: #CF7B00;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
@@ -126,24 +162,40 @@
         /* Accent elements */
         .accent-line {
             width: 120px;
-            height: 6px;
-            background: linear-gradient(90deg, rgba(45, 27, 0, 0.6) 0%, rgba(45, 27, 0, 0.2) 100%);
+            height: 4px;
+            background: linear-gradient(90deg, #CF7B00 0%, #A16000 100%);
             margin: 0 auto 30px;
-            border-radius: 3px;
+            border-radius: 2px;
+        }
+
+        .accent-underline {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #CF7B00 50%, transparent 100%);
+            margin: 20px auto 0;
+            opacity: 0.6;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="bg-pattern"></div>
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
+        
+        <!-- Corner accents -->
+        <div class="corner-accent corner-top-left"></div>
+        <div class="corner-accent corner-bottom-right"></div>
+        
+        <!-- Decorative lines -->
+        <div class="line line-1"></div>
+        <div class="line line-2"></div>
+        <div class="line line-3"></div>
+        <div class="line line-4"></div>
         
         <div class="content">
             <div class="accent-line"></div>
             <div class="title">Xarpeg</div>
             <div class="subtitle">Kotlin PEG Parser</div>
+            <div class="accent-underline"></div>
             <div class="badge">Multiplatform</div>
         </div>
     </div>
