@@ -20,7 +20,7 @@
         .container {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #FFF9F0 0%, #FFEFD5 50%, #FFE4B8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             display: flex;
             align-items: center;
@@ -28,114 +28,106 @@
             overflow: hidden;
         }
 
-        /* Soft animated background pattern */
+        /* Animated background pattern */
         .bg-pattern {
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.03;
+            opacity: 0.1;
             background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(207,123,0,0.1) 2px, rgba(207,123,0,0.1) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(207,123,0,0.1) 2px, rgba(207,123,0,0.1) 4px);
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
         }
 
-        /* Subtle decorative geometric shapes */
+        /* Decorative geometric shapes */
         .shape {
             position: absolute;
             border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .shape-1 {
-            width: 500px;
-            height: 500px;
-            top: -200px;
-            right: -150px;
-            background: radial-gradient(circle, rgba(207,123,0,0.08) 0%, rgba(207,123,0,0) 70%);
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
         }
 
         .shape-2 {
-            width: 400px;
-            height: 400px;
-            bottom: -150px;
-            left: -100px;
-            background: radial-gradient(circle, rgba(161,96,0,0.06) 0%, rgba(161,96,0,0) 70%);
+            width: 300px;
+            height: 300px;
+            bottom: -100px;
+            left: -50px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
         }
 
         .shape-3 {
-            width: 300px;
-            height: 300px;
-            top: 120px;
-            left: 80px;
-            background: radial-gradient(circle, rgba(115,69,0,0.04) 0%, rgba(115,69,0,0) 70%);
+            width: 200px;
+            height: 200px;
+            top: 100px;
+            left: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
         }
 
-        /* Content container */
+        /* Safe zone guide (for development, should be within 1200x630 but keeping important content in ~1000x530) */
         .content {
             position: relative;
             z-index: 10;
             text-align: center;
             padding: 100px;
             max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Icon */
-        .icon-container {
-            margin: 0 auto 40px;
+        .icon {
             width: 180px;
             height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            margin-bottom: 30px;
             filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Accent line */
-        .accent-line {
-            width: 120px;
-            height: 5px;
-            background: linear-gradient(90deg, rgba(207,123,0,0.6) 0%, rgba(161,96,0,0.3) 100%);
-            margin: 0 auto 40px;
-            border-radius: 3px;
-            box-shadow: 0 2px 8px rgba(207,123,0,0.15);
         }
 
         .title {
             font-size: 120px;
             font-weight: 800;
-            color: #2D1B00;
-            text-shadow: 0 2px 4px rgba(207,123,0,0.1);
-            margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 24px;
             letter-spacing: -2px;
         }
 
         .subtitle {
             font-size: 56px;
             font-weight: 500;
-            color: #5A3A00;
-            text-shadow: 0 1px 2px rgba(207,123,0,0.08);
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
             letter-spacing: 0.5px;
         }
 
         .badge {
             display: inline-block;
-            margin-top: 35px;
-            padding: 14px 32px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,249,240,0.5) 100%);
+            margin-top: 30px;
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             border-radius: 50px;
-            border: 2px solid rgba(207,123,0,0.25);
-            box-shadow: 0 4px 12px rgba(207,123,0,0.1), inset 0 1px 1px rgba(255,255,255,0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             font-size: 28px;
             font-weight: 600;
-            color: #734500;
+            color: #ffffff;
             letter-spacing: 1px;
             text-transform: uppercase;
+        }
+
+        /* Accent elements */
+        .accent-line {
+            width: 120px;
+            height: 6px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+            margin: 0 auto 30px;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -147,10 +139,8 @@
         <div class="shape shape-3"></div>
         
         <div class="content">
-            <div class="icon-container">
-                <img src="xarpeg-icon.svg" alt="Xarpeg Icon" onerror="this.style.display='none'">
-            </div>
             <div class="accent-line"></div>
+            <img src="xarpeg-icon.svg" alt="Xarpeg" class="icon">
             <div class="title">Xarpeg</div>
             <div class="subtitle">Kotlin PEG Parser</div>
             <div class="badge">Multiplatform</div>
