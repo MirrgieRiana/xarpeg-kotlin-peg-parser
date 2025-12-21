@@ -78,6 +78,15 @@ val bundleRelease by tasks.registering(Sync::class) {
         val htmlTemplate = File(socialImageDir, "social-image-template.html")
         sourceTemplate.copyTo(htmlTemplate, overwrite = true)
 
+        // Copy icon to intermediate location so HTML can reference it relatively
+        val sourceIcon = project.file("../../assets/xarpeg-icon.svg")
+        val targetIcon = File(socialImageDir, "xarpeg-icon.svg")
+        if (sourceIcon.exists()) {
+            sourceIcon.copyTo(targetIcon, overwrite = true)
+        } else {
+            throw RuntimeException("Icon file not found at ${sourceIcon.absolutePath}")
+        }
+
         if (!htmlTemplate.exists()) {
             throw RuntimeException("HTML template not found at ${htmlTemplate.absolutePath}")
         }
