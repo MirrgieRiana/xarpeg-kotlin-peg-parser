@@ -12,6 +12,13 @@ header_pages:
   - docs/en/04-runtime.md
   - docs/en/05-positions.md
   - docs/en/06-template-strings.md
+  - docs/ja/index.md
+  - docs/ja/01-quickstart.md
+  - docs/ja/02-combinators.md
+  - docs/ja/03-expressions.md
+  - docs/ja/04-runtime.md
+  - docs/ja/05-positions.md
+  - docs/ja/06-template-strings.md
 
 # Appearance
 markdown: kramdown

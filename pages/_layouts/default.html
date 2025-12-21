@@ -25,7 +25,8 @@
     
     <nav class="header-nav" style="margin-top: 1.5rem;">
       <a href="{{ '/' | relative_url }}" class="btn">Home</a>
-      <a href="{{ '/docs/en/' | relative_url }}" class="btn">Tutorial</a>
+      <a href="{{ '/docs/en/' | relative_url }}" class="btn">Tutorial (EN)</a>
+      <a href="{{ '/docs/ja/' | relative_url }}" class="btn">チュートリアル (JA)</a>
       <a href="{{ '/online-parser/' | relative_url }}" class="btn external-link">Online Parser Sample</a>
       <a href="{{ '/kdoc/' | relative_url }}" class="btn external-link">KDoc</a>
       <a href="https://github.com/{{ site.repository }}" class="btn external-link">GitHub</a>
@@ -42,6 +43,22 @@
       <a href="{{ '/docs/en/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ Step 4: Runtime</a>
       <a href="{{ '/docs/en/05-positions.html' | relative_url }}" class="doc-nav-item">📍 Step 5: Positions</a>
       <a href="{{ '/docs/en/06-template-strings.html' | relative_url }}" class="doc-nav-item">🧩 Step 6: Template strings</a>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="{{ page.url | replace: '/docs/en/', '/docs/ja/' }}" class="doc-nav-item" style="font-style: italic;">→ 日本語版</a>
+      </div>
+    </nav>
+    {% elsif page.url contains '/docs/ja/' and page.url != '/docs/ja/index.html' %}
+    <nav class="doc-nav" aria-label="チュートリアルナビゲーション">
+      <a href="{{ '/docs/ja/' | relative_url }}" class="doc-nav-item">📚 チュートリアルホーム</a>
+      <a href="{{ '/docs/ja/01-quickstart.html' | relative_url }}" class="doc-nav-item">🚀 ステップ1：クイックスタート</a>
+      <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 ステップ2：コンビネータ</a>
+      <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 ステップ3：式と再帰</a>
+      <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ ステップ4：実行時の動作</a>
+      <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" class="doc-nav-item">📍 ステップ5：解析位置</a>
+      <a href="{{ '/docs/ja/06-template-strings.html' | relative_url }}" class="doc-nav-item">🧩 ステップ6：テンプレート文字列</a>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="{{ page.url | replace: '/docs/ja/', '/docs/en/' }}" class="doc-nav-item" style="font-style: italic;">→ English version</a>
+      </div>
     </nav>
     {% endif %}
 
@@ -71,6 +88,28 @@
         <div></div>
       {% endif %}
     </nav>
+    {% elsif page.url contains '/docs/ja/' %}
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display: flex; justify-content: space-between;">
+      {% if page.url contains '01-quickstart' %}
+        <div></div>
+        <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ2 – コンビネータ →</a>
+      {% elsif page.url contains '02-combinators' %}
+        <a href="{{ '/docs/ja/01-quickstart.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ1 – クイックスタート</a>
+        <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ3 – 式と再帰 →</a>
+      {% elsif page.url contains '03-expressions' %}
+        <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ2 – コンビネータ</a>
+        <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ4 – 実行時の動作 →</a>
+      {% elsif page.url contains '04-runtime' %}
+        <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ3 – 式と再帰</a>
+        <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ5 – 解析位置 →</a>
+      {% elsif page.url contains '05-positions' %}
+        <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ4 – 実行時の動作</a>
+        <a href="{{ '/docs/ja/06-template-strings.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ6 – テンプレート文字列 →</a>
+      {% elsif page.url contains '06-template-strings' %}
+        <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ5 – 解析位置</a>
+        <div></div>
+      {% endif %}
+    </nav>
     {% endif %}
   </main>
 
@@ -78,6 +117,10 @@
     {% if page.url contains '/docs/en/' %}
     <p style="font-size: 0.85rem; margin-bottom: 1.5rem; color: #959da5;">
       ⚠️ This documentation was predominantly generated by AI and may contain inaccuracies. Please verify against the source code.
+    </p>
+    {% elsif page.url contains '/docs/ja/' %}
+    <p style="font-size: 0.85rem; margin-bottom: 1.5rem; color: #959da5;">
+      ⚠️ このドキュメントは主にAIによって生成されており、不正確な情報が含まれている可能性があります。疑わしい場合は、ソースコードを確認してください。
     </p>
     {% endif %}
     <p>
