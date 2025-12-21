@@ -201,3 +201,52 @@ tasks.named("build") {
 tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
     mustRunAfter(tasks.matching { it.name.startsWith("runKtlintFormat") })
 }
+
+// Bundle all Pages content for deployment
+
+// Bundle all Pages content for deployment
+val bundleRelease by tasks.registering(Sync::class) {
+    group = "build"
+    description = "Bundles all Pages content (pages/, online-parser, dokka) into build/bundleRelease for Jekyll processing"
+    
+    val outputDirectory = layout.buildDirectory.dir("bundleRelease")
+    
+    dependsOn("dokkaHtml")
+    
+    into(outputDirectory)
+    
+    // Copy pages directory content
+    from("pages") {
+        exclude("_site/**", ".jekyll-cache/**")
+    }
+    
+    // Copy online-parser build output (built separately)
+    from("samples/online-parser/build/site") {
+        into("online-parser")
+    }
+    
+    // Copy dokka output
+    from(layout.buildDirectory.dir("dokka")) {
+        into("kdoc")
+    }
+    
+    // Create index.md from README
+    doLast {
+        val readmeFile = file("README.md")
+        val indexFile = outputDirectory.get().file("index.md").asFile
+        
+        if (readmeFile.exists()) {
+            indexFile.writeText("""
+                ---
+                layout: default
+                title: Home
+                ---
+                
+            """.trimIndent() + readmeFile.readText())
+        }
+    }
+}
+
+tasks.named("build") {
+    dependsOn(bundleRelease)
+}
