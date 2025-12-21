@@ -6,6 +6,7 @@ import java.nio.file.Paths
 /**
  * Generates a social image using Playwright to render HTML template.
  * Creates a modern design with proper safe zones for social media.
+ * Standard size: 1200x630px (recommended for Twitter, Discord, etc.)
  */
 fun generateSocialImageWithPlaywright(
     htmlTemplate: File,
@@ -34,7 +35,7 @@ fun generateSocialImageWithPlaywright(
             val context = browser.newContext(
                 Browser.NewContextOptions()
                     .setViewportSize(width, height)
-                    .setDeviceScaleFactor(2.0)
+                    .setDeviceScaleFactor(1.0)  // Standard resolution, not 2x
             )
 
             val page = context.newPage()

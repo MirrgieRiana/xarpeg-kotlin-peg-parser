@@ -5,9 +5,8 @@
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg">
 
-{% if page.url contains '/online-parser/' %}
-<!-- Open Graph / Social Media Meta Tags for Online Parser -->
-<meta property="og:title" content="{{ page.title | default: 'Xarpeg Online Parser' }}">
+<!-- Open Graph / Social Media Meta Tags -->
+<meta property="og:title" content="{{ page.title | default: site.title }}">
 <meta property="og:description" content="{{ site.description }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ page.url | absolute_url }}">
@@ -15,24 +14,8 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
-<!-- Twitter Card for Online Parser -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ page.title | default: 'Xarpeg Online Parser' }}">
-<meta name="twitter:description" content="{{ site.description }}">
-<meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/online-parser/assets/social-image.png">
-{% else %}
-<!-- Open Graph / Social Media Meta Tags for Documentation -->
-<meta property="og:title" content="{{ page.title | default: site.title }}">
-<meta property="og:description" content="{{ site.description }}">
-<meta property="og:type" content="website">
-<meta property="og:url" content="{{ page.url | absolute_url }}">
-<meta property="og:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-
-<!-- Twitter Card for Documentation -->
+<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page.title | default: site.title }}">
 <meta name="twitter:description" content="{{ site.description }}">
-<meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-image.png">
-{% endif %}
+<meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/online-parser/assets/social-image.png">

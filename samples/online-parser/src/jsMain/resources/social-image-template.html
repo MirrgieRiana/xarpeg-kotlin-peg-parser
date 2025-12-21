@@ -20,7 +20,7 @@
         .container {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #FFF9F2 0%, #FFF4E6 50%, #FFEFD5 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             position: relative;
             display: flex;
             align-items: center;
@@ -28,31 +28,46 @@
             overflow: hidden;
         }
 
-        /* Subtle background texture */
-        .bg-texture {
+        /* Animated background pattern */
+        .bg-pattern {
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.03;
+            opacity: 0.1;
             background-image: 
-                radial-gradient(circle at 25% 25%, rgba(207, 123, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(161, 96, 0, 0.1) 0%, transparent 50%);
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
         }
 
-        /* Elegant decorative elements */
-        .accent-wave {
+        /* Decorative geometric shapes */
+        .shape {
             position: absolute;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, rgba(207, 123, 0, 0.15) 50%, transparent 100%);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .accent-wave-top {
-            top: 120px;
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
         }
 
-        .accent-wave-bottom {
-            bottom: 120px;
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -100px;
+            left: -50px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        }
+
+        .shape-3 {
+            width: 200px;
+            height: 200px;
+            top: 100px;
+            left: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
         }
 
         /* Content container */
@@ -60,24 +75,15 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 60px;
+            padding: 100px;
             max-width: 1000px;
         }
 
-        /* Title above icon */
-        .project-title {
-            font-size: 32px;
-            font-weight: 600;
-            color: rgba(45, 27, 0, 0.75);
-            margin-bottom: 32px;
-            letter-spacing: 0.5px;
-        }
-
-        /* Icon container */
+        /* Icon */
         .icon-container {
-            margin: 0 auto 36px;
-            width: 200px;
-            height: 200px;
+            margin: 0 auto 40px;
+            width: 180px;
+            height: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -87,77 +93,66 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(207, 123, 0, 0.15));
+            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
         }
 
-        /* Feature labels container */
-        .features {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-top: 36px;
+        /* Accent line */
+        .accent-line {
+            width: 120px;
+            height: 6px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+            margin: 0 auto 40px;
+            border-radius: 3px;
         }
 
-        .feature-label {
-            padding: 10px 24px;
-            background: rgba(255, 255, 255, 0.7);
-            border: 2px solid rgba(207, 123, 0, 0.25);
-            border-radius: 24px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #A16000;
+        .title {
+            font-size: 120px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        .subtitle {
+            font-size: 56px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
             letter-spacing: 0.5px;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 14px 32px;
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(207, 123, 0, 0.08);
-        }
-
-        /* Subtle corner ornaments */
-        .ornament {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border: 2px solid rgba(207, 123, 0, 0.12);
-        }
-
-        .ornament-tl {
-            top: 30px;
-            left: 30px;
-            border-right: none;
-            border-bottom: none;
-            border-radius: 4px 0 0 0;
-        }
-
-        .ornament-br {
-            bottom: 30px;
-            right: 30px;
-            border-left: none;
-            border-top: none;
-            border-radius: 0 0 4px 0;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="bg-texture"></div>
-        <div class="accent-wave accent-wave-top"></div>
-        <div class="accent-wave accent-wave-bottom"></div>
-        <div class="ornament ornament-tl"></div>
-        <div class="ornament ornament-br"></div>
+        <div class="bg-pattern"></div>
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
         
         <div class="content">
-            <div class="project-title">Xarpeg: Kotlin PEG Parser</div>
-            
             <div class="icon-container">
-                <img src="https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg" alt="Xarpeg Icon">
+                <img src="file:///home/runner/work/xarpeg-kotlin-peg-parser/xarpeg-kotlin-peg-parser/assets/xarpeg-icon.svg" alt="Xarpeg Icon" onerror="this.style.display='none'">
             </div>
-            
-            <div class="features">
-                <div class="feature-label">Multiplatform</div>
-                <div class="feature-label">Lightweight</div>
-                <div class="feature-label">Type-Safe</div>
-            </div>
+            <div class="accent-line"></div>
+            <div class="title">Xarpeg</div>
+            <div class="subtitle">Kotlin PEG Parser</div>
+            <div class="badge">Multiplatform</div>
         </div>
     </div>
 </body>
