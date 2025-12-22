@@ -7,6 +7,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("com.microsoft.playwright:playwright:1.41.0")
+}
+
 // ktlint configuration
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     version.set(libs.versions.ktlint.asProvider().get())

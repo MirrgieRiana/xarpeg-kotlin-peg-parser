@@ -83,68 +83,27 @@ jobs:
           cd samples/online-parser
           ./gradlew build --console=plain --info --stacktrace
 
-      # dokkaHtml is the available Dokka task for this project (no dokkaHtmlMultiplatform task is registered)
-      - name: Generate KDoc
-        run: ./gradlew dokkaHtml --stacktrace
+      - name: Bundle all Pages content
+        run: ./gradlew bundleRelease --console=plain
         env:
           GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m"
 
-      - name: Prepare Jekyll source
-        run: |
-          mkdir -p site-src/docs site-src/assets/css site-src/_layouts site-src/_includes
-          # Copy config, assets, layouts, and includes
-          cp pages/_config.yml site-src/
-          cp pages/assets/css/style.scss site-src/assets/css/
-          cp pages/_layouts/default.html site-src/_layouts/
-          cp pages/_includes/head-custom.html site-src/_includes/
-          # Create index from README
-          {
-            cat <<'EOF'
-          ---
-          layout: default
-          title: Home
-          ---
-          EOF
-            cat README.md
-          } > site-src/index.md
-          # Copy documentation files (they already have front matter)
-          find pages/docs -name '*.md' -print0 | while IFS= read -r -d '' file; do
-            relative="${file#pages/}"
-            dest="site-src/$relative"
-            mkdir -p "$(dirname "$dest")"
-            cp "$file" "$dest"
-          done
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: false
 
-          # Copy online parser sample output
-          mkdir -p site-src/online-parser
-          cp -r samples/online-parser/build/site/* site-src/online-parser/
-
-          BUILD_DIR="${BUILD_DIR:-build}"
-          DOKKA_OUTPUT="${BUILD_DIR}/dokka"
-          if [ ! -d "$DOKKA_OUTPUT" ]; then
-            echo "KDoc output not found at $DOKKA_OUTPUT after running ./gradlew dokkaHtml" >&2
-            exit 1
-          fi
-          # Copy KDoc output
-          mkdir -p site-src/kdoc
-          cp -r "$DOKKA_OUTPUT"/. site-src/kdoc/
-
-          # Copy Google verification
-          cp pages/googlea59f33fe422494f1.html site-src
+      - name: Install Jekyll
+        run: gem install jekyll bundler
 
       - name: Build site with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./site-src
-          destination: ./site
+        run: ./scripts/build-pages.sh ./build/site
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: ./build/site
 
       - name: Deploy to GitHub Pages
         id: deployment
