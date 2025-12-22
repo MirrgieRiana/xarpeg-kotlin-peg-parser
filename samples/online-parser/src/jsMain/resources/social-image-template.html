@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, height=630">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-krypton@5.2.5/latin.css">
     <style>
+
+        /**********
+         * Layout *
+         **********/
+
         * {
             margin: 0;
             padding: 0;
@@ -14,36 +20,49 @@
             width: 1200px;
             height: 630px;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
 
-        /* Animated background pattern */
+        .safe-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 1200px;
+            height: 500px;
+        }
+
+
+        /**********
+         * Design *
+         **********/
+
+        .container {
+            background: linear-gradient(135deg, #936600 0%, #a14400 100%);
+        }
+
         .bg-pattern {
             position: absolute;
             width: 100%;
             height: 100%;
             opacity: 0.1;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 10px),
+                repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(255,255,255,0.1) 5px, rgba(255,255,255,0.1) 10px);
         }
 
-        /* Decorative geometric shapes */
         .shape {
             position: absolute;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
         }
 
         .shape-1 {
@@ -70,13 +89,9 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
         }
 
-        /* Safe zone guide (for development, should be within 1200x630 but keeping important content in ~1000x530) */
-        .content {
-            position: relative;
+        .safe-zone {
             z-index: 10;
             text-align: center;
-            padding: 100px;
-            max-width: 1000px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -85,57 +100,67 @@
         .icon {
             width: 180px;
             height: 180px;
-            margin-bottom: 30px;
-            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
+            filter:
+                drop-shadow(0 0 80px rgba(255, 255, 255, 1.0))
+                drop-shadow(0 0 32px rgba(255, 255, 255, 1.0));
         }
 
-        .title {
-            font-size: 120px;
-            font-weight: 800;
+        .accent-line {
+            width: 120px;
+            height: 6px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+            border-radius: 3px;
+        }
+
+        .title1 {
+            font-family: 'Monaspace Krypton', monospace;
+            font-size: 80px;
             color: #ffffff;
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            margin-bottom: 24px;
+            letter-spacing: -2px;
+        }
+
+        .title2 {
+            font-family: sans-serif;
+            font-size: 60px;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             letter-spacing: -2px;
         }
 
         .badge {
             display: inline-block;
-            margin-top: 30px;
             padding: 12px 28px;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
             border-radius: 50px;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            font-family: sans-serif;
             font-size: 28px;
             font-weight: 600;
             color: #ffffff;
             letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
-        /* Accent elements */
-        .accent-line {
-            width: 120px;
-            height: 6px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
-            margin: 0 auto 30px;
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="bg-pattern"></div>
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        
-        <div class="content">
-            <img src="xarpeg-icon.svg" alt="Xarpeg" class="icon">
-            <div class="accent-line"></div>
-            <div class="title">Xarpeg: Kotlin PEG Parser</div>
-            <div class="badge">Multiplatform</div>
-        </div>
+<div class="container">
+    <div class="bg-pattern"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="safe-zone">
+        <img src="xarpeg-icon.svg" alt="Xarpeg" class="icon">
+        <div style="flex-grow: 1;"></div>
+        <div class="accent-line"></div>
+        <div style="flex-grow: 1;"></div>
+        <div class="title1">Xarpeg</div>
+        <div class="title2">Kotlin PEG Parser</div>
+        <div style="flex-grow: 1;"></div>
+        <div class="badge">ONLINE PARSER</div>
     </div>
+</div>
 </body>
 </html>

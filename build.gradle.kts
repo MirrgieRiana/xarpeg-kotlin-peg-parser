@@ -203,7 +203,7 @@ tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
 }
 
 // Generate documentation social image
-val generateDocsSocialImage by tasks.registering {
+val generateDocsSocialImage = tasks.register("generateDocsSocialImage") {
     group = "build"
     description = "Generates social image for documentation pages using Playwright"
     
@@ -236,7 +236,7 @@ val generateDocsSocialImage by tasks.registering {
 }
 
 // Bundle all Pages content for deployment
-val bundleRelease by tasks.registering(Sync::class) {
+val bundleRelease = tasks.register<Sync>("bundleRelease") {
     group = "build"
     description = "Bundles all Pages content (pages/, online-parser, dokka) into build/bundleRelease for Jekyll processing"
     

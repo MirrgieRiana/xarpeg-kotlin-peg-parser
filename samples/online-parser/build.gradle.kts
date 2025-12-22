@@ -53,7 +53,7 @@ kotlin {
     }
 }
 
-val bundleRelease by tasks.registering(Sync::class) {
+val bundleRelease = tasks.register<Sync>("bundleRelease") {
     group = "build"
     description = "Bundles the production JS output and resources into build/site."
 
