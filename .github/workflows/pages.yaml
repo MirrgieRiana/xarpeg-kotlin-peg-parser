@@ -88,11 +88,17 @@ jobs:
         env:
           GRADLE_OPTS: "-Xmx2g -XX:MaxMetaspaceSize=512m"
 
-      - name: Build site with Jekyll
-        uses: actions/jekyll-build-pages@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          source: ./build/bundleRelease
-          destination: ./build/site
+          ruby-version: '3.1'
+          bundler-cache: false
+
+      - name: Install Jekyll
+        run: gem install jekyll bundler
+
+      - name: Build site with Jekyll
+        run: ./scripts/build-pages.sh ./build/site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
