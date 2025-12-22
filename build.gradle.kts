@@ -206,31 +206,31 @@ tasks.matching { it.name.startsWith("runKtlintCheck") }.configureEach {
 val generateDocsSocialImage = tasks.register("generateDocsSocialImage") {
     group = "build"
     description = "Generates social image for documentation pages using Playwright"
-    
+
     val templateSource = file("pages/social-image-template.html")
     val iconSource = file("assets/xarpeg-icon.svg")
     val intermediateDir = layout.buildDirectory.dir("socialImage").get().asFile
     val templateIntermediate = intermediateDir.resolve("social-image-template.html")
     val iconIntermediate = intermediateDir.resolve("xarpeg-icon.svg")
     val outputImage = intermediateDir.resolve("social-image.png")
-    
+
     inputs.files(templateSource, iconSource)
     outputs.file(outputImage)
-    
+
     doLast {
         // Create intermediate directory
         intermediateDir.mkdirs()
-        
+
         // Copy template and icon to intermediate directory
         templateSource.copyTo(templateIntermediate, overwrite = true)
         iconSource.copyTo(iconIntermediate, overwrite = true)
-        
+
         // Generate social image using Playwright
         build_logic.generateSocialImageWithPlaywright(
             htmlTemplate = templateIntermediate,
             outputFile = outputImage
         )
-        
+
         println("Documentation social image generated: ${outputImage.absolutePath}")
     }
 }
@@ -239,39 +239,39 @@ val generateDocsSocialImage = tasks.register("generateDocsSocialImage") {
 val bundleRelease = tasks.register<Sync>("bundleRelease") {
     group = "build"
     description = "Bundles all Pages content (pages/, online-parser, dokka) into build/bundleRelease for Jekyll processing"
-    
+
     val outputDirectory = layout.buildDirectory.dir("bundleRelease")
-    
+
     dependsOn("dokkaHtml", generateDocsSocialImage)
-    
+
     into(outputDirectory)
-    
+
     // Copy pages directory content
     from("pages") {
         exclude("_site/**", ".jekyll-cache/**", "social-image-template.html", "vendor/**", ".bundle/**", "Gemfile.lock")
     }
-    
+
     // Copy online-parser build output (built separately)
     from("samples/online-parser/build/site") {
         into("online-parser")
     }
-    
+
     // Copy dokka output
     from(layout.buildDirectory.dir("dokka")) {
         into("kdoc")
     }
-    
+
     // Copy generated docs social image from intermediate directory
     from(layout.buildDirectory.dir("socialImage")) {
         into("assets")
         include("social-image.png")
     }
-    
+
     // Create index.md from README
     doLast {
         val readmeFile = file("README.md")
         val indexFile = outputDirectory.get().file("index.md").asFile
-        
+
         if (readmeFile.exists()) {
             indexFile.writeText("""
                 ---
