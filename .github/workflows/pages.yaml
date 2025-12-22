@@ -96,7 +96,7 @@ jobs:
           working-directory: build/bundleRelease
 
       - name: Build site with Jekyll
-        run: ./scripts/build-pages.sh ./build/site
+        run: ./scripts/build-pages.sh "$GITHUB_WORKSPACE/build/site"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
