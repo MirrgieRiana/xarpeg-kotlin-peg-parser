@@ -89,7 +89,7 @@ tasks.register("generateSrc") {
                 val codeBlocks = kotlinBlockRegex.findAll(sourceFile.readText()).map { it.groupValues[1].trimEnd() }.toList()
                 if (codeBlocks.isNotEmpty()) {
                     codeBlocks.forEachIndexed { index, block ->
-                        val lines = block.lines().map { it.trimEnd() }
+                        val lines = block.lines()
                         val imports = mutableListOf<String>()
                         val declarations = mutableListOf<String>()
                         val statements = mutableListOf<String>()
