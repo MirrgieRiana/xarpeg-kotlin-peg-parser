@@ -10,7 +10,11 @@
 <meta property="og:description" content="{{ site.description }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ page.url | absolute_url }}">
+{% if page.url contains '/online-parser' %}
 <meta property="og:image" content="{{ site.url }}{{ site.baseurl }}/online-parser/assets/social-image.png">
+{% else %}
+<meta property="og:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-image.png">
+{% endif %}
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
@@ -18,4 +22,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ page.title | default: site.title }}">
 <meta name="twitter:description" content="{{ site.description }}">
+{% if page.url contains '/online-parser' %}
 <meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/online-parser/assets/social-image.png">
+{% else %}
+<meta name="twitter:image" content="{{ site.url }}{{ site.baseurl }}/assets/social-image.png">
+{% endif %}
