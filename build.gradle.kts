@@ -212,7 +212,7 @@ val generateDocsSocialImage = tasks.register("generateDocsSocialImage") {
     val intermediateDir = layout.buildDirectory.dir("socialImage").get().asFile
     val templateIntermediate = intermediateDir.resolve("social-image-template.html")
     val iconIntermediate = intermediateDir.resolve("xarpeg-icon.svg")
-    val outputImage = layout.buildDirectory.file("bundleRelease/assets/social-image.png").get().asFile
+    val outputImage = intermediateDir.resolve("social-image.png")
     
     inputs.files(templateSource, iconSource)
     outputs.file(outputImage)
@@ -259,6 +259,12 @@ val bundleRelease = tasks.register<Sync>("bundleRelease") {
     // Copy dokka output
     from(layout.buildDirectory.dir("dokka")) {
         into("kdoc")
+    }
+    
+    // Copy generated docs social image from intermediate directory
+    from(layout.buildDirectory.dir("socialImage")) {
+        into("assets")
+        include("social-image.png")
     }
     
     // Create index.md from README
