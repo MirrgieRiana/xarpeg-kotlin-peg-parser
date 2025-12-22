@@ -3,10 +3,12 @@ import org.gradle.api.tasks.Sync
 import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import java.io.File
+import build_logic.generateSocialImageWithPlaywright
 
 plugins {
     kotlin("multiplatform")
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("build-logic")
 }
 
 repositories {
