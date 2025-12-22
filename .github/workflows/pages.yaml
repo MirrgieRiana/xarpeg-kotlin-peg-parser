@@ -92,10 +92,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1'
-          bundler-cache: false
-
-      - name: Install Jekyll
-        run: gem install jekyll bundler
+          bundler-cache: true
+          working-directory: build/bundleRelease
 
       - name: Build site with Jekyll
         run: ./scripts/build-pages.sh ./build/site

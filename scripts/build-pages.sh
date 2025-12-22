@@ -18,16 +18,16 @@ fi
 echo "Building Jekyll site from: $BUNDLE_DIR"
 echo "Output directory: $SITE_OUTPUT"
 
-# Check if Jekyll is available
-if ! command -v jekyll &> /dev/null; then
-    echo "Error: Jekyll is not installed"
-    echo "Install with: gem install jekyll bundler"
+# Check if bundler is available
+if ! command -v bundle &> /dev/null; then
+    echo "Error: Bundler is not installed"
+    echo "Install with: gem install bundler"
     exit 1
 fi
 
-# Build with Jekyll
+# Build with Jekyll using bundler
 cd "$BUNDLE_DIR"
-jekyll build --destination "$SITE_OUTPUT" --verbose
+bundle exec jekyll build --destination "$SITE_OUTPUT" --verbose
 
 echo "Jekyll build complete!"
 echo "Site generated at: $SITE_OUTPUT"
