@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% seo %}
+  {% include head-custom.html %}
+</head>
+<body>
+  <header class="page-header" role="banner">
+    <div class="project-brand">
+      <img class="project-logo" src="https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg" alt="{{ site.title }} icon">
+      <div>
+        <h1 class="project-name">
+          <a href="{{ '/' | relative_url }}" style="color: var(--text-color); text-decoration: none; border: none;">
+            {{ site.title }}
+          </a>
+        </h1>
+        <h2 class="project-tagline">{{ site.description }}</h2>
+      </div>
+    </div>
+    
+    <nav class="header-nav" style="margin-top: 1.5rem;">
+      <a href="{{ '/' | relative_url }}" class="btn">Home</a>
+      <a href="{{ '/docs/en/' | relative_url }}" class="btn">Tutorial (EN)</a>
+      <a href="{{ '/docs/ja/' | relative_url }}" class="btn">チュートリアル (JA)</a>
+      <a href="{{ '/online-parser/' | relative_url }}" class="btn external-link">Online Parser Sample</a>
+      <a href="{{ '/kdoc/' | relative_url }}" class="btn external-link">KDoc</a>
+      <a href="https://github.com/{{ site.repository }}" class="btn external-link">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="main-content" role="main">
+    {% if page.url != '/docs/en/index.html' %}
+    <nav class="doc-nav" aria-label="Tutorial Navigation">
+      <a href="{{ '/docs/en/' | relative_url }}" class="doc-nav-item">📚 Tutorial Home</a>
+      <a href="{{ '/docs/en/01-quickstart.html' | relative_url }}" class="doc-nav-item">🚀 Step 1: Quickstart</a>
+      <a href="{{ '/docs/en/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 Step 2: Combinators</a>
+      <a href="{{ '/docs/en/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 Step 3: Expressions</a>
+      <a href="{{ '/docs/en/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ Step 4: Runtime</a>
+      <a href="{{ '/docs/en/05-positions.html' | relative_url }}" class="doc-nav-item">📍 Step 5: Positions</a>
+      <a href="{{ '/docs/en/06-template-strings.html' | relative_url }}" class="doc-nav-item">🧩 Step 6: Template strings</a>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="{{ page.url | replace: '/docs/en/', '/docs/ja/' }}" class="doc-nav-item" style="font-style: italic;">→ 日本語版</a>
+      </div>
+    </nav>
+    {% endif %}
+
+    <article>
+      {{ content }}
+    </article>
+
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display: flex; justify-content: space-between;">
+      {% if page.url contains '01-quickstart' %}
+        <div></div>
+        <a href="{{ '/docs/en/02-combinators.html' | relative_url }}" style="font-weight: 600;">Next: Step 2 – Combinators →</a>
+      {% elsif page.url contains '02-combinators' %}
+        <a href="{{ '/docs/en/01-quickstart.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 1 – Quickstart</a>
+        <a href="{{ '/docs/en/03-expressions.html' | relative_url }}" style="font-weight: 600;">Next: Step 3 – Expressions →</a>
+      {% elsif page.url contains '03-expressions' %}
+        <a href="{{ '/docs/en/02-combinators.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 2 – Combinators</a>
+        <a href="{{ '/docs/en/04-runtime.html' | relative_url }}" style="font-weight: 600;">Next: Step 4 – Runtime →</a>
+      {% elsif page.url contains '04-runtime' %}
+        <a href="{{ '/docs/en/03-expressions.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 3 – Expressions</a>
+        <a href="{{ '/docs/en/05-positions.html' | relative_url }}" style="font-weight: 600;">Next: Step 5 – Positions →</a>
+      {% elsif page.url contains '05-positions' %}
+        <a href="{{ '/docs/en/04-runtime.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 4 – Runtime</a>
+        <a href="{{ '/docs/en/06-template-strings.html' | relative_url }}" style="font-weight: 600;">Next: Step 6 – Template strings →</a>
+      {% elsif page.url contains '06-template-strings' %}
+        <a href="{{ '/docs/en/05-positions.html' | relative_url }}" style="font-weight: 600;">← Previous: Step 5 – Positions</a>
+        <div></div>
+      {% endif %}
+    </nav>
+  </main>
+
+  <footer style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 2px solid var(--border-color); color: #6a737d;">
+    <p style="font-size: 0.85rem; margin-bottom: 1.5rem; color: #959da5;">
+      ⚠️ This documentation was predominantly generated by AI and may contain inaccuracies. Please verify against the source code.
+    </p>
+    <p>
+      <a href="https://github.com/{{ site.repository }}" target="_blank">{{ site.title }}</a> is maintained by 
+      <a href="https://github.com/{{ site.repository | split: '/' | first }}" target="_blank">
+        {{ site.repository | split: '/' | first }}
+      </a>
+    </p>
+    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+      Built with ❤️ using Jekyll and GitHub Pages
+    </p>
+  </footer>
+</body>
+</html>

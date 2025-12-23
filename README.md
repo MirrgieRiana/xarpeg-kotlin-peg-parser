@@ -78,7 +78,7 @@ Follow our comprehensive tutorial to master parser combinators:
 5. **[Parsing Positions](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/05-positions.html)** - Extract location information with `mapEx`
 6. **[Template Strings](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/06-template-strings.html)** - Parse embedded expressions naturally
 
-**→ [Start the Tutorial](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)**
+**→ Start the Tutorial: [[English](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)] [[日本語](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/ja/)]**
 
 ---
 
@@ -215,7 +215,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## Resources
 
-- **[Documentation](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)** - Complete tutorial
+- **Documentation** - Complete tutorial [[English](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)] [[日本語](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/ja/)]
 - **[API Reference](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/kdoc/)** - Browse source for KDoc
 - **[Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Sample applications
 - **[Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - Bug reports and feature requests

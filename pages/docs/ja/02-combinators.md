@@ -1,17 +1,17 @@
 ---
-layout: docs-en
-title: Step 2 – Combinators
+layout: docs-ja
+title: ステップ2 – コンビネータ
 ---
 
-# Step 2: Combinators
+# ステップ2：コンビネータ
 
-Learn to combine parsers using sequences, choices, repetition, and more to build complex grammars.
+シーケンス、選択、繰り返しなどを使用してパーサを組み合わせ、複雑な文法を構築する方法を学びます。
 
-## Core Combinators
+## コアコンビネータ
 
-### Choice with `+`
+### `+`による選択
 
-Try alternatives in order. The first match wins:
+順番に代替案を試します。最初のマッチが勝ちます：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -20,14 +20,14 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val keyword = (+"if" + +"while" + +"for") named "keyword"
 
 fun main() {
-    keyword.parseAllOrThrow("if")      // ✓ matches "if"
-    keyword.parseAllOrThrow("while")   // ✓ matches "while"
+    keyword.parseAllOrThrow("if")      // ✓ "if"にマッチ
+    keyword.parseAllOrThrow("while")   // ✓ "while"にマッチ
 }
 ```
 
-### Optional Parsing
+### オプショナル解析
 
-`optional` attempts to match but rewinds on failure. Returns `Tuple1<T?>`:
+`optional`はマッチを試みますが、失敗時には巻き戻します。`Tuple1<T?>`を返します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -46,11 +46,11 @@ fun main() {
 }
 ```
 
-Use `it.a` to access the optional value, or destructure with `map { (value) -> ... }`.
+オプショナル値にアクセスするには`it.a`を使用するか、`map { (value) -> ... }`で分解します。
 
-### Repetition
+### 繰り返し
 
-Collect multiple matches into a list:
+複数のマッチをリストに収集します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -71,13 +71,13 @@ fun main() {
 }
 ```
 
-- **`.zeroOrMore`** - Matches zero or more times (never fails)
-- **`.oneOrMore`** - Matches one or more times (fails if no match)
-- **`.list(min, max)`** - Matches between `min` and `max` times
+- **`.zeroOrMore`** - 0回以上マッチ（失敗しない）
+- **`.oneOrMore`** - 1回以上マッチ（マッチがない場合は失敗）
+- **`.list(min, max)`** - `min`から`max`回の間マッチ
 
-### Serial Parsing
+### シリアル解析
 
-When you need to parse multiple different parsers of the same type in sequence without tuple limits, use `serial`:
+タプルの制限なしに、同じ型の複数の異なるパーサを順番に解析する必要がある場合は、`serial`を使用します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -95,26 +95,26 @@ fun main() {
 }
 ```
 
-`serial` returns a `List<T>` and has no theoretical upper limit, unlike tuple parsers which are limited to 16 elements. Use it when:
-- You have many parsers to combine (especially beyond tuple limits)
-- You need a long natural language phrase with selectable parts
-- You want a list result instead of a tuple
+`serial`は`List<T>`を返し、理論上の上限はありません。タプルパーサは16要素に制限されています。次の場合に使用します：
+- 結合するパーサが多数ある場合（特にタプルの制限を超える場合）
+- 選択可能な部分を持つ長い自然言語フレーズが必要な場合
+- タプルではなくリスト結果が必要な場合
 
-For repeating the same parser, use `.list()` or `.oneOrMore` instead.
+同じパーサを繰り返す場合は、代わりに`.list()`または`.oneOrMore`を使用してください。
 
-## Shaping Results
+## 結果の整形
 
-Sequences with `*` return tuples. Use `-parser` to drop unneeded values:
+`*`によるシーケンスはタプルを返します。不要な値をドロップするには`-parser`を使用します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 
-// Without dropping: Tuple3<Char, MatchResult, Char>
+// ドロップなし：Tuple3<Char, MatchResult, Char>
 val word = +Regex("[a-z]+") named "word"
 val withDelimiters = +'(' * word * +')'
 
-// With dropping: MatchResult (just the middle value)
+// ドロップあり：MatchResult（中央の値のみ）
 val cleanResult = -'(' * word * -')' map { it.value }
 
 fun main() {
@@ -122,7 +122,7 @@ fun main() {
 }
 ```
 
-Destructure tuples in `map` to transform results:
+`map`でタプルを分解して結果を変換します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -139,9 +139,9 @@ fun main() {
 }
 ```
 
-## Input Boundaries
+## 入力境界
 
-`startOfInput` and `endOfInput` match at position boundaries without consuming input:
+`startOfInput`と`endOfInput`は、入力を消費せずに位置境界でマッチします：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -150,17 +150,17 @@ import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
 val word = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    // Matches at start of input
+    // 入力の開始でマッチ
     val atStart = (startOfInput * word).parseAllOrThrow("hello")
-    check(atStart == "hello")  // Succeeds
+    check(atStart == "hello")  // 成功
 }
 ```
 
-**Note:** When using `parseAllOrThrow`, boundary checks are redundant—it already verifies the entire input is consumed. Use these parsers with `parseOrNull` or within sub-grammars.
+**注意：** `parseAllOrThrow`を使用する場合、境界チェックは冗長です—入力全体が消費されることをすでに検証しています。これらのパーサは`parseOrNull`またはサブ文法内で使用してください。
 
-## Naming Parsers
+## パーサへの名前付け
 
-Assign names for better error messages:
+より良いエラーメッセージのために名前を割り当てます：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -174,14 +174,14 @@ fun main() {
     val result = identifier.parseAll("123abc")
     val exception = result.exceptionOrNull() as? UnmatchedInputParseException
     
-    check(exception != null)  // Parsing fails
+    check(exception != null)  // 解析失敗
     check(exception.message!!.contains("Failed to parse"))
 }
 ```
 
-### Named Composite Parsers
+### 名前付き複合パーサ
 
-Named composite parsers hide constituent parsers from error suggestions:
+名前付き複合パーサは、構成要素パーサをエラー提案から隠します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -191,10 +191,10 @@ fun main() {
     val parserA = +'a' named "letter_a"
     val parserB = +'b' named "letter_b"
     
-    // Named composite: only "ab_sequence" in errors
+    // 名前付き複合：エラーには"ab_sequence"のみ
     val namedComposite = (parserA * parserB) named "ab_sequence"
     
-    // Unnamed composite: "letter_a" in errors
+    // 名前なし複合：エラーには"letter_a"
     val unnamedComposite = parserA * parserB
     
     val result1 = namedComposite.parseAll("c")
@@ -209,20 +209,20 @@ fun main() {
 }
 ```
 
-**Best practice:** Name composite parsers for semantic errors ("Expected: identifier") and leave components unnamed for detailed token-level errors during development.
+**ベストプラクティス：** 意味的なエラー（"Expected: identifier"）のために複合パーサに名前を付け、開発中の詳細なトークンレベルのエラーのためにコンポーネントは名前なしのままにします。
 
-## Key Takeaways
+## 重要なポイント
 
-- **`+`** for alternatives (first match wins)
-- **`.optional`** rewinds on failure, returns `Tuple1<T?>`
-- **`.zeroOrMore` / `.oneOrMore`** collect matches into lists
-- **`-parser`** drops values from tuples
-- **Destructuring** in `map` transforms tuple results
-- **`startOfInput` / `endOfInput`** match boundaries
-- **`named`** improves error messages
+- **`+`** 代替案用（最初のマッチが勝つ）
+- **`.optional`** 失敗時に巻き戻し、`Tuple1<T?>`を返す
+- **`.zeroOrMore` / `.oneOrMore`** マッチをリストに収集
+- **`-parser`** タプルから値をドロップ
+- **分解** `map`でタプル結果を変換
+- **`startOfInput` / `endOfInput`** 境界でマッチ
+- **`named`** エラーメッセージを改善
 
-## Next Steps
+## 次のステップ
 
-Learn how to handle recursive grammars and operator precedence.
+再帰的な文法と演算子の優先順位を扱う方法を学びます。
 
-→ **[Step 3: Expressions & Recursion](03-expressions.html)**
+→ **[ステップ3：式と再帰](03-expressions.html)**

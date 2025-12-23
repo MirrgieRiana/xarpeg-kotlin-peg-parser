@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: docs-en
 title: Step 1 – Quickstart
 ---
 

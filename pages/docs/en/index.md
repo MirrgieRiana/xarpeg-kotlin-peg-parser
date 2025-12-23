@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: docs-en
 title: Xarpeg Tutorial - Learn Parser Combinators
 ---
 

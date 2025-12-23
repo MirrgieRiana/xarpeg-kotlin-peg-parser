@@ -1,24 +1,24 @@
 ---
-layout: docs-en
-title: Step 5 – Parsing Positions
+layout: docs-ja
+title: ステップ5 – 解析位置
 ---
 
-# Step 5: Parsing Positions
+# ステップ5：解析位置
 
-Extract location information from parsed results for error reporting, source mapping, and debugging.
+エラー報告、ソースマッピング、デバッグのために解析結果から位置情報を抽出します。
 
-## Parse Results and Positions
+## 解析結果と位置
 
-Every successful parse returns a `ParseResult<T>` containing:
-- **`value: T`** - The parsed value
-- **`start: Int`** - Starting position in input
-- **`end: Int`** - Ending position in input
+すべての成功した解析は、以下を含む`ParseResult<T>`を返します：
+- **`value: T`** - 解析された値
+- **`start: Int`** - 入力の開始位置
+- **`end: Int`** - 入力の終了位置
 
-Position information is always available, but you typically work with simple types like `Parser<Int>` until you need the positions.
+位置情報は常に利用可能ですが、通常は位置が必要になるまで`Parser<Int>`のような単純な型で作業します。
 
-## Simple Transformations with `map`
+## `map`による単純な変換
 
-The `map` combinator works with just the value, keeping types simple:
+`map`コンビネータは値だけで動作し、型をシンプルに保ちます：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -28,13 +28,13 @@ val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     val result = number.parseAllOrThrow("42")
-    check(result == 42)  // Just the value, no position info
+    check(result == 42)  // 値だけ、位置情報なし
 }
 ```
 
-## Accessing Positions with `mapEx`
+## `mapEx`による位置へのアクセス
 
-Use `mapEx` when you need position information. It receives the `ParseContext` and full `ParseResult`:
+位置情報が必要な場合は`mapEx`を使用します。`ParseContext`と完全な`ParseResult`を受け取ります：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -48,15 +48,15 @@ val identifierWithPosition = identifier mapEx { ctx, result ->
 
 fun main() {
     val result = identifierWithPosition.parseAllOrThrow("hello")
-    check(result == "hello@0-5")  // Includes position info
+    check(result == "hello@0-5")  // 位置情報を含む
 }
 ```
 
-**Note:** `+Regex(...)` returns `Parser<MatchResult>`, so access the string with `result.value.value`.
+**注意：** `+Regex(...)`は`Parser<MatchResult>`を返すため、`result.value.value`で文字列にアクセスします。
 
-## Extracting Matched Text
+## マッチしたテキストの抽出
 
-Get the original matched substring using the `text()` extension:
+`text()`拡張を使用して元のマッチした部分文字列を取得します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -72,13 +72,13 @@ val numberWithText = number mapEx { ctx, result ->
 
 fun main() {
     val result = numberWithText.parseAllOrThrow("123")
-    check(result == "Parsed '123' as 123")  // Matched text extracted
+    check(result == "Parsed '123' as 123")  // マッチしたテキストが抽出される
 }
 ```
 
-## Calculating Line and Column Numbers
+## 行番号と列番号の計算
 
-Build enhanced error reporting with line/column information:
+行/列情報を使用して強化されたエラー報告を構築します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -102,9 +102,9 @@ fun main() {
 }
 ```
 
-## Multi-line Position Tracking
+## 複数行の位置追跡
 
-Track positions across multiple lines:
+複数行にわたる位置を追跡します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -123,15 +123,15 @@ fun main() {
     val word = +Regex("[a-z]+") map { it.value } named "word"
     val wordWithPos = word.withPos()
     
-    // Parse tracks position in input
+    // 解析は入力内の位置を追跡
     val result = wordWithPos.parseAllOrThrow("hello")
     check(result == Token("hello", 1, 1))
 }
 ```
 
-## Practical Example: Error Messages
+## 実用的な例：エラーメッセージ
 
-Combine position tracking with error context for helpful messages:
+位置追跡をエラーコンテキストと組み合わせて、役立つメッセージを作成します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpite.xarpeg.*
@@ -160,31 +160,31 @@ fun main() {
     }
     
     val result = parseWithErrors("abc")
-    check(result.isFailure)  // Parsing fails as expected
+    check(result.isFailure)  // 期待通り解析失敗
 }
 ```
 
-## Best Practices
+## ベストプラクティス
 
-**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = +Regex("[0-9]+") map { it.value.toInt() } named "number"`).
+**デフォルトで`map`を使用** - 位置が不要な場合は型をシンプルに保つ（例：`val simple = +Regex("[0-9]+") map { it.value.toInt() } named "number"`）。
 
-**Use `mapEx` when needed** - Extract positions only where required.
+**必要な場合は`mapEx`を使用** - 必要な場所でのみ位置を抽出。
 
-**Isolate position logic** - Create reusable helpers like `fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>>` for position tracking.
+**位置ロジックを分離** - 位置追跡のために`fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>>`のような再利用可能なヘルパーを作成。
 
-**Remember: positions are always there** - You don't need to change your parser's return type throughout your grammar. Extract position information at boundaries where you need it.
+**覚えておいてください：位置は常にそこにあります** - 文法全体でパーサの戻り値の型を変更する必要はありません。必要な境界で位置情報を抽出します。
 
-## Key Takeaways
+## 重要なポイント
 
-- **`ParseResult`** includes `value`, `start`, and `end`
-- **`map`** transforms values, keeping types simple
-- **`mapEx`** accesses context and position information
-- **`.text(ctx)`** extracts the matched substring
-- **Line/column calculation** requires counting newlines
-- **Position helpers** keep grammar code clean
+- **`ParseResult`** `value`、`start`、`end`を含む
+- **`map`** 値を変換し、型をシンプルに保つ
+- **`mapEx`** コンテキストと位置情報にアクセス
+- **`.text(ctx)`** マッチした部分文字列を抽出
+- **行/列の計算** 改行のカウントが必要
+- **位置ヘルパー** 文法コードをクリーンに保つ
 
-## Next Steps
+## 次のステップ
 
-Discover how PEG parsers naturally handle template strings with embedded expressions.
+PEGパーサが埋め込み式を使用してテンプレート文字列を自然に処理する方法を発見します。
 
-→ **[Step 6: Template Strings](06-template-strings.html)**
+→ **[ステップ6：テンプレート文字列](06-template-strings.html)**

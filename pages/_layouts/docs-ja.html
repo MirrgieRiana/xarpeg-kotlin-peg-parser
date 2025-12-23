@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} | {{ site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% seo %}
+  {% include head-custom.html %}
+</head>
+<body>
+  <header class="page-header" role="banner">
+    <div class="project-brand">
+      <img class="project-logo" src="https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/xarpeg-icon.svg" alt="{{ site.title }} icon">
+      <div>
+        <h1 class="project-name">
+          <a href="{{ '/' | relative_url }}" style="color: var(--text-color); text-decoration: none; border: none;">
+            {{ site.title }}
+          </a>
+        </h1>
+        <h2 class="project-tagline">{{ site.description }}</h2>
+      </div>
+    </div>
+    
+    <nav class="header-nav" style="margin-top: 1.5rem;">
+      <a href="{{ '/' | relative_url }}" class="btn">Home</a>
+      <a href="{{ '/docs/en/' | relative_url }}" class="btn">Tutorial (EN)</a>
+      <a href="{{ '/docs/ja/' | relative_url }}" class="btn">チュートリアル (JA)</a>
+      <a href="{{ '/online-parser/' | relative_url }}" class="btn external-link">Online Parser Sample</a>
+      <a href="{{ '/kdoc/' | relative_url }}" class="btn external-link">KDoc</a>
+      <a href="https://github.com/{{ site.repository }}" class="btn external-link">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="main-content" role="main">
+    {% if page.url != '/docs/ja/index.html' %}
+    <nav class="doc-nav" aria-label="チュートリアルナビゲーション">
+      <a href="{{ '/docs/ja/' | relative_url }}" class="doc-nav-item">📚 チュートリアルホーム</a>
+      <a href="{{ '/docs/ja/01-quickstart.html' | relative_url }}" class="doc-nav-item">🚀 ステップ1：クイックスタート</a>
+      <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" class="doc-nav-item">🔧 ステップ2：コンビネータ</a>
+      <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" class="doc-nav-item">🎯 ステップ3：式と再帰</a>
+      <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" class="doc-nav-item">⚙️ ステップ4：実行時の動作</a>
+      <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" class="doc-nav-item">📍 ステップ5：解析位置</a>
+      <a href="{{ '/docs/ja/06-template-strings.html' | relative_url }}" class="doc-nav-item">🧩 ステップ6：テンプレート文字列</a>
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="{{ page.url | replace: '/docs/ja/', '/docs/en/' }}" class="doc-nav-item" style="font-style: italic;">→ English version</a>
+      </div>
+    </nav>
+    {% endif %}
+
+    <article>
+      {{ content }}
+    </article>
+
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color); display: flex; justify-content: space-between;">
+      {% if page.url contains '01-quickstart' %}
+        <div></div>
+        <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ2 – コンビネータ →</a>
+      {% elsif page.url contains '02-combinators' %}
+        <a href="{{ '/docs/ja/01-quickstart.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ1 – クイックスタート</a>
+        <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ3 – 式と再帰 →</a>
+      {% elsif page.url contains '03-expressions' %}
+        <a href="{{ '/docs/ja/02-combinators.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ2 – コンビネータ</a>
+        <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ4 – 実行時の動作 →</a>
+      {% elsif page.url contains '04-runtime' %}
+        <a href="{{ '/docs/ja/03-expressions.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ3 – 式と再帰</a>
+        <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ5 – 解析位置 →</a>
+      {% elsif page.url contains '05-positions' %}
+        <a href="{{ '/docs/ja/04-runtime.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ4 – 実行時の動作</a>
+        <a href="{{ '/docs/ja/06-template-strings.html' | relative_url }}" style="font-weight: 600;">次へ：ステップ6 – テンプレート文字列 →</a>
+      {% elsif page.url contains '06-template-strings' %}
+        <a href="{{ '/docs/ja/05-positions.html' | relative_url }}" style="font-weight: 600;">← 前へ：ステップ5 – 解析位置</a>
+        <div></div>
+      {% endif %}
+    </nav>
+  </main>
+
+  <footer style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 2px solid var(--border-color); color: #6a737d;">
+    <p style="font-size: 0.85rem; margin-bottom: 1.5rem; color: #959da5;">
+      ⚠️ このドキュメントは主にAIによって生成されており、不正確な情報が含まれている可能性があります。疑わしい場合は、ソースコードを確認してください。
+    </p>
+    <p>
+      <a href="https://github.com/{{ site.repository }}" target="_blank">{{ site.title }}</a> is maintained by 
+      <a href="https://github.com/{{ site.repository | split: '/' | first }}" target="_blank">
+        {{ site.repository | split: '/' | first }}
+      </a>
+    </p>
+    <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+      Built with ❤️ using Jekyll and GitHub Pages
+    </p>
+  </footer>
+</body>
+</html>

@@ -13,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Tests for examples from the template strings tutorial (docs/en/06-template-strings.md)
+ * Tests for examples from the template strings tutorial (docs/en/06-template-strings.md and docs/ja/06-template-strings.md)
  */
 class TemplateStringTutorialTest {
 
