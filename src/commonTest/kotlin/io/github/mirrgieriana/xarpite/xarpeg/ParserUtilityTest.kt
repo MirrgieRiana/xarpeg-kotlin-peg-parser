@@ -33,8 +33,8 @@ class ParserUtilityTest {
 
         val result = parser.parseAllOrThrow("bar")
 
-        check(result.value == "bar")
-        check(result.start == 0)
-        check(result.end == 3)
+        assertEquals("bar", result.value)
+        assertEquals(0, result.start)
+        assertEquals(3, result.end)
     }
 }
