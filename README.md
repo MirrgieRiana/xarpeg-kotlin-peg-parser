@@ -108,6 +108,7 @@ Interactive browser-based parser that demonstrates:
 | **Optional** | `.optional` | Try to match; rewind on failure |
 | **Transform** | `.map { ... }` | Convert parsed value to another type |
 | **Position** | `.mapEx { ctx, result -> ... }` | Access context and position info |
+| **Position** | `.result` | Get full `ParseResult<T>` with value and positions |
 | **Lookahead** | `!parser` | Succeed if parser fails (zero width) |
 | **Naming** | `parser named "name"` | Assign name for error messages |
 | **Recursion** | `ref { parser }` | Forward reference for recursive grammars |
