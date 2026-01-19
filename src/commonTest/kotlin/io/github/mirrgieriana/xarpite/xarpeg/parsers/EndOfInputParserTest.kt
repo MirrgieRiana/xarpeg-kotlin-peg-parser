@@ -78,11 +78,11 @@ class EndOfInputParserTest {
         val parser = +'a' * (+'b').optional * endOfInput
         val result1 = parser.parseAllOrThrow("ab")
         assertEquals('a', result1.a)
-        assertEquals('b', result1.b.a)
+        assertEquals('b', result1.b)
 
         val result2 = parser.parseAllOrThrow("a")
         assertEquals('a', result2.a)
-        assertNull(result2.b.a)
+        assertNull(result2.b)
     }
 
     @Test
