@@ -1,6 +1,7 @@
 package io.github.mirrgieriana.xarpite.xarpeg
 
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.mapEx
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.result
 import io.github.mirrgieriana.xarpite.xarpeg.parsers.unaryPlus
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -24,5 +25,16 @@ class ParserUtilityTest {
         }
 
         assertEquals("foo@0-3", parser.parseAllOrThrow("foo"))
+    }
+
+    @Test
+    fun resultExtensionReturnsParseResult() {
+        val parser = (+"bar").result
+
+        val result = parser.parseAllOrThrow("bar")
+
+        check(result.value == "bar")
+        check(result.start == 0)
+        check(result.end == 3)
     }
 }
