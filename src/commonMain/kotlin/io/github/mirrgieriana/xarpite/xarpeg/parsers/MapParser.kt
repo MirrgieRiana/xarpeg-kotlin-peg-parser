@@ -13,3 +13,5 @@ infix fun <I : Any, O : Any> Parser<I>.mapEx(function: (ParseContext, ParseResul
     val result = context.parseOrNull(this, start) ?: return@Parser null
     ParseResult(function(context, result), result.start, result.end)
 }
+
+val <T : Any> Parser<T>.result get() = this.mapEx { _, result -> result }

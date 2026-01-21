@@ -54,6 +54,27 @@ fun main() {
 
 **Note:** `+Regex(...)` returns `Parser<MatchResult>`, so access the string with `result.value.value`.
 
+## Getting the Full ParseResult
+
+When you need the complete `ParseResult` object (including value, start, and end positions), use the `.result` extension:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val word = +"hello"
+val wordWithResult = word.result
+
+fun main() {
+    val result = wordWithResult.parseAllOrThrow("hello")
+    check(result.value == "hello")
+    check(result.start == 0)
+    check(result.end == 5)
+}
+```
+
+The `.result` extension transforms `Parser<T>` into `Parser<ParseResult<T>>`, giving you direct access to all position information without needing to use `mapEx`.
+
 ## Extracting Matched Text
 
 Get the original matched substring using the `text()` extension:
@@ -179,6 +200,7 @@ fun main() {
 - **`ParseResult`** includes `value`, `start`, and `end`
 - **`map`** transforms values, keeping types simple
 - **`mapEx`** accesses context and position information
+- **`.result`** returns full `ParseResult<T>` for direct access to all position data
 - **`.text(ctx)`** extracts the matched substring
 - **Line/column calculation** requires counting newlines
 - **Position helpers** keep grammar code clean

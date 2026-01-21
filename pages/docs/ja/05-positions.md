@@ -54,6 +54,27 @@ fun main() {
 
 **注意：** `+Regex(...)`は`Parser<MatchResult>`を返すため、`result.value.value`で文字列にアクセスします。
 
+## 完全なParseResultの取得
+
+完全な`ParseResult`オブジェクト（値、開始位置、終了位置を含む）が必要な場合は、`.result`拡張を使用します：
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val word = +"hello"
+val wordWithResult = word.result
+
+fun main() {
+    val result = wordWithResult.parseAllOrThrow("hello")
+    check(result.value == "hello")
+    check(result.start == 0)
+    check(result.end == 5)
+}
+```
+
+`.result`拡張は`Parser<T>`を`Parser<ParseResult<T>>`に変換し、`mapEx`を使用せずにすべての位置情報に直接アクセスできるようにします。
+
 ## マッチしたテキストの抽出
 
 `text()`拡張を使用して元のマッチした部分文字列を取得します：
@@ -179,6 +200,7 @@ fun main() {
 - **`ParseResult`** `value`、`start`、`end`を含む
 - **`map`** 値を変換し、型をシンプルに保つ
 - **`mapEx`** コンテキストと位置情報にアクセス
+- **`.result`** すべての位置データに直接アクセスするための完全な`ParseResult<T>`を返す
 - **`.text(ctx)`** マッチした部分文字列を抽出
 - **行/列の計算** 改行のカウントが必要
 - **位置ヘルパー** 文法コードをクリーンに保つ
