@@ -1,14 +1,13 @@
-
 import build_logic.getTupleParserSrc
 import build_logic.getTupleSrc
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    id("maven-publish")
     alias(libs.plugins.dokka)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktlint)
     id("build-logic")
+    `maven-publish`
 }
 
 group = libs.versions.xarpeg.group.get()
