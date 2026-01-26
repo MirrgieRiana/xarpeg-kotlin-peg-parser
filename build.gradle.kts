@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.ktlint)
     id("build-logic")
     `maven-publish`
+    signing
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 group = libs.versions.xarpeg.group.get()
@@ -70,10 +72,58 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 publishing {
+    publications.withType<MavenPublication>().configureEach {
+        pom {
+            val ownerName = providers.gradleProperty("ownerName").get()
+            val repositoryName = providers.gradleProperty("repositoryName").get()
+            val repositoryFullName = "$ownerName/$repositoryName"
+
+            name = libs.versions.xarpeg.name.get()
+            description = "Lightweight PEG-style parser combinators for Kotlin Multiplatform"
+            url = "https://github.com/$repositoryFullName"
+            licenses {
+                license {
+                    name = "MIT License"
+                    url = "http://www.opensource.org/licenses/mit-license.php"
+                }
+            }
+            developers {
+                developer {
+                    id = providers.gradleProperty("developer").get()
+                    name = providers.gradleProperty("developerMavenId").get()
+                    url = "https://github.com/$ownerName"
+                }
+            }
+            scm {
+                connection = "scm:git:https://github.com/$repositoryFullName.git"
+                developerConnection = "scm:git:ssh://github.com:$repositoryFullName.git"
+                url = "https://github.com/$repositoryFullName"
+            }
+        }
+    }
     repositories {
         maven {
             name = "local"
             url = uri(layout.buildDirectory.dir("maven/maven"))
+        }
+    }
+}
+
+signing {
+    isRequired = true
+
+    val signingKey = providers.gradleProperty("signingKey").orNull
+    val signingPassword = providers.gradleProperty("signingPassword").orNull
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
+    sign(publishing.publications)
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
         }
     }
 }
