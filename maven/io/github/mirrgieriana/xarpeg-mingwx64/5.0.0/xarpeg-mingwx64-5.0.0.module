@@ -1,0 +1,73 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg/5.0.0/xarpeg-5.0.0.module",
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg",
+    "version": "5.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-mingwX64Main-5.0.0.klib",
+          "url": "xarpeg-mingwx64-5.0.0.klib",
+          "size": 202343,
+          "sha512": "9790ff7da5c09d2841ac82b3b36e9c0d75703f25366bf6dc211861c14a799a68bdad77e72a77e848bc47f5f16c8671ccf1888ba38cb08ee6632e033d9aa198c2",
+          "sha256": "d90283a35d7b62f78fcc57cde08198f3d8593f8a805f50a8c3fa8c9469bd35b9",
+          "sha1": "3b310697272a56b524cd2de67db1ae24a1daf6c2",
+          "md5": "12a7ad61eae54ac1ff595cefee381f12"
+        }
+      ]
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "xarpeg-mingwx64-5.0.0-sources.jar",
+          "url": "xarpeg-mingwx64-5.0.0-sources.jar",
+          "size": 19145,
+          "sha512": "5be88890f548e647ead35b1b3f65100e212b49b47105ea18ca96c49c826d7c920f81e7e7f9af0c3d0cbc2430b050d758e0d0b736074f211c47f4f53cce6096d2",
+          "sha256": "f6745cc1c1b1b61d5e32dfa5cdfeee967eb451cc11fb824d9fb3245331e154c9",
+          "sha1": "b4a6d89c1a9dc825c5bc15ac3198d37b4073e2fc",
+          "md5": "b194fa6cf86b34f6326593bdb342ad2d"
+        }
+      ]
+    }
+  ]
+}

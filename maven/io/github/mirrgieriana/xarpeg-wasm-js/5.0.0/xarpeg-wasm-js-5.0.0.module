@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg/5.0.0/xarpeg-5.0.0.module",
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg",
+    "version": "5.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-wasm-js-5.0.0.klib",
+          "url": "xarpeg-wasm-js-5.0.0.klib",
+          "size": 202493,
+          "sha512": "bfb5ce0baf84d69d44113c4d1d815de691084f01c077290ce0fba2ba32f6a03b44be6330068919b857025cd82d344b37cd4433fb54381712fc0b93a8e8269d10",
+          "sha256": "c25cf4ff4402a6e52a02e67cf66676548717051db208947521c5e54abd06dbbb",
+          "sha1": "08143bd7877049f50fb38636d8b9990d8cfc3037",
+          "md5": "a6a5b14d4570e82188de2c3628790058"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-wasm-js-5.0.0.klib",
+          "url": "xarpeg-wasm-js-5.0.0.klib",
+          "size": 202493,
+          "sha512": "bfb5ce0baf84d69d44113c4d1d815de691084f01c077290ce0fba2ba32f6a03b44be6330068919b857025cd82d344b37cd4433fb54381712fc0b93a8e8269d10",
+          "sha256": "c25cf4ff4402a6e52a02e67cf66676548717051db208947521c5e54abd06dbbb",
+          "sha1": "08143bd7877049f50fb38636d8b9990d8cfc3037",
+          "md5": "a6a5b14d4570e82188de2c3628790058"
+        }
+      ]
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "files": [
+        {
+          "name": "xarpeg-wasm-js-5.0.0-sources.jar",
+          "url": "xarpeg-wasm-js-5.0.0-sources.jar",
+          "size": 19146,
+          "sha512": "866ad1d897d57ad1ed832f9a2a4e5d4e564769cab4a21b3650b556ddede64e92337a714d608035f1ee428012c654c9ab5867cc9e2a7e1cdbeac89c57d0daa500",
+          "sha256": "bd2d122a7a43b97143e74c3b18bb894065da3de611da5df196a56fc15be1391a",
+          "sha1": "53bda17aeacba9fd36bcd6e8d535c8bfa23f5246",
+          "md5": "1f4053cfbf1f1ed73f6a2f532ac934c8"
+        }
+      ]
+    }
+  ]
+}

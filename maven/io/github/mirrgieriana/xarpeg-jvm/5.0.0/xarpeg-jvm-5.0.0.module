@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg/5.0.0/xarpeg-5.0.0.module",
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg",
+    "version": "5.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-jvm-5.0.0.jar",
+          "url": "xarpeg-jvm-5.0.0.jar",
+          "size": 134811,
+          "sha512": "adf537ea34bcc27f79712ce24be2f39282769c00c5b9f695874ca562f804a70bec1bd6b7754e089eda850134d343359603d1d8eb9afbdaf3f187b3b4f9cba9ce",
+          "sha256": "5e040fe431019236ff2a3613d20a94b2a730ccf430b7bc6801aae38a5cd3280d",
+          "sha1": "2cf54989a9ff84e1fef4d302da5626a8155d803d",
+          "md5": "cf3d9edf6ba174c7057ff1e874b5398d"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-jvm-5.0.0.jar",
+          "url": "xarpeg-jvm-5.0.0.jar",
+          "size": 134811,
+          "sha512": "adf537ea34bcc27f79712ce24be2f39282769c00c5b9f695874ca562f804a70bec1bd6b7754e089eda850134d343359603d1d8eb9afbdaf3f187b3b4f9cba9ce",
+          "sha256": "5e040fe431019236ff2a3613d20a94b2a730ccf430b7bc6801aae38a5cd3280d",
+          "sha1": "2cf54989a9ff84e1fef4d302da5626a8155d803d",
+          "md5": "cf3d9edf6ba174c7057ff1e874b5398d"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "xarpeg-jvm-5.0.0-sources.jar",
+          "url": "xarpeg-jvm-5.0.0-sources.jar",
+          "size": 19110,
+          "sha512": "1c98c69b94d9137a29c41c8a72b827d775321f095a4a45c20a9f575d38098d45655d56faba1a627833319a334d727740db6c385fb6cc9862a50b49f4ede6c823",
+          "sha256": "f37ec4f37d0591d48c2887da165f899698f45ac27aa81f1305c7ef7bf8f27fb1",
+          "sha1": "39592ac2d04b4175ba89f6a59cc64073d11a0bfa",
+          "md5": "dbfce1b3d1e7cbed4ea8fc3fd37c1b5d"
+        }
+      ]
+    }
+  ]
+}

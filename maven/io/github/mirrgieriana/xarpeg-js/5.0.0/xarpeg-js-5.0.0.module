@@ -1,0 +1,116 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg/5.0.0/xarpeg-5.0.0.module",
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg",
+    "version": "5.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-dom-api-compat",
+          "version": {
+            "requires": "2.2.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-js-5.0.0.klib",
+          "url": "xarpeg-js-5.0.0.klib",
+          "size": 202501,
+          "sha512": "dbef12f31fff469604dabcafeaa976f0afc596ee523eb97b512131c98e32944906e231292a65dd8aa73ee5040c93e979f0e6e0633e942d70ca4c840a1eb95bbe",
+          "sha256": "bdb32afac3d1f320553a42a2588e4cddc573a38a30662e35456ed8bf361e74a0",
+          "sha1": "c655d6d41b451d81789bad636e0c746e74a039cc",
+          "md5": "8ddf807408cdbf57b5a1e1091d722be0"
+        }
+      ]
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-dom-api-compat",
+          "version": {
+            "requires": "2.2.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-js-5.0.0.klib",
+          "url": "xarpeg-js-5.0.0.klib",
+          "size": 202501,
+          "sha512": "dbef12f31fff469604dabcafeaa976f0afc596ee523eb97b512131c98e32944906e231292a65dd8aa73ee5040c93e979f0e6e0633e942d70ca4c840a1eb95bbe",
+          "sha256": "bdb32afac3d1f320553a42a2588e4cddc573a38a30662e35456ed8bf361e74a0",
+          "sha1": "c655d6d41b451d81789bad636e0c746e74a039cc",
+          "md5": "8ddf807408cdbf57b5a1e1091d722be0"
+        }
+      ]
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "files": [
+        {
+          "name": "xarpeg-js-5.0.0-sources.jar",
+          "url": "xarpeg-js-5.0.0-sources.jar",
+          "size": 19098,
+          "sha512": "474e1a7f556f922a1dea4fb779300f1b143b4b1a4f394a47b38d4fb40c3067ee4c3142e2bef209906133609f34633c907f7a50b0b2a34f933bb1eedc6c8a1f1a",
+          "sha256": "d2eccf35cdd9a23d41e899129e28aefe8491e3bf687ebd1c430b4d93740487ce",
+          "sha1": "af18fd73327908734f0ce3fcc236db059d42a672",
+          "md5": "2df4921375e25ddce3d5326f3f302137"
+        }
+      ]
+    }
+  ]
+}
