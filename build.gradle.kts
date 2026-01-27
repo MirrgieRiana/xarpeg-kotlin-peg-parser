@@ -71,6 +71,11 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     outputColorName.set("RED")
 }
 
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    archiveClassifier = "javadoc"
+    from(tasks.dokkaHtml)
+}
+
 publishing {
     publications.withType<MavenPublication>().configureEach {
         pom {
@@ -100,6 +105,7 @@ publishing {
                 url = "https://github.com/$repositoryFullName"
             }
         }
+        artifact(javadocJar)
     }
     repositories {
         maven {
