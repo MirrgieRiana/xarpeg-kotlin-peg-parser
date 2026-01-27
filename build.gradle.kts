@@ -322,13 +322,15 @@ val bundleRelease = tasks.register<Sync>("bundleRelease") {
         val indexFile = outputDirectory.get().file("index.md").asFile
 
         if (readmeFile.exists()) {
-            indexFile.writeText("""
+            indexFile.writeText(
+                """
                 ---
                 layout: default
                 title: Home
                 ---
-                
-            """.trimIndent() + readmeFile.readText())
+
+                """.trimIndent() + readmeFile.readText()
+            )
         }
     }
 }
