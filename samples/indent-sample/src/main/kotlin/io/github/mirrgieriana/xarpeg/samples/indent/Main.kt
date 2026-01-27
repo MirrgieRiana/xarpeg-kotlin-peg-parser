@@ -2,6 +2,7 @@ package io.github.mirrgieriana.xarpeg.samples.indent
 
 import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
 import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -127,7 +128,7 @@ object IndentParser {
         // Empty block case - if next line doesn't have greater indent
         if (firstIndent <= context.currentIndent) {
             // Return empty list for empty block
-            return@Parser io.github.mirrgieriana.xarpeg.ParseResult(emptyList(), start, nlResult.end)
+            return@Parser ParseResult(emptyList(), start, nlResult.end)
         }
 
         // Push the new indent level
@@ -167,7 +168,7 @@ object IndentParser {
             }
 
             context.popIndent()
-            io.github.mirrgieriana.xarpeg.ParseResult(nodes, start, pos)
+            ParseResult(nodes, start, pos)
         } catch (e: Exception) {
             context.popIndent()
             throw e
