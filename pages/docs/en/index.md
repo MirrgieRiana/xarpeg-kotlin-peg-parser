@@ -110,12 +110,12 @@ Interactive browser-based parser demonstrating real-time parsing and evaluation.
 
 ### API Documentation
 - **KDoc in IDE** - Use code completion for inline documentation
-- **[Parser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Parser.kt)** - Core interface and helpers
-- **[parsers package](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers)** - Combinator implementations
+- **[Parser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpeg/Parser.kt)** - Core interface and helpers
+- **[parsers package](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpeg/parsers)** - Combinator implementations
 
 ### Tests
-- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt)** - Comprehensive behavior examples
-- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ErrorContextTest.kt)** - Error tracking examples
+- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior examples
+- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
 
 ### Real-World Usage
 - **[Xarpite](https://github.com/MirrgieRiana/Xarpite)** - Production application using Xarpeg for complex grammar parsing

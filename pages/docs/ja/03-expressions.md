@@ -21,8 +21,8 @@ Xarpegは再帰のための`ref { }`と、演算子の優先順位のための`l
 以下は、再帰と優先順位を持つ完全な算術式パーサです：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -82,8 +82,8 @@ fun main() {
 より多くの演算子のためにパターンを拡張します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -117,8 +117,8 @@ fun main() {
 前処理で前置/後置演算子を処理します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"

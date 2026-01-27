@@ -12,8 +12,8 @@ title: ステップ1 – クイックスタート
 `count=42`のようなパターンにマッチするシンプルなキーバリューパーサを構築してみましょう：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -48,8 +48,8 @@ fun main() {
 `parseAllOrThrow`は、入力全体が消費されることを要求します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"

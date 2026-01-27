@@ -3,7 +3,7 @@ package build_logic
 fun getTupleSrc(maxElementCount: Int): String {
     val typeParams = (0 until maxElementCount).map { index -> ('A'.code + index).toChar().toString() }
     return buildString {
-        appendLine("package io.github.mirrgieriana.xarpite.xarpeg")
+        appendLine("package io.github.mirrgieriana.xarpeg")
         appendLine()
         appendLine("object Tuple0")
         (1..maxElementCount).forEach { n ->
@@ -18,13 +18,13 @@ fun getTupleSrc(maxElementCount: Int): String {
 fun getTupleParserSrc(maxElementCount: Int): String {
     val typeParams = (0 until maxElementCount).map { index -> ('A'.code + index).toChar().toString() }
     return buildString {
-        appendLine("package io.github.mirrgieriana.xarpite.xarpeg.parsers")
+        appendLine("package io.github.mirrgieriana.xarpeg.parsers")
         appendLine()
-        appendLine("import io.github.mirrgieriana.xarpite.xarpeg.ParseResult")
-        appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Parser")
-        appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Tuple0")
+        appendLine("import io.github.mirrgieriana.xarpeg.ParseResult")
+        appendLine("import io.github.mirrgieriana.xarpeg.Parser")
+        appendLine("import io.github.mirrgieriana.xarpeg.Tuple0")
         (1..maxElementCount).forEach { n ->
-            appendLine("import io.github.mirrgieriana.xarpite.xarpeg.Tuple$n")
+            appendLine("import io.github.mirrgieriana.xarpeg.Tuple$n")
         }
         appendLine("import kotlin.jvm.JvmName")
         appendLine()

@@ -186,8 +186,8 @@ tasks.register("generateTuples") {
     description = "Generates tuple source files"
     group = "build"
 
-    val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg").asFile
-    val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers").asFile
+    val outputDir = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpeg").asFile
+    val outputDirParsers = layout.projectDirectory.dir("src/generated/kotlin/io/github/mirrgieriana/xarpeg/parsers").asFile
 
     val generatedTuplesKt = outputDir.resolve("Tuples.kt")
     val generatedTupleParserKt = outputDirParsers.resolve("TupleParser.kt")

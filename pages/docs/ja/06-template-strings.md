@@ -22,8 +22,8 @@ PEGスタイルのパーサが、トークン化なしで埋め込み式を含�
 以下は、埋め込み算術式を持つテンプレート文字列のパーサです：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 sealed class TemplateElement
 data class StringPart(val text: String) : TemplateElement()
@@ -104,8 +104,8 @@ fun main() {
 式内の文字列を処理するためにパターンを拡張します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 sealed class TemplateElement
 data class StringPart(val text: String) : TemplateElement()
@@ -196,7 +196,7 @@ Xarpegチュートリアルを完了しました！以下の方法を習得し�
 
 - **[例を探る](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - 完全なアプリケーションを学ぶ
 - **[テストを読む](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonTest/kotlin)** - すべての機能が動作しているのを見る
-- **[ソースを閲覧](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg)** - 実装の詳細を理解
+- **[ソースを閲覧](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpeg)** - 実装の詳細を理解
 - **[何かを作る](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - 自分のパーサを作成！
 
 → **[チュートリアルインデックスに戻る](index.html)**

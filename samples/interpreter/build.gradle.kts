@@ -21,7 +21,7 @@ group = "mirrg.xarpite.samples"
 version = libs.versions.xarpeg.get()
 
 application {
-    mainClass.set("io.github.mirrgieriana.xarpite.xarpeg.samples.interpreter.MainKt")
+    mainClass.set("io.github.mirrgieriana.xarpeg.samples.interpreter.MainKt")
 }
 
 dependencies {

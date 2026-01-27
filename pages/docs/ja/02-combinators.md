@@ -14,8 +14,8 @@ title: ステップ2 – コンビネータ
 順番に代替案を試します。最初のマッチが勝ちます：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val keyword = (+"if" + +"while" + +"for") named "keyword"
 
@@ -30,8 +30,8 @@ fun main() {
 `optional`はマッチを試みますが、失敗時には巻き戻します。`Tuple1<T?>`を返します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val sign = (+'+' map { '+' }) + (+'-' map { '-' })
 val signOpt = sign.optional map { it.a ?: '+' }
@@ -53,8 +53,8 @@ fun main() {
 複数のオプショナルパーサを`*`で組み合わせる場合、タプルは自動的にフラット化され、nullable値を直接含むようになります：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val optA = (+'a').optional
 val optB = (+'b').optional
@@ -80,8 +80,8 @@ fun main() {
 複数のマッチをリストに収集します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
     matches.joinToString("")
@@ -107,8 +107,8 @@ fun main() {
 タプルの制限なしに、同じ型の複数の異なるパーサを順番に解析する必要がある場合は、`serial`を使用します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val article = +"the" + +"a"
 val adjective = +"quick" + +"lazy"
@@ -134,8 +134,8 @@ fun main() {
 `*`によるシーケンスはタプルを返します。不要な値をドロップするには`-parser`を使用します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 // ドロップなし：Tuple3<Char, MatchResult, Char>
 val word = +Regex("[a-z]+") named "word"
@@ -152,8 +152,8 @@ fun main() {
 `map`でタプルを分解して結果を変換します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val wordPart = +Regex("[a-z]+") named "word"
 val numPart = +Regex("[0-9]+") named "number"
@@ -171,8 +171,8 @@ fun main() {
 `startOfInput`と`endOfInput`は、入力を消費せずに位置境界でマッチします：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val word = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -190,8 +190,8 @@ fun main() {
 より良いエラーメッセージのために名前を割り当てます：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val digit = +Regex("[0-9]") named "digit"
 val letter = +Regex("[a-z]") named "letter"
@@ -211,8 +211,8 @@ fun main() {
 名前付き複合パーサは、構成要素パーサをエラー提案から隠します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val parserA = +'a' named "letter_a"

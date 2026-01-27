@@ -14,8 +14,8 @@ title: ステップ4 – 実行時の動作
 入力全体が消費されることを要求します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
@@ -38,8 +38,8 @@ fun main() {
 `ParseContext`は、ユーザーフレンドリーなエラーメッセージを構築するために解析の失敗を追跡します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val letter = +Regex("[a-z]") map { it.value } named "letter"
 val digit = +Regex("[0-9]") map { it.value } named "digit"
@@ -75,8 +75,8 @@ fun main() {
 ### 例外でのエラーコンテキストの使用
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val operator = (+'*' + +'+') named "operator"
@@ -100,8 +100,8 @@ fun main() {
 `ParseContext`はデフォルトでメモ化を使用して、バックトラッキングを予測可能にします：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -118,8 +118,8 @@ fun main() {
 文法が大量のバックトラックをしない場合、メモリ使用量を減らすためにメモ化を無効化します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -137,8 +137,8 @@ fun main() {
 `map`関数が例外をスローした場合、それは伝播して解析を中止します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val divisionByZero = +Regex("[0-9]+") map { value ->
     val n = value.value.toInt()
@@ -161,8 +161,8 @@ fun main() {
 解析結果からエラーコンテキストにアクセス：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") named "word"
 
@@ -181,8 +181,8 @@ fun main() {
 `optional`と`zeroOrMore`が失敗時にどのように巻き戻すかを確認：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") named "digits"
 
@@ -196,8 +196,8 @@ fun main() {
 ### リファレンスとしてテストを使用
 
 観測された動作についてはテストスイートを確認：
-- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
-- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt)** - 包括的な動作テスト
+- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
+- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作テスト
 
 ## 重要なポイント
 
