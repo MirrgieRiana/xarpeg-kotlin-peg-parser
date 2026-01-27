@@ -1,5 +1,5 @@
 [versions]
-xarpeg = "5.0.0"
+xarpeg = "latest"
 
 [libraries]
 xarpeg = { group = "io.github.mirrgieriana", name = "xarpeg", version.ref = "xarpeg" }
