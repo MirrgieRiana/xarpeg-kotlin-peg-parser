@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
+    implementation("io.github.mirrgieriana:xarpeg-kotlinMultiplatform:<latest-version>")
 }
 ```
 
