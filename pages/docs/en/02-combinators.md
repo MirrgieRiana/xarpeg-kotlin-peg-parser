@@ -48,6 +48,33 @@ fun main() {
 
 Use `it.a` to access the optional value, or destructure with `map { (value) -> ... }`.
 
+#### Combining Optionals with Tuples
+
+When combining multiple optional parsers using `*`, tuples are automatically flattened to contain nullable values directly:
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val optA = (+'a').optional
+val optB = (+'b').optional
+val combined = optA * optB
+
+fun main() {
+    // Result type is Tuple2<Char?, Char?> (flattened)
+    // NOT Tuple2<Tuple1<Char?>, Tuple1<Char?>> (nested)
+    val result1 = combined.parseAllOrThrow("ab")
+    check(result1.a == 'a')  // Direct access to nullable Char
+    check(result1.b == 'b')
+    
+    val result2 = combined.parseAllOrThrow("a")
+    check(result2.a == 'a')
+    check(result2.b == null)  // Missing optional is null
+}
+```
+
+This flattening makes optional combinations more ergonomic—you work with nullable types directly instead of nested tuples.
+
 ### Repetition
 
 Collect multiple matches into a list:
