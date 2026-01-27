@@ -155,7 +155,6 @@ Try the samples locally to see Xarpeg in action:
 
 **Minimal JVM Sample:**
 ```bash
-./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
 cd samples/minimal-jvm-sample && ./gradlew run
 ```
 
@@ -180,7 +179,7 @@ Add Xarpeg to your project using Gradle. Replace `<latest-version>` with the ver
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {
@@ -192,7 +191,7 @@ dependencies {
 
 ```groovy
 repositories {
-    maven { url "https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven" }
+    mavenCentral()
 }
 
 dependencies {

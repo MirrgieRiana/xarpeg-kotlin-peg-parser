@@ -19,7 +19,7 @@ Kotlinで強力なパーサを構築する方法を学びましょう。この�
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {

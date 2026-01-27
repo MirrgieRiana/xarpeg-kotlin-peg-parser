@@ -19,7 +19,7 @@ Add Xarpeg to your `build.gradle.kts`:
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {

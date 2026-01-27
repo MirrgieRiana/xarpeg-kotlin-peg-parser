@@ -12,9 +12,7 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
 }
 
 // ktlint configuration
