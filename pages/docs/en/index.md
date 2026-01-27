@@ -19,13 +19,15 @@ Add Xarpeg to your `build.gradle.kts`:
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
+    implementation("io.github.mirrgieriana:xarpeg:<latest-version>")
 }
 ```
+
+The `xarpeg` artifact uses Gradle module metadata to automatically resolve to the correct platform-specific variant (JVM, JS, Native, etc.) based on your project configuration.
 
 Find the latest version in [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
 

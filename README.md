@@ -155,7 +155,6 @@ Try the samples locally to see Xarpeg in action:
 
 **Minimal JVM Sample:**
 ```bash
-./gradlew publishKotlinMultiplatformPublicationToMavenLocal publishJvmPublicationToMavenLocal
 cd samples/minimal-jvm-sample && ./gradlew run
 ```
 
@@ -176,29 +175,17 @@ cd samples/interpreter && ./gradlew run --args='-e "2*(3+4)"'
 
 Add Xarpeg to your project using Gradle. Replace `<latest-version>` with the version from [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
 
-### Gradle (Kotlin DSL)
-
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
+    implementation("io.github.mirrgieriana:xarpeg:<latest-version>")
 }
 ```
 
-### Gradle (Groovy)
-
-```groovy
-repositories {
-    maven { url "https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven" }
-}
-
-dependencies {
-    implementation "io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>"
-}
-```
+The `xarpeg` artifact uses Gradle module metadata to automatically resolve to the correct platform-specific variant (JVM, JS, Native, etc.) based on your project configuration.
 
 > **Note:** The API may evolve as we refine the DSL. Pin a specific version for production use.
 

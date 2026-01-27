@@ -19,13 +19,15 @@ Kotlinで強力なパーサを構築する方法を学びましょう。この�
 
 ```kotlin
 repositories {
-    maven { url = uri("https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/maven/maven") }
+    mavenCentral()
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana.xarpite:xarpeg-kotlin-peg-parser:<latest-version>")
+    implementation("io.github.mirrgieriana:xarpeg:<latest-version>")
 }
 ```
+
+`xarpeg`アーティファクトは、Gradleモジュールメタデータを使用して、プロジェクト設定に基づいて正しいプラットフォーム固有のバリアント（JVM、JS、Nativeなど）に自動的に解決されます。
 
 最新バージョンは[Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases)で確認できます。
 
