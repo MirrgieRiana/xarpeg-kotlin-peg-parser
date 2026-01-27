@@ -70,11 +70,11 @@ class StartOfInputParserTest {
     fun startOfInputWithOptional() {
         val parser = startOfInput * (+'a').optional * +'b'
         val result1 = parser.parseAllOrThrow("ab")
-        assertEquals('a', result1.a.a)
+        assertEquals('a', result1.a)
         assertEquals('b', result1.b)
 
         val result2 = parser.parseAllOrThrow("b")
-        assertNull(result2.a.a)
+        assertNull(result2.a)
         assertEquals('b', result2.b)
     }
 }

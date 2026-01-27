@@ -48,6 +48,33 @@ fun main() {
 
 オプショナル値にアクセスするには`it.a`を使用するか、`map { (value) -> ... }`で分解します。
 
+#### オプショナルとタプルの組み合わせ
+
+複数のオプショナルパーサを`*`で組み合わせる場合、タプルは自動的にフラット化され、nullable値を直接含むようになります：
+
+```kotlin
+import io.github.mirrgieriana.xarpite.xarpeg.*
+import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+
+val optA = (+'a').optional
+val optB = (+'b').optional
+val combined = optA * optB
+
+fun main() {
+    // 結果の型は Tuple2<Char?, Char?> （フラット化）
+    // Tuple2<Tuple1<Char?>, Tuple1<Char?>> （ネスト）ではない
+    val result1 = combined.parseAllOrThrow("ab")
+    check(result1.a == 'a')  // nullable Charに直接アクセス
+    check(result1.b == 'b')
+    
+    val result2 = combined.parseAllOrThrow("a")
+    check(result2.a == 'a')
+    check(result2.b == null)  // 欠落したoptionalはnull
+}
+```
+
+このフラット化により、オプショナルの組み合わせがより使いやすくなります—ネストされたタプルではなく、nullable型を直接扱えます。
+
 ### 繰り返し
 
 複数のマッチをリストに収集します：
