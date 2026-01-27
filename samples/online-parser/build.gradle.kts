@@ -42,7 +42,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(libs.xarpeg.kotlinMultiplatform)
+                implementation(libs.xarpeg)
             }
         }
         val jsTest by getting {

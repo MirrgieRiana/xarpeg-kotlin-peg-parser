@@ -175,46 +175,17 @@ cd samples/interpreter && ./gradlew run --args='-e "2*(3+4)"'
 
 Add Xarpeg to your project using Gradle. Replace `<latest-version>` with the version from [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
 
-### Kotlin Multiplatform Projects
-
 ```kotlin
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("io.github.mirrgieriana:xarpeg-kotlinMultiplatform:<latest-version>")
+    implementation("io.github.mirrgieriana:xarpeg:<latest-version>")
 }
 ```
 
-### JVM-Only Projects
-
-```kotlin
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("io.github.mirrgieriana:xarpeg-jvm:<latest-version>")
-}
-```
-
-### JS-Only Projects
-
-```kotlin
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("io.github.mirrgieriana:xarpeg-js:<latest-version>")
-}
-```
-
-### Other Platforms
-
-For other platform-specific artifacts (Native targets, WASM), see the available artifacts at:
-**[Maven Central Repository](https://repo1.maven.org/maven2/io/github/mirrgieriana/)**
+The `xarpeg` artifact uses Gradle module metadata to automatically resolve to the correct platform-specific variant (JVM, JS, Native, etc.) based on your project configuration.
 
 > **Note:** The API may evolve as we refine the DSL. Pin a specific version for production use.
 

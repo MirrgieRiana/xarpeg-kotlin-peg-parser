@@ -23,7 +23,7 @@ application {
 }
 
 dependencies {
-    implementation(libs.xarpeg.jvm)
+    implementation(libs.xarpeg)
     testImplementation(kotlin("test"))
 }
 
