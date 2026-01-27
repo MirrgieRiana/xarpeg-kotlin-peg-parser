@@ -1,11 +1,23 @@
 package io.github.mirrgieriana.xarpeg.internal
 
+/**
+ * Truncates a string to a maximum length, appending an ellipsis if truncated.
+ *
+ * @param maxLength The maximum length of the resulting string (including ellipsis).
+ * @param ellipsis The string to append when truncating.
+ * @return The truncated string.
+ */
 internal fun String.truncate(maxLength: Int, ellipsis: String): String {
     if (maxLength < 0) return ""
     if (this.length <= maxLength) return this
     return this.take(maxLength - ellipsis.length) + ellipsis
 }
 
+/**
+ * Escapes a string for use in double-quoted contexts.
+ *
+ * Converts special characters to their escape sequences and control characters to Unicode escapes.
+ */
 internal fun String.escapeDoubleQuote(): String {
     val sb = StringBuilder()
     this.forEach { char ->
