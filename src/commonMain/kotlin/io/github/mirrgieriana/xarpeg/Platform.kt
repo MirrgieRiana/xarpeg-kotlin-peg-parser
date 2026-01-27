@@ -1,8 +1,8 @@
 package io.github.mirrgieriana.xarpeg
 
 /**
- * Indicates whether the current platform is Kotlin/Native.
+ * 現在のプラットフォームがKotlin/Nativeかどうかを示します。
  *
- * Used internally to optimize parser caching strategies for different platforms.
+ * 異なるプラットフォームに対してパーサーのキャッシュ戦略を最適化するために内部的に使用されます。
  */
 expect val isNative: Boolean

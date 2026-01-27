@@ -9,9 +9,9 @@ import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
 import io.github.mirrgieriana.xarpeg.isNative
 
 /**
- * Parser that matches a literal string.
+ * リテラル文字列をマッチするパーサー。
  *
- * @param string The string to match.
+ * @param string マッチする文字列。
  */
 class StringParser(val string: String) : Parser<String> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<String>? {
@@ -33,45 +33,45 @@ class StringParser(val string: String) : Parser<String> {
 }
 
 /**
- * Converts this string to a parser that matches it literally.
+ * この文字列をリテラルにマッチするパーサーに変換します。
  */
 fun String.toParser(): Parser<String> = if (isNative) StringParser(this) else StringParser.cache.getOrPut(this) { StringParser(this) }
 
 /**
- * Returns a parser that matches this string.
+ * この文字列をマッチするパーサーを返します。
  */
 val String.token: Parser<String> get() = this.toParser()
 
 /**
- * Converts this string to a parser using the unary `+` operator.
+ * 単項`+`演算子を使用してこの文字列をパーサーに変換します。
  *
- * Example: `+"hello"` creates a parser that matches the string "hello".
+ * 例: `+"hello"`は文字列"hello"をマッチするパーサーを作成します。
  */
 operator fun String.unaryPlus(): Parser<String> = this.toParser()
 
 /**
- * Returns a parser that matches this string and captures it as a [Tuple1].
+ * この文字列をマッチし、[Tuple1]としてキャプチャするパーサーを返します。
  */
 val String.capture: Parser<Tuple1<String>> get() = this.toParser().capture
 
 /**
- * Returns a parser that matches this string but discards the result.
+ * この文字列をマッチするが、結果を破棄するパーサーを返します。
  */
 val String.ignore: Parser<Tuple0> get() = this.toParser().ignore
 
 /**
- * Converts this string to a parser that matches it but discards the result.
+ * この文字列をマッチするが、結果を破棄するパーサーに変換します。
  *
- * Example: `-"("` creates a parser that matches '(' without capturing it.
+ * 例: `-"("`は'('をマッチするがキャプチャしないパーサーを作成します。
  */
 operator fun String.unaryMinus(): Parser<Tuple0> = this.toParser().ignore
 
 /**
- * Returns a negative lookahead parser for this string.
+ * この文字列の否定先読みパーサーを返します。
  */
 val String.not: Parser<Tuple0> get() = this.toParser().not
 
 /**
- * Creates a negative lookahead parser for this string using the `!` operator.
+ * `!`演算子を使用してこの文字列の否定先読みパーサーを作成します。
  */
 operator fun String.not(): Parser<Tuple0> = this.toParser().not

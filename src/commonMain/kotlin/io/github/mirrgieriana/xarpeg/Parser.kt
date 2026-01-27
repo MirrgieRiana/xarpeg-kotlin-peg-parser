@@ -5,37 +5,37 @@ import io.github.mirrgieriana.xarpeg.internal.truncate
 import io.github.mirrgieriana.xarpeg.parsers.normalize
 
 /**
- * Core interface for all parsers.
+ * すべてのパーサーの基本インターフェース。
  *
- * A parser attempts to match input at a given position and produces a typed result on success.
+ * パーサーは指定された位置で入力をマッチさせ、成功時に型付きの結果を生成します。
  *
- * @param T The type of value produced by successful parsing.
+ * @param T パース成功時に生成される値の型。
  */
 // fun interfaceにすると1.9.21/jvmで不正なname-getterを持つクラスが生成されてバグる
 interface Parser<out T : Any> {
     /**
-     * Attempts to parse input at the specified position.
+     * 指定された位置で入力のパースを試みます。
      *
-     * @param context The parsing context containing the input string and memoization state.
-     * @param start The starting position in the input string.
-     * @return A [ParseResult] if parsing succeeds, or `null` if it fails.
+     * @param context 入力文字列とメモ化状態を含むパースコンテキスト。
+     * @param start 入力文字列内の開始位置。
+     * @return パース成功時は[ParseResult]、失敗時は`null`。
      */
     fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>?
     
     /**
-     * Optional name for this parser, used in error messages.
+     * このパーサーのオプション名。エラーメッセージで使用されます。
      *
-     * Named parsers appear in parse failure suggestions to help users understand what was expected.
+     * 名前付きパーサーはパース失敗時の提案に表示され、ユーザーが期待される内容を理解するのに役立ちます。
      */
     val name: String? get() = null
 }
 
 /**
- * Creates a custom parser from a lambda function.
+ * ラムダ関数からカスタムパーサーを作成します。
  *
- * @param T The type of value produced by the parser.
- * @param block A function that implements the parsing logic.
- * @return A parser that delegates to the provided block.
+ * @param T パーサーが生成する値の型。
+ * @param block パースロジックを実装する関数。
+ * @return 提供されたブロックに処理を委譲するパーサー。
  */
 inline fun <T : Any> Parser(crossinline block: (context: ParseContext, start: Int) -> ParseResult<T>?): Parser<T> {
     return object : Parser<T> {
@@ -46,89 +46,89 @@ inline fun <T : Any> Parser(crossinline block: (context: ParseContext, start: In
 }
 
 /**
- * Returns the parser's name if available, otherwise its string representation.
+ * パーサーの名前が利用可能な場合はそれを返し、そうでない場合は文字列表現を返します。
  */
 val Parser<*>.nameOrString get() = this.name ?: this.toString()
 
 /**
- * Represents a successful parse result.
+ * パース成功の結果を表します。
  *
- * @param T The type of the parsed value.
- * @param value The parsed value.
- * @param start The starting position of the matched input.
- * @param end The ending position of the matched input (exclusive).
+ * @param T パースされた値の型。
+ * @param value パースされた値。
+ * @param start マッチした入力の開始位置。
+ * @param end マッチした入力の終了位置（排他的）。
  */
 data class ParseResult<out T : Any>(val value: T, val start: Int, val end: Int)
 
 /**
- * Extracts the matched text from the parse result.
+ * パース結果からマッチしたテキストを抽出します。
  *
- * @param context The parsing context containing the source string.
- * @return The substring that was matched, normalized according to the parser's rules.
+ * @param context ソース文字列を含むパースコンテキスト。
+ * @return マッチした部分文字列。パーサーのルールに従って正規化されます。
  */
 fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.start, this.end).normalize()
 
 
 /**
- * Base exception for parsing failures.
+ * パース失敗の基底例外。
  *
- * @param message The error message.
- * @param context The parsing context where the error occurred.
- * @param position The position in the input where parsing failed.
+ * @param message エラーメッセージ。
+ * @param context エラーが発生したパースコンテキスト。
+ * @param position パースが失敗した入力内の位置。
  */
 open class ParseException(message: String, val context: ParseContext, val position: Int) : Exception(message)
 
 /**
- * Exception thrown when the parser fails to match the input.
+ * パーサーが入力とマッチできなかった場合にスローされる例外。
  *
- * @param message The error message.
- * @param context The parsing context where the error occurred.
- * @param position The position in the input where parsing failed.
+ * @param message エラーメッセージ。
+ * @param context エラーが発生したパースコンテキスト。
+ * @param position パースが失敗した入力内の位置。
  */
 class UnmatchedInputParseException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
 
 /**
- * Exception thrown when extra characters remain after successful parsing.
+ * パース成功後に余分な文字が残っている場合にスローされる例外。
  *
- * This occurs when [parseAll] successfully matches a prefix but doesn't consume the entire input.
+ * [parseAll]がプレフィックスのマッチに成功したが、入力全体を消費しなかった場合に発生します。
  *
- * @param message The error message.
- * @param context The parsing context where the error occurred.
- * @param position The position where the extra characters begin.
+ * @param message エラーメッセージ。
+ * @param context エラーが発生したパースコンテキスト。
+ * @param position 余分な文字が始まる位置。
  */
 class ExtraCharactersParseException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
 
 
 /**
- * Parses the entire input string, throwing an exception on failure.
+ * 入力文字列全体をパースし、失敗時に例外をスローします。
  *
- * @param src The input string to parse.
- * @param useMemoization Whether to enable memoization for better backtracking performance. Default is `true`.
- * @return The parsed value.
- * @throws UnmatchedInputParseException if parsing fails.
- * @throws ExtraCharactersParseException if extra characters remain after parsing.
+ * @param src パースする入力文字列。
+ * @param useMemoization バックトラッキングのパフォーマンス向上のためにメモ化を有効にするかどうか。デフォルトは`true`。
+ * @return パースされた値。
+ * @throws UnmatchedInputParseException パースに失敗した場合。
+ * @throws ExtraCharactersParseException パース後に余分な文字が残っている場合。
  */
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
 
 /**
- * Parses the entire input string, returning `null` on failure.
+ * 入力文字列全体をパースし、失敗時に`null`を返します。
  *
- * @param src The input string to parse.
- * @param useMemoization Whether to enable memoization for better backtracking performance. Default is `true`.
- * @return The parsed value, or `null` if parsing fails.
+ * @param src パースする入力文字列。
+ * @param useMemoization バックトラッキングのパフォーマンス向上のためにメモ化を有効にするかどうか。デフォルトは`true`。
+ * @return パースされた値、またはパース失敗時は`null`。
  */
 fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrNull()
 
 /**
- * Parses the entire input string, returning a [Result].
+ * 入力文字列全体をパースし、[Result]を返します。
  *
- * This function ensures that:
- * 1. The parser successfully matches from the beginning of the input
- * 2. The entire input is consumed (no extra characters remain)
+ * この関数は以下を保証します：
+ * 1. パーサーが入力の先頭から正常にマッチすること
+ * 2. 入力全体が消費されること（余分な文字が残らないこと）
  *
- * @param src The input string to parse.
- * @param useMemoization Whether to enable memoization for better backtracking performance. Default is `true`.
- * @return A [Result] containing the parsed value on success, or a [ParseException] on failure.
+ * @param src パースする入力文字列。
+ * @param useMemoization バックトラッキングのパフォーマンス向上のためにメモ化を有効にするかどうか。デフォルトは`true`。
+ * @return 成功時はパースされた値を含む[Result]、失敗時は[ParseException]。
  */
 fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
     val context = ParseContext(src, useMemoization)

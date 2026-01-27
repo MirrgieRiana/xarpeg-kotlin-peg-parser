@@ -1,61 +1,61 @@
 package io.github.mirrgieriana.xarpeg
 
 /**
- * Context for parsing operations.
+ * パース操作のコンテキスト。
  *
- * Maintains parsing state including memoization cache, error tracking, and position information.
+ * メモ化キャッシュ、エラー追跡、位置情報を含むパース状態を管理します。
  *
- * @param src The input string being parsed.
- * @param useMemoization Whether to cache parsing results for better performance with backtracking.
+ * @param src パース対象の入力文字列。
+ * @param useMemoization バックトラッキング時のパフォーマンス向上のためにパース結果をキャッシュするかどうか。
  */
 class ParseContext(val src: String, val useMemoization: Boolean) {
 
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 
     /**
-     * Whether currently inside a named parser.
+     * 現在名前付きパーサーの内部にいるかどうか。
      *
-     * This flag prevents nested named parsers from interfering with error tracking.
+     * このフラグは、ネストされた名前付きパーサーがエラー追跡を妨げるのを防ぎます。
      */
     var isInNamedParser = false
     
     /**
-     * The furthest position where parsing has failed.
+     * パースが失敗した最も遠い位置。
      *
-     * Used to provide meaningful error messages by tracking the deepest point reached in the input.
+     * 入力内で到達した最深点を追跡することで、意味のあるエラーメッセージを提供するために使用されます。
      */
     var errorPosition: Int = 0
     
     /**
-     * Set of parsers that could have matched at [errorPosition].
+     * [errorPosition]でマッチできた可能性のあるパーサーのセット。
      *
-     * Used to generate helpful error messages showing what was expected at the failure point.
+     * 失敗地点で期待されていた内容を示す有用なエラーメッセージを生成するために使用されます。
      */
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
     private val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
     
     /**
-     * Converts a linear position to a (row, column) position.
+     * 線形位置を(行、列)位置に変換します。
      *
-     * @param index The position in the input string.
-     * @return A [MatrixPosition] with row and column numbers (1-indexed).
+     * @param index 入力文字列内の位置。
+     * @return 行番号と列番号を含む[MatrixPosition]（1から始まるインデックス）。
      */
     fun toMatrixPosition(index: Int) = matrixPositionCalculator.toMatrixPosition(index)
     
     /**
-     * The (row, column) position of the parsing error.
+     * パースエラーの(行、列)位置。
      */
     val errorMatrixPosition get() = toMatrixPosition(errorPosition)
 
     /**
-     * Attempts to parse using the given parser at the specified position.
+     * 指定された位置で与えられたパーサーを使用してパースを試みます。
      *
-     * This method handles memoization and error tracking automatically.
+     * このメソッドはメモ化とエラー追跡を自動的に処理します。
      *
-     * @param parser The parser to use.
-     * @param start The starting position in the input.
-     * @return A [ParseResult] if parsing succeeds, or `null` if it fails.
+     * @param parser 使用するパーサー。
+     * @param start 入力内の開始位置。
+     * @return パース成功時は[ParseResult]、失敗時は`null`。
      */
     fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
         val result = if (useMemoization) {
@@ -107,21 +107,21 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
 }
 
 /**
- * Represents a position in the input as (row, column).
+ * 入力内の位置を(行、列)として表します。
  *
- * Both row and column are 1-indexed.
+ * 行と列は両方とも1から始まるインデックスです。
  *
- * @param row The line number (1-indexed).
- * @param column The column number within the line (1-indexed).
+ * @param row 行番号（1から始まるインデックス）。
+ * @param column 行内の列番号（1から始まるインデックス）。
  */
 data class MatrixPosition(val row: Int, val column: Int)
 
 /**
- * Converts linear string positions to (row, column) positions.
+ * 線形文字列位置を(行、列)位置に変換します。
  *
- * Efficiently tracks line breaks to enable quick conversion from string indices to human-readable positions.
+ * 改行を効率的に追跡し、文字列インデックスから人間が読みやすい位置への迅速な変換を可能にします。
  *
- * @param src The input string to analyze.
+ * @param src 解析する入力文字列。
  */
 class MatrixPositionCalculator(private val src: String) {
     private val lineStartIndices = run {
@@ -133,11 +133,11 @@ class MatrixPositionCalculator(private val src: String) {
     }
 
     /**
-     * Converts a linear position to (row, column) format.
+     * 線形位置を(行、列)形式に変換します。
      *
-     * @param index The position in the source string (0-indexed).
-     * @return A [MatrixPosition] with 1-indexed row and column numbers.
-     * @throws IllegalArgumentException if the index is out of range.
+     * @param index ソース文字列内の位置（0から始まるインデックス）。
+     * @return 1から始まるインデックスの行番号と列番号を持つ[MatrixPosition]。
+     * @throws IllegalArgumentException インデックスが範囲外の場合。
      */
     fun toMatrixPosition(index: Int): MatrixPosition {
         require(index in 0..src.length) { "index ($index) is out of range for src of length ${src.length}" }

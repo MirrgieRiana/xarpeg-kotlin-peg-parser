@@ -5,12 +5,12 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Parser that matches parsers sequentially.
+ * パーサーを逐次的にマッチするパーサー。
  *
- * All parsers must match in order for this parser to succeed.
+ * このパーサーが成功するには、すべてのパーサーが順番にマッチする必要があります。
  *
- * @param T The type of value produced by each parser.
- * @param parsers The list of parsers to match in sequence.
+ * @param T 各パーサーが生成する値の型。
+ * @param parsers 順番にマッチするパーサーのリスト。
  */
 class SerialParser<out T : Any>(val parsers: List<Parser<T>>) : Parser<List<T>> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<List<T>>? {
@@ -26,6 +26,6 @@ class SerialParser<out T : Any>(val parsers: List<Parser<T>>) : Parser<List<T>> 
 }
 
 /**
- * Creates a parser that matches all given parsers in sequence.
+ * 与えられたすべてのパーサーを順番にマッチするパーサーを作成します。
  */
 fun <T : Any> serial(vararg parsers: Parser<T>) = SerialParser(parsers.toList())

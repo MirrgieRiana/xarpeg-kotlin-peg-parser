@@ -7,11 +7,11 @@ import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.Tuple1
 
 /**
- * Parser that matches a regular expression pattern.
+ * 正規表現パターンをマッチするパーサー。
  *
- * The regex must match at the current position (anchored match).
+ * 正規表現は現在位置でマッチする必要があります（アンカーされたマッチ）。
  *
- * @param regex The regular expression pattern to match.
+ * @param regex マッチする正規表現パターン。
  */
 class RegexParser(val regex: Regex) : Parser<MatchResult> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<MatchResult>? {
@@ -24,43 +24,43 @@ class RegexParser(val regex: Regex) : Parser<MatchResult> {
 }
 
 /**
- * Converts this regular expression to a parser.
+ * この正規表現をパーサーに変換します。
  */
 fun Regex.toParser(): Parser<MatchResult> = RegexParser(this)
 
 /**
- * Returns a parser that matches this regular expression.
+ * この正規表現をマッチするパーサーを返します。
  */
 val Regex.token: Parser<MatchResult> get() = this.toParser()
 
 /**
- * Converts this regular expression to a parser using the unary `+` operator.
+ * 単項`+`演算子を使用してこの正規表現をパーサーに変換します。
  *
- * Example: `+Regex("[0-9]+")` creates a parser that matches one or more digits.
+ * 例: `+Regex("[0-9]+")`は1つ以上の数字をマッチするパーサーを作成します。
  */
 operator fun Regex.unaryPlus(): Parser<MatchResult> = this.toParser()
 
 /**
- * Returns a parser that matches this regex and captures the result as a [Tuple1].
+ * この正規表現をマッチし、結果を[Tuple1]としてキャプチャするパーサーを返します。
  */
 val Regex.capture: Parser<Tuple1<MatchResult>> get() = this.toParser().capture
 
 /**
- * Returns a parser that matches this regex but discards the result.
+ * この正規表現をマッチするが、結果を破棄するパーサーを返します。
  */
 val Regex.ignore: Parser<Tuple0> get() = this.toParser().ignore
 
 /**
- * Converts this regex to a parser that matches it but discards the result.
+ * この正規表現をマッチするが、結果を破棄するパーサーに変換します。
  */
 operator fun Regex.unaryMinus(): Parser<Tuple0> = this.toParser().ignore
 
 /**
- * Returns a negative lookahead parser for this regex.
+ * この正規表現の否定先読みパーサーを返します。
  */
 val Regex.not: Parser<Tuple0> get() = this.toParser().not
 
 /**
- * Creates a negative lookahead parser for this regex using the `!` operator.
+ * `!`演算子を使用してこの正規表現の否定先読みパーサーを作成します。
  */
 operator fun Regex.not(): Parser<Tuple0> = this.toParser().not

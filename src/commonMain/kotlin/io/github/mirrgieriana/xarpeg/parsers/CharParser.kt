@@ -9,9 +9,9 @@ import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
 import io.github.mirrgieriana.xarpeg.isNative
 
 /**
- * Parser that matches a single character.
+ * 単一の文字をマッチするパーサー。
  *
- * @param char The character to match.
+ * @param char マッチする文字。
  */
 class CharParser(val char: Char) : Parser<Char> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Char>? {
@@ -28,45 +28,45 @@ class CharParser(val char: Char) : Parser<Char> {
 }
 
 /**
- * Converts this character to a parser that matches it.
+ * この文字をマッチするパーサーに変換します。
  */
 fun Char.toParser(): Parser<Char> = if (isNative) CharParser(this) else CharParser.cache.getOrPut(this) { CharParser(this) }
 
 /**
- * Returns a parser that matches this character.
+ * この文字をマッチするパーサーを返します。
  */
 val Char.token: Parser<Char> get() = this.toParser()
 
 /**
- * Converts this character to a parser using the unary `+` operator.
+ * 単項`+`演算子を使用してこの文字をパーサーに変換します。
  *
- * Example: `+'a'` creates a parser that matches the character 'a'.
+ * 例: `+'a'`は文字'a'をマッチするパーサーを作成します。
  */
 operator fun Char.unaryPlus(): Parser<Char> = this.toParser()
 
 /**
- * Returns a parser that matches this character and captures it as a [Tuple1].
+ * この文字をマッチし、[Tuple1]としてキャプチャするパーサーを返します。
  */
 val Char.capture: Parser<Tuple1<Char>> get() = this.toParser().capture
 
 /**
- * Returns a parser that matches this character but discards the result.
+ * この文字をマッチするが、結果を破棄するパーサーを返します。
  */
 val Char.ignore: Parser<Tuple0> get() = this.toParser().ignore
 
 /**
- * Converts this character to a parser that matches it but discards the result.
+ * この文字をマッチするが、結果を破棄するパーサーに変換します。
  *
- * Example: `-'a'` creates a parser that matches 'a' without capturing it.
+ * 例: `-'a'`は'a'をマッチするがキャプチャしないパーサーを作成します。
  */
 operator fun Char.unaryMinus(): Parser<Tuple0> = this.toParser().ignore
 
 /**
- * Returns a negative lookahead parser for this character.
+ * この文字の否定先読みパーサーを返します。
  */
 val Char.not: Parser<Tuple0> get() = this.toParser().not
 
 /**
- * Creates a negative lookahead parser for this character using the `!` operator.
+ * `!`演算子を使用してこの文字の否定先読みパーサーを作成します。
  */
 operator fun Char.not(): Parser<Tuple0> = this.toParser().not

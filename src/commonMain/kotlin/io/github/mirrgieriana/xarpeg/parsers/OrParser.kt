@@ -5,12 +5,12 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Parser that tries multiple alternative parsers in order.
+ * 複数の代替パーサーを順番に試すパーサー。
  *
- * Succeeds with the first parser that matches. This implements PEG's ordered choice operator.
+ * 最初にマッチしたパーサーで成功します。これはPEGの順序選択演算子を実装しています。
  *
- * @param T The type of value produced by all alternatives.
- * @param parsers The list of alternative parsers to try.
+ * @param T すべての選択肢が生成する値の型。
+ * @param parsers 試行する代替パーサーのリスト。
  */
 class OrParser<out T : Any>(val parsers: List<Parser<T>>) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {
@@ -23,18 +23,18 @@ class OrParser<out T : Any>(val parsers: List<Parser<T>>) : Parser<T> {
 }
 
 /**
- * Creates a parser that tries each of the given parsers in order.
+ * 与えられたパーサーを順番に試すパーサーを作成します。
  */
 fun <T : Any> or(vararg parsers: Parser<T>) = OrParser(parsers.toList())
 
 /**
- * Creates an ordered choice parser using the `+` operator.
+ * `+`演算子を使用して順序選択パーサーを作成します。
  *
- * Example: `parser1 + parser2` tries parser1 first, then parser2 if the first fails.
+ * 例: `parser1 + parser2`は最初にparser1を試し、失敗したらparser2を試します。
  */
 operator fun <T : Any> Parser<T>.plus(other: Parser<T>) = OrParser(listOf(this, other))
 
 /**
- * Adds another alternative to an existing [OrParser].
+ * 既存の[OrParser]に別の選択肢を追加します。
  */
 operator fun <T : Any> OrParser<T>.plus(other: Parser<T>) = OrParser(this.parsers + other)
