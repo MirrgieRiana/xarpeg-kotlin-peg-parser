@@ -71,13 +71,13 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     outputColorName.set("RED")
 }
 
-val javadocJar = tasks.register<Jar>("javadocJar") {
-    archiveClassifier = "javadoc"
-    from(tasks.dokkaHtml)
-}
-
 publishing {
-    publications.withType<MavenPublication>().configureEach {
+    publications.withType<MavenPublication>().configureEach publication@{
+        val javadocJar = tasks.register<Jar>("${name}JavadocJar") {
+            archiveAppendix = this@publication.name
+            archiveClassifier = "javadoc"
+            from(tasks.dokkaHtml)
+        }
         artifactId = "${libs.versions.xarpeg.name.get()}-$name"
         pom {
             val ownerName = providers.gradleProperty("ownerName").get()
