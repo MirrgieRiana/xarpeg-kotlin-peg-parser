@@ -6,9 +6,9 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 /**
- * Parser that succeeds only at the end of the input.
+ * 入力の終了位置でのみ成功するパーサー。
  *
- * Useful for ensuring that the entire input has been consumed.
+ * 入力全体が消費されたことを確認するのに便利です。
  */
 object EndOfInputParser : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
@@ -18,6 +18,6 @@ object EndOfInputParser : Parser<Tuple0> {
 }
 
 /**
- * Returns a parser that succeeds only at the end of the input.
+ * 入力の終了位置でのみ成功するパーサーを返します。
  */
 val endOfInput = EndOfInputParser

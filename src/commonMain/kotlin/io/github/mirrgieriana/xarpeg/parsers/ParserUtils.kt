@@ -4,23 +4,23 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Normalizes line endings in a string.
+ * 文字列内の改行を正規化します。
  *
- * Converts all line endings (`\r\n` and `\r`) to `\n`.
+ * すべての改行（`\r\n`と`\r`）を`\n`に変換します。
  */
 fun String.normalize() = this.replace("\r\n", "\n").replace("\r", "\n")
 
 /**
- * Creates a left-associative binary operator parser.
+ * 左結合二項演算子パーサーを作成します。
  *
- * Parses expressions like `a op b op c` as `((a op b) op c)`.
+ * `a op b op c`のような式を`((a op b) op c)`としてパースします。
  *
- * @param T The type of operands and result.
- * @param O The type of operator.
- * @param term Parser for operands.
- * @param operator Parser for the operator.
- * @param combinator Function that combines left operand, operator, and right operand.
- * @return A parser that produces the combined result.
+ * @param T オペランドと結果の型。
+ * @param O 演算子の型。
+ * @param term オペランドのパーサー。
+ * @param operator 演算子のパーサー。
+ * @param combinator 左オペランド、演算子、右オペランドを結合する関数。
+ * @return 結合された結果を生成するパーサー。
  */
 fun <T : Any, O : Any> leftAssociative(term: Parser<T>, operator: Parser<O>, combinator: (T, O, T) -> T) = Parser { context, start ->
     var result = context.parseOrNull(term, start) ?: return@Parser null
@@ -33,16 +33,16 @@ fun <T : Any, O : Any> leftAssociative(term: Parser<T>, operator: Parser<O>, com
 }
 
 /**
- * Creates a right-associative binary operator parser.
+ * 右結合二項演算子パーサーを作成します。
  *
- * Parses expressions like `a op b op c` as `(a op (b op c))`.
+ * `a op b op c`のような式を`(a op (b op c))`としてパースします。
  *
- * @param T The type of operands and result.
- * @param O The type of operator.
- * @param term Parser for operands.
- * @param operator Parser for the operator.
- * @param combinator Function that combines left operand, operator, and right operand.
- * @return A parser that produces the combined result.
+ * @param T オペランドと結果の型。
+ * @param O 演算子の型。
+ * @param term オペランドのパーサー。
+ * @param operator 演算子のパーサー。
+ * @param combinator 左オペランド、演算子、右オペランドを結合する関数。
+ * @return 結合された結果を生成するパーサー。
  */
 fun <T : Any, O : Any> rightAssociative(term: Parser<T>, operator: Parser<O>, combinator: (T, O, T) -> T) = Parser { context, start ->
     val termResults = mutableListOf<ParseResult<T>>()

@@ -5,9 +5,9 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * A parser that always fails.
+ * 常に失敗するパーサー。
  *
- * This can be useful as a placeholder or default case in conditional parsing logic.
+ * 条件付きパースロジックのプレースホルダーやデフォルトケースとして便利です。
  */
 object FailParser : Parser<Nothing> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Nothing>? {
@@ -16,6 +16,6 @@ object FailParser : Parser<Nothing> {
 }
 
 /**
- * Returns a parser that always fails.
+ * 常に失敗するパーサーを返します。
  */
 val fail get() = FailParser

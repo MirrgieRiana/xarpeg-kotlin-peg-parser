@@ -5,12 +5,12 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Transforms the result of this parser using the given function.
+ * 与えられた関数を使用してこのパーサーの結果を変換します。
  *
- * @param I The input type produced by this parser.
- * @param O The output type produced by the transformation.
- * @param function The transformation function to apply to successful parse results.
- * @return A parser that produces transformed values.
+ * @param I このパーサーが生成する入力型。
+ * @param O 変換が生成する出力型。
+ * @param function 成功したパース結果に適用する変換関数。
+ * @return 変換された値を生成するパーサー。
  */
 infix fun <I : Any, O : Any> Parser<I>.map(function: (I) -> O) = Parser { context, start ->
     val result = context.parseOrNull(this, start) ?: return@Parser null
@@ -18,15 +18,15 @@ infix fun <I : Any, O : Any> Parser<I>.map(function: (I) -> O) = Parser { contex
 }
 
 /**
- * Transforms the result of this parser using a function that also has access to the parse context.
+ * パースコンテキストにもアクセスできる関数を使用してこのパーサーの結果を変換します。
  *
- * This is useful when the transformation needs additional information from the parsing context,
- * such as the matched text or position information.
+ * 変換がマッチしたテキストや位置情報などのパースコンテキストからの追加情報を
+ * 必要とする場合に便利です。
  *
- * @param I The input type produced by this parser.
- * @param O The output type produced by the transformation.
- * @param function The transformation function that receives the parse context and result.
- * @return A parser that produces transformed values.
+ * @param I このパーサーが生成する入力型。
+ * @param O 変換が生成する出力型。
+ * @param function パースコンテキストと結果を受け取る変換関数。
+ * @return 変換された値を生成するパーサー。
  */
 infix fun <I : Any, O : Any> Parser<I>.mapEx(function: (ParseContext, ParseResult<I>) -> O) = Parser { context, start ->
     val result = context.parseOrNull(this, start) ?: return@Parser null
@@ -34,8 +34,8 @@ infix fun <I : Any, O : Any> Parser<I>.mapEx(function: (ParseContext, ParseResul
 }
 
 /**
- * Creates a parser that produces the [ParseResult] itself instead of just the value.
+ * 値だけでなく[ParseResult]自体を生成するパーサーを作成します。
  *
- * Useful when you need access to position information (start/end) in addition to the parsed value.
+ * パースされた値に加えて位置情報（start/end）にアクセスする必要がある場合に便利です。
  */
 val <T : Any> Parser<T>.result get() = this.mapEx { _, result -> result }

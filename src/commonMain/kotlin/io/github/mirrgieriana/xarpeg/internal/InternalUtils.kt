@@ -1,11 +1,11 @@
 package io.github.mirrgieriana.xarpeg.internal
 
 /**
- * Truncates a string to a maximum length, appending an ellipsis if truncated.
+ * 文字列を最大長に切り詰め、切り詰められた場合は省略記号を追加します。
  *
- * @param maxLength The maximum length of the resulting string (including ellipsis).
- * @param ellipsis The string to append when truncating.
- * @return The truncated string.
+ * @param maxLength 結果の文字列の最大長（省略記号を含む）。
+ * @param ellipsis 切り詰め時に追加する文字列。
+ * @return 切り詰められた文字列。
  */
 internal fun String.truncate(maxLength: Int, ellipsis: String): String {
     if (maxLength < 0) return ""
@@ -14,9 +14,9 @@ internal fun String.truncate(maxLength: Int, ellipsis: String): String {
 }
 
 /**
- * Escapes a string for use in double-quoted contexts.
+ * ダブルクォートコンテキストで使用するために文字列をエスケープします。
  *
- * Converts special characters to their escape sequences and control characters to Unicode escapes.
+ * 特殊文字をエスケープシーケンスに変換し、制御文字をUnicodeエスケープに変換します。
  */
 internal fun String.escapeDoubleQuote(): String {
     val sb = StringBuilder()

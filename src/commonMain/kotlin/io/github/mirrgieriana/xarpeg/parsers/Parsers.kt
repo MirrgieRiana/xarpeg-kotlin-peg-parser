@@ -4,8 +4,8 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple1
 
 /**
- * Wraps this parser's result in a [Tuple1].
+ * このパーサーの結果を[Tuple1]でラップします。
  *
- * This is primarily used for capturing single values in parser combinations.
+ * これは主にパーサーの組み合わせで単一の値をキャプチャするために使用されます。
  */
 val <T : Any> Parser<T>.capture: Parser<Tuple1<T>> get() = +this

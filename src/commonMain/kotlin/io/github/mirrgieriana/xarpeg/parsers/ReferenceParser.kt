@@ -5,13 +5,13 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * A parser that lazily references another parser.
+ * 別のパーサーを遅延参照するパーサー。
  *
- * This is essential for recursive grammars where a parser needs to reference itself or other
- * parsers that haven't been defined yet.
+ * パーサーが自分自身や、まだ定義されていない他のパーサーを参照する必要がある
+ * 再帰文法に不可欠です。
  *
- * @param T The type of value produced by the referenced parser.
- * @param parserGetter A function that returns the parser to delegate to.
+ * @param T 参照されるパーサーが生成する値の型。
+ * @param parserGetter 委譲先のパーサーを返す関数。
  */
 class ReferenceParser<out T : Any>(val parserGetter: () -> Parser<T>) : Parser<T> {
     private val parser by lazy { parserGetter() }
@@ -21,13 +21,13 @@ class ReferenceParser<out T : Any>(val parserGetter: () -> Parser<T>) : Parser<T
 }
 
 /**
- * Creates a lazy reference to a parser.
+ * パーサーへの遅延参照を作成します。
  *
- * This is crucial for recursive grammars. Example:
+ * これは再帰文法に不可欠です。例:
  * ```
  * val expr: Parser<Int> = object {
  *     val number = +Regex("[0-9]+") map { it.value.toInt() }
- *     val parens = -'(' * ref { expr } * -')'  // Forward reference
+ *     val parens = -'(' * ref { expr } * -')'  // 前方参照
  *     val expr = number + parens
  * }.expr
  * ```

@@ -4,15 +4,15 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 /**
- * Creates a parser that matches this parser but discards the result.
+ * このパーサーをマッチするが、結果を破棄するパーサーを作成します。
  *
- * The parser succeeds if this parser matches, but produces [Tuple0] instead of the original value.
+ * このパーサーがマッチすればパーサーは成功しますが、元の値の代わりに[Tuple0]を生成します。
  */
 val Parser<*>.ignore: Parser<Tuple0> get() = this map { Tuple0 }
 
 /**
- * Creates a parser that ignores the result using the unary `-` operator.
+ * 単項`-`演算子を使用して結果を無視するパーサーを作成します。
  *
- * Example: `-"hello"` matches "hello" but doesn't capture it in the result tuple.
+ * 例: `-"hello"`は"hello"をマッチしますが、結果タプルにキャプチャしません。
  */
 operator fun Parser<*>.unaryMinus(): Parser<Tuple0> = this.ignore

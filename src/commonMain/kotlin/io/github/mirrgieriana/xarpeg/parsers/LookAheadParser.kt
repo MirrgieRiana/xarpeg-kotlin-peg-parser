@@ -5,13 +5,13 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Parser that succeeds if the wrapped parser matches, but doesn't consume input.
+ * ラップされたパーサーがマッチすれば成功するが、入力を消費しないパーサー。
  *
- * This is a positive lookahead assertion. It checks that the pattern can be matched
- * at the current position without advancing the parse position.
+ * これは肯定先読みアサーションです。パース位置を進めることなく、現在位置でパターンが
+ * マッチできることをチェックします。
  *
- * @param T The type of value produced by the wrapped parser.
- * @param parser The parser to check.
+ * @param T ラップされたパーサーが生成する値の型。
+ * @param parser チェックするパーサー。
  */
 class LookAheadParser<T : Any>(val parser: Parser<T>) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {
@@ -22,8 +22,8 @@ class LookAheadParser<T : Any>(val parser: Parser<T>) : Parser<T> {
 }
 
 /**
- * Creates a positive lookahead parser.
+ * 肯定先読みパーサーを作成します。
  *
- * The parser succeeds if this parser would match, but doesn't consume any input.
+ * このパーサーがマッチする場合にパーサーは成功しますが、入力を消費しません。
  */
 val <T : Any> Parser<T>.lookAhead get() = LookAheadParser(this)

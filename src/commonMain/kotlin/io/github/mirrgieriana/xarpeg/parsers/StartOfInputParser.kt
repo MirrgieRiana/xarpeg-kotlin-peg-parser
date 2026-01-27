@@ -6,9 +6,9 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 /**
- * Parser that succeeds only at the start of the input (position 0).
+ * 入力の開始位置（位置0）でのみ成功するパーサー。
  *
- * Useful for anchoring patterns that must begin at the start of the input.
+ * 入力の開始位置から始まる必要があるパターンをアンカーするのに便利です。
  */
 object StartOfInputParser : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
@@ -18,6 +18,6 @@ object StartOfInputParser : Parser<Tuple0> {
 }
 
 /**
- * Returns a parser that succeeds only at the start of the input.
+ * 入力の開始位置でのみ成功するパーサーを返します。
  */
 val startOfInput = StartOfInputParser

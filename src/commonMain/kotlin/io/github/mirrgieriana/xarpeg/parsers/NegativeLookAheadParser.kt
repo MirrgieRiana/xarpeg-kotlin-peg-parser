@@ -6,12 +6,12 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 /**
- * Parser that succeeds if the wrapped parser fails, without consuming input.
+ * ラップされたパーサーが失敗すれば成功し、入力を消費しないパーサー。
  *
- * This is a negative lookahead assertion. It checks that the pattern cannot be matched
- * at the current position without advancing the parse position.
+ * これは否定先読みアサーションです。パース位置を進めることなく、現在位置でパターンが
+ * マッチできないことをチェックします。
  *
- * @param parser The parser that must not match.
+ * @param parser マッチしてはいけないパーサー。
  */
 class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
@@ -22,18 +22,18 @@ class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
 }
 
 /**
- * Creates a negative lookahead parser.
+ * 否定先読みパーサーを作成します。
  *
- * The parser succeeds if this parser would fail, but doesn't consume any input.
+ * このパーサーが失敗する場合にパーサーは成功しますが、入力を消費しません。
  */
 val Parser<*>.negativeLookAhead: Parser<Tuple0> get() = NegativeLookAheadParser(this)
 
 /**
- * Creates a negative lookahead parser (alias for [negativeLookAhead]).
+ * 否定先読みパーサーを作成します（[negativeLookAhead]のエイリアス）。
  */
 val Parser<*>.not: Parser<Tuple0> get() = this.negativeLookAhead
 
 /**
- * Creates a negative lookahead parser using the `!` operator.
+ * `!`演算子を使用して否定先読みパーサーを作成します。
  */
 operator fun Parser<*>.not(): Parser<Tuple0> = this.not

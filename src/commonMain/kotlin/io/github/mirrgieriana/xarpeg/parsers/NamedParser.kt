@@ -5,13 +5,14 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
 /**
- * Wraps a parser with a human-readable name.
+ * パーサーを人間が読みやすい名前でラップします。
  *
- * The name appears in error messages to help users understand what was expected at a parse failure.
+ * 名前はエラーメッセージに表示され、ユーザーがパース失敗時に期待されていた内容を
+ * 理解するのに役立ちます。
  *
- * @param T The type of value produced by the wrapped parser.
- * @param parser The parser to wrap.
- * @param name The name to assign to this parser.
+ * @param T ラップされたパーサーが生成する値の型。
+ * @param parser ラップするパーサー。
+ * @param name このパーサーに割り当てる名前。
  */
 class NamedParser<T : Any>(val parser: Parser<T>, override val name: String) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {
@@ -20,8 +21,8 @@ class NamedParser<T : Any>(val parser: Parser<T>, override val name: String) : P
 }
 
 /**
- * Assigns a name to this parser for better error messages.
+ * より良いエラーメッセージのためにこのパーサーに名前を割り当てます。
  *
- * Example: `+Regex("[0-9]+") named "number"` will show "number" in error messages.
+ * 例: `+Regex("[0-9]+") named "number"`はエラーメッセージに"number"を表示します。
  */
 infix fun <T : Any> Parser<T>.named(name: String) = NamedParser(this, name)

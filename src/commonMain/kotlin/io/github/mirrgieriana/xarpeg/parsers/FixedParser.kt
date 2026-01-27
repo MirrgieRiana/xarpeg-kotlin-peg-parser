@@ -6,10 +6,10 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 /**
- * A parser that always succeeds with a fixed value without consuming input.
+ * 入力を消費せずに固定値で常に成功するパーサー。
  *
- * @param T The type of the fixed value.
- * @param value The value to always produce.
+ * @param T 固定値の型。
+ * @param value 常に生成する値。
  */
 class FixedParser<T : Any>(val value: T) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {
@@ -18,13 +18,13 @@ class FixedParser<T : Any>(val value: T) : Parser<T> {
 }
 
 /**
- * Creates a parser that always succeeds with the given value without consuming input.
+ * 入力を消費せずに与えられた値で常に成功するパーサーを作成します。
  */
 fun <T : Any> fixed(value: T) = FixedParser(value)
 
 /**
- * A parser that always succeeds without consuming input, producing [Tuple0].
+ * 入力を消費せずに[Tuple0]を生成して常に成功するパーサー。
  *
- * Useful for optional branches or as a default case.
+ * オプショナルな分岐やデフォルトケースとして便利です。
  */
 val empty get() = fixed(Tuple0)
