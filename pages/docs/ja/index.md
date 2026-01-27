@@ -17,6 +17,8 @@ Kotlinで強力なパーサを構築する方法を学びましょう。この�
 
 `build.gradle.kts`にXarpegを追加します：
 
+### Kotlin Multiplatformプロジェクト
+
 ```kotlin
 repositories {
     mavenCentral()
@@ -26,6 +28,35 @@ dependencies {
     implementation("io.github.mirrgieriana:xarpeg-kotlinMultiplatform:<latest-version>")
 }
 ```
+
+### JVM専用プロジェクト
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.mirrgieriana:xarpeg-jvm:<latest-version>")
+}
+```
+
+### JS専用プロジェクト
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.mirrgieriana:xarpeg-js:<latest-version>")
+}
+```
+
+### その他のプラットフォーム
+
+その他のプラットフォーム固有のアーティファクト（Nativeターゲット、WASM）については、以下を参照してください：
+**[Maven Centralリポジトリ](https://repo1.maven.org/maven2/io/github/mirrgieriana/)**
 
 最新バージョンは[Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases)で確認できます。
 

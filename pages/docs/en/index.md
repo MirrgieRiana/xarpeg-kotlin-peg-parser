@@ -17,6 +17,8 @@ Learn to build powerful parsers with Kotlin. This tutorial guides you from basic
 
 Add Xarpeg to your `build.gradle.kts`:
 
+### Kotlin Multiplatform Projects
+
 ```kotlin
 repositories {
     mavenCentral()
@@ -26,6 +28,35 @@ dependencies {
     implementation("io.github.mirrgieriana:xarpeg-kotlinMultiplatform:<latest-version>")
 }
 ```
+
+### JVM-Only Projects
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.mirrgieriana:xarpeg-jvm:<latest-version>")
+}
+```
+
+### JS-Only Projects
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.mirrgieriana:xarpeg-js:<latest-version>")
+}
+```
+
+### Other Platforms
+
+For other platform-specific artifacts (Native targets, WASM), see:
+**[Maven Central Repository](https://repo1.maven.org/maven2/io/github/mirrgieriana/)**
 
 Find the latest version in [Releases](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/releases).
 

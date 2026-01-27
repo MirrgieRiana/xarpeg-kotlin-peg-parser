@@ -2,4 +2,5 @@
 xarpeg = "4.0.3"
 
 [libraries]
-xarpeg = { group = "io.github.mirrgieriana", name = "xarpeg-kotlinMultiplatform", version.ref = "xarpeg" }
+xarpeg-kotlinMultiplatform = { group = "io.github.mirrgieriana", name = "xarpeg-kotlinMultiplatform", version.ref = "xarpeg" }
+xarpeg-jvm = { group = "io.github.mirrgieriana", name = "xarpeg-jvm", version.ref = "xarpeg" }
