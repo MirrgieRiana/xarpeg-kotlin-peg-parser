@@ -525,10 +525,6 @@ func2(10, 10)</code>
                         <p class="example-title">Syntax Error: Invalid Identifier</p>
                         <code class="example-code">123abc = 5</code>
                     </div>
-                    <!--
-                    TODO: Uncomment when open class ParseContext is published:
-                    These examples demonstrate indent-based language parsing (Python-style).
-                    
                     <div class="example-card" data-example="fun hello:&#10;    world" data-parser="indent">
                         <p class="example-title">Indent: Simple Function</p>
                         <code class="example-code">fun hello:
@@ -547,7 +543,6 @@ func2(10, 10)</code>
 fun another:
     x</code>
                     </div>
-                    -->
                 </div>
             </div>
         </aside>
@@ -558,9 +553,7 @@ fun another:
     </footer>
 
     <script type="module">
-        import { parseExpression } from "./online-parser.mjs";
-        // TODO: Uncomment when open class ParseContext is published:
-        // import { parseIndentCode } from "./online-parser.mjs";
+        import { parseExpression, parseIndentCode } from "./online-parser.mjs";
 
         const input = document.getElementById("input");
         const output = document.getElementById("output");
@@ -571,12 +564,10 @@ fun another:
         const defaultInput = "x = 10";
 
         const updateOutput = () => {
-            // TODO: Uncomment when open class ParseContext is published:
-            // const parserType = input.dataset.parser || 'expression';
-            // const result = parserType === 'indent' 
-            //     ? parseIndentCode(input.value)
-            //     : parseExpression(input.value);
-            const result = parseExpression(input.value);
+            const parserType = input.dataset.parser || 'expression';
+            const result = parserType === 'indent' 
+                ? parseIndentCode(input.value)
+                : parseExpression(input.value);
             output.value = result;
             
             // Update output styling based on result type
@@ -644,9 +635,8 @@ fun another:
         exampleCards.forEach(card => {
             card.addEventListener("click", () => {
                 const example = card.getAttribute("data-example");
-                // TODO: Uncomment when open class ParseContext is published:
-                // const parser = card.getAttribute("data-parser") || 'expression';
-                // input.dataset.parser = parser;
+                const parser = card.getAttribute("data-parser") || 'expression';
+                input.dataset.parser = parser;
                 loadExample(example);
             });
         });
