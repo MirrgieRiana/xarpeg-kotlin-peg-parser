@@ -78,6 +78,7 @@ val javadocJar = tasks.register<Jar>("javadocJar") {
 
 publishing {
     publications.withType<MavenPublication>().configureEach {
+        artifactId = "${libs.versions.xarpeg.name.get()}-$name"
         pom {
             val ownerName = providers.gradleProperty("ownerName").get()
             val repositoryName = providers.gradleProperty("repositoryName").get()
