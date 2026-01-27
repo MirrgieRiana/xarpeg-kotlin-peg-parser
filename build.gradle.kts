@@ -74,11 +74,10 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 publishing {
     publications.withType<MavenPublication>().configureEach publication@{
         val javadocJar = tasks.register<Jar>("${name}JavadocJar") {
-            archiveBaseName = "${project.name}-${this@publication.name}"
+            archiveAppendix = this@publication.name
             archiveClassifier = "javadoc"
             from(tasks.dokkaHtml)
         }
-        artifactId = "${libs.versions.xarpeg.name.get()}-$name"
         pom {
             val ownerName = providers.gradleProperty("ownerName").get()
             val repositoryName = providers.gradleProperty("repositoryName").get()
@@ -155,7 +154,7 @@ tasks.register("writeKotlinMetadata") {
 
 // Dokka configuration for KDoc generation
 tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
-    moduleName.set(providers.gradleProperty("repositoryName"))
+    moduleName.set(providers.gradleProperty("projectName"))
     outputDirectory.set(layout.buildDirectory.dir("dokka"))
 
     // Whitelist: Only process JVM source set by name
