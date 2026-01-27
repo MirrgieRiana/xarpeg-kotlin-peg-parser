@@ -74,7 +74,7 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 publishing {
     publications.withType<MavenPublication>().configureEach publication@{
         val javadocJar = tasks.register<Jar>("${name}JavadocJar") {
-            archiveAppendix = this@publication.name
+            archiveBaseName = "${project.name}-${this@publication.name}"
             archiveClassifier = "javadoc"
             from(tasks.dokkaHtml)
         }
