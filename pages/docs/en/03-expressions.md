@@ -21,8 +21,8 @@ Xarpeg provides `ref { }` for recursion and `leftAssociative`/`rightAssociative`
 Here's a complete arithmetic expression parser with recursion and precedence:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -82,8 +82,8 @@ Use `by lazy` only as a last resort for rare initialization errors unrelated to 
 Extend the pattern for more operators:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -117,8 +117,8 @@ fun main() {
 Handle prefix/postfix operators with preprocessing:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"

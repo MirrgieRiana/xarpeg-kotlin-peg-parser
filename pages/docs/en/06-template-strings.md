@@ -22,8 +22,8 @@ PEG parsers working character-by-character naturally handle context switches wit
 Here's a parser for template strings with embedded arithmetic expressions:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 sealed class TemplateElement
 data class StringPart(val text: String) : TemplateElement()
@@ -104,8 +104,8 @@ This enables nested expressions like `$(2*(3+4))`.
 Extend the pattern to handle strings inside expressions:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 sealed class TemplateElement
 data class StringPart(val text: String) : TemplateElement()
@@ -196,7 +196,7 @@ You've completed the Xarpeg tutorial! You now know how to:
 
 - **[Explore Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Study complete applications
 - **[Read Tests](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonTest/kotlin)** - See all features in action
-- **[Browse Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg)** - Understand implementation details
+- **[Browse Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpeg)** - Understand implementation details
 - **[Build Something](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - Create your own parser!
 
 → **[Back to Tutorial Index](index.html)**

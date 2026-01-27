@@ -12,8 +12,8 @@ Build your first parser in minutes. This guide walks through a minimal example t
 Let's build a simple key-value parser that matches patterns like `count=42`:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
@@ -48,8 +48,8 @@ fun main() {
 `parseAllOrThrow` requires the entire input to be consumed:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"

@@ -2,5 +2,5 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
-rootProject.name = providers.gradleProperty("repositoryName").get()
+rootProject.name = providers.gradleProperty("projectName").get()
 include("doc-test")

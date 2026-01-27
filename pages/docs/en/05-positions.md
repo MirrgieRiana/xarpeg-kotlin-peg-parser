@@ -21,8 +21,8 @@ Position information is always available, but you typically work with simple typ
 The `map` combinator works with just the value, keeping types simple:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
@@ -37,8 +37,8 @@ fun main() {
 Use `mapEx` when you need position information. It receives the `ParseContext` and full `ParseResult`:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") named "identifier"
 
@@ -59,8 +59,8 @@ fun main() {
 When you need the complete `ParseResult` object (including value, start, and end positions), use the `.result` extension:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val word = +"hello"
 val wordWithResult = word.result
@@ -80,8 +80,8 @@ The `.result` extension transforms `Parser<T>` into `Parser<ParseResult<T>>`, gi
 Get the original matched substring using the `text()` extension:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") named "number"
 
@@ -102,8 +102,8 @@ fun main() {
 Build enhanced error reporting with line/column information:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 data class Located<T>(val value: T, val line: Int, val column: Int)
 
@@ -128,8 +128,8 @@ fun main() {
 Track positions across multiple lines:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 data class Token(val value: String, val line: Int, val col: Int)
 
@@ -155,8 +155,8 @@ fun main() {
 Combine position tracking with error context for helpful messages:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"

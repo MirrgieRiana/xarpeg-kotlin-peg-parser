@@ -141,12 +141,12 @@ dependencies {
 
 ### APIドキュメント
 - **IDE内のKDoc** - インラインドキュメントのためにコード補完を使用
-- **[Parser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/Parser.kt)** - コアインターフェースとヘルパー
-- **[parsersパッケージ](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpite/xarpeg/parsers)** - コンビネータの実装
+- **[Parser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpeg/Parser.kt)** - コアインターフェースとヘルパー
+- **[parsersパッケージ](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonMain/kotlin/io/github/mirrgieriana/xarpeg/parsers)** - コンビネータの実装
 
 ### テスト
-- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt)** - 包括的な動作例
-- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
+- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作例
+- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
 
 ### 実際の使用例
 - **[Xarpite](https://github.com/MirrgieRiana/Xarpite)** - 複雑な文法解析にXarpegを使用している本番アプリケーション

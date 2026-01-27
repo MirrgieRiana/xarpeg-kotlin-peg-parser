@@ -21,8 +21,8 @@ title: ステップ5 – 解析位置
 `map`コンビネータは値だけで動作し、型をシンプルに保ちます：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
@@ -37,8 +37,8 @@ fun main() {
 位置情報が必要な場合は`mapEx`を使用します。`ParseContext`と完全な`ParseResult`を受け取ります：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") named "identifier"
 
@@ -59,8 +59,8 @@ fun main() {
 完全な`ParseResult`オブジェクト（値、開始位置、終了位置を含む）が必要な場合は、`.result`拡張を使用します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val word = +"hello"
 val wordWithResult = word.result
@@ -80,8 +80,8 @@ fun main() {
 `text()`拡張を使用して元のマッチした部分文字列を取得します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") named "number"
 
@@ -102,8 +102,8 @@ fun main() {
 行/列情報を使用して強化されたエラー報告を構築します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 data class Located<T>(val value: T, val line: Int, val column: Int)
 
@@ -128,8 +128,8 @@ fun main() {
 複数行にわたる位置を追跡します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 data class Token(val value: String, val line: Int, val col: Int)
 
@@ -155,8 +155,8 @@ fun main() {
 位置追跡をエラーコンテキストと組み合わせて、役立つメッセージを作成します：
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"

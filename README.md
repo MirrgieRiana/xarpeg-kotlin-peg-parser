@@ -32,8 +32,8 @@ Xarpeg (/ˈʃɑrpɛɡ/) is a compact, operator-driven parser combinator library 
 Here's a complete arithmetic expression parser in just a few lines:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"

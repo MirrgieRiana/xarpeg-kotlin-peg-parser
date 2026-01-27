@@ -14,8 +14,8 @@ Learn to combine parsers using sequences, choices, repetition, and more to build
 Try alternatives in order. The first match wins:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val keyword = (+"if" + +"while" + +"for") named "keyword"
 
@@ -30,8 +30,8 @@ fun main() {
 `optional` attempts to match but rewinds on failure. Returns `Tuple1<T?>`:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val sign = (+'+' map { '+' }) + (+'-' map { '-' })
 val signOpt = sign.optional map { it.a ?: '+' }
@@ -48,13 +48,40 @@ fun main() {
 
 Use `it.a` to access the optional value, or destructure with `map { (value) -> ... }`.
 
+#### Combining Optionals with Tuples
+
+When combining multiple optional parsers using `*`, tuples are automatically flattened to contain nullable values directly:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+val optA = (+'a').optional
+val optB = (+'b').optional
+val combined = optA * optB
+
+fun main() {
+    // Result type is Tuple2<Char?, Char?> (flattened)
+    // NOT Tuple2<Tuple1<Char?>, Tuple1<Char?>> (nested)
+    val result1 = combined.parseAllOrThrow("ab")
+    check(result1.a == 'a')  // Direct access to nullable Char
+    check(result1.b == 'b')
+    
+    val result2 = combined.parseAllOrThrow("a")
+    check(result2.a == 'a')
+    check(result2.b == null)  // Missing optional is null
+}
+```
+
+This flattening makes optional combinations more ergonomic—you work with nullable types directly instead of nested tuples.
+
 ### Repetition
 
 Collect multiple matches into a list:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
     matches.joinToString("")
@@ -80,8 +107,8 @@ fun main() {
 When you need to parse multiple different parsers of the same type in sequence without tuple limits, use `serial`:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val article = +"the" + +"a"
 val adjective = +"quick" + +"lazy"
@@ -107,8 +134,8 @@ For repeating the same parser, use `.list()` or `.oneOrMore` instead.
 Sequences with `*` return tuples. Use `-parser` to drop unneeded values:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 // Without dropping: Tuple3<Char, MatchResult, Char>
 val word = +Regex("[a-z]+") named "word"
@@ -125,8 +152,8 @@ fun main() {
 Destructure tuples in `map` to transform results:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val wordPart = +Regex("[a-z]+") named "word"
 val numPart = +Regex("[0-9]+") named "number"
@@ -144,8 +171,8 @@ fun main() {
 `startOfInput` and `endOfInput` match at position boundaries without consuming input:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val word = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -163,8 +190,8 @@ fun main() {
 Assign names for better error messages:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val digit = +Regex("[0-9]") named "digit"
 val letter = +Regex("[a-z]") named "letter"
@@ -184,8 +211,8 @@ fun main() {
 Named composite parsers hide constituent parsers from error suggestions:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val parserA = +'a' named "letter_a"

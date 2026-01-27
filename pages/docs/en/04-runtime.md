@@ -14,8 +14,8 @@ Understand how parsers handle errors, consume input, and control caching for opt
 Requires the entire input to be consumed:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
@@ -38,8 +38,8 @@ Both exceptions provide a `context` property for detailed error information.
 `ParseContext` tracks parsing failures to help build user-friendly error messages:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val letter = +Regex("[a-z]") map { it.value } named "letter"
 val digit = +Regex("[0-9]") map { it.value } named "digit"
@@ -75,8 +75,8 @@ As parsing proceeds:
 ### Using Error Context with Exceptions
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 val operator = (+'*' + +'+') named "operator"
@@ -100,8 +100,8 @@ fun main() {
 `ParseContext` uses memoization by default to make backtracking predictable:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -118,8 +118,8 @@ Each `(parser, position)` pair is memoized, so repeated attempts at the same pos
 Disable memoization for lower memory usage when your grammar doesn't backtrack heavily:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
@@ -137,8 +137,8 @@ fun main() {
 If a `map` function throws an exception, it bubbles up and aborts parsing:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val divisionByZero = +Regex("[0-9]+") map { value ->
     val n = value.value.toInt()
@@ -161,8 +161,8 @@ Validate before mapping or catch and wrap errors when recovery is needed.
 Access error context from parse result:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = +Regex("[a-z]+") named "word"
 
@@ -181,8 +181,8 @@ fun main() {
 Confirm how `optional` and `zeroOrMore` rewind on failure:
 
 ```kotlin
-import io.github.mirrgieriana.xarpite.xarpeg.*
-import io.github.mirrgieriana.xarpite.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
 
 val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") named "digits"
 
@@ -196,8 +196,8 @@ fun main() {
 ### Use Tests as Reference
 
 Check the test suite for observed behavior:
-- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ErrorContextTest.kt)** - Error tracking examples
-- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpite/xarpeg/ParserTest.kt)** - Comprehensive behavior tests
+- **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
+- **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior tests
 
 ## Key Takeaways
 
