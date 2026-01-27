@@ -117,7 +117,7 @@ publishing {
 }
 
 signing {
-    isRequired = true
+    isRequired = false
 
     val signingKey = providers.gradleProperty("signingKey").orNull
     val signingPassword = providers.gradleProperty("signingPassword").orNull
