@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalJsExport::class)
+
 package io.github.mirrgieriana.xarpeg.samples.online.parser.indent
 
 import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
+import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
@@ -11,6 +14,8 @@ import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 /**
  * Parse all input using IndentParseContext and throw an exception if parsing fails
@@ -147,21 +152,61 @@ object IndentParser {
 }
 
 /**
- * Example usage of the indent-based parser
+ * Parse and format indent-based code
+ * This is exported for use in the online parser demo
  */
-fun demonstrateIndentParsing() {
-    // Example 1: Simple function with one statement
-    val example1 = "fun hello:\n    world"
-    val result1 = IndentParser.program.parseAllWithIndentOrThrow(example1)
-    console.log("Example 1:", result1)
-
-    // Example 2: Function with multiple statements
-    val example2 = "fun test:\n    a\n    b\n    c"
-    val result2 = IndentParser.program.parseAllWithIndentOrThrow(example2)
-    console.log("Example 2:", result2)
-
-    // Example 3: Multiple functions, one empty
-    val example3 = "fun empty:\nfun another:\n    x"
-    val result3 = IndentParser.program.parseAllWithIndentOrThrow(example3)
-    console.log("Example 3:", result3)
+@JsExport
+fun parseIndentCode(input: String): String {
+    return try {
+        val result = IndentParser.program.parseAllWithIndentOrThrow(input)
+        result.joinToString("\n") { func ->
+            val bodyStr = if (func.body.isEmpty()) {
+                "  (empty)"
+            } else {
+                func.body.joinToString("\n") { "  - ${(it as ExpressionNode).value}" }
+            }
+            "Function '${func.name}':\n$bodyStr"
+        }
+    } catch (e: ParseException) {
+        val position = e.context.errorPosition
+        val beforePosition = input.substring(0, position.coerceAtMost(input.length))
+        var line = 1
+        var lastNewlinePos = -1
+        beforePosition.forEachIndexed { i, char ->
+            if (char == '\n') {
+                line++
+                lastNewlinePos = i
+            }
+        }
+        val column = position - lastNewlinePos
+        
+        val sb = StringBuilder()
+        sb.append("Error: Syntax error at line $line, column $column")
+        
+        if (e.context.suggestedParsers.isNotEmpty()) {
+            val candidates = e.context.suggestedParsers
+                .mapNotNull { it.name }
+                .distinct()
+            if (candidates.isNotEmpty()) {
+                sb.append("\nExpected: ${candidates.joinToString(", ")}")
+            }
+        }
+        
+        val lineStart = beforePosition.lastIndexOf('\n') + 1
+        val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
+        val sourceLine = input.substring(lineStart, lineEnd)
+        
+        if (sourceLine.isNotEmpty()) {
+            sb.append("\n")
+            sb.append(sourceLine)
+            sb.append("\n")
+            val caretPosition = position - lineStart
+            sb.append(" ".repeat(caretPosition.coerceAtLeast(0)))
+            sb.append("^")
+        }
+        
+        sb.toString()
+    } catch (e: Exception) {
+        "Error: ${e.message}"
+    }
 }
