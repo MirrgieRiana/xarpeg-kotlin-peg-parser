@@ -5,15 +5,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple1
 
-/**
- * 別のパーサーをオプショナルにするパーサー。
- *
- * ラップされたパーサーがマッチに失敗した場合は`null`を生成し、常に成功します。
- *
- * @param T ラップされたパーサーが生成する値の型。
- * @param parser オプショナルにするパーサー。
- */
-class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
+private class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple1<T?>> {
         val result = context.parseOrNull(parser, start)
         return if (result != null) {
@@ -29,4 +21,4 @@ class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
  *
  * 結果のパーサーは常に成功し、マッチ時は`Tuple1(value)`、マッチしない場合は`Tuple1(null)`を生成します。
  */
-val <T : Any> Parser<T>.optional get() = OptionalParser(this)
+val <T : Any> Parser<T>.optional: Parser<Tuple1<T?>> get() = OptionalParser(this)

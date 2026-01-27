@@ -5,15 +5,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
-/**
- * ラップされたパーサーが失敗すれば成功し、入力を消費しないパーサー。
- *
- * これは否定先読みアサーションです。パース位置を進めることなく、現在位置でパターンが
- * マッチできないことをチェックします。
- *
- * @param parser マッチしてはいけないパーサー。
- */
-class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
+private class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         val result = context.parseOrNull(parser, start)
         if (result != null) return null

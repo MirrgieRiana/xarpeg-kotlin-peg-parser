@@ -4,12 +4,7 @@ import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 
-/**
- * 常に失敗するパーサー。
- *
- * 条件付きパースロジックのプレースホルダーやデフォルトケースとして便利です。
- */
-object FailParser : Parser<Nothing> {
+private object FailParser : Parser<Nothing> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Nothing>? {
         return null
     }
@@ -18,4 +13,4 @@ object FailParser : Parser<Nothing> {
 /**
  * 常に失敗するパーサーを返します。
  */
-val fail get() = FailParser
+val fail: Parser<Nothing> get() = FailParser
