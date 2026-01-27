@@ -1,7 +1,6 @@
-package io.github.mirrgieriana.xarpeg.samples.indent
+package io.github.mirrgieriana.xarpeg.samples.online.parser.indent
 
 import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
-import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
@@ -27,44 +26,6 @@ fun <T : Any> Parser<T>.parseAllWithIndentOrThrow(src: String, useMemoization: B
         )
     }
     return result.value
-}
-
-/**
- * Example of an indent-aware ParseContext.
- * This extends ParseContext to track the current indentation level.
- */
-class IndentParseContext(
-    src: String,
-    useMemoization: Boolean = true,
-) : ParseContext(src, useMemoization) {
-    private val indentStack = mutableListOf(0)
-
-    /**
-     * Get the current required indent level
-     */
-    val currentIndent: Int
-        get() = indentStack.last()
-
-    /**
-     * Push a new indent level onto the stack
-     */
-    fun pushIndent(indent: Int) {
-        require(indent > currentIndent) { "New indent ($indent) must be greater than current indent ($currentIndent)" }
-        indentStack.add(indent)
-    }
-
-    /**
-     * Pop the current indent level from the stack
-     */
-    fun popIndent() {
-        require(indentStack.size > 1) { "Cannot pop base indent level" }
-        indentStack.removeLast()
-    }
-
-    /**
-     * Peek at what the next indent would be without modifying the stack
-     */
-    fun peekIndent(indent: Int): Boolean = indent > currentIndent
 }
 
 /**
@@ -185,31 +146,22 @@ object IndentParser {
     val program: Parser<List<FunctionNode>> = functionDef.oneOrMore named "program"
 }
 
-fun main() {
+/**
+ * Example usage of the indent-based parser
+ */
+fun demonstrateIndentParsing() {
     // Example 1: Simple function with one statement
     val example1 = "fun hello:\n    world"
-    val result1 = IndentParser.program.parseAllWithIndentOrThrow(example1, useMemoization = true)
-    println("Example 1 parsed: $result1")
-    check(result1.size == 1)
-    check(result1[0].name == "hello")
-    check(result1[0].body.size == 1)
+    val result1 = IndentParser.program.parseAllWithIndentOrThrow(example1)
+    console.log("Example 1:", result1)
 
     // Example 2: Function with multiple statements
     val example2 = "fun test:\n    a\n    b\n    c"
-    val result2 = IndentParser.program.parseAllWithIndentOrThrow(example2, useMemoization = true)
-    println("Example 2 parsed: $result2")
-    check(result2.size == 1)
-    check(result2[0].body.size == 3)
+    val result2 = IndentParser.program.parseAllWithIndentOrThrow(example2)
+    console.log("Example 2:", result2)
 
     // Example 3: Multiple functions, one empty
     val example3 = "fun empty:\nfun another:\n    x"
-    val result3 = IndentParser.program.parseAllWithIndentOrThrow(example3, useMemoization = true)
-    println("Example 3 parsed: $result3")
-    check(result3.size == 2)
-    check(result3[0].name == "empty")
-    check(result3[0].body.isEmpty())
-    check(result3[1].name == "another")
-    check(result3[1].body.size == 1)
-
-    println("\nAll examples parsed successfully!")
+    val result3 = IndentParser.program.parseAllWithIndentOrThrow(example3)
+    console.log("Example 3:", result3)
 }
