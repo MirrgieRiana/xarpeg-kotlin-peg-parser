@@ -1,0 +1,324 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg-kotlinMultiplatform",
+    "version": "4.0.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-metadata-4.0.3.jar",
+          "url": "xarpeg-kotlinMultiplatform-4.0.3.jar",
+          "size": 26152,
+          "sha512": "62e3812c8d55c414502418ac5b904e7545bfe301e13b90ef2b2480b091dd46c53a2e17d0f93b8ec3a6b2ab98fdabe7bd2bc307f86a5d888d4b64a208a03a2aeb",
+          "sha256": "7cf09ead9c8f74462540bf2ba2c3a0e95c264697f28e5495332a8cb651253cfc",
+          "sha1": "aad37540badc8201d05b11e68fa18fdc66c98956",
+          "md5": "5d875f4ff218c36f281ee086b559640b"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "xarpeg-kotlin-peg-parser-kotlin-4.0.3-sources.jar",
+          "url": "xarpeg-kotlinMultiplatform-4.0.3-sources.jar",
+          "size": 20087,
+          "sha512": "3d17045adcbb8236e343202b6bc38785fec82f273fed27d7bf0c90501c3d163bc136d9f5dc940985aada5bb1bc91b7a728d2dc3bd44e4392dd9cbbe8a2ae6563",
+          "sha256": "7847c5ef9bb6305ac0d104d5964212ebd6f57084f9b77a5b861375e5b4dbdae8",
+          "sha1": "130a2fe09460520bd7118cc4d43ae0a523f3011b",
+          "md5": "6e9e9cd67b03f7203e9eb688215f121b"
+        }
+      ]
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-js/4.0.3/xarpeg-js-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-js",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-js/4.0.3/xarpeg-js-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-js",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-js/4.0.3/xarpeg-js-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-js",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-jvm/4.0.3/xarpeg-jvm-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-jvm",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-jvm/4.0.3/xarpeg-jvm-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-jvm",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../xarpeg-jvm/4.0.3/xarpeg-jvm-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-jvm",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-linuxArm64/4.0.3/xarpeg-linuxArm64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-linuxArm64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-linuxArm64/4.0.3/xarpeg-linuxArm64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-linuxArm64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-linuxX64/4.0.3/xarpeg-linuxX64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-linuxX64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-linuxX64/4.0.3/xarpeg-linuxX64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-linuxX64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-mingwX64/4.0.3/xarpeg-mingwX64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-mingwX64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../xarpeg-mingwX64/4.0.3/xarpeg-mingwX64-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-mingwX64",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-wasmJs/4.0.3/xarpeg-wasmJs-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-wasmJs",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-wasmJs/4.0.3/xarpeg-wasmJs-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-wasmJs",
+        "version": "4.0.3"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../xarpeg-wasmJs/4.0.3/xarpeg-wasmJs-4.0.3.module",
+        "group": "io.github.mirrgieriana",
+        "module": "xarpeg-wasmJs",
+        "version": "4.0.3"
+      }
+    }
+  ]
+}
