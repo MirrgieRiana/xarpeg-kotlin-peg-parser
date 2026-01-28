@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package io.github.mirrgieriana.xarpeg.samples.online.parser.indent
 
 import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
@@ -14,8 +12,6 @@ import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 
 /**
  * Parse all input using IndentParseContext and throw an exception if parsing fails
