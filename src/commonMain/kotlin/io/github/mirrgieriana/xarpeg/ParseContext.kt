@@ -1,6 +1,6 @@
 package io.github.mirrgieriana.xarpeg
 
-class ParseContext(val src: String, val useMemoization: Boolean) {
+open class ParseContext(val src: String, val useMemoization: Boolean) {
 
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 

@@ -199,6 +199,52 @@ Check the test suite for observed behavior:
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior tests
 
+## Extending ParseContext
+
+`ParseContext` is declared as `open class`, allowing you to extend it with custom state for specialized parsing needs.
+
+### Example: Indent-Based Language Support
+
+You can extend `ParseContext` to track indentation levels for Python-style languages:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.ParseContext
+
+class IndentParseContext(
+    src: String,
+    useMemoization: Boolean = true,
+) : ParseContext(src, useMemoization) {
+    private val indentStack = mutableListOf(0)
+    
+    val currentIndent: Int get() = indentStack.last()
+    
+    fun pushIndent(indent: Int) {
+        require(indent > currentIndent)
+        indentStack.add(indent)
+    }
+    
+    fun popIndent() {
+        require(indentStack.size > 1)
+        indentStack.removeLast()
+    }
+}
+```
+
+You can then use this custom context in your parsers to validate indentation:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun indent(): Parser<String> = Parser { context, start ->
+    if (context !is IndentParseContext) error("Requires IndentParseContext")
+    val expectedIndent = context.currentIndent
+    // Parse and validate indentation...
+}
+```
+
+See the [online-parser sample](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/indent) for a complete implementation.
+
 ## Key Takeaways
 
 - **`parseAllOrThrow`** requires full consumption, throws on failure
@@ -207,6 +253,7 @@ Check the test suite for observed behavior:
 - **Memoization** is enabled by default; disable with `useMemoization = false`
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
+- **`ParseContext` is extensible** for custom parsing requirements
 
 ## Next Steps
 
