@@ -11,6 +11,7 @@ import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.named
+import io.github.mirrgieriana.xarpeg.parsers.optional
 import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpeg.parsers.times
@@ -35,6 +36,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ProgramEx
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.indent.IndentParseContext
 import io.github.mirrgieriana.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -289,6 +291,61 @@ private object ExpressionGrammar {
     }
 
     private val assignment: Parser<Expression> = run {
+        // Indent-style function definition: name(params): <newline> <indent> body
+        val indentFuncDef = Parser<Expression> { context, start ->
+            if (context !is IndentParseContext) return@Parser null
+            
+            // Parse: identifier '(' paramList ')' ':'
+            val nameResult = identifier.parseOrNull(context, start) ?: return@Parser null
+            val wsResult1 = whitespace.parseOrNull(context, nameResult.end) ?: return@Parser null
+            val paramListResult = paramList.parseOrNull(context, wsResult1.end) ?: return@Parser null
+            val wsResult2 = whitespace.parseOrNull(context, paramListResult.end) ?: return@Parser null
+            
+            if (context.src.getOrNull(wsResult2.end) != ':') return@Parser null
+            var pos = wsResult2.end + 1
+            
+            // Parse optional whitespace and newline
+            val wsResult3 = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
+            pos = wsResult3.end
+            
+            if (context.src.getOrNull(pos) != '\n') return@Parser null
+            pos++
+            
+            // Parse indent
+            val indentSpaces = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
+            val indentLevel = indentSpaces.value.value.length
+            
+            if (indentLevel <= context.currentIndent) return@Parser null
+            
+            context.pushIndent(indentLevel)
+            pos = indentSpaces.end
+            
+            try {
+                // Parse the body expression
+                val bodyResult = ref { expression }.parseOrNull(context, pos)
+                if (bodyResult == null) {
+                    context.popIndent()
+                    return@Parser null
+                }
+                
+                context.popIndent()
+                
+                // Create lambda expression
+                val name = nameResult.value
+                val params = paramListResult.value
+                val body = bodyResult.value
+                val lambda = LambdaExpression(params, body, SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end)))
+                val assignment = AssignmentExpression(name, lambda)
+                
+                ParseResult(assignment, start, bodyResult.end)
+            } catch (e: Exception) {
+                context.popIndent()
+                throw e
+            }
+        }
+        
+        // Try indent-style first, then regular assignment, then ternary
+        indentFuncDef + 
         ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueExpr) ->
             AssignmentExpression(name, valueExpr)
         }) + ternary
@@ -356,10 +413,20 @@ fun parseExpression(input: String): String {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-
-        val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
-        val result = resultExpr.evaluate(initialContext)
-        result.toString()
+        
+        // Use IndentParseContext to support indent-based function definitions
+        val indentContext = IndentParseContext(input, useMemoization = true)
+        val parseResult = indentContext.parseOrNull(ExpressionGrammar.programRoot, 0)
+        
+        if (parseResult == null || parseResult.end != input.length) {
+            // Fall back to error handling
+            val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
+            val result = resultExpr.evaluate(initialContext)
+            result.toString()
+        } else {
+            val result = parseResult.value.evaluate(initialContext)
+            result.toString()
+        }
     } catch (e: EvaluationException) {
         if (e.context != null && e.context.callStack.isNotEmpty()) {
             e.formatWithCallStack()
