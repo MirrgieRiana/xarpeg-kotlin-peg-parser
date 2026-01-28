@@ -1,3 +1,3 @@
 package io.github.mirrgieriana.xarpeg
 
-expect val isNative: Boolean
+internal expect val isNative: Boolean
