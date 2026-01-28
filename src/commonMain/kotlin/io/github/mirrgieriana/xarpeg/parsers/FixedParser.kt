@@ -15,4 +15,4 @@ private class FixedParser<T : Any>(val value: T) : Parser<T> {
 fun <T : Any> fixed(value: T): Parser<T> = FixedParser(value)
 
 /** 解析位置を進めることなしに、常に [Tuple0] を返すパーサーを返します。 */
-val empty get() = fixed(Tuple0)
+val empty: Parser<Tuple0> get() = fixed(Tuple0)
