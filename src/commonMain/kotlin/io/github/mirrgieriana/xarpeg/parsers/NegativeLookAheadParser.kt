@@ -5,7 +5,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
-class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
+private class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         val result = context.parseOrNull(parser, start)
         if (result != null) return null
@@ -13,7 +13,19 @@ class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     }
 }
 
+/**
+ * 否定先読みパーサーを作成します。
+ *
+ * このパーサーが失敗する場合にパーサーは成功しますが、入力を消費しません。
+ */
 val Parser<*>.negativeLookAhead: Parser<Tuple0> get() = NegativeLookAheadParser(this)
 
+/**
+ * 否定先読みパーサーを作成します（[negativeLookAhead]のエイリアス）。
+ */
 val Parser<*>.not: Parser<Tuple0> get() = this.negativeLookAhead
+
+/**
+ * `!`演算子を使用して否定先読みパーサーを作成します。
+ */
 operator fun Parser<*>.not(): Parser<Tuple0> = this.not

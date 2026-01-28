@@ -5,7 +5,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple1
 
-class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
+private class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple1<T?>> {
         val result = context.parseOrNull(parser, start)
         return if (result != null) {
@@ -16,4 +16,9 @@ class OptionalParser<out T : Any>(val parser: Parser<T>) : Parser<Tuple1<T?>> {
     }
 }
 
-val <T : Any> Parser<T>.optional get() = OptionalParser(this)
+/**
+ * このパーサーを0回または1回マッチするパーサーを作成します。
+ *
+ * 結果のパーサーは常に成功し、マッチ時は`Tuple1(value)`、マッチしない場合は`Tuple1(null)`を生成します。
+ */
+val <T : Any> Parser<T>.optional: Parser<Tuple1<T?>> get() = OptionalParser(this)

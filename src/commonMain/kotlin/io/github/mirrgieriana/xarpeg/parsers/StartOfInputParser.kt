@@ -5,11 +5,14 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
-object StartOfInputParser : Parser<Tuple0> {
+private object StartOfInputParser : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         if (start != 0) return null
         return ParseResult(Tuple0, start, start)
     }
 }
 
-val startOfInput = StartOfInputParser
+/**
+ * 入力の開始位置でのみ成功するパーサーを返します。
+ */
+val startOfInput: Parser<Tuple0> = StartOfInputParser
