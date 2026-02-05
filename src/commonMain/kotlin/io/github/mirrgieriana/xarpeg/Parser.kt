@@ -47,27 +47,6 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
 }
 
 /**
- * Calculates the line and column position for a given index in the input string.
- *
- * @param input The input string
- * @param position The character position in the input
- * @return A pair of (line number, column number) where both are 1-indexed
- */
-private fun calculateLineAndColumn(input: String, position: Int): Pair<Int, Int> {
-    val textBeforePosition = input.substring(0, position.coerceAtMost(input.length))
-    var line = 1
-    var lastNewlinePos = -1
-    textBeforePosition.forEachIndexed { i, char ->
-        if (char == '\n') {
-            line++
-            lastNewlinePos = i
-        }
-    }
-    val column = position - lastNewlinePos
-    return Pair(line, column)
-}
-
-/**
  * Formats a ParseException into a user-friendly error message with context.
  *
  * The formatted message includes:
@@ -88,8 +67,6 @@ private fun calculateLineAndColumn(input: String, position: Int): Pair<Int, Int>
  * @return A formatted error message with context
  */
 fun ParseException.formatMessage(input: String): String {
-    val sb = StringBuilder()
-
     // Use the errorPosition from context for UnmatchedInputParseException
     // and the position property for ExtraCharactersParseException
     val position = if (this is ExtraCharactersParseException) {
@@ -98,37 +75,8 @@ fun ParseException.formatMessage(input: String): String {
         this.context.errorPosition
     }
 
-    // Calculate line and column
-    val (line, column) = calculateLineAndColumn(input, position)
-
-    sb.append("Error: Syntax error at line $line, column $column")
-
-    // Add expected parsers if available
-    if (context.suggestedParsers.isNotEmpty()) {
-        val candidates = context.suggestedParsers
-            .mapNotNull { it.name }
-            .distinct()
-        if (candidates.isNotEmpty()) {
-            sb.append("\nExpected: ${candidates.joinToString(", ")}")
-        }
-    }
-
-    // Add source line and caret
-    val textBeforePosition = input.substring(0, position.coerceAtMost(input.length))
-    val lineStart = textBeforePosition.lastIndexOf('\n') + 1
-    val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
-    val sourceLine = input.substring(lineStart, lineEnd)
-
-    if (sourceLine.isNotEmpty()) {
-        sb.append("\n")
-        sb.append(sourceLine)
-        sb.append("\n")
-        val caretPosition = position - lineStart
-        sb.append(" ".repeat(caretPosition.coerceAtLeast(0)))
-        sb.append("^")
-    }
-
-    return sb.toString()
+    val calculator = MatrixPositionCalculator(input)
+    return calculator.formatMessage(position, this.context.suggestedParsers)
 }
 
 
