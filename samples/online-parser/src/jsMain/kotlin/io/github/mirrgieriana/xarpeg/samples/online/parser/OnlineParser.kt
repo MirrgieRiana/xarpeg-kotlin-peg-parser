@@ -2,10 +2,12 @@
 
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
+import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
+import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -415,18 +417,19 @@ fun parseExpression(input: String): String {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-
-        val indentContext = OnlineParserParseContext(input, useMemoization = true)
-        val parseResult = indentContext.parseOrNull(ExpressionGrammar.programRoot, 0)
-
-        if (parseResult == null || parseResult.end != input.length) {
-            val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
-            val result = resultExpr.evaluate(initialContext)
-            result.toString()
-        } else {
-            val result = parseResult.value.evaluate(initialContext)
-            result.toString()
+        val context = OnlineParserParseContext(input, useMemoization = true)
+        val parseResult = context.parseOrNull(ExpressionGrammar.programRoot, 0)
+            ?: throw UnmatchedInputParseException("Failed to parse.", context, 0)
+        if (parseResult.end != input.length) {
+            val extraChars = input.drop(parseResult.end).take(10).let { if (input.length - parseResult.end > 10) "$it..." else it }
+            throw ExtraCharactersParseException(
+                "Extra characters found after position ${parseResult.end}: \"$extraChars\"",
+                context,
+                parseResult.end
+            )
         }
+        val result = parseResult.value.evaluate(initialContext)
+        result.toString()
     } catch (e: EvaluationException) {
         if (e.context != null && e.context.callStack.isNotEmpty()) {
             e.formatWithCallStack()
