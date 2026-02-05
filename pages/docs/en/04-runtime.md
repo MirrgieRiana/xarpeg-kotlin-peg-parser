@@ -93,6 +93,41 @@ fun main() {
 }
 ```
 
+### Rich Error Messages
+
+Use the `formatMessage` extension function to generate user-friendly error messages that include error position, expected elements, the source line, and a caret indicator pointing to the error location:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val operator = (+'*' + +'+') named "operator"
+val expr = number * operator * number
+
+fun main() {
+    val input = "42 + 10"
+    val result = expr.parseAll(input)
+    val exception = result.exceptionOrNull() as? ParseException
+    
+    if (exception != null) {
+        val formattedMessage = exception.formatMessage(input)
+        println(formattedMessage)
+        // Example output:
+        // Error: Syntax error at line 1, column 4
+        // Expected: operator
+        // 42 + 10
+        //    ^
+    }
+}
+```
+
+The `formatMessage` function provides:
+- Error line and column number
+- List of expected named parsers (if available)
+- The source line where the error occurred
+- A caret (`^`) symbol indicating the error position
+
 ## Memoization and Caching
 
 ### Default Behavior
