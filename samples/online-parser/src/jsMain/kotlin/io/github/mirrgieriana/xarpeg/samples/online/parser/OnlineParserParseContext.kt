@@ -1,23 +1,21 @@
-package io.github.mirrgieriana.xarpeg.samples.online.parser.indent
+package io.github.mirrgieriana.xarpeg.samples.online.parser
 
 import io.github.mirrgieriana.xarpeg.ParseContext
 
 /**
- * Example of an indent-aware ParseContext.
- * This extends ParseContext to track the current indentation level.
+ * Custom ParseContext for the online parser.
+ * This extends ParseContext to track the current indentation level for indent-based syntax.
  *
- * **Note:** This example demonstrates indent-based language support that requires
+ * **Note:** This demonstrates ParseContext extension that requires
  * ParseContext to be declared as `open class`. This feature is available when using
  * a development build or will be available in future releases of xarpeg.
  *
- * To use this example with a local development build:
+ * To use this with a local development build:
  * 1. Build and publish the main project to mavenLocal: `./gradlew publishToMavenLocal`
  * 2. Add `mavenLocal()` to repositories in this build.gradle.kts
  * 3. Update libs.versions.toml to use version "latest"
- *
- * Example usage for parsing indent-based languages like Python.
  */
-class IndentParseContext(
+class OnlineParserParseContext(
     src: String,
     useMemoization: Boolean = true,
 ) : ParseContext(src, useMemoization) {
@@ -46,7 +44,9 @@ class IndentParseContext(
     }
 
     /**
-     * Peek at what the next indent would be without modifying the stack
+     * Check whether the given indent level is deeper than the current indent.
+     *
+     * Returns true if [indent] is greater than [currentIndent] without modifying the stack.
      */
     fun peekIndent(indent: Int): Boolean = indent > currentIndent
 }

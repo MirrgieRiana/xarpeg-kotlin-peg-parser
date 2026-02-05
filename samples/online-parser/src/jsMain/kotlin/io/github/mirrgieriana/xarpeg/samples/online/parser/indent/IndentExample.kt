@@ -12,12 +12,13 @@ import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
+import io.github.mirrgieriana.xarpeg.samples.online.parser.OnlineParserParseContext
 
 /**
- * Parse all input using IndentParseContext and throw an exception if parsing fails
+ * Parse all input using OnlineParserParseContext and throw an exception if parsing fails
  */
 fun <T : Any> Parser<T>.parseAllWithIndentOrThrow(src: String, useMemoization: Boolean = true): T {
-    val context = IndentParseContext(src, useMemoization)
+    val context = OnlineParserParseContext(src, useMemoization)
     val result = context.parseOrNull(this, 0) ?: throw UnmatchedInputParseException("Failed to parse.", context, 0)
     if (result.end != src.length) {
         throw ExtraCharactersParseException(
@@ -57,8 +58,8 @@ object IndentParser {
      * Create a parser that matches the current indent level
      */
     private fun indent(): Parser<String> = Parser { context, start ->
-        if (context !is IndentParseContext) {
-            error("IndentParser requires IndentParseContext")
+        if (context !is OnlineParserParseContext) {
+            error("IndentParser requires OnlineParserParseContext")
         }
         val expectedIndent = context.currentIndent
         val spaceResult = spaces.parseOrNull(context, start) ?: return@Parser null
@@ -75,8 +76,8 @@ object IndentParser {
      * Create a parser for an indented block
      */
     private fun indentedBlock(contentParser: Parser<Node>): Parser<List<Node>> = Parser { context, start ->
-        if (context !is IndentParseContext) {
-            error("IndentParser requires IndentParseContext")
+        if (context !is OnlineParserParseContext) {
+            error("IndentParser requires OnlineParserParseContext")
         }
 
         // Parse newline after the colon

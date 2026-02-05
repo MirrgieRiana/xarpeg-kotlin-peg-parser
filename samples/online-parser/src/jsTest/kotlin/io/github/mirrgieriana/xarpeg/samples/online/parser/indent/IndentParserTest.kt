@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.indent
 
+import io.github.mirrgieriana.xarpeg.samples.online.parser.OnlineParserParseContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -44,7 +45,7 @@ class IndentParserTest {
 
     @Test
     fun testIndentParseContextStackManagement() {
-        val context = IndentParseContext("test", useMemoization = false)
+        val context = OnlineParserParseContext("test", useMemoization = false)
         assertEquals(0, context.currentIndent)
 
         context.pushIndent(4)

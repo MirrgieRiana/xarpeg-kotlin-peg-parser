@@ -35,7 +35,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ProgramEx
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
-import io.github.mirrgieriana.xarpeg.samples.online.parser.indent.IndentParseContext
+
 import io.github.mirrgieriana.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -290,7 +290,7 @@ private object ExpressionGrammar {
     }
 
     private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
-        if (context !is IndentParseContext) return@Parser null
+        if (context !is OnlineParserParseContext) return@Parser null
 
         val nameResult = identifier.parseOrNull(context, start) ?: return@Parser null
         val wsResult1 = whitespace.parseOrNull(context, nameResult.end) ?: return@Parser null
@@ -303,8 +303,18 @@ private object ExpressionGrammar {
         val wsResult3 = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
         pos = wsResult3.end
 
-        if (context.src.getOrNull(pos) != '\n') return@Parser null
-        pos++
+        val ch = context.src.getOrNull(pos) ?: return@Parser null
+        if (ch == '\r') {
+            if (context.src.getOrNull(pos + 1) == '\n') {
+                pos += 2
+            } else {
+                return@Parser null
+            }
+        } else if (ch == '\n') {
+            pos++
+        } else {
+            return@Parser null
+        }
 
         val indentSpaces = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
         val indentLevel = indentSpaces.value.value.length
@@ -406,7 +416,7 @@ fun parseExpression(input: String): String {
 
         val initialContext = EvaluationContext(sourceCode = input)
 
-        val indentContext = IndentParseContext(input, useMemoization = true)
+        val indentContext = OnlineParserParseContext(input, useMemoization = true)
         val parseResult = indentContext.parseOrNull(ExpressionGrammar.programRoot, 0)
 
         if (parseResult == null || parseResult.end != input.length) {
