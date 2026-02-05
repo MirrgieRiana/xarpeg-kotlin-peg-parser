@@ -45,3 +45,76 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
     }
     return Result.success(result.value)
 }
+
+/**
+ * Formats a ParseException into a user-friendly error message with context.
+ *
+ * The formatted message includes:
+ * - Error line and column number
+ * - Expected parsers (if named parsers are available)
+ * - The source line where the error occurred
+ * - A caret (^) indicating the error position
+ *
+ * Example output:
+ * ```
+ * Error: Syntax error at line 1, column 4
+ * Expected: operator
+ * 42 + 10
+ *    ^
+ * ```
+ *
+ * @param input The original input string that was being parsed
+ * @return A formatted error message with context
+ */
+fun ParseException.formatMessage(input: String): String {
+    val sb = StringBuilder()
+
+    // Use the errorPosition from context for UnmatchedInputParseException
+    // and the position property for ExtraCharactersParseException
+    val position = if (this is ExtraCharactersParseException) {
+        this.position
+    } else {
+        this.context.errorPosition
+    }
+
+    // Calculate line and column
+    val beforePosition = input.substring(0, position.coerceAtMost(input.length))
+    var line = 1
+    var lastNewlinePos = -1
+    beforePosition.forEachIndexed { i, char ->
+        if (char == '\n') {
+            line++
+            lastNewlinePos = i
+        }
+    }
+    val column = position - lastNewlinePos
+
+    sb.append("Error: Syntax error at line $line, column $column")
+
+    // Add expected parsers if available
+    if (context.suggestedParsers.isNotEmpty()) {
+        val candidates = context.suggestedParsers
+            .mapNotNull { it.name }
+            .distinct()
+        if (candidates.isNotEmpty()) {
+            sb.append("\nExpected: ${candidates.joinToString(", ")}")
+        }
+    }
+
+    // Add source line and caret
+    val lineStart = beforePosition.lastIndexOf('\n') + 1
+    val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
+    val sourceLine = input.substring(lineStart, lineEnd)
+
+    if (sourceLine.isNotEmpty()) {
+        sb.append("\n")
+        sb.append(sourceLine)
+        sb.append("\n")
+        val caretPosition = position - lineStart
+        sb.append(" ".repeat(caretPosition.coerceAtLeast(0)))
+        sb.append("^")
+    }
+
+    return sb.toString()
+}
+

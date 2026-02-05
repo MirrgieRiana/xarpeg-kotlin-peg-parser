@@ -254,6 +254,95 @@ class ErrorContextTest {
         assertEquals(0, context2.errorPosition)
     }
 
+    @Test
+    fun formatMessageForUnmatchedInput() {
+        // Test formatMessage for UnmatchedInputParseException
+        val letter = +Regex("[a-z]") named "letter" map { it.value }
+        val digit = +Regex("[0-9]") named "digit" map { it.value }
+        val parser = letter * digit
+
+        val input = "123"
+        val exception = assertFailsWith<UnmatchedInputParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage(input)
+        
+        // Should contain line/column information
+        assertTrue(formatted.contains("line 1"))
+        assertTrue(formatted.contains("column 1"))
+        // Should contain the source line
+        assertTrue(formatted.contains("123"))
+        // Should contain caret indicator
+        assertTrue(formatted.contains("^"))
+        // Should contain expected parsers
+        assertTrue(formatted.contains("letter"))
+    }
+
+    @Test
+    fun formatMessageForMultilineInput() {
+        // Test formatMessage with multiline input
+        val hello = +"hello"
+        val space = +' '
+        val world = +"world" named "world"
+        val parser = hello * space * world
+
+        val input = "hello test\nline2"
+        val exception = assertFailsWith<UnmatchedInputParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage(input)
+        
+        // Should point to the correct line (first line where error occurred)
+        assertTrue(formatted.contains("line 1"))
+        assertTrue(formatted.contains("column 7"))
+        // Should show the problematic line
+        assertTrue(formatted.contains("hello test"))
+        // Should show caret at error position
+        assertTrue(formatted.contains("^"))
+    }
+
+    @Test
+    fun formatMessageForExtraCharacters() {
+        // Test formatMessage for ExtraCharactersParseException
+        val parser = +"hello" named "greeting"
+
+        val input = "helloworld"
+        val exception = assertFailsWith<ExtraCharactersParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage(input)
+        
+        // Should contain line/column information at position 5
+        assertTrue(formatted.contains("line 1"))
+        assertTrue(formatted.contains("column 6"))
+        // Should contain the source line
+        assertTrue(formatted.contains("helloworld"))
+        // Should contain caret indicator
+        assertTrue(formatted.contains("^"))
+    }
+
+    @Test
+    fun formatMessageWithNoSuggestedParsers() {
+        // Test formatMessage when no named parsers are available
+        val parser = +"test"
+
+        val input = "fail"
+        val exception = assertFailsWith<UnmatchedInputParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage(input)
+        
+        // Should still contain basic error information
+        assertTrue(formatted.contains("Error"))
+        assertTrue(formatted.contains("line 1"))
+        assertTrue(formatted.contains("fail"))
+        assertTrue(formatted.contains("^"))
+    }
+
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
         val suggestions = context.suggestedParsers

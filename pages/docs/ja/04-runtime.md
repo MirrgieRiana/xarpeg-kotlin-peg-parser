@@ -93,6 +93,41 @@ fun main() {
 }
 ```
 
+### リッチなエラーメッセージ
+
+`formatMessage`拡張関数を使用すると、エラー位置、期待される要素、該当行のソースコード、エラー箇所を示すキャレット表示を含むユーザーフレンドリーなエラーメッセージを生成できます：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val operator = (+'*' + +'+') named "operator"
+val expr = number * operator * number
+
+fun main() {
+    val input = "42 + 10"
+    val result = expr.parseAll(input)
+    val exception = result.exceptionOrNull() as? ParseException
+    
+    if (exception != null) {
+        val formattedMessage = exception.formatMessage(input)
+        println(formattedMessage)
+        // 出力例：
+        // Error: Syntax error at line 1, column 4
+        // Expected: operator
+        // 42 + 10
+        //    ^
+    }
+}
+```
+
+`formatMessage`関数は以下を提供します：
+- エラーの行番号と列番号
+- 期待される名前付きパーサのリスト（利用可能な場合）
+- エラーが発生した行のソースコード
+- エラー位置を示すキャレット（`^`）記号
+
 ## メモ化とキャッシング
 
 ### デフォルトの動作
