@@ -99,8 +99,8 @@ class MatrixPositionCalculator(private val src: String) {
     fun formatMessage(position: Int, suggestedParsers: Set<Parser<*>>, maxLineLength: Int = 80): String {
         val sb = StringBuilder()
 
-        val matrixPos = toMatrixPosition(position)
-        sb.append("Error: Syntax error at line ${matrixPos.row}, column ${matrixPos.column}")
+        val matrixPosition = toMatrixPosition(position)
+        sb.append("Error: Syntax error at line ${matrixPosition.row}, column ${matrixPosition.column}")
 
         // Add expected parsers if available
         if (suggestedParsers.isNotEmpty()) {
