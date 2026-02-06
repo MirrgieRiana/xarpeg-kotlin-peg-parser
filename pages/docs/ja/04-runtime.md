@@ -110,15 +110,12 @@ fun main() {
     val result = expr.parseAll(input)
     val exception = result.exceptionOrNull() as? ParseException
     
-    if (exception != null) {
-        val formattedMessage = exception.formatMessage(input)
-        println(formattedMessage)
-        // 出力例：
-        // Error: Syntax error at line 1, column 4
-        // Expected: operator
-        // 42 + 10
-        //    ^
-    }
+    check(exception != null)
+    val formattedMessage = exception.formatMessage()
+    check(formattedMessage.contains("Error: Syntax error at line 1, column 4"))
+    check(formattedMessage.contains("Expected: operator"))
+    check(formattedMessage.contains("42 + 10"))
+    check(formattedMessage.contains("^"))
 }
 ```
 

@@ -266,7 +266,7 @@ class ErrorContextTest {
             parser.parseAllOrThrow(input)
         }
 
-        val formatted = exception.formatMessage(input)
+        val formatted = exception.formatMessage()
         
         // Should contain line/column information
         assertTrue(formatted.contains("line 1"))
@@ -292,7 +292,7 @@ class ErrorContextTest {
             parser.parseAllOrThrow(input)
         }
 
-        val formatted = exception.formatMessage(input)
+        val formatted = exception.formatMessage()
         
         // Should point to the correct line (first line where error occurred)
         assertTrue(formatted.contains("line 1"))
@@ -313,7 +313,7 @@ class ErrorContextTest {
             parser.parseAllOrThrow(input)
         }
 
-        val formatted = exception.formatMessage(input)
+        val formatted = exception.formatMessage()
         
         // Should contain line/column information at position 5
         assertTrue(formatted.contains("line 1"))
@@ -334,7 +334,7 @@ class ErrorContextTest {
             parser.parseAllOrThrow(input)
         }
 
-        val formatted = exception.formatMessage(input)
+        val formatted = exception.formatMessage()
         
         // Should still contain basic error information
         assertTrue(formatted.contains("Error"))

@@ -113,7 +113,7 @@ class MatrixPositionCalculator(private val src: String) {
         }
 
         // Add source line and caret
-        val lineIndex = lineStartIndices.binarySearch(position).let { if (it >= 0) it else -it - 2 }
+        val lineIndex = matrixPosition.row - 1
         val lineStart = lineStartIndices[lineIndex]
         val lineEnd = lineStartIndices.getOrNull(lineIndex + 1)?.let { it - 1 } ?: src.length
         val sourceLine = src.substring(lineStart, lineEnd)

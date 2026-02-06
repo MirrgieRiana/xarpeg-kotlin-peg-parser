@@ -38,7 +38,7 @@ fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = tr
 
 fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
     val context = ParseContext(src, useMemoization)
-    val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException("Failed to parse.", context, 0))
+    val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException("Failed to parse.", context, context.errorPosition))
     if (result.end != src.length) {
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
         return Result.failure(ExtraCharactersParseException("""Extra characters found after position ${result.end}: "$string"""", context, result.end))
@@ -63,20 +63,11 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
  *    ^
  * ```
  *
- * @param input The original input string that was being parsed
  * @return A formatted error message with context
  */
-fun ParseException.formatMessage(input: String): String {
-    // Use the errorPosition from context for UnmatchedInputParseException
-    // and the position property for ExtraCharactersParseException
-    val position = if (this is ExtraCharactersParseException) {
-        this.position
-    } else {
-        this.context.errorPosition
-    }
-
-    val calculator = MatrixPositionCalculator(input)
-    return calculator.formatMessage(position, this.context.suggestedParsers)
+fun ParseException.formatMessage(): String {
+    val calculator = MatrixPositionCalculator(this.context.src)
+    return calculator.formatMessage(this.position, this.context.suggestedParsers)
 }
 
 

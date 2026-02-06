@@ -47,11 +47,13 @@ private fun Int.toHexDigit() = if (this < 10) '0' + this else 'A' + (this - 10)
  *
  * When truncating, " ..." (4 chars) is added, so to save 1 char, 5 chars must be removed.
  *
- * @param maxLength Maximum length of the output string
+ * @param maxLength Maximum length of the output string (must be at least 9)
  * @param caretPosition Position of the caret (0-indexed)
  * @return A pair of (truncated string, new caret position)
  */
 internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<String, Int> {
+    require(maxLength >= 9) { "maxLength must be at least 9, but was $maxLength" }
+    
     if (this.length <= maxLength) {
         return Pair(this, caretPosition)
     }
