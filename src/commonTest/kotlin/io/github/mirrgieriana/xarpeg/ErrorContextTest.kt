@@ -357,4 +357,27 @@ class ErrorContextTest {
             "Failed to parse at position ${context.errorPosition}."
         }
     }
+
+    @Test
+    fun formatMessageDocExample() {
+        // Test the exact example from documentation
+        val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+        val operator = +'+' + +'-'
+        val expr = number * operator * number
+
+        val input = "42*10"
+        val exception = assertFailsWith<UnmatchedInputParseException> {
+            expr.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.split("\n")
+
+        // Verify the exact structure from documentation
+        assertEquals("Error: Syntax error at line 1, column 3", lines[0])
+        assertEquals("Expected: \"+\", \"-\"", lines[1])
+        assertEquals("42*10", lines[2])
+        assertEquals("  ^", lines[3])
+    }
 }
+

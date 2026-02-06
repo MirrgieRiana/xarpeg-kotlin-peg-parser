@@ -113,7 +113,7 @@ fun main() {
         val message = exception.formatMessage()
         val lines = message.split("\n")
         check(lines[0] == "Error: Syntax error at line 1, column 3")
-        check(lines[1] == "Expected: number")
+        check(lines[1] == "Expected: \"+\", \"-\"")
         check(lines[2] == "42*10")
         check(lines[3] == "  ^")
     }
