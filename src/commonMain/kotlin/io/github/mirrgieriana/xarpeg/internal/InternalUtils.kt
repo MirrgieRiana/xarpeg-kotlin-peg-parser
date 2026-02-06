@@ -33,27 +33,9 @@ private fun StringBuilder.appendUnicodeChar(char: Char) {
 
 private fun Int.toHexDigit() = if (this < 10) '0' + this else 'A' + (this - 10)
 
-/**
- * Truncates a string to fit within a maximum length with a caret position indicator.
- *
- * When the line is longer than maxLength, it will be truncated with "..." on one or both sides,
- * keeping the caret position visible.
- *
- * There are four patterns:
- * 1. Line is <= maxLength: no truncation
- * 2. Caret position <= leftMaxChars: truncate right side only
- * 3. Remaining chars from caret <= rightMaxChars: truncate left side only
- * 4. Otherwise: truncate both sides
- *
- * When truncating, " ..." (4 chars) is added, so to save 1 char, 5 chars must be removed.
- *
- * @param maxLength Maximum length of the output string (must be at least 9)
- * @param caretPosition Position of the caret (0-indexed)
- * @return A pair of (truncated string, new caret position)
- */
 internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<String, Int> {
     require(maxLength >= 9) { "maxLength must be at least 9, but was $maxLength" }
-    
+
     if (this.length <= maxLength) {
         return Pair(this, caretPosition)
     }

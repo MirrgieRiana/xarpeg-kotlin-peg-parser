@@ -31,6 +31,10 @@ class UnmatchedInputParseException(message: String, context: ParseContext, posit
 
 class ExtraCharactersParseException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
 
+/** Formats a ParseException into a user-friendly error message with context. */
+fun ParseException.formatMessage() =
+    MatrixPositionCalculator(context.src).formatMessage(this)
+
 
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
 
@@ -45,8 +49,4 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
     }
     return Result.success(result.value)
 }
-
-/** Formats a ParseException into a user-friendly error message with context. */
-fun ParseException.formatMessage() =
-    MatrixPositionCalculator(context.src).formatMessage(this)
 

@@ -267,7 +267,7 @@ class ErrorContextTest {
         }
 
         val formatted = exception.formatMessage()
-        
+
         // Should contain line/column information
         assertTrue(formatted.contains("line 1"))
         assertTrue(formatted.contains("column 1"))
@@ -293,7 +293,7 @@ class ErrorContextTest {
         }
 
         val formatted = exception.formatMessage()
-        
+
         // Should point to the correct line (first line where error occurred)
         assertTrue(formatted.contains("line 1"))
         assertTrue(formatted.contains("column 7"))
@@ -314,7 +314,7 @@ class ErrorContextTest {
         }
 
         val formatted = exception.formatMessage()
-        
+
         // Should contain line/column information at position 5
         assertTrue(formatted.contains("line 1"))
         assertTrue(formatted.contains("column 6"))
@@ -335,7 +335,7 @@ class ErrorContextTest {
         }
 
         val formatted = exception.formatMessage()
-        
+
         // Should still contain basic error information
         assertTrue(formatted.contains("Error"))
         assertTrue(formatted.contains("line 1"))
