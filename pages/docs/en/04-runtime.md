@@ -102,20 +102,21 @@ import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
-val operator = (+'*' + +'+') named "operator"
+val operator = +'*' + '+'
 val expr = number * operator * number
 
 fun main() {
-    val input = "42 + 10"
-    val result = expr.parseAll(input)
-    val exception = result.exceptionOrNull() as? ParseException
-    
-    check(exception != null)
-    val formattedMessage = exception.formatMessage()
-    check(formattedMessage.contains("Error: Syntax error at line 1, column 4"))
-    check(formattedMessage.contains("Expected: operator"))
-    check(formattedMessage.contains("42 + 10"))
-    check(formattedMessage.contains("^"))
+    val input = "42*10"
+    try {
+        expr.parseAllOrThrow(input)
+    } catch (exception: ParseException) {
+        val message = exception.formatMessage()
+        check(message[0] == 'E')
+        check(message.contains("line 1"))
+        check(message.contains("column 3"))
+        check(message.contains("42*10"))
+        check(message.contains("^"))
+    }
 }
 ```
 

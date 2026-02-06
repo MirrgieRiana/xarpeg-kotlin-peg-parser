@@ -91,18 +91,19 @@ class MatrixPositionCalculator(private val src: String) {
      * - The source line where the error occurred (truncated to maxLineLength if needed)
      * - A caret (^) indicating the error position
      *
-     * @param position The error position in the source
-     * @param suggestedParsers Set of parsers that failed at the error position
+     * @param exception The parse exception to format
      * @param maxLineLength Maximum length for the source line display (default 80)
      * @return A formatted error message with context
      */
-    fun formatMessage(position: Int, suggestedParsers: Set<Parser<*>>, maxLineLength: Int = 80): String {
+    fun formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
         val sb = StringBuilder()
 
+        val position = exception.position
         val matrixPosition = toMatrixPosition(position)
         sb.append("Error: Syntax error at line ${matrixPosition.row}, column ${matrixPosition.column}")
 
         // Add expected parsers if available
+        val suggestedParsers = exception.context.suggestedParsers
         if (suggestedParsers.isNotEmpty()) {
             val candidates = suggestedParsers
                 .mapNotNull { it.name }
@@ -116,7 +117,7 @@ class MatrixPositionCalculator(private val src: String) {
         val lineIndex = matrixPosition.row - 1
         val lineStart = lineStartIndices[lineIndex]
         val lineEnd = lineStartIndices.getOrNull(lineIndex + 1)?.let { it - 1 } ?: src.length
-        val sourceLine = src.substring(lineStart, lineEnd)
+        val sourceLine = src.substring(lineStart, lineEnd).trimEnd('\r')
 
         if (sourceLine.isNotEmpty()) {
             val caretPosition = position - lineStart

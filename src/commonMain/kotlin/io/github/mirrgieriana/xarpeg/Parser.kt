@@ -46,28 +46,7 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
     return Result.success(result.value)
 }
 
-/**
- * Formats a ParseException into a user-friendly error message with context.
- *
- * The formatted message includes:
- * - Error line and column number
- * - Expected parsers (if named parsers are available)
- * - The source line where the error occurred
- * - A caret (^) indicating the error position
- *
- * Example output:
- * ```
- * Error: Syntax error at line 1, column 4
- * Expected: operator
- * 42 + 10
- *    ^
- * ```
- *
- * @return A formatted error message with context
- */
-fun ParseException.formatMessage(): String {
-    val calculator = MatrixPositionCalculator(this.context.src)
-    return calculator.formatMessage(this.position, this.context.suggestedParsers)
-}
-
+/** Formats a ParseException into a user-friendly error message with context. */
+fun ParseException.formatMessage() =
+    MatrixPositionCalculator(context.src).formatMessage(this)
 

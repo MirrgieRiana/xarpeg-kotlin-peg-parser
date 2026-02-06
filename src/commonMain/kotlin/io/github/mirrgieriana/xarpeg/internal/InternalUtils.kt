@@ -61,7 +61,7 @@ internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<
     // leftMaxChars: Maximum characters to show on the left side when doing single-side truncation
     // rightMaxChars: Maximum characters to show on the right side of caret when doing single-side truncation
     val leftMaxChars = maxLength / 2
-    val rightMaxChars = maxLength - leftMaxChars - 1 // -1 accounts for the caret character itself
+    val rightMaxChars = maxLength - leftMaxChars - 1 // -1 to ensure leftMaxChars + 1 + rightMaxChars = maxLength
 
     val charsAfterCaret = this.length - caretPosition - 1
 
@@ -83,10 +83,10 @@ internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<
         // Pattern 4: Truncate both sides
         else -> {
             // Total available chars for content: maxLength - 8 (for "... " and " ...")
-            // Content structure: leftChars + caret (1 char) + rightChars
+            // Content structure: leftChars + 1 (caret position) + rightChars
             val totalContentChars = maxLength - 8
             val leftChars = totalContentChars / 2
-            val rightChars = totalContentChars - leftChars - 1 // -1 accounts for the caret character
+            val rightChars = totalContentChars - leftChars - 1 // -1 because totalContentChars = leftChars + 1 + rightChars
 
             val leftStart = caretPosition - leftChars
             val rightEnd = caretPosition + 1 + rightChars
