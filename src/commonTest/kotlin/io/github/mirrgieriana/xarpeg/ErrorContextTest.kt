@@ -371,10 +371,10 @@ class ErrorContextTest {
         }
 
         val message = exception.formatMessage()
-        val lines = message.split("\n")
+        val lines = message.lines()
 
         // Verify the exact structure from documentation
-        assertEquals("Error: Syntax error at line 1, column 3", lines[0])
+        assertEquals("Error: Unmatched input at line 1, column 3", lines[0])
         assertEquals("Expected: \"+\", \"-\"", lines[1])
         assertEquals("42*10", lines[2])
         assertEquals("  ^", lines[3])

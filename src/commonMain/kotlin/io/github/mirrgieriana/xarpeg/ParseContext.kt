@@ -61,6 +61,13 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
         return result
     }
 
+    /**
+     * Formats a ParseException into a user-friendly error message.
+     * Delegates to the MatrixPositionCalculator for formatting.
+     */
+    fun formatMessage(exception: ParseException, maxLineLength: Int = 80) =
+        matrixPositionCalculator.formatMessage(exception, maxLineLength)
+
 }
 
 data class MatrixPosition(val row: Int, val column: Int)
@@ -100,7 +107,10 @@ class MatrixPositionCalculator(private val src: String) {
 
         val position = exception.position
         val matrixPosition = toMatrixPosition(position)
-        sb.append("Error: Syntax error at line ${matrixPosition.row}, column ${matrixPosition.column}")
+
+        // Use rawMessage for cleaner error description
+        val errorMessage = exception.rawMessage.takeIf { it.isNotBlank() } ?: "Syntax error"
+        sb.append("Error: $errorMessage at line ${matrixPosition.row}, column ${matrixPosition.column}")
 
         // Add expected parsers if available
         val suggestedParsers = exception.context.suggestedParsers

@@ -39,10 +39,10 @@ class InternalUtilsTest {
 
     @Test
     fun truncateWithCaret_bothSidesTruncation() {
-        // Caret at position 7, line is 20 chars, max is 10
+        // Caret at position 10, line is 20 chars, max is 10
         // Available chars: 10 - 8 = 2 chars (8 for "... " and " ...")
         // Left: 1 char, Right: 1 char
-        // Should show: "... 67 ..." (4 + 2 + 4 = 10 chars)
+        // Should show: "... 90 ..." (4 + 2 + 4 = 10 chars)
         val line = "01234567890123456789"
         val (result, caretPos) = line.truncateWithCaret(10, 10)
         assertEquals("... 90 ...", result)
