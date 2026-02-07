@@ -35,10 +35,7 @@ private fun Int.toHexDigit() = if (this < 10) '0' + this else 'A' + (this - 10)
 
 internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<String, Int> {
     require(maxLength >= 9) { "maxLength must be at least 9, but was $maxLength" }
-
-    if (this.length <= maxLength) {
-        return Pair(this, caretPosition)
-    }
+    if (this.length <= maxLength) return Pair(this, caretPosition)
 
     // leftMaxChars: Maximum characters to show on the left side when doing single-side truncation
     // rightMaxChars: Maximum characters to show on the right side of caret when doing single-side truncation

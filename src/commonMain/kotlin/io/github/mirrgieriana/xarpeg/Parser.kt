@@ -27,13 +27,12 @@ fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.star
 
 open class ParseException(message: String, val context: ParseContext, val position: Int, val rawMessage: String = message) : Exception(message)
 
-class UnmatchedInputParseException(rawMessage: String, context: ParseContext, position: Int) : ParseException("Failed to parse: $rawMessage", context, position, rawMessage)
+class UnmatchedInputParseException(context: ParseContext, position: Int) : ParseException("Failed to parse: Unmatched input", context, position, "Unmatched input")
 
-class ExtraCharactersParseException(rawMessage: String, context: ParseContext, position: Int) : ParseException("Extra characters: $rawMessage", context, position, rawMessage)
+class ExtraCharactersParseException(context: ParseContext, position: Int, extraInfo: String) : ParseException("Extra characters: $extraInfo", context, position, "Found after position $position")
 
 /** Formats a ParseException into a user-friendly error message with context. */
-fun ParseException.formatMessage() =
-    context.formatMessage(this)
+fun ParseException.formatMessage() = context.formatMessage(this)
 
 
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
@@ -42,10 +41,10 @@ fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = tr
 
 fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
     val context = ParseContext(src, useMemoization)
-    val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException("Unmatched input", context, context.errorPosition))
+    val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException(context, context.errorPosition))
     if (result.end != src.length) {
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
-        return Result.failure(ExtraCharactersParseException("""Found after position ${result.end}: "$string"""", context, result.end))
+        return Result.failure(ExtraCharactersParseException(context, result.end, """"$string""""))
     }
     return Result.success(result.value)
 }
