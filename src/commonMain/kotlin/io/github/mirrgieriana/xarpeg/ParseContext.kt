@@ -52,8 +52,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
                 errorPosition = start
                 suggestedParsers.clear()
             }
-            // Only add parsers with names to suggestions - unnamed parsers are just noise
-            // Also exclude parsers with empty names (hidden parsers)
+            // Only add parsers with non-empty names to suggestions - unnamed and hidden parsers are just noise
             if (parser.name != null && parser.name != "") {
                 suggestedParsers += parser
             }
