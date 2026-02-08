@@ -108,7 +108,7 @@ class MatrixPositionCalculator(private val src: String) {
         val matrixPosition = toMatrixPosition(position)
 
         // Use rawMessage for cleaner error description
-        sb.append("Syntac Error: At line ${matrixPosition.row}, column ${matrixPosition.column}")
+        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
 
         // Add expected parsers if available
         val suggestedParsers = exception.context.suggestedParsers
@@ -125,9 +125,11 @@ class MatrixPositionCalculator(private val src: String) {
         val lineIndex = matrixPosition.row - 1
         val lineStart = lineStartIndices[lineIndex]
         val lineEnd = lineStartIndices.getOrNull(lineIndex + 1)?.let { it - 1 } ?: src.length
-        val sourceLine = src.substring(lineStart, lineEnd).trimEnd('\r')
+        val originalLine = src.substring(lineStart, lineEnd)
+        val sourceLine = originalLine.trimEnd('\r')
 
-        val caretPosition = position - lineStart
+        var caretPosition = position - lineStart
+        caretPosition = caretPosition.coerceAtMost(sourceLine.length)
         val (displayLine, displayCaretPos) = if (sourceLine.isNotEmpty()) {
             sourceLine.truncateWithCaret(maxLineLength, caretPosition)
         } else {

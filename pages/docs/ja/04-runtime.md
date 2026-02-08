@@ -28,10 +28,9 @@ fun main() {
 
 ### 例外の種類
 
-- **`ParseException`** - 現在位置でパーサがマッチしなかった
-- **`ParseException`** - 解析は成功したが、末尾の入力が残っている
+- **`ParseException`** - 現在位置でパーサがマッチしなかった場合、または解析は成功したが末尾の入力が残っている場合
 
-両方の例外は、詳細なエラー情報のための`context`プロパティを提供します。
+この例外は、詳細なエラー情報のための`context`プロパティを提供します。
 
 ## エラーコンテキスト
 
@@ -112,7 +111,7 @@ fun main() {
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
-        check(lines[0] == "Syntac Error: At line 1, column 3")
+        check(lines[0] == "Syntax Error at 1:3")
         check(lines[1] == "Expected: \"+\", \"-\"")
         check(lines[2] == "42*10")
         check(lines[3] == "  ^")

@@ -69,8 +69,7 @@ fun main() {
 ```
 
 **Exception types:**
-- `ParseException` when no parser matches
-- `ParseException` when trailing input remains
+- `ParseException` when no parser matches or when trailing input remains
 
 ## Key Takeaways
 

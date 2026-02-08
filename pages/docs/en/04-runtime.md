@@ -28,10 +28,9 @@ fun main() {
 
 ### Exception Types
 
-- **`ParseException`** - No parser matched at the current position
-- **`ParseException`** - Parsing succeeded but trailing input remains
+- **`ParseException`** - Thrown when no parser matches at the current position or when parsing succeeds but trailing input remains
 
-Both exceptions provide a `context` property for detailed error information.
+This exception provides a `context` property for detailed error information.
 
 ## Error Context
 
@@ -112,7 +111,7 @@ fun main() {
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
-        check(lines[0] == "Syntac Error: At line 1, column 3")
+        check(lines[0] == "Syntax Error at 1:3")
         check(lines[1] == "Expected: \"+\", \"-\"")
         check(lines[2] == "42*10")
         check(lines[3] == "  ^")

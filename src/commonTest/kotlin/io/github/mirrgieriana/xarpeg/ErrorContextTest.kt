@@ -269,9 +269,8 @@ class ErrorContextTest {
 
         val formatted = exception.formatMessage()
 
-        // Should contain line/column information
-        assertTrue(formatted.contains("line 1"))
-        assertTrue(formatted.contains("column 1"))
+        // Should contain error information in new format
+        assertTrue(formatted.contains("Syntax Error at 1:1"))
         // Should contain the source line
         assertTrue(formatted.contains("123"))
         // Should contain caret indicator
@@ -295,9 +294,8 @@ class ErrorContextTest {
 
         val formatted = exception.formatMessage()
 
-        // Should point to the correct line (first line where error occurred)
-        assertTrue(formatted.contains("line 1"))
-        assertTrue(formatted.contains("column 7"))
+        // Should point to the correct position in new format
+        assertTrue(formatted.contains("Syntax Error at 1:7"))
         // Should show the problematic line
         assertTrue(formatted.contains("hello test"))
         // Should show caret at error position
@@ -316,18 +314,9 @@ class ErrorContextTest {
 
         val formatted = exception.formatMessage()
 
-        // Debug: print the formatted message
-        println("ParseException (extra chars) formatted message:")
-        println(formatted)
-        println("Exception position: ${exception.position}")
-        println("Context errorPosition: ${exception.context.errorPosition}")
-
-        // Should contain line/column information
-        assertTrue(formatted.contains("line 1"))
-        // Position is now errorPosition, which should be 5 (column 6)
-        // But let's verify what column is actually displayed
+        // Should contain error information in new format
         val lines = formatted.lines()
-        assertTrue(lines[0].contains("column"))
+        assertTrue(lines[0].contains("Syntax Error at"))
         // Should contain the source line
         assertTrue(formatted.contains("helloworld"))
         // Should contain caret indicator
@@ -346,9 +335,8 @@ class ErrorContextTest {
 
         val formatted = exception.formatMessage()
 
-        // Should still contain basic error information
-        assertTrue(formatted.contains("Error"))
-        assertTrue(formatted.contains("line 1"))
+        // Should still contain basic error information in new format
+        assertTrue(formatted.contains("Syntax Error at"))
         assertTrue(formatted.contains("fail"))
         assertTrue(formatted.contains("^"))
     }
@@ -365,9 +353,8 @@ class ErrorContextTest {
         val message = exception.formatMessage()
         val lines = message.lines()
 
-        // Should contain error information
-        assertTrue(lines[0].contains("Error"))
-        assertTrue(lines[0].contains("line 1"))
+        // Should contain error information in new format
+        assertTrue(lines[0].contains("Syntax Error at"))
         // May have Expected line if suggestedParsers is not empty
         // Empty source line should be displayed (after Expected line if present)
         val emptyLineIndex = if (lines[1].startsWith("Expected:")) 2 else 1
@@ -387,35 +374,42 @@ class ErrorContextTest {
 
         val message = exception.formatMessage()
 
-        // Debug output
-        println("=== Nameless fixed parser test ===")
-        println("Message:")
-        println(message)
-        println()
-        println("Suggested parsers (${exception.context.suggestedParsers.size}):")
-        exception.context.suggestedParsers.forEach {
-            println("  name: ${it.name}")
-            println("  toString: $it")
-        }
-        println("===")
-
         // Nameless parsers should appear in Expected line with their toString representation
         val hasExpectedLine = message.contains("Expected:")
         if (!hasExpectedLine) {
-            println("WARNING: No 'Expected:' line found in message")
             // If there are no suggestedParsers, this is acceptable
             if (exception.context.suggestedParsers.isEmpty()) {
-                println("No suggested parsers, skipping test")
                 return
             }
         }
         assertTrue(hasExpectedLine, "Expected line should be present when there are suggested parsers")
+        assertTrue(exception.context.suggestedParsers.isNotEmpty(), "Should have suggested parsers")
         // The parser's toString should be included in the Expected line
         val lines = message.lines()
         val expectedLine = lines.find { it.startsWith("Expected:") }
         assertNotNull(expectedLine)
         // Should contain something (the toString representation of the parser)
         assertTrue(expectedLine.length > "Expected: ".length)
+    }
+
+    @Test
+    fun formatMessageWithMixedLineEndings() {
+        // Test with mixed line endings (LF, CRLF, and positions after \r)
+        val parser = +"test"
+        val input = "hello\r\nworld\ntest\rfail"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Should display error information correctly even with mixed line endings in new format
+        assertTrue(lines[0].contains("Syntax Error at"))
+
+        // Caret position should be correctly calculated
+        val caretLine = lines.find { it.trim().startsWith("^") }
+        assertNotNull(caretLine, "Should have a caret line")
     }
 
     // Helper function to build error messages from context
@@ -449,7 +443,7 @@ class ErrorContextTest {
         val lines = message.lines()
 
         // Verify the exact structure from documentation
-        assertEquals("Syntac Error: At line 1, column 3", lines[0])
+        assertEquals("Syntax Error at 1:3", lines[0])
         assertEquals("Expected: \"+\", \"-\"", lines[1])
         assertEquals("42*10", lines[2])
         assertEquals("  ^", lines[3])

@@ -69,8 +69,7 @@ fun main() {
 ```
 
 **例外の種類：**
-- `ParseException` パーサがマッチしなかった場合
-- `ParseException` 末尾の入力が残っている場合
+- `ParseException` パーサがマッチしなかった場合、または末尾の入力が残っている場合
 
 ## 重要なポイント
 
