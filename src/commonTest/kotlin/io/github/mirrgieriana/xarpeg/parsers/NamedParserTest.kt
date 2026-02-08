@@ -290,14 +290,14 @@ class NamedParserTest {
         val whitespace = (+Regex("\\s+")).hidden
         val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
         val plus = (+'+'). hidden
-        
+
         // Allow optional whitespace around operators
         val expr = number * (whitespace.optional * plus * whitespace.optional * number).optional
 
         // Should parse successfully
         val result1 = expr.parseAllOrThrow("42")
         assertEquals(42, result1.a)
-        
+
         val result2 = expr.parseAllOrThrow("3+5")
         assertEquals(3, result2.a)
     }
@@ -308,7 +308,7 @@ class NamedParserTest {
         val whitespace = (+Regex("\\s*")).hidden
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val digit = +Regex("[0-9]") named "digit" map { it.value }
-        
+
         // Grammar that expects letter or digit, with optional whitespace before
         val token = whitespace * (letter + digit)
 
