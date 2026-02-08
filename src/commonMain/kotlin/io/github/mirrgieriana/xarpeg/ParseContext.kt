@@ -5,6 +5,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 
     var isInNamedParser = false
+    var isInLookAhead = false
     var errorPosition: Int = 0
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
@@ -46,7 +47,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
                 parser.parseOrNull(this, start)
             }
         }
-        if (result == null && !isInNamedParser && start >= errorPosition) {
+        if (result == null && !isInNamedParser && !isInLookAhead && start >= errorPosition) {
             if (start > errorPosition) {
                 errorPosition = start
                 suggestedParsers.clear()
