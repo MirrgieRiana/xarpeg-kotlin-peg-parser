@@ -1,5 +1,7 @@
 package io.github.mirrgieriana.xarpeg.internal
 
+import kotlin.math.min
+
 internal fun String.truncate(maxLength: Int, ellipsis: String): String {
     if (maxLength < 0) return ""
     if (this.length <= maxLength) return this
@@ -33,46 +35,54 @@ private fun StringBuilder.appendUnicodeChar(char: Char) {
 
 private fun Int.toHexDigit() = if (this < 10) '0' + this else 'A' + (this - 10)
 
+
+private const val PREFIX = "... "
+private const val SUFFIX = " ..."
+
+private abstract class TruncateCase(val line: String, maxLength: Int, val prefix: String, val suffix: String) {
+    val visibleLength = min(line.length, maxLength) - prefix.length - suffix.length
+    abstract val visibleStart: Int
+    val truncated by lazy { prefix + line.drop(visibleStart).take(visibleLength) + suffix }
+}
+
 internal fun String.truncateWithCaret(maxLength: Int, caretPosition: Int): Pair<String, Int> {
-    require(maxLength >= 9) { "maxLength must be at least 9, but was $maxLength" }
-    if (this.length <= maxLength) return Pair(this, caretPosition)
+    val minLength = PREFIX.length + 1 + SUFFIX.length // "... ^ ..." = 9
+    require(maxLength >= minLength) { "maxLength must be at least $minLength, but was $maxLength" }
 
-    // leftMaxChars: Maximum characters to show on the left side when doing single-side truncation
-    // rightMaxChars: Maximum characters to show on the right side of caret when doing single-side truncation
-    val leftMaxChars = maxLength / 2
-    val rightMaxChars = maxLength - leftMaxChars - 1 // -1 to ensure leftMaxChars + 1 + rightMaxChars = maxLength
+    // maxLength = 10
 
-    val charsAfterCaret = this.length - caretPosition - 1
+    // 0123456789
+    //      ^
+    // 12345 1234
+    val leftMaxVisibleLength = maxLength / 2 // 10 / 2 = 5
+    val rightMaxVisibleLength = maxLength - 1 - leftMaxVisibleLength // 10 - 5 - 1 = 4
 
-    return when {
+    val leftCharCount = caretPosition
+    val rightCharCount = this.length - caretPosition - 1
+
+    val case = when {
+
+        // Pattern 1: No truncation needed
+        leftCharCount + 1 + rightCharCount <= maxLength -> object : TruncateCase(this, maxLength, "", "") {
+            override val visibleStart = 0
+        }
+
         // Pattern 2: Caret is near the start, truncate right only
-        caretPosition <= leftMaxChars -> {
-            val contentLength = maxLength - 4 // " ..." = 4 chars
-            val truncated = this.substring(0, contentLength) + " ..."
-            Pair(truncated, caretPosition)
+        leftCharCount <= leftMaxVisibleLength -> object : TruncateCase(this, maxLength, "", SUFFIX) {
+            override val visibleStart = 0
         }
+
         // Pattern 3: Caret is near the end, truncate left only
-        charsAfterCaret <= rightMaxChars -> {
-            val contentLength = maxLength - 4 // "... " = 4 chars
-            val startIndex = this.length - contentLength
-            val truncated = "... " + this.substring(startIndex)
-            val newCaretPos = caretPosition - startIndex + 4
-            Pair(truncated, newCaretPos)
+        rightCharCount <= rightMaxVisibleLength -> object : TruncateCase(this, maxLength, PREFIX, "") {
+            override val visibleStart by lazy { line.length - visibleLength }
         }
+
         // Pattern 4: Truncate both sides
-        else -> {
-            // Total available chars for content: maxLength - 8 (for "... " and " ...")
-            // Content structure: leftChars + 1 (caret position) + rightChars
-            val totalContentChars = maxLength - 8
-            val leftChars = totalContentChars / 2
-            val rightChars = totalContentChars - leftChars - 1 // -1 because totalContentChars = leftChars + 1 + rightChars
-
-            val leftStart = caretPosition - leftChars
-            val rightEnd = caretPosition + 1 + rightChars
-
-            val truncated = "... " + this.substring(leftStart, rightEnd) + " ..."
-            val newCaretPos = 4 + leftChars
-            Pair(truncated, newCaretPos)
+        else -> object : TruncateCase(this, maxLength, PREFIX, SUFFIX) {
+            override val visibleStart by lazy { caretPosition - visibleLength / 2 }
         }
+
     }
+
+    return Pair(case.truncated, case.prefix.length + caretPosition - case.visibleStart)
 }
