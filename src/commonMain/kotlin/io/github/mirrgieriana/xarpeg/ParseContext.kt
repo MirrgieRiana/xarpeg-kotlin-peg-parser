@@ -129,19 +129,18 @@ class MatrixPositionCalculator(private val src: String) {
         val lineEnd = lineStartIndices.getOrNull(lineIndex + 1)?.let { it - 1 } ?: src.length
         val sourceLine = src.substring(lineStart, lineEnd).trimEnd('\r')
 
-        if (sourceLine.isNotEmpty()) {
-            val caretPosition = position - lineStart
-            val (displayLine, displayCaretPos) = sourceLine.truncateWithCaret(
-                maxLineLength,
-                caretPosition
-            )
-
-            sb.append("\n")
-            sb.append(displayLine)
-            sb.append("\n")
-            sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
-            sb.append("^")
+        val caretPosition = position - lineStart
+        val (displayLine, displayCaretPos) = if (sourceLine.isNotEmpty()) {
+            sourceLine.truncateWithCaret(maxLineLength, caretPosition)
+        } else {
+            "" to 0
         }
+
+        sb.append("\n")
+        sb.append(displayLine)
+        sb.append("\n")
+        sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
+        sb.append("^")
 
         return sb.toString()
     }

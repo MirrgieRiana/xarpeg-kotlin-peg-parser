@@ -343,6 +343,52 @@ class ErrorContextTest {
         assertTrue(formatted.contains("^"))
     }
 
+    @Test
+    fun formatMessageWithEmptyLine() {
+        // Test formatMessage with error on empty line
+        val parser = +"test"
+        val input = "\n"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Should contain error information
+        assertTrue(lines[0].contains("Error"))
+        assertTrue(lines[0].contains("line 1"))
+        // May have Expected line if suggestedParsers is not empty
+        // Empty source line should be displayed (after Expected line if present)
+        val emptyLineIndex = if (lines[1].startsWith("Expected:")) 2 else 1
+        assertEquals("", lines[emptyLineIndex])
+        // Caret should be at position 0
+        assertEquals("^", lines[emptyLineIndex + 1])
+    }
+
+    @Test
+    fun formatMessageWithNamelessFixedParser() {
+        // Test how nameless fixed parsers appear in the message
+        val parser = Parser<String> { _, _ -> null }
+        val input = "fail"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+
+        // Nameless parsers should appear in Expected line with their toString representation
+        // The parser's toString should be included in the message
+        println("Nameless fixed parser formatMessage output:")
+        println(message)
+        println()
+        println("Suggested parsers:")
+        exception.context.suggestedParsers.forEach {
+            println("  name: ${it.name}")
+            println("  toString: $it")
+        }
+    }
+
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
         val suggestions = context.suggestedParsers
@@ -380,4 +426,3 @@ class ErrorContextTest {
         assertEquals("  ^", lines[3])
     }
 }
-

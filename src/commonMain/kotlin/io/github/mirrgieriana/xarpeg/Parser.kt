@@ -48,4 +48,3 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
     }
     return Result.success(result.value)
 }
-
