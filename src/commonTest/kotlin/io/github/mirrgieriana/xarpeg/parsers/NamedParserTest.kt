@@ -289,7 +289,7 @@ class NamedParserTest {
         // Test that hidden parsers work well with complex grammars (e.g., whitespace)
         val whitespace = (+Regex("\\s+")).hidden
         val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
-        val plus = (+'+'). hidden
+        val plus = (+'+').hidden
 
         // Allow optional whitespace around operators
         val expr = number * (whitespace.optional * plus * whitespace.optional * number).optional
