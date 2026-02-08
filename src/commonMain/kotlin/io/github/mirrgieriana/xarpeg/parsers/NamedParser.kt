@@ -11,3 +11,5 @@ class NamedParser<T : Any>(val parser: Parser<T>, override val name: String) : P
 }
 
 infix fun <T : Any> Parser<T>.named(name: String) = NamedParser(this, name)
+
+val <T : Any> Parser<T>.hidden get() = this.named("")

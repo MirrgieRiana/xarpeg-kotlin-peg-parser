@@ -250,4 +250,77 @@ class NamedParserTest {
         // Since the composite parser is unnamed, constituent parsers are suggested
         assertTrue(context.suggestedParsers.any { it.name == "letter_a" })
     }
+
+    @Test
+    fun hiddenParserHasEmptyName() {
+        val parser = +'a'.hidden
+        assertEquals("", parser.name)
+    }
+
+    @Test
+    fun hiddenParserParsesSuccessfully() {
+        val parser = +'a'.hidden
+        val result = parser.parseAllOrThrow("a")
+        assertEquals('a', result)
+    }
+
+    @Test
+    fun hiddenParserNotInSuggestions() {
+        // Test that hidden parsers are not added to suggestions
+        val hiddenParser = +'a'.hidden
+        val visibleParser = +'b' named "letter_b"
+        val combined = hiddenParser + visibleParser
+
+        val context = ParseContext("c", useMemoization = true)
+        val result = combined.parseOrNull(context, 0)
+
+        // The parse should fail
+        assertNull(result)
+        assertEquals(0, context.errorPosition)
+
+        // The hidden parser should NOT be in suggestions
+        assertTrue(context.suggestedParsers.none { it.name == "" })
+        // The visible parser should be in suggestions
+        assertTrue(context.suggestedParsers.any { it.name == "letter_b" })
+    }
+
+    @Test
+    fun hiddenParserInComplexGrammar() {
+        // Test that hidden parsers work well with complex grammars (e.g., whitespace)
+        val whitespace = +Regex("\\s+").hidden
+        val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+        val plus = (+'+').hidden
+        
+        // Allow optional whitespace around operators
+        val expr = number * (whitespace.optional * plus * whitespace.optional * number).optional
+
+        // Should parse successfully
+        val result1 = expr.parseAllOrThrow("42")
+        assertEquals(42, result1.a)
+        
+        val result2 = expr.parseAllOrThrow("3+5")
+        assertEquals(3, result2.a)
+    }
+
+    @Test
+    fun hiddenParserDoesNotAppearInErrorContext() {
+        // Test that when parsing fails, hidden parsers don't clutter error messages
+        val whitespace = +Regex("\\s*").hidden
+        val letter = +Regex("[a-z]") named "letter" map { it.value }
+        val digit = +Regex("[0-9]") named "digit" map { it.value }
+        
+        // Grammar that expects letter or digit, with optional whitespace before
+        val token = whitespace * (letter + digit)
+
+        val context = ParseContext("!", useMemoization = true)
+        val result = token.parseOrNull(context, 0)
+
+        assertNull(result)
+        // The error should be at position 0 (where the '!' is)
+        assertEquals(0, context.errorPosition)
+        // Suggested parsers should contain letter and digit, but not whitespace
+        assertTrue(context.suggestedParsers.any { it.name == "letter" })
+        assertTrue(context.suggestedParsers.any { it.name == "digit" })
+        assertTrue(context.suggestedParsers.none { it.name == "" })
+    }
 }
