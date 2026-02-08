@@ -43,8 +43,11 @@ fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): R
     val context = ParseContext(src, useMemoization)
     val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException(context, context.errorPosition))
     if (result.end != src.length) {
+        // Update errorPosition to where extra characters start
+        // This ensures the caret and suggestions point to the correct location
+        context.errorPosition = result.end
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
-        return Result.failure(ExtraCharactersParseException(context, result.end, """"$string""""))
+        return Result.failure(ExtraCharactersParseException(context, context.errorPosition, """"$string""""))
     }
     return Result.success(result.value)
 }
