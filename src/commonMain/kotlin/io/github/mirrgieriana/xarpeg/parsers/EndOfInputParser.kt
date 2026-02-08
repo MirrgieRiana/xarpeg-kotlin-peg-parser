@@ -6,6 +6,7 @@ import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 
 private object EndOfInputParser : Parser<Tuple0> {
+    override val name: String = "EOF"
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
         if (start != context.src.length) return null
         return ParseResult(Tuple0, start, start)

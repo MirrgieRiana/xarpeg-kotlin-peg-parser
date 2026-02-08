@@ -214,9 +214,10 @@ class ErrorContextTest {
 
         // Exception contains the context
         assertNotNull(exception.context)
-        // Position points to errorPosition (furthest parse attempt during parsing)
-        // In this case, "hello" parses successfully without failures, so errorPosition stays at 0
-        assertEquals(0, exception.position)
+        // Position points to errorPosition (where EOF was expected after "hello")
+        assertEquals(5, exception.position)
+        // suggestedParsers should contain "EOF"
+        assertTrue(exception.context.suggestedParsers.any { it.name == "EOF" })
     }
 
     @Test

@@ -1,5 +1,7 @@
 package io.github.mirrgieriana.xarpeg
 
+import io.github.mirrgieriana.xarpeg.parsers.endOfInput
+
 import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
 import io.github.mirrgieriana.xarpeg.internal.truncate
 import io.github.mirrgieriana.xarpeg.parsers.normalize
@@ -42,7 +44,8 @@ fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = tr
 fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
     val context = ParseContext(src, useMemoization)
     val result = context.parseOrNull(this, 0) ?: return Result.failure(UnmatchedInputParseException(context, context.errorPosition))
-    if (result.end != src.length) {
+    val eofResult = context.parseOrNull(endOfInput, result.end)
+    if (eofResult == null) {
         val string = src.drop(result.end).truncate(10, "...").escapeDoubleQuote()
         return Result.failure(ExtraCharactersParseException(context, context.errorPosition, """"$string""""))
     }
