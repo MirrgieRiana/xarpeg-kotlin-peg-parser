@@ -214,8 +214,9 @@ class ErrorContextTest {
 
         // Exception contains the context
         assertNotNull(exception.context)
-        // Position now points to errorPosition (which is set to result.end, position 5)
-        assertEquals(5, exception.position)
+        // Position points to errorPosition (furthest parse attempt during parsing)
+        // In this case, "hello" parses successfully without failures, so errorPosition stays at 0
+        assertEquals(0, exception.position)
     }
 
     @Test

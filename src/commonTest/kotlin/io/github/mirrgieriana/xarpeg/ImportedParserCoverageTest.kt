@@ -152,7 +152,8 @@ class ImportedParserCoverageTest {
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
 
         val exception = assertFailsWith<ExtraCharactersParseException> { add.parseAllOrThrow("1+") }
-        assertEquals(1, exception.position)
+        // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
+        assertEquals(2, exception.position)
     }
 
     @Test
@@ -161,7 +162,8 @@ class ImportedParserCoverageTest {
         val add = rightAssociative(num, -'+') { a, _, b -> a + b }
 
         val exception = assertFailsWith<ExtraCharactersParseException> { add.parseAllOrThrow("2+") }
-        assertEquals(1, exception.position)
+        // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
+        assertEquals(2, exception.position)
     }
 
     @Test
