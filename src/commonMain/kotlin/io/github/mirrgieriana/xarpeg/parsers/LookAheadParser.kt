@@ -6,12 +6,12 @@ import io.github.mirrgieriana.xarpeg.Parser
 
 private class LookAheadParser<T : Any>(val parser: Parser<T>) : Parser<T> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<T>? {
-        val wasInLookAhead = context.isInLookAhead
+        val oldIsInLookAhead = context.isInLookAhead
         context.isInLookAhead = true
         val result = try {
             context.parseOrNull(parser, start)
         } finally {
-            context.isInLookAhead = wasInLookAhead
+            context.isInLookAhead = oldIsInLookAhead
         }
         if (result == null) return null
         return ParseResult(result.value, start, start)

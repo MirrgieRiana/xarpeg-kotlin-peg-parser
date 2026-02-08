@@ -7,12 +7,12 @@ import io.github.mirrgieriana.xarpeg.Tuple0
 
 private class NegativeLookAheadParser(val parser: Parser<*>) : Parser<Tuple0> {
     override fun parseOrNull(context: ParseContext, start: Int): ParseResult<Tuple0>? {
-        val wasInLookAhead = context.isInLookAhead
+        val oldIsInLookAhead = context.isInLookAhead
         context.isInLookAhead = true
         val result = try {
             context.parseOrNull(parser, start)
         } finally {
-            context.isInLookAhead = wasInLookAhead
+            context.isInLookAhead = oldIsInLookAhead
         }
         if (result != null) return null
         return ParseResult(Tuple0, start, start)
