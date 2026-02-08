@@ -71,17 +71,17 @@ class NegativeLookAheadParserTest {
         // Test case: !"A" * +"B" with input "C"
         // Expected: fail but suggest only B
         // Problem: currently suggests both A and B
-        
+
         val parserA = +"A" named "A"
         val parserB = +"B" named "B"
         val parser = !parserA * parserB
-        
+
         val context = ParseContext("C", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
-        
+
         assertNull(result, "Parser should fail on input 'C'")
         assertEquals(0, context.errorPosition, "Error position should be 0")
-        
+
         // Only "B" should be suggested because:
         // - !"A" succeeds (because input is not "A"), so it doesn't fail and shouldn't be suggested
         // - +"B" fails (because input is not "B"), so it should be suggested
@@ -94,17 +94,17 @@ class NegativeLookAheadParserTest {
     fun negativeLookaheadSuggestionsWithMultipleAlternatives() {
         // Test: (!parserA + parserB) + parserC with input "D"
         // Expected: suggest both B and C, but not A
-        
+
         val parserA = +"A" named "A"
         val parserB = +"B" named "B"
         val parserC = +"C" named "C"
         val parser = (!parserA * parserB) + parserC
-        
+
         val context = ParseContext("D", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
-        
+
         assertNull(result, "Parser should fail on input 'D'")
-        
+
         val suggestedNames = context.suggestedParsers.mapNotNull { it.name }
         assertTrue(suggestedNames.contains("B"), "Should suggest 'B'")
         assertTrue(suggestedNames.contains("C"), "Should suggest 'C'")
@@ -114,25 +114,25 @@ class NegativeLookAheadParserTest {
     @Test
     fun positiveLookaheadSuggestionsComparison() {
         // Compare with positive lookahead: (+parserA).lookAhead * parserB with input "C"
-        // 
+        //
         // Note: With the current implementation, lookahead parsers (both positive and negative)
         // do not add their internal parsers to suggestions. This is because lookahead doesn't
         // consume input - the actual consumption happens in subsequent parsers.
-        // 
+        //
         // In this case: (+parserA).lookAhead * parserB with input "C"
         // - The lookahead for "A" fails (C is not A)
         // - The whole parser fails
         // - Only the lookahead itself might be in suggestions, but not the internal "A" parser
-        
+
         val parserA = +"A" named "A"
         val parserB = +"B" named "B"
         val parser = (+parserA).lookAhead * parserB
-        
+
         val context = ParseContext("C", useMemoization = true)
         val result = parser.parseOrNull(context, 0)
-        
+
         assertNull(result, "Parser should fail on input 'C'")
-        
+
         val suggestedNames = context.suggestedParsers.mapNotNull { it.name }
         // The lookahead parser failed, but its internal parser "A" is not in suggestions
         // because lookahead doesn't consume input
