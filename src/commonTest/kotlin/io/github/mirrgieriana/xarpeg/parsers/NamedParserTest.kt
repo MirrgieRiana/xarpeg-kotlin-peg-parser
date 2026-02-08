@@ -253,13 +253,13 @@ class NamedParserTest {
 
     @Test
     fun hiddenParserHasEmptyName() {
-        val parser = +'a'.hidden
+        val parser = (+'a').hidden
         assertEquals("", parser.name)
     }
 
     @Test
     fun hiddenParserParsesSuccessfully() {
-        val parser = +'a'.hidden
+        val parser = (+'a').hidden
         val result = parser.parseAllOrThrow("a")
         assertEquals('a', result)
     }
@@ -267,7 +267,7 @@ class NamedParserTest {
     @Test
     fun hiddenParserNotInSuggestions() {
         // Test that hidden parsers are not added to suggestions
-        val hiddenParser = +'a'.hidden
+        val hiddenParser = (+'a').hidden
         val visibleParser = +'b' named "letter_b"
         val combined = hiddenParser + visibleParser
 
@@ -287,9 +287,9 @@ class NamedParserTest {
     @Test
     fun hiddenParserInComplexGrammar() {
         // Test that hidden parsers work well with complex grammars (e.g., whitespace)
-        val whitespace = +Regex("\\s+").hidden
+        val whitespace = (+Regex("\\s+")).hidden
         val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
-        val plus = (+'+').hidden
+        val plus = (+'+'). hidden
         
         // Allow optional whitespace around operators
         val expr = number * (whitespace.optional * plus * whitespace.optional * number).optional
@@ -305,7 +305,7 @@ class NamedParserTest {
     @Test
     fun hiddenParserDoesNotAppearInErrorContext() {
         // Test that when parsing fails, hidden parsers don't clutter error messages
-        val whitespace = +Regex("\\s*").hidden
+        val whitespace = (+Regex("\\s*")).hidden
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val digit = +Regex("[0-9]") named "digit" map { it.value }
         
