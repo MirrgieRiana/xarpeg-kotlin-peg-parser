@@ -199,10 +199,10 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
     val result = identifier.parseAll("123abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
-    check(exception.message!!.contains("Failed to parse"))
+    check(exception.message!!.contains("Syntax Error"))
 }
 ```
 
@@ -225,12 +225,12 @@ fun main() {
     val unnamedComposite = parserA * parserB
     
     val result1 = namedComposite.parseAll("c")
-    val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
+    val exception1 = result1.exceptionOrNull() as? ParseException
     val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
     
     val result2 = unnamedComposite.parseAll("c")
-    val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
+    val exception2 = result2.exceptionOrNull() as? ParseException
     val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names2.contains("letter_a"))
 }

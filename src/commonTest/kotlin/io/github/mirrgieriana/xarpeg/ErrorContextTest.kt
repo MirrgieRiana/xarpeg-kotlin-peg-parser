@@ -190,12 +190,11 @@ class ErrorContextTest {
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val parser = letter
 
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow("123")
         }
 
         // Exception contains the context with error information
-        assertNotNull(exception.context)
         assertEquals(0, exception.context.errorPosition)
         // suggestedParsers should contain parsers that failed
         assertTrue(exception.context.suggestedParsers.isNotEmpty())
@@ -205,15 +204,14 @@ class ErrorContextTest {
 
     @Test
     fun errorContextWithExtraCharacters() {
-        // ExtraCharactersParseException also provides context
+        // ParseException also provides context when extra characters are found
         val parser = +"hello" named "greeting"
 
-        val exception = assertFailsWith<ExtraCharactersParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow("helloworld")
         }
 
         // Exception contains the context
-        assertNotNull(exception.context)
         // Position points to errorPosition (where EOF was expected after "hello")
         assertEquals(5, exception.position)
         // suggestedParsers should contain "EOF"
@@ -259,13 +257,13 @@ class ErrorContextTest {
 
     @Test
     fun formatMessageForUnmatchedInput() {
-        // Test formatMessage for UnmatchedInputParseException
+        // Test formatMessage for ParseException (unmatched input case)
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val digit = +Regex("[0-9]") named "digit" map { it.value }
         val parser = letter * digit
 
         val input = "123"
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow(input)
         }
 
@@ -291,7 +289,7 @@ class ErrorContextTest {
         val parser = hello * space * world
 
         val input = "hello test\nline2"
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow(input)
         }
 
@@ -308,18 +306,18 @@ class ErrorContextTest {
 
     @Test
     fun formatMessageForExtraCharacters() {
-        // Test formatMessage for ExtraCharactersParseException
+        // Test formatMessage for ParseException (extra characters case)
         val parser = +"hello" named "greeting"
 
         val input = "helloworld"
-        val exception = assertFailsWith<ExtraCharactersParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow(input)
         }
 
         val formatted = exception.formatMessage()
 
         // Debug: print the formatted message
-        println("ExtraCharactersParseException formatted message:")
+        println("ParseException (extra chars) formatted message:")
         println(formatted)
         println("Exception position: ${exception.position}")
         println("Context errorPosition: ${exception.context.errorPosition}")
@@ -342,7 +340,7 @@ class ErrorContextTest {
         val parser = +"test"
 
         val input = "fail"
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow(input)
         }
 
@@ -443,7 +441,7 @@ class ErrorContextTest {
         val expr = number * operator * number
 
         val input = "42*10"
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             expr.parseAllOrThrow(input)
         }
 
@@ -451,7 +449,7 @@ class ErrorContextTest {
         val lines = message.lines()
 
         // Verify the exact structure from documentation
-        assertEquals("Error: Unmatched input at line 1, column 3", lines[0])
+        assertEquals("Syntac Error: At line 1, column 3", lines[0])
         assertEquals("Expected: \"+\", \"-\"", lines[1])
         assertEquals("42*10", lines[2])
         assertEquals("  ^", lines[3])

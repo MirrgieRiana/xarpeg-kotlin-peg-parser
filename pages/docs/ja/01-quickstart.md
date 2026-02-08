@@ -62,15 +62,15 @@ fun main() {
     check(kv.parseAllOrThrow("x=100") == ("x" to 100))        // ✓
     
     // エラーケースは例外をスローします：
-    // kv.parseAllOrThrow("=42")        // ✗ UnmatchedInputParseException
-    // kv.parseAllOrThrow("count")      // ✗ UnmatchedInputParseException
-    // kv.parseAllOrThrow("count=42x")  // ✗ ExtraCharactersParseException
+    // kv.parseAllOrThrow("=42")        // ✗ ParseException
+    // kv.parseAllOrThrow("count")      // ✗ ParseException
+    // kv.parseAllOrThrow("count=42x")  // ✗ ParseException
 }
 ```
 
 **例外の種類：**
-- `UnmatchedInputParseException` パーサがマッチしなかった場合
-- `ExtraCharactersParseException` 末尾の入力が残っている場合
+- `ParseException` パーサがマッチしなかった場合
+- `ParseException` 末尾の入力が残っている場合
 
 ## 重要なポイント
 

@@ -21,15 +21,15 @@ val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     number.parseAllOrThrow("123")      // ✓ Returns 123
-    // number.parseAllOrThrow("123abc") // ✗ ExtraCharactersParseException
-    // number.parseAllOrThrow("abc")    // ✗ UnmatchedInputParseException
+    // number.parseAllOrThrow("123abc") // ✗ ParseException
+    // number.parseAllOrThrow("abc")    // ✗ ParseException
 }
 ```
 
 ### Exception Types
 
-- **`UnmatchedInputParseException`** - No parser matched at the current position
-- **`ExtraCharactersParseException`** - Parsing succeeded but trailing input remains
+- **`ParseException`** - No parser matched at the current position
+- **`ParseException`** - Parsing succeeded but trailing input remains
 
 Both exceptions provide a `context` property for detailed error information.
 
@@ -47,7 +47,7 @@ val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
     val result = identifier.parseAll("1abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Failed at position 0
@@ -84,7 +84,7 @@ val expr = number * operator * number
 
 fun main() {
     val result = expr.parseAll("42 + 10")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition > 0)  // Error position tracked
@@ -112,7 +112,7 @@ fun main() {
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
-        check(lines[0] == "Error: Unmatched input at line 1, column 3")
+        check(lines[0] == "Syntac Error: At line 1, column 3")
         check(lines[1] == "Expected: \"+\", \"-\"")
         check(lines[2] == "42*10")
         check(lines[3] == "  ^")
@@ -201,7 +201,7 @@ val parser = +Regex("[a-z]+") named "word"
 
 fun main() {
     val result = parser.parseAll("123")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Error at position 0

@@ -21,15 +21,15 @@ val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     number.parseAllOrThrow("123")      // ✓ 123を返す
-    // number.parseAllOrThrow("123abc") // ✗ ExtraCharactersParseException
-    // number.parseAllOrThrow("abc")    // ✗ UnmatchedInputParseException
+    // number.parseAllOrThrow("123abc") // ✗ ParseException
+    // number.parseAllOrThrow("abc")    // ✗ ParseException
 }
 ```
 
 ### 例外の種類
 
-- **`UnmatchedInputParseException`** - 現在位置でパーサがマッチしなかった
-- **`ExtraCharactersParseException`** - 解析は成功したが、末尾の入力が残っている
+- **`ParseException`** - 現在位置でパーサがマッチしなかった
+- **`ParseException`** - 解析は成功したが、末尾の入力が残っている
 
 両方の例外は、詳細なエラー情報のための`context`プロパティを提供します。
 
@@ -47,7 +47,7 @@ val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
     val result = identifier.parseAll("1abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0で失敗
@@ -84,7 +84,7 @@ val expr = number * operator * number
 
 fun main() {
     val result = expr.parseAll("42 + 10")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition > 0)  // エラー位置が追跡される
@@ -112,7 +112,7 @@ fun main() {
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
-        check(lines[0] == "Error: Unmatched input at line 1, column 3")
+        check(lines[0] == "Syntac Error: At line 1, column 3")
         check(lines[1] == "Expected: \"+\", \"-\"")
         check(lines[2] == "42*10")
         check(lines[3] == "  ^")
@@ -201,7 +201,7 @@ val parser = +Regex("[a-z]+") named "word"
 
 fun main() {
     val result = parser.parseAll("123")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0でエラー
