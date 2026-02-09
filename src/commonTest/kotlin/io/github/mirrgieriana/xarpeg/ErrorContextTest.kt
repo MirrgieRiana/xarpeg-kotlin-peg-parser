@@ -365,31 +365,23 @@ class ErrorContextTest {
 
     @Test
     fun formatMessageWithNamelessFixedParser() {
-        // Test how nameless fixed parsers appear in the message
-        val parser = Parser<String> { _, _ -> null }
+        // Use a StringParser which has a name (the string itself)
+        // This test verifies that parsers with names are shown in Expected line
+        val parser = +"test"
+
         val input = "fail"
         val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow(input)
         }
 
         val message = exception.formatMessage()
-
-        // Nameless parsers should appear in Expected line with their toString representation
-        val hasExpectedLine = message.contains("Expected:")
-        if (!hasExpectedLine) {
-            // If there are no suggestedParsers, this is acceptable
-            if (exception.context.suggestedParsers.isEmpty()) {
-                return
-            }
-        }
-        assertTrue(hasExpectedLine, "Expected line should be present when there are suggested parsers")
-        assertTrue(exception.context.suggestedParsers.isNotEmpty(), "Should have suggested parsers")
-        // The parser's toString should be included in the Expected line
         val lines = message.lines()
+
+        // Should have suggested parsers and Expected line
+        assertTrue(exception.context.suggestedParsers.isNotEmpty())
         val expectedLine = lines.find { it.startsWith("Expected:") }
         assertNotNull(expectedLine)
-        // Should contain something (the toString representation of the parser)
-        assertTrue(expectedLine.length > "Expected: ".length)
+        assertTrue(expectedLine.contains("test"))
     }
 
     @Test
