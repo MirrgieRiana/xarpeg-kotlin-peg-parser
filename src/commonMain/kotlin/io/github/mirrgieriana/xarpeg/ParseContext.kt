@@ -99,6 +99,7 @@ class MatrixPositionCalculator(private val src: String) {
      * The formatted message includes:
      * - Error line and column number
      * - Expected parsers (if named parsers are available)
+     * - Actual character found (or EOF)
      * - The source line where the error occurred (truncated to maxLineLength if needed)
      * - A caret (^) indicating the error position
      *

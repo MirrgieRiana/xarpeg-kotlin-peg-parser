@@ -355,18 +355,21 @@ class ErrorContextTest {
 
         // Should contain error information in new format
         assertTrue(lines[0].contains("Syntax Error at"))
-        // May have Expected line if suggestedParsers is not empty
-        // Empty source line should be displayed (after Expected line if present)
-        val emptyLineIndex = if (lines[1].startsWith("Expected:")) 2 else 1
-        assertEquals("", lines[emptyLineIndex])
+        // Should have Expect line
+        assertTrue(lines[1].startsWith("Expect:"))
+        // Should have Actual line (newline character)
+        assertTrue(lines[2].startsWith("Actual:"))
+        // Empty lines before caret (source line display)
+        assertEquals("", lines[3])
+        assertEquals("", lines[4])
         // Caret should be at position 0
-        assertEquals("^", lines[emptyLineIndex + 1])
+        assertEquals("^", lines[5])
     }
 
     @Test
     fun formatMessageWithNamelessFixedParser() {
         // Use a StringParser which has a name (the string itself)
-        // This test verifies that parsers with names are shown in Expected line
+        // This test verifies that parsers with names are shown in Expect line
         val parser = +"test"
 
         val input = "fail"
@@ -377,11 +380,11 @@ class ErrorContextTest {
         val message = exception.formatMessage()
         val lines = message.lines()
 
-        // Should have suggested parsers and Expected line
+        // Should have suggested parsers and Expect line
         assertTrue(exception.context.suggestedParsers.isNotEmpty())
-        val expectedLine = lines.find { it.startsWith("Expected:") }
-        assertNotNull(expectedLine)
-        assertTrue(expectedLine.contains("test"))
+        val expectLine = lines.find { it.startsWith("Expect:") }
+        assertNotNull(expectLine)
+        assertTrue(expectLine.contains("test"))
     }
 
     @Test
@@ -434,10 +437,11 @@ class ErrorContextTest {
         val message = exception.formatMessage()
         val lines = message.lines()
 
-        // Verify the exact structure from documentation
+        // Verify the exact structure from documentation (matching actual formatMessage output)
         assertEquals("Syntax Error at 1:3", lines[0])
-        assertEquals("Expected: \"+\", \"-\"", lines[1])
-        assertEquals("42*10", lines[2])
-        assertEquals("  ^", lines[3])
+        assertEquals("Expect: \"+\", \"-\"", lines[1])
+        assertEquals("Actual: *", lines[2])
+        assertEquals("42*10", lines[3])
+        assertEquals("  ^", lines[4])
     }
 }
