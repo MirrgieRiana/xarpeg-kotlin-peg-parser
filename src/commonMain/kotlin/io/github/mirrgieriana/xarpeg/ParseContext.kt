@@ -125,8 +125,7 @@ class MatrixPositionCalculator(private val src: String) {
         val lineIndex = matrixPosition.row - 1
         val lineStart = lineStartIndices[lineIndex]
         val lineEnd = lineStartIndices.getOrNull(lineIndex + 1)?.let { it - 1 } ?: src.length
-        val originalLine = src.substring(lineStart, lineEnd)
-        val sourceLine = originalLine.trimEnd('\r')
+        val sourceLine = src.substring(lineStart, lineEnd).trimEnd('\r')
 
         var caretPosition = position - lineStart
         caretPosition = caretPosition.coerceAtMost(sourceLine.length)
