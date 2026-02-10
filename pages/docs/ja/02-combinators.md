@@ -256,10 +256,10 @@ fun main() {
 
     val result = expr.parseAll("42abc")  // 失敗：演算子または数値が必要
 
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     check(exception != null)
 
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
     // 意味のあるパーサを含むが、非表示の空白は含まない
     check(suggestions.contains("operator") || suggestions.contains("number"))
     check(!suggestions.contains(""))

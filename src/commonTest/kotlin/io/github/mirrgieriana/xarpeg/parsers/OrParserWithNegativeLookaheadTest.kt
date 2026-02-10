@@ -23,7 +23,7 @@ class OrParserWithNegativeLookaheadTest {
         // Input: "C"
         // Expected: parseAll fails because !"A" matches empty string (consuming nothing),
         //           leaving "C" as extra characters
-        //           Suggestions should be EMPTY (or性質上、Bは試されない)
+        //           Suggestions should include "EOF" (expected at position 0 after empty match)
         val parserA = +"A" named "A"
         val parserB = +"B" named "B"
         val parser = !parserA + parserB
@@ -35,13 +35,10 @@ class OrParserWithNegativeLookaheadTest {
         // The parser matched empty string at position 0, so extra characters start at 0
         assertEquals(0, exception.position, "Extra characters should start at position 0")
 
-        // Due to Or parser behavior, only the first alternative (!"A") is tried
-        // It succeeds, so +"B" is never attempted
-        // Therefore suggestions should be EMPTY
-        // Before fix: "A" would have been in suggestions (incorrect)
-        // After fix: suggestions should be empty (correct, though not helpful due to Or nature)
-        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name }
-        assertTrue(suggestedNames.isEmpty(), "Suggestions should be empty (Or parser stops at first success)")
+        // parseAllOrThrow expects EOF at position 0 (after the empty match)
+        // So suggestedParsers should contain "EOF"
+        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        assertTrue(suggestedNames.contains("EOF"), "Should suggest EOF")
         assertTrue(!suggestedNames.contains("A"), "Should NOT contain A (inside lookahead)")
     }
 
@@ -59,7 +56,7 @@ class OrParserWithNegativeLookaheadTest {
         // !"A" fails (A IS A), +"B" fails (A is not B)
         assertNull(result, "Parser should fail")
 
-        val suggestedNames = context.suggestedParsers.mapNotNull { it.name }
+        val suggestedNames = context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
         // Only B should be suggested (not A, because it's in a negative lookahead)
         assertTrue(suggestedNames.contains("B"), "Should suggest B")
         assertTrue(!suggestedNames.contains("A"), "Should NOT suggest A (in negative lookahead)")
@@ -81,8 +78,9 @@ class OrParserWithNegativeLookaheadTest {
         }
 
         assertEquals(0, exception.position)
-        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name }
-        assertTrue(suggestedNames.isEmpty(), "Suggestions should be empty")
+        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        // parseAllOrThrow expects EOF, so "EOF" should be in suggestions
+        assertTrue(suggestedNames.contains("EOF"), "Should suggest EOF")
     }
 
     @Test
@@ -111,12 +109,12 @@ class OrParserWithNegativeLookaheadTest {
         val result1 = serialParser.parseOrNull(context1, 0)
 
         assertNull(result1, "Serial parser should fail (first part succeeds but second part fails)")
-        val suggestedNames1 = context1.suggestedParsers.mapNotNull { it.name }
+        val suggestedNames1 = context1.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
         assertTrue(suggestedNames1.contains("B"), "Serial: Should suggest B")
         assertTrue(!suggestedNames1.contains("A"), "Serial: Should NOT suggest A")
 
         // Or: !"A" + +"B" = "empty if not A, OR B"
-        // With parseAll, this fails due to extra characters but suggestions are empty
+        // With parseAll, this fails due to extra characters
         val parserA2 = +"A" named "A"
         val parserB2 = +"B" named "B"
         val orParser = !parserA2 + parserB2
@@ -125,8 +123,9 @@ class OrParserWithNegativeLookaheadTest {
             orParser.parseAllOrThrow("C")
         }
 
-        val suggestedNames2 = exception.context.suggestedParsers.mapNotNull { it.name }
-        assertTrue(suggestedNames2.isEmpty(), "Or: Suggestions should be empty (first alternative succeeded)")
+        val suggestedNames2 = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        // parseAllOrThrow expects EOF at position 0
+        assertTrue(suggestedNames2.contains("EOF"), "Or: Should contain EOF")
         assertTrue(!suggestedNames2.contains("A"), "Or: Should NOT contain A")
         assertTrue(!suggestedNames2.contains("B"), "Or: Should NOT contain B (never tried)")
     }

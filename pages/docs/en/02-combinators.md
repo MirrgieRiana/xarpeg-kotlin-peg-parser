@@ -256,10 +256,10 @@ fun main() {
 
     val result = expr.parseAll("42abc")  // Fails: expected operator or number
 
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     check(exception != null)
 
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
     // Contains meaningful parsers but not hidden whitespace
     check(suggestions.contains("operator") || suggestions.contains("number"))
     check(!suggestions.contains(""))

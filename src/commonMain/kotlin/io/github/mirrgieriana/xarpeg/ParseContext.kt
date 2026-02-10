@@ -107,7 +107,7 @@ class MatrixPositionCalculator(private val src: String) {
         val matrixPosition = toMatrixPosition(exception.position)
 
 
-        // Use rawMessage for cleaner error description
+        // Build error message header with position
         sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
 
 
