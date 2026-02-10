@@ -7,6 +7,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 
     var isInNamedParser = false
+    var isInLookAhead = false
     var errorPosition: Int = 0
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
@@ -15,28 +16,8 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
     val errorMatrixPosition get() = toMatrixPosition(errorPosition)
 
     fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
-        val result = if (useMemoization) {
-            val key = Pair(parser, start)
-            if (key in memo) {
-                @Suppress("UNCHECKED_CAST")
-                memo[key] as ParseResult<T>?
-            } else {
-                val result = if (!isInNamedParser && parser.name != null) {
-                    isInNamedParser = true
-                    val result = try {
-                        parser.parseOrNull(this, start)
-                    } finally {
-                        isInNamedParser = false
-                    }
-                    result
-                } else {
-                    parser.parseOrNull(this, start)
-                }
-                memo[key] = result
-                result
-            }
-        } else {
-            if (!isInNamedParser && parser.name != null) {
+        fun parse(): ParseResult<T>? {
+            return if (!isInNamedParser && parser.name != null) {
                 isInNamedParser = true
                 val result = try {
                     parser.parseOrNull(this, start)
@@ -48,13 +29,27 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
                 parser.parseOrNull(this, start)
             }
         }
-        if (result == null && !isInNamedParser && start >= errorPosition) {
+
+        val result = if (useMemoization) {
+            val key = Pair(parser, start)
+            if (key in memo) {
+                @Suppress("UNCHECKED_CAST")
+                memo[key] as ParseResult<T>?
+            } else {
+                val result = parse()
+                memo[key] = result
+                result
+            }
+        } else {
+            parse()
+        }
+        if (result == null && !isInNamedParser && !isInLookAhead && start >= errorPosition) {
             if (start > errorPosition) {
                 errorPosition = start
                 suggestedParsers.clear()
             }
-            // Only add parsers with names to suggestions - unnamed parsers are just noise
-            if (parser.name != null) {
+            // Only add parsers with non-empty names to suggestions - unnamed and hidden parsers are just noise
+            if (parser.name != null && parser.name != "") {
                 suggestedParsers += parser
             }
         }

@@ -111,6 +111,7 @@ Interactive browser-based parser that demonstrates:
 | **Position** | `.result` | Get full `ParseResult<T>` with value and positions |
 | **Lookahead** | `!parser` | Succeed if parser fails (zero width) |
 | **Naming** | `parser named "name"` | Assign name for error messages |
+| **Hidden** | `parser.hidden` | Mark parser to exclude from error suggestions |
 | **Recursion** | `ref { parser }` | Forward reference for recursive grammars |
 | **Associativity** | `leftAssociative(...)`, `rightAssociative(...)` | Build operator chains |
 | **Boundaries** | `startOfInput`, `endOfInput` | Match at position boundaries |
