@@ -116,7 +116,7 @@ class MatrixPositionCalculator(private val src: String) {
 
 
         // Add expected parsers
-        val candidates = exception.context.suggestedParsers.mapNotNull { it.name }.distinct()
+        val candidates = exception.context.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
         if (candidates.isNotEmpty()) {
             sb.append("\nExpect: ${candidates.joinToString(", ")}")
         } else {
