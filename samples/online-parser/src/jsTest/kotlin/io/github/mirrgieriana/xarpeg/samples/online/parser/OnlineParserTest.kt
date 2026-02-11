@@ -209,7 +209,7 @@ class OnlineParserTest {
 
     @Test
     fun showsErrorForUndefinedFunction() {
-        // 未定義関数の呼び出しはエラーになる
+        // Calling an undefined function results in an error
         val result = parseExpression("f()")
         assertTrue(result.startsWith("Error"))
     }
