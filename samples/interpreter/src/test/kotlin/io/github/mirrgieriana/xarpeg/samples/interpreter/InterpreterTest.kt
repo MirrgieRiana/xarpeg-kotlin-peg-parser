@@ -7,9 +7,6 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * インタープリターの動作をテストする
- */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InterpreterTest {
 

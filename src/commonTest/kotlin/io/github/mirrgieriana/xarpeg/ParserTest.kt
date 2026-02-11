@@ -23,9 +23,6 @@ import kotlin.test.assertFails
 import kotlin.test.assertNotNull
 import kotlin.test.fail
 
-/**
- * パーサーの基本的な機能をテストする
- */
 class ParserTest {
 
     @Test

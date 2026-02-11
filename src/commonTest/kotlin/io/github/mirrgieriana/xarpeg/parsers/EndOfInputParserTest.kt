@@ -8,9 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-/**
- * EndOfInputパーサーの動作をテストする
- */
 class EndOfInputParserTest {
 
     @Test

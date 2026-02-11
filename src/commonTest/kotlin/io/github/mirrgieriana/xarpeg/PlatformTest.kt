@@ -4,9 +4,6 @@ import io.github.mirrgieriana.xarpeg.parsers.toParser
 import kotlin.test.Test
 import kotlin.test.assertSame
 
-/**
- * プラットフォーム固有の動作をテストする
- */
 class PlatformTest {
 
     @Test

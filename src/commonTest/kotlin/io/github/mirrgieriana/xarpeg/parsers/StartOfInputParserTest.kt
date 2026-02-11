@@ -7,9 +7,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-/**
- * StartOfInputパーサーの動作をテストする
- */
 class StartOfInputParserTest {
 
     @Test

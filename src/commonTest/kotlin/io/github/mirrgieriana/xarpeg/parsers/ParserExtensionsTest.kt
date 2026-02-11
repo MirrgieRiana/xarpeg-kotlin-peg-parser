@@ -8,9 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-/**
- * パーサー拡張プロパティの動作をテストする
- */
 class ParserExtensionsTest {
 
     @Test

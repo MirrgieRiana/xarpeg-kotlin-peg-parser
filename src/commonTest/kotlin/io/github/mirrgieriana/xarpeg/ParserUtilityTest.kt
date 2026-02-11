@@ -6,9 +6,6 @@ import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-/**
- * パーサーユーティリティ機能をテストする
- */
 class ParserUtilityTest {
 
     @Test

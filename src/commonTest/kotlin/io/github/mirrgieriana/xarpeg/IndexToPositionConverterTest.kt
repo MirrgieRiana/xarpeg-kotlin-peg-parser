@@ -4,9 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-/**
- * インデックスから位置への変換をテストする
- */
 class IndexToPositionConverterTest {
 
     @Test

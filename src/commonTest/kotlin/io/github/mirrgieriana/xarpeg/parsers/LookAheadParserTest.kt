@@ -7,9 +7,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-/**
- * LookAheadパーサーの動作をテストする
- */
 class LookAheadParserTest {
 
     @Test
