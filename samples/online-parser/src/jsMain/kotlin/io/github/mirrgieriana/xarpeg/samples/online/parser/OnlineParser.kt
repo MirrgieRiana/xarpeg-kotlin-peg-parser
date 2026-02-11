@@ -309,9 +309,14 @@ private object ExpressionGrammar {
 }
 
 
+@JsExport
+data class ExpressionResult(
+    val success: Boolean,
+    val output: String
+)
 
 @JsExport
-fun parseExpression(input: String): String {
+fun parseExpression(input: String): ExpressionResult {
     return try {
         FunctionCallExpression.functionCallCount = 0
 
@@ -319,16 +324,17 @@ fun parseExpression(input: String): String {
 
         val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
         val result = resultExpr.evaluate(initialContext)
-        result.toString()
+        ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
-        if (e.context != null && e.context.callStack.isNotEmpty()) {
+        val errorMessage = if (e.context != null && e.context.callStack.isNotEmpty()) {
             e.formatWithCallStack()
         } else {
             "Error: ${e.message}"
         }
+        ExpressionResult(success = false, output = errorMessage)
     } catch (e: ParseException) {
-        e.formatMessage()
+        ExpressionResult(success = false, output = e.formatMessage())
     } catch (e: Exception) {
-        "Error: ${e.message}"
+        ExpressionResult(success = false, output = "Error: ${e.message}")
     }
 }
