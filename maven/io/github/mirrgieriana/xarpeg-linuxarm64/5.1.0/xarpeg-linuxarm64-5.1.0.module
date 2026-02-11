@@ -1,0 +1,73 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../xarpeg/5.1.0/xarpeg-5.1.0.module",
+    "group": "io.github.mirrgieriana",
+    "module": "xarpeg",
+    "version": "5.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "artifactType": "org.jetbrains.kotlin.klib",
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "xarpeg-linuxArm64Main-5.1.0.klib",
+          "url": "xarpeg-linuxarm64-5.1.0.klib",
+          "size": 213544,
+          "sha512": "906bfd7ca45d03b5cb7638cf3538a100610c4bb945bff0c600029fc68ca115cf632e728eb629679dacd0dfdc015f0dd9d26e1f114444039fcefdf6a534ec6e51",
+          "sha256": "d96c25eef7b796c9f2d78c3be7e9b4228737e26045570e2e289d84e88fabc321",
+          "sha1": "74903ac72c3d65f91cf8ffaa73b437b60611120d",
+          "md5": "9a7272a0a97d2961310d39a7c3a94b7f"
+        }
+      ]
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "xarpeg-linuxarm64-5.1.0-sources.jar",
+          "url": "xarpeg-linuxarm64-5.1.0-sources.jar",
+          "size": 22580,
+          "sha512": "0c208da5ed4fd623b38f85dfa1377360470c713ebfa19307a13d9f6402bff1ec053ad9c42f18083e680828b9ce19f92ca1dfa250a95816c9a67e536de18fcf52",
+          "sha256": "ebb889831ca29791fe9995012879d80c17946eb19233d12700f2245aacc38267",
+          "sha1": "f01b41622a0588cf2017a24a526a25e550df3636",
+          "md5": "0b719765ad995071c57b38f5c32b8af6"
+        }
+      ]
+    }
+  ]
+}
