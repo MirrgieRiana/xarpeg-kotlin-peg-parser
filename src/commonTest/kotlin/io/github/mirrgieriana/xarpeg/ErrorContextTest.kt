@@ -232,8 +232,8 @@ class ErrorContextTest {
     }
 
     @Test
-    fun errorContextResetsBetweenParses() {
-        // Each ParseContext is independent
+    fun independentParseContextsHaveSeparateErrorState() {
+        // Each ParseContext is independent and maintains different error positions
         val hello = +"hello" named "greeting"
         val world = +"world" named "farewell"
 
