@@ -113,7 +113,7 @@ fun main() {
         val lines = message.lines()
         check(lines[0] == "Syntax Error at 1:3")
         check(lines[1] == "Expect: \"+\", \"-\"")
-        check(lines[2] == "Actual: *")
+        check(lines[2] == "Actual: \"*\"")
         check(lines[3] == "42*10")
         check(lines[4] == "  ^")
     }

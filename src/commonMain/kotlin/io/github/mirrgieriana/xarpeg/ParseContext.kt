@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg
 
+import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
 import io.github.mirrgieriana.xarpeg.internal.truncateWithCaret
 
 class ParseContext(val src: String, val useMemoization: Boolean) {
@@ -121,7 +122,12 @@ class MatrixPositionCalculator(private val src: String) {
 
 
         // Add actual character
-        sb.append("\nActual: ${exception.context.src.getOrNull(exception.position) ?: "EOF"}")
+        val actualChar = exception.context.src.getOrNull(exception.position)
+        if (actualChar != null) {
+            sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
+        } else {
+            sb.append("\nActual: EOF")
+        }
 
 
         // Add source line and caret

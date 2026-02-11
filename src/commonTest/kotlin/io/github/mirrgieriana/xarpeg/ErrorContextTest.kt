@@ -359,12 +359,12 @@ class ErrorContextTest {
         assertTrue(lines[0].contains("Syntax Error at"))
         // Should have Expect line
         assertTrue(lines[1].startsWith("Expect:"))
-        // Should have Actual line - note that actual newline character creates an extra line
-        assertTrue(lines[2].startsWith("Actual:"))
-        // lines[3] is the continuation after the newline in Actual
-        // Empty line for source (line[4])
-        // Caret should be at position 0 (line[5])
-        assertTrue(lines.any { it == "^" }, "Should contain caret line")
+        // Should have Actual line with escaped newline
+        assertEquals("Actual: \"\\n\"", lines[2])
+        // Empty line (source line display for newline character)
+        assertEquals("", lines[3])
+        // Caret should be at position 0
+        assertEquals("^", lines[4])
     }
 
     @Test
@@ -441,7 +441,7 @@ class ErrorContextTest {
         // Verify the exact structure from documentation (matching actual formatMessage output)
         assertEquals("Syntax Error at 1:3", lines[0])
         assertEquals("Expect: \"+\", \"-\"", lines[1])
-        assertEquals("Actual: *", lines[2])
+        assertEquals("Actual: \"*\"", lines[2])
         assertEquals("42*10", lines[3])
         assertEquals("  ^", lines[4])
     }
