@@ -21,17 +21,16 @@ val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     number.parseAllOrThrow("123")      // ✓ 123を返す
-    // number.parseAllOrThrow("123abc") // ✗ ExtraCharactersParseException
-    // number.parseAllOrThrow("abc")    // ✗ UnmatchedInputParseException
+    // number.parseAllOrThrow("123abc") // ✗ ParseException
+    // number.parseAllOrThrow("abc")    // ✗ ParseException
 }
 ```
 
 ### 例外の種類
 
-- **`UnmatchedInputParseException`** - 現在位置でパーサがマッチしなかった
-- **`ExtraCharactersParseException`** - 解析は成功したが、末尾の入力が残っている
+- **`ParseException`** - 現在位置でパーサがマッチしなかった場合、または解析は成功したが末尾の入力が残っている場合
 
-両方の例外は、詳細なエラー情報のための`context`プロパティを提供します。
+この例外は、詳細なエラー情報のための`context`プロパティを提供します。
 
 ## エラーコンテキスト
 
@@ -47,7 +46,7 @@ val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
     val result = identifier.parseAll("1abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0で失敗
@@ -84,7 +83,7 @@ val expr = number * operator * number
 
 fun main() {
     val result = expr.parseAll("42 + 10")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition > 0)  // エラー位置が追跡される
@@ -92,6 +91,41 @@ fun main() {
     check(suggestions.isNotEmpty())  // 提案がある
 }
 ```
+
+### リッチなエラーメッセージ
+
+`formatMessage`拡張関数を使用すると、エラー位置、期待される要素、該当行のソースコード、エラー箇所を示すキャレット表示を含むユーザーフレンドリーなエラーメッセージを生成できます：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val operator = +'+' + +'-'
+val expr = number * operator * number
+
+fun main() {
+    val input = "42*10"
+    try {
+        expr.parseAllOrThrow(input)
+    } catch (exception: ParseException) {
+        val message = exception.formatMessage()
+        val lines = message.lines()
+        check(lines[0] == "Syntax Error at 1:3")
+        check(lines[1] == "Expect: \"+\", \"-\"")
+        check(lines[2] == "Actual: \"*\"")
+        check(lines[3] == "42*10")
+        check(lines[4] == "  ^")
+    }
+}
+```
+
+`formatMessage`関数は以下を提供します：
+- エラーの行番号と列番号
+- 期待される名前付きパーサのリスト（利用可能な場合）
+- 実際に見つかった文字（またはEOF）
+- エラーが発生した行のソースコード
+- エラー位置を示すキャレット（`^`）記号
 
 ## メモ化とキャッシング
 
@@ -168,7 +202,7 @@ val parser = +Regex("[a-z]+") named "word"
 
 fun main() {
     val result = parser.parseAll("123")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0でエラー

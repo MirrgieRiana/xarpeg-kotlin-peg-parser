@@ -10,6 +10,8 @@ private object EndOfInputParser : Parser<Tuple0> {
         if (start != context.src.length) return null
         return ParseResult(Tuple0, start, start)
     }
+
+    override val name: String = "EOF"
 }
 
 /** 解析位置がソースの末尾である場合にマッチするパーサーを返します。 */

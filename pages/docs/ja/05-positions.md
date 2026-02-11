@@ -163,7 +163,7 @@ fun main() {
     
     fun parseWithErrors(input: String): Result<Int> {
         val result = parser.parseAll(input)
-        val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+        val exception = result.exceptionOrNull() as? ParseException
         
         return if (exception != null) {
             val pos = exception.context.errorPosition

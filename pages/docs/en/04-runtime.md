@@ -21,17 +21,16 @@ val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
     number.parseAllOrThrow("123")      // ✓ Returns 123
-    // number.parseAllOrThrow("123abc") // ✗ ExtraCharactersParseException
-    // number.parseAllOrThrow("abc")    // ✗ UnmatchedInputParseException
+    // number.parseAllOrThrow("123abc") // ✗ ParseException
+    // number.parseAllOrThrow("abc")    // ✗ ParseException
 }
 ```
 
 ### Exception Types
 
-- **`UnmatchedInputParseException`** - No parser matched at the current position
-- **`ExtraCharactersParseException`** - Parsing succeeded but trailing input remains
+- **`ParseException`** - Thrown when no parser matches at the current position or when parsing succeeds but trailing input remains
 
-Both exceptions provide a `context` property for detailed error information.
+This exception provides a `context` property for detailed error information.
 
 ## Error Context
 
@@ -47,7 +46,7 @@ val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
     val result = identifier.parseAll("1abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Failed at position 0
@@ -84,7 +83,7 @@ val expr = number * operator * number
 
 fun main() {
     val result = expr.parseAll("42 + 10")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition > 0)  // Error position tracked
@@ -92,6 +91,41 @@ fun main() {
     check(suggestions.isNotEmpty())  // Has suggestions
 }
 ```
+
+### Rich Error Messages
+
+Use the `formatMessage` extension function to generate user-friendly error messages that include error position, expected elements, the source line, and a caret indicator pointing to the error location:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val operator = +'+' + +'-'
+val expr = number * operator * number
+
+fun main() {
+    val input = "42*10"
+    try {
+        expr.parseAllOrThrow(input)
+    } catch (exception: ParseException) {
+        val message = exception.formatMessage()
+        val lines = message.lines()
+        check(lines[0] == "Syntax Error at 1:3")
+        check(lines[1] == "Expect: \"+\", \"-\"")
+        check(lines[2] == "Actual: \"*\"")
+        check(lines[3] == "42*10")
+        check(lines[4] == "  ^")
+    }
+}
+```
+
+The `formatMessage` function provides:
+- Error line and column number
+- List of expected named parsers (if available)
+- The actual character found (or EOF)
+- The source line where the error occurred
+- A caret (`^`) symbol indicating the error position
 
 ## Memoization and Caching
 
@@ -168,7 +202,7 @@ val parser = +Regex("[a-z]+") named "word"
 
 fun main() {
     val result = parser.parseAll("123")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Error at position 0

@@ -15,7 +15,7 @@ import kotlin.test.assertFailsWith
 /**
  * Exception thrown when the special '!' operator is evaluated.
  */
-class PositionMarkerException(message: String, context: ParseContext, position: Int) : ParseException(message, context, position)
+class PositionMarkerException(context: ParseContext, position: Int) : ParseException(context, position)
 
 /**
  * Test demonstrating position tracking using mapEx with lazy arithmetic parser.
@@ -34,7 +34,7 @@ class LazyArithmeticTest {
         private val positionMarker: Parser<() -> Int> =
             +'!' mapEx { context, result ->
                 val position = result.start
-                return@mapEx { throw PositionMarkerException("Position marker at index $position", context, position) }
+                return@mapEx { throw PositionMarkerException(context, position) }
             }
 
         private val primary: Parser<() -> Int> =
