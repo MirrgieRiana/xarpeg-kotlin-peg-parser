@@ -39,20 +39,20 @@ class OnlineParserTest {
     }
 
     @Test
-    fun parsesVariableReference() {
+    fun parsesVariableAssignmentForY() {
         assertEquals("10", parseExpression("y = 10").output)
     }
 
     @Test
     fun parsesLambdaExpression() {
         val result = parseExpression("add = (a, b) -> a + b")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda"))
     }
 
     @Test
     fun parsesFunctionCall() {
-        // This would need multiple statements, which we don't support in single expression
-        // So we test error case
+        // Test that calling an undefined function results in an error
         val result = parseExpression("undefined_func(1, 2)")
         assertFalse(result.success)
     }
@@ -81,41 +81,39 @@ class OnlineParserTest {
         assertTrue(result.output.contains("Division by zero"))
     }
 
-    @Test
-    fun showsErrorMessageForDivisionByZero() {
-        val result = parseExpression("1 / 0")
-        assertFalse(result.success)
-        assertTrue(result.output.contains("Division by zero"))
-    }
-
     // Lambda expression tests
     @Test
     fun parsesLambdaWithNoParameters() {
         val result = parseExpression("f = () -> 42")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda()"))
     }
 
     @Test
     fun parsesLambdaWithOneParameter() {
         val result = parseExpression("double = (x) -> x * 2")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda(x)"))
     }
 
     @Test
     fun parsesLambdaWithMultipleParameters() {
         val result = parseExpression("add3 = (a, b, c) -> a + b + c")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda(a, b, c)"))
     }
 
     @Test
     fun parsesLambdaWithWhitespaceInParameters() {
         val result = parseExpression("add = ( a , b ) -> a + b")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda(a, b)"))
     }
 
     @Test
     fun parsesLambdaWithComplexBody() {
         val result = parseExpression("calc = (x, y) -> (x + y) * 2 - 1")
+        assertTrue(result.success)
         assertTrue(result.output.contains("lambda(x, y)"))
     }
 
@@ -240,6 +238,7 @@ class OnlineParserTest {
     @Test
     fun parsesLambdaAssignmentReturnsLambda() {
         val result = parseExpression("sum = (a, b) -> a + b")
+        assertTrue(result.success)
         assertTrue(result.output.startsWith("<lambda"))
         assertTrue(result.output.contains("a, b"))
     }
