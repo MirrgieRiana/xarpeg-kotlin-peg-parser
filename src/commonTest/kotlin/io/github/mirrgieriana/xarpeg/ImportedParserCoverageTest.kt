@@ -19,6 +19,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
+/**
+ * インポートされたパーサーの詳細な挙動をテストする（カバレッジ向上用）
+ */
 class ImportedParserCoverageTest {
 
     @Test

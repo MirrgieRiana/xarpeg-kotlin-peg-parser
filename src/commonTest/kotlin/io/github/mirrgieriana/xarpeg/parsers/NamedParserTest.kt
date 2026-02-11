@@ -9,6 +9,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * NamedパーサーとHiddenパーサーの動作をテストする
+ */
 class NamedParserTest {
 
     @Test

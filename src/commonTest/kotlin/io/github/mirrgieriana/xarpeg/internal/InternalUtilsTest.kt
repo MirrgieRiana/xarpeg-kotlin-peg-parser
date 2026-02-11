@@ -3,6 +3,9 @@ package io.github.mirrgieriana.xarpeg.internal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/**
+ * 内部ユーティリティ機能をテストする
+ */
 class InternalUtilsTest {
 
     @Test

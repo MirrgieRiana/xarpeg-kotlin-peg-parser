@@ -6,6 +6,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+/**
+ * オンラインパーサーの動作をテストする
+ */
 class OnlineParserTest {
 
     @Test

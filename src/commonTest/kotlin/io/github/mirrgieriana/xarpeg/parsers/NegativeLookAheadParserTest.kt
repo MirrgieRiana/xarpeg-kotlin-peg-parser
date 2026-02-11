@@ -8,6 +8,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * NegativeLookAheadパーサーの動作とサジェスチョンをテストする
+ */
 class NegativeLookAheadParserTest {
 
     @Test

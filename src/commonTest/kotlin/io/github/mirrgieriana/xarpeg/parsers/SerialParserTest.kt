@@ -9,6 +9,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
+/**
+ * Serialパーサーの動作をテストする
+ */
 class SerialParserTest {
 
     @Test
