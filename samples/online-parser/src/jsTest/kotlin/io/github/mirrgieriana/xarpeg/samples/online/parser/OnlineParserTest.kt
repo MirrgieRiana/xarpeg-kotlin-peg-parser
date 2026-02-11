@@ -208,9 +208,8 @@ class OnlineParserTest {
     }
 
     @Test
-    fun showsErrorForArgumentCountMismatch() {
-        // Can't actually test this in current implementation since variables are reset
-        // between calls, but we verify the error message exists in implementation
+    fun showsErrorForUndefinedFunction() {
+        // 未定義関数の呼び出しはエラーになる
         val result = parseExpression("f()")
         assertTrue(result.startsWith("Error"))
     }

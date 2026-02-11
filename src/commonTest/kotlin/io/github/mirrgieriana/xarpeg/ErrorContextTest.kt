@@ -232,25 +232,25 @@ class ErrorContextTest {
     }
 
     @Test
-    fun errorContextResetsBetweenParses() {
-        // Each ParseContext is independent
+    fun independentParseContextsHaveSeparateErrorState() {
+        // 各ParseContextは独立しており、異なるエラー位置を保持する
         val hello = +"hello" named "greeting"
         val world = +"world" named "farewell"
 
-        // Test with partial match advancing error position
+        // 部分一致でエラー位置が進むケースをテスト
         val parser = hello * +' ' * world
 
         val context1 = ParseContext("hello test", useMemoization = true)
         parser.parseOrNull(context1, 0)
-        // Failed at position 6 (after "hello ")
+        // position 6で失敗（"hello "の後）
         assertEquals(6, context1.errorPosition)
 
         val context2 = ParseContext("goodbye", useMemoization = true)
         parser.parseOrNull(context2, 0)
-        // Failed at position 0 (first parser didn't match)
+        // position 0で失敗（最初のパーサーがマッチしない）
         assertEquals(0, context2.errorPosition)
 
-        // The two contexts are independent
+        // 2つのコンテキストは独立している
         assertEquals(6, context1.errorPosition)
         assertEquals(0, context2.errorPosition)
     }
