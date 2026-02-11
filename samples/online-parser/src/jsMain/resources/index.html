@@ -550,7 +550,7 @@ func2(10, 10)</code>
             output.value = result;
             
             // Update output styling based on result type
-            if (result.startsWith("Error")) {
+            if (result.startsWith("Error") || result.startsWith("Syntax Error")) {
                 output.classList.remove("output-success");
                 output.classList.add("output-error");
             } else {

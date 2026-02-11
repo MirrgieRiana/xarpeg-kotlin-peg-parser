@@ -192,19 +192,19 @@ class OnlineParserTest {
     @Test
     fun showsErrorForInvalidSyntax() {
         val result = parseExpression("x = ")
-        assertTrue(result.startsWith("Error"))
+        assertTrue(result.startsWith("Error") || result.startsWith("Syntax Error"))
     }
 
     @Test
     fun showsErrorForMismatchedParentheses() {
         val result = parseExpression("(1 + 2")
-        assertTrue(result.startsWith("Error"))
+        assertTrue(result.startsWith("Error") || result.startsWith("Syntax Error"))
     }
 
     @Test
     fun showsErrorForInvalidOperator() {
         val result = parseExpression("5 % 2")
-        assertTrue(result.startsWith("Error"))
+        assertTrue(result.startsWith("Error") || result.startsWith("Syntax Error"))
     }
 
     @Test

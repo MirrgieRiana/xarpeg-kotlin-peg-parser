@@ -327,7 +327,7 @@ fun parseExpression(input: String): String {
             "Error: ${e.message}"
         }
     } catch (e: ParseException) {
-        "Error: ${e.formatMessage()}"
+        e.formatMessage()
     } catch (e: Exception) {
         "Error: ${e.message}"
     }
