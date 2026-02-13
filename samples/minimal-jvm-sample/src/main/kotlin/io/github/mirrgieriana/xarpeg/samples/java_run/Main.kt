@@ -1,6 +1,8 @@
 package io.github.mirrgieriana.xarpeg.samples.java_run
 
+import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Parser
+import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -22,6 +24,10 @@ private val expression: Parser<Int> = object {
 
 fun main() {
     val input = "2*(3+4)+5"
-    val result = expression.parseAllOrThrow(input)
-    println("$input = $result")
+    try {
+        val result = expression.parseAllOrThrow(input)
+        println("$input = $result")
+    } catch (e: ParseException) {
+        println(e.formatMessage())
+    }
 }

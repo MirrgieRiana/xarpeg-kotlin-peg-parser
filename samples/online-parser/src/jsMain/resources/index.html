@@ -547,15 +547,15 @@ func2(10, 10)</code>
 
         const updateOutput = () => {
             const result = parseExpression(input.value);
-            output.value = result;
+            output.value = result.output;
             
             // Update output styling based on result type
-            if (result.startsWith("Error")) {
-                output.classList.remove("output-success");
-                output.classList.add("output-error");
-            } else {
+            if (result.success) {
                 output.classList.remove("output-error");
                 output.classList.add("output-success");
+            } else {
+                output.classList.remove("output-success");
+                output.classList.add("output-error");
             }
         };
 
