@@ -2,6 +2,7 @@
   <img src="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/actions/workflows/check.yml/badge.svg" alt="CI Status">
   <img src="https://img.shields.io/github/v/release/MirrgieRiana/xarpeg-kotlin-peg-parser" alt="GitHub Release">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MirrgieRiana/xarpeg-kotlin-peg-parser/main/assets/kotlin.json" alt="Kotlin Version">
 </div>
 
 <br>

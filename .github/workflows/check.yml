@@ -24,6 +24,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Verify Kotlin version in assets/kotlin.json
+      run: |
+        # Extract Kotlin version from gradle/libs.versions.toml
+        GRADLE_KOTLIN_VERSION=$(grep '^kotlin = ' gradle/libs.versions.toml | cut -d'"' -f2)
+        echo "Kotlin version in gradle/libs.versions.toml: $GRADLE_KOTLIN_VERSION"
+        
+        # Extract Kotlin version from assets/kotlin.json
+        ASSETS_KOTLIN_VERSION=$(jq -r '.message' assets/kotlin.json)
+        echo "Kotlin version in assets/kotlin.json: $ASSETS_KOTLIN_VERSION"
+        
+        # Verify they match
+        if [ "$GRADLE_KOTLIN_VERSION" = "$ASSETS_KOTLIN_VERSION" ]; then
+          echo "✓ Kotlin versions match: $GRADLE_KOTLIN_VERSION"
+        else
+          echo "✗ Kotlin version mismatch!"
+          echo "  gradle/libs.versions.toml: $GRADLE_KOTLIN_VERSION"
+          echo "  assets/kotlin.json: $ASSETS_KOTLIN_VERSION"
+          exit 1
+        fi
+
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
