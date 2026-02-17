@@ -26,33 +26,9 @@ jobs:
 
     - name: Verify Kotlin version in assets/kotlin.json
       run: |
-        # Extract Kotlin version from gradle/libs.versions.toml
-        GRADLE_KOTLIN_VERSION=$(grep -E '^\s*kotlin\s*=' gradle/libs.versions.toml | cut -d'"' -f2)
-        echo "Kotlin version in gradle/libs.versions.toml: $GRADLE_KOTLIN_VERSION"
-        
-        # Extract Kotlin version from assets/kotlin.json
-        ASSETS_KOTLIN_VERSION=$(jq -r '.message' assets/kotlin.json)
-        echo "Kotlin version in assets/kotlin.json: $ASSETS_KOTLIN_VERSION"
-        
-        # Validate that both versions were extracted successfully
-        if [ -z "$GRADLE_KOTLIN_VERSION" ]; then
-          echo "✗ Failed to extract Kotlin version from gradle/libs.versions.toml"
-          exit 1
-        fi
-        if [ -z "$ASSETS_KOTLIN_VERSION" ] || [ "$ASSETS_KOTLIN_VERSION" = "null" ]; then
-          echo "✗ Failed to extract Kotlin version from assets/kotlin.json"
-          exit 1
-        fi
-        
-        # Verify they match
-        if [ "$GRADLE_KOTLIN_VERSION" = "$ASSETS_KOTLIN_VERSION" ]; then
-          echo "✓ Kotlin versions match: $GRADLE_KOTLIN_VERSION"
-        else
-          echo "✗ Kotlin version mismatch!"
-          echo "  gradle/libs.versions.toml: $GRADLE_KOTLIN_VERSION"
-          echo "  assets/kotlin.json: $ASSETS_KOTLIN_VERSION"
-          exit 1
-        fi
+        GRADLE_VERSION=$(grep -E '^\s*kotlin\s*=' gradle/libs.versions.toml | cut -d'"' -f2)
+        ASSETS_VERSION=$(jq -r '.message' assets/kotlin.json)
+        [ "$GRADLE_VERSION" = "$ASSETS_VERSION" ] || { echo "Version mismatch: gradle=$GRADLE_VERSION assets=$ASSETS_VERSION"; exit 1; }
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
