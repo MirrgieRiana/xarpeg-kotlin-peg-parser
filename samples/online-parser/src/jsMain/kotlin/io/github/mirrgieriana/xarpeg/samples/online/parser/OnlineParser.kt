@@ -2,11 +2,10 @@
 
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
-import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
-import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
@@ -383,14 +382,9 @@ fun parseExpression(input: String): ExpressionResult {
         val initialContext = EvaluationContext(sourceCode = input)
         val context = OnlineParserParseContext(input, useMemoization = true)
         val parseResult = context.parseOrNull(ExpressionGrammar.programRoot, 0)
-            ?: throw UnmatchedInputParseException("Failed to parse.", context, 0)
+            ?: throw ParseException(context, context.errorPosition)
         if (parseResult.end != input.length) {
-            val extraChars = input.drop(parseResult.end).take(10).let { if (input.length - parseResult.end > 10) "$it..." else it }
-            throw ExtraCharactersParseException(
-                "Extra characters found after position ${parseResult.end}: \"$extraChars\"",
-                context,
-                parseResult.end
-            )
+            throw ParseException(context, parseResult.end)
         }
         val result = parseResult.value.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
