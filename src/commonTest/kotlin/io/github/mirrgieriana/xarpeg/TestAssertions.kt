@@ -2,24 +2,19 @@ package io.github.mirrgieriana.xarpeg
 
 import kotlin.test.fail
 
-fun assertExtraCharacters(block: () -> Unit) {
+fun assertParseException(block: () -> Unit) {
     try {
         block()
-        fail("Expected ExtraCharactersParseException, but no exception was thrown.")
-    } catch (_: ExtraCharactersParseException) {
+        fail("Expected ParseException, but no exception was thrown.")
+    } catch (_: ParseException) {
         // ok
     } catch (e: Throwable) {
-        fail("Expected ExtraCharactersParseException, but got ${e::class}", e)
+        fail("Expected ParseException, but got ${e::class}", e)
     }
 }
 
-fun assertUnmatchedInput(block: () -> Unit) {
-    try {
-        block()
-        fail("Expected UnmatchedInputParseException, but no exception was thrown.")
-    } catch (_: UnmatchedInputParseException) {
-        // ok
-    } catch (e: Throwable) {
-        fail("Expected UnmatchedInputParseException, but got ${e::class}", e)
-    }
-}
+@Deprecated("Use assertParseException instead", ReplaceWith("assertParseException(block)"))
+fun assertExtraCharacters(block: () -> Unit) = assertParseException(block)
+
+@Deprecated("Use assertParseException instead", ReplaceWith("assertParseException(block)"))
+fun assertUnmatchedInput(block: () -> Unit) = assertParseException(block)

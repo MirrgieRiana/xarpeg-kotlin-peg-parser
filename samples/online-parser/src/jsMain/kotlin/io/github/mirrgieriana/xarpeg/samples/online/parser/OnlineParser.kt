@@ -5,9 +5,9 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ExtraCharactersParseException
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
-import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.UnmatchedInputParseException
+import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -368,51 +368,15 @@ private object ExpressionGrammar {
     val programRoot = whitespace * program * whitespace
 }
 
-private fun formatParseException(e: ParseException, input: String): String {
-    val sb = StringBuilder()
-
-    val position = e.context.errorPosition
-
-    val beforePosition = input.substring(0, position.coerceAtMost(input.length))
-    var line = 1
-    var lastNewlinePos = -1
-    beforePosition.forEachIndexed { i, char ->
-        if (char == '\n') {
-            line++
-            lastNewlinePos = i
-        }
-    }
-    val column = position - lastNewlinePos
-
-    sb.append("Error: Syntax error at line $line, column $column")
-
-    if (e.context.suggestedParsers.isNotEmpty()) {
-        val candidates = e.context.suggestedParsers
-            .mapNotNull { it.name }
-            .distinct()
-        if (candidates.isNotEmpty()) {
-            sb.append("\nExpected: ${candidates.joinToString(", ")}")
-        }
-    }
-
-    val lineStart = beforePosition.lastIndexOf('\n') + 1
-    val lineEnd = input.indexOf('\n', position).let { if (it == -1) input.length else it }
-    val sourceLine = input.substring(lineStart, lineEnd)
-
-    if (sourceLine.isNotEmpty()) {
-        sb.append("\n")
-        sb.append(sourceLine)
-        sb.append("\n")
-        val caretPosition = position - lineStart
-        sb.append(" ".repeat(caretPosition.coerceAtLeast(0)))
-        sb.append("^")
-    }
-
-    return sb.toString()
-}
 
 @JsExport
-fun parseExpression(input: String): String {
+data class ExpressionResult(
+    val success: Boolean,
+    val output: String
+)
+
+@JsExport
+fun parseExpression(input: String): ExpressionResult {
     return try {
         FunctionCallExpression.functionCallCount = 0
 
@@ -429,16 +393,17 @@ fun parseExpression(input: String): String {
             )
         }
         val result = parseResult.value.evaluate(initialContext)
-        result.toString()
+        ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
-        if (e.context != null && e.context.callStack.isNotEmpty()) {
+        val errorMessage = if (e.context != null && e.context.callStack.isNotEmpty()) {
             e.formatWithCallStack()
         } else {
             "Error: ${e.message}"
         }
+        ExpressionResult(success = false, output = errorMessage)
     } catch (e: ParseException) {
-        formatParseException(e, input)
+        ExpressionResult(success = false, output = e.formatMessage())
     } catch (e: Exception) {
-        "Error: ${e.message}"
+        ExpressionResult(success = false, output = "Error: ${e.message}")
     }
 }

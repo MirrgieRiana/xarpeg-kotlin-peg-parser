@@ -199,10 +199,10 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
     val result = identifier.parseAll("123abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
-    check(exception.message!!.contains("Failed to parse"))
+    check(exception.message!!.contains("Syntax Error"))
 }
 ```
 
@@ -225,18 +225,50 @@ fun main() {
     val unnamedComposite = parserA * parserB
     
     val result1 = namedComposite.parseAll("c")
-    val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
+    val exception1 = result1.exceptionOrNull() as? ParseException
     val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
     
     val result2 = unnamedComposite.parseAll("c")
-    val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
+    val exception2 = result2.exceptionOrNull() as? ParseException
     val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names2.contains("letter_a"))
 }
 ```
 
 **ベストプラクティス：** 意味的なエラー（"Expected: identifier"）のために複合パーサに名前を付け、開発中の詳細なトークンレベルのエラーのためにコンポーネントは名前なしのままにします。
+
+### 非表示パーサ
+
+パーサを内部的に追跡する必要があるが、エラー提案に表示したくない場合があります。どこにでも出現可能な空白文字のようなパーサには`.hidden`を使用します：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    val whitespace = (+Regex("\\s+")).hidden
+    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val operator = (+'*' + +'+') named "operator"
+
+    // 空白をオプションで受け入れるパーサ
+    val expr = number * whitespace.optional * operator * whitespace.optional * number
+
+    val result = expr.parseAll("42abc")  // 失敗：演算子または数値が必要
+
+    val exception = result.exceptionOrNull() as? ParseException
+    check(exception != null)
+
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+    // 意味のあるパーサを含むが、非表示の空白は含まない
+    check(suggestions.contains("operator") || suggestions.contains("number"))
+    check(!suggestions.contains(""))
+}
+```
+
+`.hidden`は`named("")`と同等です - パーサ名を空文字列に設定し、内部的には追跡しつつエラー提案からは除外します。
+
+**ユースケース：** どこにでも出現可能なパーサ（空白、コメント）に適用して、エラーメッセージを意味のあるトークンに集中させます。
 
 ## 重要なポイント
 
@@ -247,6 +279,7 @@ fun main() {
 - **分解** `map`でタプル結果を変換
 - **`startOfInput` / `endOfInput`** 境界でマッチ
 - **`named`** エラーメッセージを改善
+- **`.hidden`** エラー提案からパーサを除外
 
 ## 次のステップ
 

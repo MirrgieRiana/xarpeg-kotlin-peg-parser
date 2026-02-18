@@ -199,10 +199,10 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 
 fun main() {
     val result = identifier.parseAll("123abc")
-    val exception = result.exceptionOrNull() as? UnmatchedInputParseException
+    val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
-    check(exception.message!!.contains("Failed to parse"))
+    check(exception.message!!.contains("Syntax Error"))
 }
 ```
 
@@ -225,18 +225,50 @@ fun main() {
     val unnamedComposite = parserA * parserB
     
     val result1 = namedComposite.parseAll("c")
-    val exception1 = result1.exceptionOrNull() as? UnmatchedInputParseException
+    val exception1 = result1.exceptionOrNull() as? ParseException
     val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
     
     val result2 = unnamedComposite.parseAll("c")
-    val exception2 = result2.exceptionOrNull() as? UnmatchedInputParseException
+    val exception2 = result2.exceptionOrNull() as? ParseException
     val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names2.contains("letter_a"))
 }
 ```
 
 **Best practice:** Name composite parsers for semantic errors ("Expected: identifier") and leave components unnamed for detailed token-level errors during development.
+
+### Hidden Parsers
+
+Sometimes parsers need to be tracked internally but shouldn't clutter error suggestions. Use `.hidden` for parsers like whitespace that can appear anywhere:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    val whitespace = (+Regex("\\s+")).hidden
+    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val operator = (+'*' + +'+') named "operator"
+
+    // Parser that optionally accepts whitespace
+    val expr = number * whitespace.optional * operator * whitespace.optional * number
+
+    val result = expr.parseAll("42abc")  // Fails: expected operator or number
+
+    val exception = result.exceptionOrNull() as? ParseException
+    check(exception != null)
+
+    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+    // Contains meaningful parsers but not hidden whitespace
+    check(suggestions.contains("operator") || suggestions.contains("number"))
+    check(!suggestions.contains(""))
+}
+```
+
+`.hidden` is equivalent to `named("")` - it sets the parser name to an empty string, which excludes it from error suggestions while still tracking it internally.
+
+**Use case:** Apply to parsers that can appear anywhere (whitespace, comments) to keep error messages focused on meaningful tokens.
 
 ## Key Takeaways
 
@@ -247,6 +279,7 @@ fun main() {
 - **Destructuring** in `map` transforms tuple results
 - **`startOfInput` / `endOfInput`** match boundaries
 - **`named`** improves error messages
+- **`.hidden`** excludes parsers from error suggestions
 
 ## Next Steps
 

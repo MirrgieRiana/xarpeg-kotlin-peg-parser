@@ -151,8 +151,9 @@ class ImportedParserCoverageTest {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
 
-        val exception = assertFailsWith<ExtraCharactersParseException> { add.parseAllOrThrow("1+") }
-        assertEquals(1, exception.position)
+        val exception = assertFailsWith<ParseException> { add.parseAllOrThrow("1+") }
+        // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
+        assertEquals(2, exception.position)
     }
 
     @Test
@@ -160,15 +161,16 @@ class ImportedParserCoverageTest {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = rightAssociative(num, -'+') { a, _, b -> a + b }
 
-        val exception = assertFailsWith<ExtraCharactersParseException> { add.parseAllOrThrow("2+") }
-        assertEquals(1, exception.position)
+        val exception = assertFailsWith<ParseException> { add.parseAllOrThrow("2+") }
+        // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
+        assertEquals(2, exception.position)
     }
 
     @Test
     fun parseAllOrThrowUnmatchedInputHasPosition() {
         val parser = +'a'
 
-        val exception = assertFailsWith<UnmatchedInputParseException> { parser.parseAllOrThrow("") }
+        val exception = assertFailsWith<ParseException> { parser.parseAllOrThrow("") }
 
         assertEquals(0, exception.position)
     }

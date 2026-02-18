@@ -190,12 +190,11 @@ class ErrorContextTest {
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val parser = letter
 
-        val exception = assertFailsWith<UnmatchedInputParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow("123")
         }
 
         // Exception contains the context with error information
-        assertNotNull(exception.context)
         assertEquals(0, exception.context.errorPosition)
         // suggestedParsers should contain parsers that failed
         assertTrue(exception.context.suggestedParsers.isNotEmpty())
@@ -205,16 +204,18 @@ class ErrorContextTest {
 
     @Test
     fun errorContextWithExtraCharacters() {
-        // ExtraCharactersParseException also provides context
+        // ParseException also provides context when extra characters are found
         val parser = +"hello" named "greeting"
 
-        val exception = assertFailsWith<ExtraCharactersParseException> {
+        val exception = assertFailsWith<ParseException> {
             parser.parseAllOrThrow("helloworld")
         }
 
         // Exception contains the context
-        assertNotNull(exception.context)
-        assertEquals(5, exception.position) // Position where extra characters start
+        // Position points to errorPosition (where EOF was expected after "hello")
+        assertEquals(5, exception.position)
+        // suggestedParsers should contain "EOF"
+        assertTrue(exception.context.suggestedParsers.any { it.name == "EOF" })
     }
 
     @Test
@@ -231,8 +232,8 @@ class ErrorContextTest {
     }
 
     @Test
-    fun errorContextResetsBetweenParses() {
-        // Each ParseContext is independent
+    fun independentParseContextsHaveSeparateErrorState() {
+        // Each ParseContext is independent and maintains different error positions
         val hello = +"hello" named "greeting"
         val world = +"world" named "farewell"
 
@@ -254,6 +255,159 @@ class ErrorContextTest {
         assertEquals(0, context2.errorPosition)
     }
 
+    @Test
+    fun formatMessageForUnmatchedInput() {
+        // Test formatMessage for ParseException (unmatched input case)
+        val letter = +Regex("[a-z]") named "letter" map { it.value }
+        val digit = +Regex("[0-9]") named "digit" map { it.value }
+        val parser = letter * digit
+
+        val input = "123"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage()
+
+        // Should contain error information in new format
+        assertTrue(formatted.contains("Syntax Error at 1:1"))
+        // Should contain the source line
+        assertTrue(formatted.contains("123"))
+        // Should contain caret indicator
+        assertTrue(formatted.contains("^"))
+        // Should contain expected parsers
+        assertTrue(formatted.contains("letter"))
+    }
+
+    @Test
+    fun formatMessageForMultilineInput() {
+        // Test formatMessage with multiline input
+        val hello = +"hello"
+        val space = +' '
+        val world = +"world" named "world"
+        val parser = hello * space * world
+
+        val input = "hello test\nline2"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage()
+
+        // Should point to the correct position in new format
+        assertTrue(formatted.contains("Syntax Error at 1:7"))
+        // Should show the problematic line
+        assertTrue(formatted.contains("hello test"))
+        // Should show caret at error position
+        assertTrue(formatted.contains("^"))
+    }
+
+    @Test
+    fun formatMessageForExtraCharacters() {
+        // Test formatMessage for ParseException (extra characters case)
+        val parser = +"hello" named "greeting"
+
+        val input = "helloworld"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage()
+
+        // Should contain error information in new format
+        val lines = formatted.lines()
+        assertTrue(lines[0].contains("Syntax Error at"))
+        // Should contain the source line
+        assertTrue(formatted.contains("helloworld"))
+        // Should contain caret indicator
+        assertTrue(formatted.contains("^"))
+    }
+
+    @Test
+    fun formatMessageWithNamedParser() {
+        // Test formatMessage when named parser is available
+        val parser = +"test" named "test"
+
+        val input = "fail"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val formatted = exception.formatMessage()
+
+        // Should contain error information with expected parser name
+        assertTrue(formatted.contains("Syntax Error at"))
+        assertTrue(formatted.contains("Expect:"))
+        assertTrue(formatted.contains("test"))
+        assertTrue(formatted.contains("fail"))
+        assertTrue(formatted.contains("^"))
+    }
+
+    @Test
+    fun formatMessageWithEmptyLine() {
+        // Test formatMessage with error on empty line
+        val parser = +"test"
+        val input = "\n"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Should contain error information in new format
+        assertTrue(lines[0].contains("Syntax Error at"))
+        // Should have Expect line
+        assertTrue(lines[1].startsWith("Expect:"))
+        // Should have Actual line with escaped newline
+        assertEquals("Actual: \"\\n\"", lines[2])
+        // Empty line (source line display for newline character)
+        assertEquals("", lines[3])
+        // Caret should be at position 0
+        assertEquals("^", lines[4])
+    }
+
+    @Test
+    fun formatMessageWithNamelessFixedParser() {
+        // Use a StringParser which has a name (the string itself)
+        // This test verifies that parsers with names are shown in Expect line
+        val parser = +"test"
+
+        val input = "fail"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Should have suggested parsers and Expect line
+        assertTrue(exception.context.suggestedParsers.isNotEmpty())
+        val expectLine = lines.find { it.startsWith("Expect:") }
+        assertNotNull(expectLine)
+        assertTrue(expectLine.contains("test"))
+    }
+
+    @Test
+    fun formatMessageWithMixedLineEndings() {
+        // Test with mixed line endings (LF, CRLF, and positions after \r)
+        val parser = +"test"
+        val input = "hello\r\nworld\ntest\rfail"
+        val exception = assertFailsWith<ParseException> {
+            parser.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Should display error information correctly even with mixed line endings in new format
+        assertTrue(lines[0].contains("Syntax Error at"))
+
+        // Caret position should be correctly calculated
+        val caretLine = lines.find { it.trim().startsWith("^") }
+        assertNotNull(caretLine, "Should have a caret line")
+    }
+
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
         val suggestions = context.suggestedParsers
@@ -267,5 +421,28 @@ class ErrorContextTest {
         } else {
             "Failed to parse at position ${context.errorPosition}."
         }
+    }
+
+    @Test
+    fun formatMessageDocExample() {
+        // Test the exact example from documentation
+        val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+        val operator = +'+' + +'-'
+        val expr = number * operator * number
+
+        val input = "42*10"
+        val exception = assertFailsWith<ParseException> {
+            expr.parseAllOrThrow(input)
+        }
+
+        val message = exception.formatMessage()
+        val lines = message.lines()
+
+        // Verify the exact structure from documentation (matching actual formatMessage output)
+        assertEquals("Syntax Error at 1:3", lines[0])
+        assertEquals("Expect: \"+\", \"-\"", lines[1])
+        assertEquals("Actual: \"*\"", lines[2])
+        assertEquals("42*10", lines[3])
+        assertEquals("  ^", lines[4])
     }
 }

@@ -62,15 +62,14 @@ fun main() {
     check(kv.parseAllOrThrow("x=100") == ("x" to 100))        // ✓
     
     // Error cases would throw exceptions:
-    // kv.parseAllOrThrow("=42")        // ✗ UnmatchedInputParseException
-    // kv.parseAllOrThrow("count")      // ✗ UnmatchedInputParseException
-    // kv.parseAllOrThrow("count=42x")  // ✗ ExtraCharactersParseException
+    // kv.parseAllOrThrow("=42")        // ✗ ParseException
+    // kv.parseAllOrThrow("count")      // ✗ ParseException
+    // kv.parseAllOrThrow("count=42x")  // ✗ ParseException
 }
 ```
 
 **Exception types:**
-- `UnmatchedInputParseException` when no parser matches
-- `ExtraCharactersParseException` when trailing input remains
+- `ParseException` when no parser matches or when trailing input remains
 
 ## Key Takeaways
 

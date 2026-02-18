@@ -1,6 +1,8 @@
 package io.github.mirrgieriana.xarpeg.samples.interpreter
 
+import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Parser
+import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
@@ -111,6 +113,8 @@ fun main(args: Array<String>) {
         else -> {
             try {
                 println(evaluate(args[1]))
+            } catch (e: ParseException) {
+                println(e.formatMessage())
             } catch (e: DivisionByZeroException) {
                 println("Error: ${e.message} at line ${e.line}, column ${e.column}")
             } catch (e: Exception) {
