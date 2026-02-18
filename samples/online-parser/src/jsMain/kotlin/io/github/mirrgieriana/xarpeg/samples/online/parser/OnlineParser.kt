@@ -8,6 +8,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parsers.endOfInput
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
@@ -383,9 +384,8 @@ fun parseExpression(input: String): ExpressionResult {
         val context = OnlineParserParseContext(input, useMemoization = true)
         val parseResult = context.parseOrNull(ExpressionGrammar.programRoot, 0)
             ?: throw ParseException(context, context.errorPosition)
-        if (parseResult.end != input.length) {
-            throw ParseException(context, parseResult.end)
-        }
+        context.parseOrNull(endOfInput, parseResult.end)
+            ?: throw ParseException(context, context.errorPosition)
         val result = parseResult.value.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
