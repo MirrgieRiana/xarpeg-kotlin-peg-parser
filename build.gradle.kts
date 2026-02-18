@@ -134,24 +134,6 @@ nexusPublishing {
     }
 }
 
-tasks.register("writeKotlinMetadata") {
-    val kotlinVersion = providers.provider {
-        kotlin.coreLibrariesVersion ?: error("Kotlin core libraries version is not set")
-    }
-    val outputFile = layout.buildDirectory.file("maven/metadata/kotlin.json")
-    inputs.property("kotlinVersion", kotlinVersion)
-    outputs.file(outputFile)
-
-    doLast {
-        val versionEscaped = kotlinVersion.get().replace("\"", "\\\"")
-        val json = """{"schemaVersion":1,"label":"Kotlin","message":"$versionEscaped","color":"blue"}"""
-        outputFile.get().asFile.apply {
-            parentFile.mkdirs()
-            writeText(json)
-        }
-    }
-}
-
 // Dokka configuration for KDoc generation
 tasks.withType<org.jetbrains.dokka.gradle.DokkaTask>().configureEach {
     moduleName.set(providers.gradleProperty("projectName"))

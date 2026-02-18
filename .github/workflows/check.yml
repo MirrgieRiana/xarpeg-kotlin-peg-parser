@@ -18,6 +18,21 @@ on:
       - '**'
 
 jobs:
+  verify-kotlin-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Verify Kotlin version in assets/kotlin.json
+      run: |
+        GRADLE_VERSION=$(grep -E '^\s*kotlin\s*=' gradle/libs.versions.toml | cut -d'"' -f2)
+        ASSETS_VERSION=$(jq -r '.message' assets/kotlin.json)
+        [ "$GRADLE_VERSION" = "$ASSETS_VERSION" ] || {
+          echo "Version mismatch: gradle=$GRADLE_VERSION assets=$ASSETS_VERSION"
+          exit 1
+        }
+
   build:
     runs-on: ubuntu-latest
 
