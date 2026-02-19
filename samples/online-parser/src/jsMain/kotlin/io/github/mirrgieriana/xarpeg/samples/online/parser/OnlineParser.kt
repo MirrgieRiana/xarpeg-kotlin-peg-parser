@@ -5,6 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
+import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parsers.endOfInput
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
@@ -138,7 +139,34 @@ class EvaluationException(
 }
 
 private object ExpressionGrammar {
-    private val whitespace = -Regex("[ \\t\\r\\n]*")
+    private val whitespace: Parser<Tuple0> = Parser { context, pos ->
+        var current = pos
+        while (current < context.src.length) {
+            val ch = context.src[current]
+            when {
+                ch == ' ' || ch == '\t' -> current++
+                (ch == '\n' || (ch == '\r' && context.src.getOrNull(current + 1) == '\n')) &&
+                        context is OnlineParserParseContext && context.isInIndentBlock -> {
+                    val nlEnd = if (ch == '\r') current + 2 else current + 1
+                    var spaceEnd = nlEnd
+                    while (spaceEnd < context.src.length &&
+                        (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
+                    ) {
+                        spaceEnd++
+                    }
+                    if (spaceEnd - nlEnd >= context.currentIndent) {
+                        current = spaceEnd
+                    } else {
+                        break
+                    }
+                }
+                ch == '\r' && context.src.getOrNull(current + 1) == '\n' -> current += 2
+                ch == '\n' -> current++
+                else -> break
+            }
+        }
+        ParseResult(Tuple0, pos, current)
+    }
 
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
@@ -289,18 +317,20 @@ private object ExpressionGrammar {
         }) + equalityComparison)
     }
 
+    private val horizontalSpace = +Regex("[ \\t]*")
+
     private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null
 
-        val nameResult = identifier.parseOrNull(context, start) ?: return@Parser null
-        val wsResult1 = whitespace.parseOrNull(context, nameResult.end) ?: return@Parser null
-        val paramListResult = paramList.parseOrNull(context, wsResult1.end) ?: return@Parser null
-        val wsResult2 = whitespace.parseOrNull(context, paramListResult.end) ?: return@Parser null
+        val nameResult = context.parseOrNull(identifier, start) ?: return@Parser null
+        val wsResult1 = context.parseOrNull(whitespace, nameResult.end) ?: return@Parser null
+        val paramListResult = context.parseOrNull(paramList, wsResult1.end) ?: return@Parser null
+        val wsResult2 = context.parseOrNull(whitespace, paramListResult.end) ?: return@Parser null
 
         if (context.src.getOrNull(wsResult2.end) != ':') return@Parser null
         var pos = wsResult2.end + 1
 
-        val wsResult3 = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
+        val wsResult3 = context.parseOrNull(horizontalSpace, pos) ?: return@Parser null
         pos = wsResult3.end
 
         val ch = context.src.getOrNull(pos) ?: return@Parser null
@@ -316,7 +346,7 @@ private object ExpressionGrammar {
             return@Parser null
         }
 
-        val indentSpaces = (+Regex("[ \\t]*")).parseOrNull(context, pos) ?: return@Parser null
+        val indentSpaces = context.parseOrNull(horizontalSpace, pos) ?: return@Parser null
         val indentLevel = indentSpaces.value.value.length
 
         if (indentLevel <= context.currentIndent) return@Parser null
@@ -326,7 +356,7 @@ private object ExpressionGrammar {
 
         val bodyResult: ParseResult<Expression>?
         try {
-            bodyResult = ref { expression }.parseOrNull(context, pos)
+            bodyResult = context.parseOrNull(ref { expression }, pos)
         } finally {
             context.popIndent()
         }

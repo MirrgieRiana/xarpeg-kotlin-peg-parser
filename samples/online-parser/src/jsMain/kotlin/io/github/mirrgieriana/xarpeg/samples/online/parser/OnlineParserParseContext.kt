@@ -31,6 +31,13 @@ class OnlineParserParseContext(
     }
 
     /**
+     * Whether parsing is currently inside an indent block.
+     * True when the indent stack has been pushed at least once.
+     */
+    val isInIndentBlock: Boolean
+        get() = indentStack.size > 1
+
+    /**
      * Pop the current indent level from the stack
      */
     fun popIndent() {
