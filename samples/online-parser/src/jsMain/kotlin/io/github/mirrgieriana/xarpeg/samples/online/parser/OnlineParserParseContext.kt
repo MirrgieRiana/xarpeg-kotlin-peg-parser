@@ -6,14 +6,10 @@ import io.github.mirrgieriana.xarpeg.ParseContext
  * Custom ParseContext for the online parser.
  * This extends ParseContext to track the current indentation level for indent-based syntax.
  *
- * **Note:** This demonstrates ParseContext extension that requires
- * ParseContext to be declared as `open class`. This feature is available when using
- * a development build or will be available in future releases of xarpeg.
- *
- * To use this with a local development build:
- * 1. Build and publish the main project to mavenLocal: `./gradlew publishToMavenLocal`
- * 2. Add `mavenLocal()` to repositories in this build.gradle.kts
- * 3. Update libs.versions.toml to use version "latest"
+ * **Note:** This sample uses a composite build to include the main project directly.
+ * The main project is included via `includeBuild("../..")` in settings.gradle.kts,
+ * allowing the sample to use the latest development version of ParseContext (as `open class`)
+ * while keeping the version catalog at the released version.
  */
 class OnlineParserParseContext(
     src: String,

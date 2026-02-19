@@ -2,12 +2,10 @@
 
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
-import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.formatMessage
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
 import io.github.mirrgieriana.xarpeg.parsers.endOfInput
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -326,26 +324,24 @@ private object ExpressionGrammar {
         context.pushIndent(indentLevel)
         pos = indentSpaces.end
 
+        val bodyResult: ParseResult<Expression>?
         try {
-            val bodyResult = ref { expression }.parseOrNull(context, pos)
-            if (bodyResult == null) {
-                context.popIndent()
-                return@Parser null
-            }
-
+            bodyResult = ref { expression }.parseOrNull(context, pos)
+        } finally {
             context.popIndent()
-
-            val name = nameResult.value
-            val params = paramListResult.value
-            val body = bodyResult.value
-            val lambda = LambdaExpression(params, body, SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end)))
-            val assignment = AssignmentExpression(name, lambda)
-
-            ParseResult(assignment, start, bodyResult.end)
-        } catch (e: Exception) {
-            context.popIndent()
-            throw e
         }
+
+        if (bodyResult == null) {
+            return@Parser null
+        }
+
+        val name = nameResult.value
+        val params = paramListResult.value
+        val body = bodyResult.value
+        val lambda = LambdaExpression(params, body, SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end)))
+        val assignment = AssignmentExpression(name, lambda)
+
+        ParseResult(assignment, start, bodyResult.end)
     }
 
     private val assignment: Parser<Expression> = run {
