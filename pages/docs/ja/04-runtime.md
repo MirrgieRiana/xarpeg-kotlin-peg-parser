@@ -244,22 +244,24 @@ Python風の言語のインデントレベルを追跡するために`ParseConte
 ```kotlin
 import io.github.mirrgieriana.xarpeg.ParseContext
 
-class OnlineParserParseContext(
-    src: String,
-    useMemoization: Boolean = true,
-) : ParseContext(src, useMemoization) {
-    private val indentStack = mutableListOf(0)
-    
-    val currentIndent: Int get() = indentStack.last()
-    
-    fun pushIndent(indent: Int) {
-        require(indent > currentIndent)
-        indentStack.add(indent)
-    }
-    
-    fun popIndent() {
-        require(indentStack.size > 1)
-        indentStack.removeLast()
+fun main() {
+    class OnlineParserParseContext(
+        src: String,
+        useMemoization: Boolean = true,
+    ) : ParseContext(src, useMemoization) {
+        private val indentStack = mutableListOf(0)
+        
+        val currentIndent: Int get() = indentStack.last()
+        
+        fun pushIndent(indent: Int) {
+            require(indent > currentIndent)
+            indentStack.add(indent)
+        }
+        
+        fun popIndent() {
+            require(indentStack.size > 1)
+            indentStack.removeLast()
+        }
     }
 }
 ```
@@ -270,10 +272,12 @@ class OnlineParserParseContext(
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-fun indent(): Parser<String> = Parser { context, start ->
-    if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
-    val expectedIndent = context.currentIndent
-    // インデントを解析して検証...
+fun main() {
+    fun indent(): Parser<String> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
+        val expectedIndent = context.currentIndent
+        // インデントを解析して検証...
+    }
 }
 ```
 

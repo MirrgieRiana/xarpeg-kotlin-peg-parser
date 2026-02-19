@@ -6,10 +6,9 @@ import io.github.mirrgieriana.xarpeg.ParseContext
  * Custom ParseContext for the online parser.
  * This extends ParseContext to track the current indentation level for indent-based syntax.
  *
- * **Note:** This sample uses a composite build to include the main project directly.
- * The main project is included via `includeBuild("../..")` in settings.gradle.kts,
- * allowing the sample to use the latest development version of ParseContext (as `open class`)
- * while keeping the version catalog at the released version.
+ * **Note:** This sample requires ParseContext to be `open class`.
+ * After a release containing the `open class` change, update the version in
+ * samples/libs.versions.toml to match the published version.
  */
 class OnlineParserParseContext(
     src: String,
@@ -38,11 +37,4 @@ class OnlineParserParseContext(
         require(indentStack.size > 1) { "Cannot pop base indent level" }
         indentStack.removeLast()
     }
-
-    /**
-     * Check whether the given indent level is deeper than the current indent.
-     *
-     * Returns true if [indent] is greater than [currentIndent] without modifying the stack.
-     */
-    fun peekIndent(indent: Int): Boolean = indent > currentIndent
 }

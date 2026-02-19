@@ -10,8 +10,6 @@ pluginManagement {
     }
 }
 
-includeBuild("../..")
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {

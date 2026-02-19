@@ -244,22 +244,24 @@ You can extend `ParseContext` to track indentation levels for Python-style langu
 ```kotlin
 import io.github.mirrgieriana.xarpeg.ParseContext
 
-class OnlineParserParseContext(
-    src: String,
-    useMemoization: Boolean = true,
-) : ParseContext(src, useMemoization) {
-    private val indentStack = mutableListOf(0)
-    
-    val currentIndent: Int get() = indentStack.last()
-    
-    fun pushIndent(indent: Int) {
-        require(indent > currentIndent)
-        indentStack.add(indent)
-    }
-    
-    fun popIndent() {
-        require(indentStack.size > 1)
-        indentStack.removeLast()
+fun main() {
+    class OnlineParserParseContext(
+        src: String,
+        useMemoization: Boolean = true,
+    ) : ParseContext(src, useMemoization) {
+        private val indentStack = mutableListOf(0)
+        
+        val currentIndent: Int get() = indentStack.last()
+        
+        fun pushIndent(indent: Int) {
+            require(indent > currentIndent)
+            indentStack.add(indent)
+        }
+        
+        fun popIndent() {
+            require(indentStack.size > 1)
+            indentStack.removeLast()
+        }
     }
 }
 ```
@@ -270,10 +272,12 @@ You can then use this custom context in your parsers to validate indentation:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-fun indent(): Parser<String> = Parser { context, start ->
-    if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
-    val expectedIndent = context.currentIndent
-    // Parse and validate indentation...
+fun main() {
+    fun indent(): Parser<String> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
+        val expectedIndent = context.currentIndent
+        // Parse and validate indentation...
+    }
 }
 ```
 
