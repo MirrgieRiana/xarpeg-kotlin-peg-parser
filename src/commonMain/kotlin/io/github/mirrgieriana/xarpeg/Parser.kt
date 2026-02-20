@@ -33,8 +33,7 @@ open class ParseException(val context: ParseContext, val position: Int) : Except
  * Formats a [ParseException] into a user-friendly error message with context.
  * @see [ParseContext.formatMessage]
  */
-fun ParseException.formatMessage() = context.formatMessage(this, 80)
-
+fun ParseException.formatMessage() = context.matrixPositionCalculator.formatMessage(this, 80)
 
 fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
 

@@ -55,12 +55,6 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
         return result
     }
 
-    /**
-     * Formats a [ParseException] into a user-friendly error message.
-     * @see [MatrixPositionCalculator.formatMessage]
-     */
-    fun formatMessage(exception: ParseException, maxLineLength: Int) = matrixPositionCalculator.formatMessage(exception, maxLineLength)
-
 }
 
 data class MatrixPosition(val row: Int, val column: Int)
