@@ -50,14 +50,15 @@ open class ParseException(val context: ParseContext) : Exception(run {
  * @param maxLineLength Maximum length for the source line display (default 80)
  * @return A formatted error message with context
  */
-fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
-    val suggestingParseContext = exception.context as? SuggestingParseContext
+fun ParseException.formatMessage(maxLineLength: Int = 80): String {
+    val suggestingParseContext = this.context as? SuggestingParseContext
+    val matrixPositionCalculator = this.context.matrixPositionCalculator
     val sb = StringBuilder()
 
 
     // Build error message header with position
     if (suggestingParseContext != null) {
-        val matrixPosition = this.getMatrixPosition(suggestingParseContext.errorPosition)
+        val matrixPosition = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition)
         sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
     } else {
         sb.append("Syntax Error")
@@ -77,7 +78,7 @@ fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLen
 
     // Add actual character
     if (suggestingParseContext != null) {
-        val actualChar = exception.context.src.getOrNull(suggestingParseContext.errorPosition)
+        val actualChar = this.context.src.getOrNull(suggestingParseContext.errorPosition)
         if (actualChar != null) {
             sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
         } else {
@@ -88,10 +89,10 @@ fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLen
 
     // Add source line and caret
     if (suggestingParseContext != null) {
-        val lineIndex = this.getMatrixPosition(suggestingParseContext.errorPosition).row - 1
-        val lineRange = this.getLineRange(lineIndex + 1)
+        val lineIndex = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition).row - 1
+        val lineRange = matrixPositionCalculator.getLineRange(lineIndex + 1)
         val lineStartIndex = lineRange.start
-        val line = this.src.substring(lineStartIndex, lineRange.endInclusive + 1)
+        val line = this.context.src.substring(lineStartIndex, lineRange.endInclusive + 1)
 
         val caretPosition = (suggestingParseContext.errorPosition - lineStartIndex).coerceAtMost(line.length)
         val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
@@ -108,12 +109,6 @@ fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLen
 
     return sb.toString()
 }
-
-/**
- * Formats a [ParseException] into a user-friendly error message with context.
- * @see [ParseContext.formatMessage]
- */
-fun ParseException.formatMessage() = context.matrixPositionCalculator.formatMessage(this, 80)
 
 
 fun <T : Any> Parser<T>.parseAll(
