@@ -66,7 +66,7 @@ fun main() {
     val result1 = combined.parseAll("ab").getOrThrow()
     check(result1.a == 'a')  // nullable Charに直接アクセス
     check(result1.b == 'b')
-    
+
     val result2 = combined.parseAll("a").getOrThrow()
     check(result2.a == 'a')
     check(result2.b == null)  // 欠落したoptionalはnull
@@ -83,11 +83,11 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
+val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches ->
     matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches -> 
+val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches ->
     matches
 }
 
@@ -200,7 +200,7 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 fun main() {
     val result = identifier.parseAll("123abc")
     val exception = result.exceptionOrNull() as? ParseException
-    
+
     check(exception != null)  // 解析失敗
     check(exception.message!!.contains("Syntax Error"))
 }
@@ -217,18 +217,18 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 fun main() {
     val parserA = +'a' named "letter_a"
     val parserB = +'b' named "letter_b"
-    
+
     // 名前付き複合：エラーには"ab_sequence"のみ
     val namedComposite = (parserA * parserB) named "ab_sequence"
-    
+
     // 名前なし複合：エラーには"letter_a"
     val unnamedComposite = parserA * parserB
-    
+
     val result1 = namedComposite.parseAll("c")
     val exception1 = result1.exceptionOrNull() as? ParseException
     val names1 = exception1?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
-    
+
     val result2 = unnamedComposite.parseAll("c")
     val exception2 = result2.exceptionOrNull() as? ParseException
     val names2 = exception2?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()

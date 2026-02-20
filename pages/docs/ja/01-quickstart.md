@@ -60,7 +60,7 @@ fun main() {
     // 成功ケース
     check(kv.parseAll("count=42").getOrThrow() == ("count" to 42))  // ✓
     check(kv.parseAll("x=100").getOrThrow() == ("x" to 100))        // ✓
-    
+
     // エラーケースは例外をスローします：
     // kv.parseAll("=42").getOrThrow()        // ✗ ParseException
     // kv.parseAll("count").getOrThrow()      // ✗ ParseException
