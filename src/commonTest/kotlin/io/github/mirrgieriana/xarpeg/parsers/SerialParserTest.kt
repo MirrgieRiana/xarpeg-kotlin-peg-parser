@@ -1,6 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
-import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.assertExtraCharacters
 import io.github.mirrgieriana.xarpeg.assertUnmatchedInput
 import io.github.mirrgieriana.xarpeg.parseAll
@@ -79,7 +79,7 @@ class SerialParserTest {
     @Test
     fun serialParserStopsAtCorrectPosition() {
         val parser = serial(+'a', +'b')
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(listOf('a', 'b'), result.value)
@@ -90,7 +90,7 @@ class SerialParserTest {
     @Test
     fun serialParserReturnsNullOnFailure() {
         val parser = serial(+'a', +'b', +'c')
-        val context = ParseContext("abd", useMemoization = true)
+        val context = DefaultParseContext("abd")
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }

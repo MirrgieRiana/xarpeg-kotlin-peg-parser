@@ -142,7 +142,7 @@ class ParserAdditionalTest {
     @Test
     fun parseAllOrThrowWithoutCacheStillWorks() {
         val parser = (+'a').oneOrMore
-        assertEquals(listOf('a', 'a'), parser.parseAll("aa", useMemoization = false).getOrThrow())
+        assertEquals(listOf('a', 'a'), parser.parseAll("aa") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow())
     }
 
     @Test
