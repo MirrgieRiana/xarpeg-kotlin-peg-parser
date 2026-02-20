@@ -26,9 +26,14 @@ data class ParseResult<out T : Any>(val value: T, val start: Int, val end: Int)
 fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.start, this.end).normalize()
 
 
-open class ParseException(val context: ParseContext, val position: Int = context.errorPosition ?: 0) : Exception(run {
-    val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(position)
-    "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+open class ParseException(val context: ParseContext) : Exception(run {
+    val errorPosition = context.errorPosition
+    if (errorPosition != null) {
+        val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(errorPosition)
+        "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+    } else {
+        "Syntax Error"
+    }
 })
 
 /**
@@ -52,8 +57,12 @@ fun ParseException.formatMessage(maxLineLength: Int = 80): String {
 
 
     // Build error message header with position
-    val matrixPosition = matrixPositionCalculator.getMatrixPosition(this.position)
-    sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    if (suggestingParseContext != null) {
+        val matrixPosition = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition)
+        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    } else {
+        sb.append("Syntax Error")
+    }
 
 
     // Add expected parsers
@@ -69,7 +78,7 @@ fun ParseException.formatMessage(maxLineLength: Int = 80): String {
 
     // Add actual character
     if (suggestingParseContext != null) {
-        val actualChar = this.context.src.getOrNull(this.position)
+        val actualChar = this.context.src.getOrNull(suggestingParseContext.errorPosition)
         if (actualChar != null) {
             sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
         } else {
@@ -80,12 +89,12 @@ fun ParseException.formatMessage(maxLineLength: Int = 80): String {
 
     // Add source line and caret
     if (suggestingParseContext != null) {
-        val lineIndex = matrixPositionCalculator.getMatrixPosition(this.position).row - 1
+        val lineIndex = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition).row - 1
         val lineRange = matrixPositionCalculator.getLineRange(lineIndex + 1)
         val lineStartIndex = lineRange.start
         val line = this.context.src.substring(lineStartIndex, lineRange.endInclusive + 1)
 
-        val caretPosition = (this.position - lineStartIndex).coerceAtMost(line.length)
+        val caretPosition = (suggestingParseContext.errorPosition - lineStartIndex).coerceAtMost(line.length)
         val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
 
         sb.append("\n")
@@ -105,16 +114,6 @@ fun ParseException.formatMessage(maxLineLength: Int = 80): String {
 fun <T : Any> Parser<T>.parseAll(
     src: String,
 ): Result<T> = this.parseAll(src) { DefaultParseContext(src) }
-
-fun <T : Any> Parser<T>.parseAll(
-    src: String,
-    useMemoization: Boolean,
-): Result<T> = this.parseAll(src) { s -> DefaultParseContext(s).also { it.useMemoization = useMemoization } }
-
-fun <T : Any> Parser<T>.parseAllOrThrow(
-    src: String,
-    useMemoization: Boolean = true,
-): T = this.parseAll(src, useMemoization).getOrThrow()
 
 fun <T : Any, C : ParseContext> Parser<T>.parseAll(
     src: String,
