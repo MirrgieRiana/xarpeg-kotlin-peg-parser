@@ -12,9 +12,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
     var errorPosition: Int = 0
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
-    private val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
-    fun getMatrixPosition(index: Int) = matrixPositionCalculator.getMatrixPosition(index)
-    val errorMatrixPosition get() = getMatrixPosition(errorPosition)
+    val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
 
     fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
         fun parse(): ParseResult<T>? {

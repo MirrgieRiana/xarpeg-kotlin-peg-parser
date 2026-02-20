@@ -25,7 +25,7 @@ fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.star
 
 
 open class ParseException(val context: ParseContext, val position: Int) : Exception(run {
-    val matrixPosition = context.getMatrixPosition(position)
+    val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(position)
     "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
 })
 
