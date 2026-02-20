@@ -3,6 +3,7 @@ package io.github.mirrgieriana.xarpeg.parsers
 import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Tuple0
+import io.github.mirrgieriana.xarpeg.errorPosition
 import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.suggestedParsers
 import kotlin.test.Test

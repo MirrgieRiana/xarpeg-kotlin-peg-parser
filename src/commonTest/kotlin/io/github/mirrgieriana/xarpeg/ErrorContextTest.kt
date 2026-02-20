@@ -197,9 +197,9 @@ class ErrorContextTest {
         // Exception contains the context with error information
         assertEquals(0, exception.context.errorPosition)
         // suggestedParsers should contain parsers that failed
-        assertTrue(exception.context.suggestedParsers.isNotEmpty())
-        assertTrue(exception.context.suggestedParsers.any { it.name == "letter" })
-        assertEquals(0, exception.position)
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "letter" } == true)
+        assertEquals(0, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -213,9 +213,9 @@ class ErrorContextTest {
 
         // Exception contains the context
         // Position points to errorPosition (where EOF was expected after "hello")
-        assertEquals(5, exception.position)
+        assertEquals(5, exception.context.errorPosition ?: 0)
         // suggestedParsers should contain "EOF"
-        assertTrue(exception.context.suggestedParsers.any { it.name == "EOF" })
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "EOF" } == true)
     }
 
     @Test
@@ -382,7 +382,7 @@ class ErrorContextTest {
         val lines = message.lines()
 
         // Should have suggested parsers and Expect line
-        assertTrue(exception.context.suggestedParsers.isNotEmpty())
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
         val expectLine = lines.find { it.startsWith("Expect:") }
         assertNotNull(expectLine)
         assertTrue(expectLine.contains("test"))
@@ -410,7 +410,7 @@ class ErrorContextTest {
 
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
-        val suggestions = context.suggestedParsers
+        val suggestions = context.suggestedParsers.orEmpty()
             .mapNotNull { it.name }
             .distinct()
             .sorted()

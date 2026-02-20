@@ -58,7 +58,7 @@ class ParserAdditionalTest {
     @Test
     fun zeroOrMoreStopsBeforeMismatch() {
         val parser = (+'a').zeroOrMore
-        val context = ParseContext("aab", useMemoization = true)
+        val context = DefaultParseContext("aab")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(listOf('a', 'a'), result.value)
@@ -127,7 +127,7 @@ class ParserAdditionalTest {
     @Test
     fun mapPreservesRange() {
         val parser = +"hi" map { it.uppercase() }
-        val context = ParseContext("hi!", useMemoization = true)
+        val context = DefaultParseContext("hi!")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(2, result.end)

@@ -153,7 +153,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("1+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, exception.position)
+        assertEquals(2, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -163,7 +163,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("2+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, exception.position)
+        assertEquals(2, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -172,7 +172,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { parser.parseAll("").getOrThrow() }
 
-        assertEquals(0, exception.position)
+        assertEquals(0, exception.context.errorPosition ?: 0)
     }
 
     @Test
