@@ -134,7 +134,7 @@ val expr: Parser<Int> = object {
 
 fun main() {
     check(expr.parseAll("-5+3").getOrThrow() == -2)
-    check(expr.parseAll("-(2+3).getOrThrow()") == -5)
+    check(expr.parseAll("-(2+3)").getOrThrow() == -5)
 }
 ```
 
