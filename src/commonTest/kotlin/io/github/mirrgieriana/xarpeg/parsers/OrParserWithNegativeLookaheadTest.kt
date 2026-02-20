@@ -58,7 +58,7 @@ class OrParserWithNegativeLookaheadTest {
         // !"A" fails (A IS A), +"B" fails (A is not B)
         assertNull(result, "Parser should fail")
 
-        val suggestedNames = context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        val suggestedNames = context.suggestedParsers.orEmpty().mapNotNull { it.name?.ifEmpty { null } }
         // Only B should be suggested (not A, because it's in a negative lookahead)
         assertTrue(suggestedNames.contains("B"), "Should suggest B")
         assertTrue(!suggestedNames.contains("A"), "Should NOT suggest A (in negative lookahead)")
@@ -111,7 +111,7 @@ class OrParserWithNegativeLookaheadTest {
         val result1 = serialParser.parseOrNull(context1, 0)
 
         assertNull(result1, "Serial parser should fail (first part succeeds but second part fails)")
-        val suggestedNames1 = context1.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        val suggestedNames1 = context1.suggestedParsers.orEmpty().mapNotNull { it.name?.ifEmpty { null } }
         assertTrue(suggestedNames1.contains("B"), "Serial: Should suggest B")
         assertTrue(!suggestedNames1.contains("A"), "Serial: Should NOT suggest A")
 
