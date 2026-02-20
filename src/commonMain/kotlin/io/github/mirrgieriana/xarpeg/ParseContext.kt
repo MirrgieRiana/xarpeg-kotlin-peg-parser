@@ -87,65 +87,68 @@ class MatrixPositionCalculator(val src: String) {
         return MatrixPosition(row = lineIndex + 1, column = index - lineStartIndex + 1)
     }
 
-    /**
-     * Formats a parse error into a user-friendly error message with context.
-     *
-     * The formatted message includes:
-     * - Error line and column number
-     * - Expected parsers (if named parsers are available)
-     * - Actual character found (or EOF)
-     * - The source line where the error occurred (truncated to maxLineLength if needed)
-     * - A caret (^) indicating the error position
-     *
-     * @param exception The parse exception to format
-     * @param maxLineLength Maximum length for the source line display (default 80)
-     * @return A formatted error message with context
-     */
-    fun formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
-        val sb = StringBuilder()
-        val matrixPosition = getMatrixPosition(exception.position)
+}
+
+/**
+ * Formats a parse error into a user-friendly error message with context.
+ *
+ * The formatted message includes:
+ * - Error line and column number
+ * - Expected parsers (if named parsers are available)
+ * - Actual character found (or EOF)
+ * - The source line where the error occurred (truncated to maxLineLength if needed)
+ * - A caret (^) indicating the error position
+ *
+ * @param exception The parse exception to format
+ * @param maxLineLength Maximum length for the source line display (default 80)
+ * @return A formatted error message with context
+ */
+fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
+    val sb = StringBuilder()
+    val matrixPosition = this.getMatrixPosition(exception.position)
 
 
-        // Build error message header with position
-        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    // Build error message header with position
+    sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
 
 
-        // Add expected parsers
+    // Add expected parsers
+    if (exception.context is SuggestingParseContext) {
         val candidates = exception.context.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
         if (candidates.isNotEmpty()) {
             sb.append("\nExpect: ${candidates.joinToString(", ")}")
         } else {
             sb.append("\nExpect:")
         }
-
-
-        // Add actual character
-        val actualChar = exception.context.src.getOrNull(exception.position)
-        if (actualChar != null) {
-            sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
-        } else {
-            sb.append("\nActual: EOF")
-        }
-
-
-        // Add source line and caret
-        val lineIndex = matrixPosition.row - 1
-        val lineStartIndex = lineStartIndices[lineIndex]
-        val lineExclusiveEndIndex = lineExclusiveEndIndices[lineIndex]
-        val line = src.substring(lineStartIndex, lineExclusiveEndIndex)
-
-        val caretPosition = (exception.position - lineStartIndex).coerceAtMost(line.length)
-        val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
-
-        sb.append("\n")
-
-        sb.append(displayLine)
-        sb.append("\n")
-
-        sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
-        sb.append("^")
-
-
-        return sb.toString()
     }
+
+
+    // Add actual character
+    val actualChar = exception.context.src.getOrNull(exception.position)
+    if (actualChar != null) {
+        sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
+    } else {
+        sb.append("\nActual: EOF")
+    }
+
+
+    // Add source line and caret
+    val lineIndex = matrixPosition.row - 1
+    val lineRange = this.getLineRange(lineIndex + 1)
+    val lineStartIndex = lineRange.start
+    val line = this.src.substring(lineStartIndex, lineRange.endInclusive + 1)
+
+    val caretPosition = (exception.position - lineStartIndex).coerceAtMost(line.length)
+    val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
+
+    sb.append("\n")
+
+    sb.append(displayLine)
+    sb.append("\n")
+
+    sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
+    sb.append("^")
+
+
+    return sb.toString()
 }
