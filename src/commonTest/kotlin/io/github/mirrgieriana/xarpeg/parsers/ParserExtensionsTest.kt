@@ -2,7 +2,7 @@ package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.Tuple0
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -33,7 +33,7 @@ class ParserExtensionsTest {
             "$hello-$world"
         }
 
-        assertEquals("hello-world", parser.parseAllOrThrow("hello world"))
+        assertEquals("hello-world", parser.parseAll("hello world").getOrThrow())
     }
 
     @Test
@@ -60,7 +60,7 @@ class ParserExtensionsTest {
             "$hello+$world"
         }
 
-        assertEquals("hello+world", parser.parseAllOrThrow("hello world"))
+        assertEquals("hello+world", parser.parseAll("hello world").getOrThrow())
     }
 
     @Test
@@ -99,7 +99,7 @@ class ParserExtensionsTest {
             "matched: $c"
         }
 
-        assertEquals("matched: c", parser.parseAllOrThrow("ac"))
+        assertEquals("matched: c", parser.parseAll("ac").getOrThrow())
 
         val context = ParseContext("abc", useMemoization = true)
         assertNull(parser.parseOrNull(context, 0))
@@ -116,7 +116,7 @@ class ParserExtensionsTest {
                 "$value-$middle"
             }
 
-        assertEquals("value-middle", parser.parseAllOrThrow("startvaluemiddle"))
+        assertEquals("value-middle", parser.parseAll("startvaluemiddle").getOrThrow())
     }
 
     @Test
@@ -128,7 +128,7 @@ class ParserExtensionsTest {
 
         val parser = -hello * space.ignore * +world map { it.a }
 
-        assertEquals("world", parser.parseAllOrThrow("hello world"))
+        assertEquals("world", parser.parseAll("hello world").getOrThrow())
     }
 
     // String extension property tests
@@ -183,7 +183,7 @@ class ParserExtensionsTest {
             world
         }
 
-        assertEquals("world", parser.parseAllOrThrow("hello world"))
+        assertEquals("world", parser.parseAll("hello world").getOrThrow())
     }
 
     // Char extension property tests
@@ -238,7 +238,7 @@ class ParserExtensionsTest {
             c
         }
 
-        assertEquals('c', parser.parseAllOrThrow("abc"))
+        assertEquals('c', parser.parseAll("abc").getOrThrow())
     }
 
     // Regex extension property tests
@@ -296,7 +296,7 @@ class ParserExtensionsTest {
             letters.value
         }
 
-        assertEquals("abc", parser.parseAllOrThrow("123abc"))
+        assertEquals("abc", parser.parseAll("123abc").getOrThrow())
     }
 
     @Test
@@ -311,6 +311,6 @@ class ParserExtensionsTest {
                 num.value.toInt()
             }
 
-        assertEquals(42, parser.parseAllOrThrow("start[42]end"))
+        assertEquals(42, parser.parseAll("start[42]end").getOrThrow())
     }
 }

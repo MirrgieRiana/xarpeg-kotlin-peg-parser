@@ -3,7 +3,7 @@ package io.github.mirrgieriana.xarpeg.parsers
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Tuple0
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -29,7 +29,7 @@ class OrParserWithNegativeLookaheadTest {
         val parser = !parserA + parserB
 
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow("C")
+            parser.parseAll("C").getOrThrow()
         }
 
         // The parser matched empty string at position 0, so extra characters start at 0
@@ -74,7 +74,7 @@ class OrParserWithNegativeLookaheadTest {
         // Due to Or parser, +"B" is not tried
         // parseAll will fail because only empty string was consumed
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow("B")
+            parser.parseAll("B").getOrThrow()
         }
 
         assertEquals(0, exception.position)
@@ -92,7 +92,7 @@ class OrParserWithNegativeLookaheadTest {
         val parser = !parserA + parserB
 
         // Should successfully match empty string (!"A" succeeds)
-        val result = parser.parseAllOrThrow("")
+        val result = parser.parseAll("").getOrThrow()
         assertEquals(Tuple0, result)
     }
 
@@ -120,7 +120,7 @@ class OrParserWithNegativeLookaheadTest {
         val orParser = !parserA2 + parserB2
 
         val exception = assertFailsWith<ParseException> {
-            orParser.parseAllOrThrow("C")
+            orParser.parseAll("C").getOrThrow()
         }
 
         val suggestedNames2 = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }

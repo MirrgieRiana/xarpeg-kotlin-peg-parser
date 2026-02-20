@@ -24,14 +24,14 @@ class ParserUtilityTest {
             "${result.text(ctx)}@${result.start}-${result.end}"
         }
 
-        assertEquals("foo@0-3", parser.parseAllOrThrow("foo"))
+        assertEquals("foo@0-3", parser.parseAll("foo").getOrThrow())
     }
 
     @Test
     fun resultExtensionReturnsParseResult() {
         val parser = (+"bar").result
 
-        val result = parser.parseAllOrThrow("bar")
+        val result = parser.parseAll("bar").getOrThrow()
 
         assertEquals("bar", result.value)
         assertEquals(0, result.start)

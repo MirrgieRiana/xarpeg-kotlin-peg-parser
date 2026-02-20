@@ -35,10 +35,6 @@ open class ParseException(val context: ParseContext, val position: Int) : Except
  */
 fun ParseException.formatMessage() = context.matrixPositionCalculator.formatMessage(this, 80)
 
-fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
-
-fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrNull()
-
 fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
     val context = ParseContext(src, useMemoization)
     val result = context.parseOrNull(this, 0) ?: return Result.failure(ParseException(context, context.errorPosition))

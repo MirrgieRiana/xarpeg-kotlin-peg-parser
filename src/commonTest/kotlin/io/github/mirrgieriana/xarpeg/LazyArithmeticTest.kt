@@ -61,7 +61,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerAtStart() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("!")
+        val lazyResult = LazyArithmetic.expr.parseAll("!").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
@@ -70,7 +70,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerAfterNumber() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("42+!")
+        val lazyResult = LazyArithmetic.expr.parseAll("42+!").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
@@ -79,7 +79,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerInMiddle() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("1+!+3")
+        val lazyResult = LazyArithmetic.expr.parseAll("1+!+3").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
@@ -88,7 +88,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerInsideParentheses() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("(2+!)")
+        val lazyResult = LazyArithmetic.expr.parseAll("(2+!)").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
@@ -97,7 +97,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerWithComplexExpression() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("(10+20)*!")
+        val lazyResult = LazyArithmetic.expr.parseAll("(10+20)*!").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }
@@ -106,7 +106,7 @@ class LazyArithmeticTest {
 
     @Test
     fun positionMarkerDeepNesting() {
-        val lazyResult = LazyArithmetic.expr.parseAllOrThrow("((1+2)*(3+!))")
+        val lazyResult = LazyArithmetic.expr.parseAll("((1+2)*(3+!))").getOrThrow()
         val exception = assertFailsWith<PositionMarkerException> {
             lazyResult()
         }

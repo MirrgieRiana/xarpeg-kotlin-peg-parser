@@ -26,33 +26,33 @@ class ParserAdditionalTest {
     @Test
     fun charParserFailsOnEmpty() {
         val parser = +'a'
-        assertUnmatchedInput { parser.parseAllOrThrow("") }
+        assertUnmatchedInput { parser.parseAll("").getOrThrow() }
     }
 
     @Test
     fun stringParserDetectsTrailingGarbage() {
         val parser = +"abc"
-        assertExtraCharacters { parser.parseAllOrThrow("abcc") }
+        assertExtraCharacters { parser.parseAll("abcc").getOrThrow() }
     }
 
     @Test
     fun regexParserAnchorsAtStart() {
         val parser = +Regex("[a-z]+") map { it.value }
-        assertUnmatchedInput { parser.parseAllOrThrow("1abc") }
-        assertEquals("abc", parser.parseAllOrThrow("abc"))
+        assertUnmatchedInput { parser.parseAll("1abc").getOrThrow() }
+        assertEquals("abc", parser.parseAll("abc").getOrThrow())
     }
 
     @Test
     fun fixedParserRejectsConsumedInput() {
         val parser = fixed("ok")
-        assertExtraCharacters { parser.parseAllOrThrow("x") }
+        assertExtraCharacters { parser.parseAll("x").getOrThrow() }
     }
 
     @Test
     fun failParserRejectsAnyInput() {
         val parser = fail
-        assertUnmatchedInput { parser.parseAllOrThrow("") }
-        assertUnmatchedInput { parser.parseAllOrThrow("anything") }
+        assertUnmatchedInput { parser.parseAll<Unit>("").getOrThrow() }
+        assertUnmatchedInput { parser.parseAll<Unit>("anything").getOrThrow() }
     }
 
     @Test
@@ -68,32 +68,32 @@ class ParserAdditionalTest {
     @Test
     fun oneOrMoreFailsWithoutFirstMatch() {
         val parser = (+'b').oneOrMore
-        assertUnmatchedInput { parser.parseAllOrThrow("a") }
+        assertUnmatchedInput { parser.parseAll("a").getOrThrow() }
     }
 
     @Test
     fun optionalDoesNotConsumeOnFailure() {
         val parser = (+'x').optional * +'y'
-        assertEquals('y', parser.parseAllOrThrow("y").b)
+        assertEquals('y', parser.parseAll("y").getOrThrow().b)
     }
 
     @Test
     fun orParserTriesLaterBranches() {
         val parser = or(+'a', +'b', +'c')
-        assertEquals('c', parser.parseAllOrThrow("c"))
+        assertEquals('c', parser.parseAll("c").getOrThrow())
     }
 
     @Test
     fun notParserBlocksMatchingPrefix() {
         val parser = !+"ab" * +"cd"
-        assertUnmatchedInput { parser.parseAllOrThrow("ab") }
-        assertEquals("cd", parser.parseAllOrThrow("cd"))
+        assertUnmatchedInput { parser.parseAll("ab").getOrThrow() }
+        assertEquals("cd", parser.parseAll("cd").getOrThrow())
     }
 
     @Test
     fun ignoreParserConsumesValue() {
         val parser = -'q' * +'w'
-        val result = parser.parseAllOrThrow("qw")
+        val result = parser.parseAll("qw").getOrThrow()
         assertEquals('w', result)
     }
 
@@ -106,22 +106,22 @@ class ParserAdditionalTest {
             val expr: Parser<Int> =
                 leftAssociative(term, -'+') { a, _, b -> a + b }
         }
-        assertEquals(6, language.expr.parseAllOrThrow("1+2+3"))
-        assertEquals(9, language.expr.parseAllOrThrow("(4+5)"))
+        assertEquals(6, language.expr.parseAll("1+2+3").getOrThrow())
+        assertEquals(9, language.expr.parseAll("(4+5)").getOrThrow())
     }
 
     @Test
     fun leftAssociativeStopsAtGap() {
         val num = +Regex("[0-9]+") map { it.value.toInt() }
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
-        assertExtraCharacters { add.parseAllOrThrow("1+2x3") }
+        assertExtraCharacters { add.parseAll("1+2x3").getOrThrow() }
     }
 
     @Test
     fun rightAssociativeConsumesChain() {
         val num = +Regex("[0-9]+") map { it.value }
         val pow = rightAssociative(num, -'^') { a, _, b -> "${a}^$b" }
-        assertEquals("1^2^3", pow.parseAllOrThrow("1^2^3"))
+        assertEquals("1^2^3", pow.parseAll("1^2^3").getOrThrow())
     }
 
     @Test
@@ -136,25 +136,25 @@ class ParserAdditionalTest {
     @Test
     fun mapThrowsArePropagated() {
         val parser = +'a' map { error("boom") }
-        assertFails { parser.parseAllOrThrow("a") }
+        assertFails { parser.parseAll<Unit>("a").getOrThrow() }
     }
 
     @Test
     fun parseAllOrThrowWithoutCacheStillWorks() {
         val parser = (+'a').oneOrMore
-        assertEquals(listOf('a', 'a'), parser.parseAllOrThrow("aa", useMemoization = false))
+        assertEquals(listOf('a', 'a'), parser.parseAll("aa", useMemoization = false).getOrThrow())
     }
 
     @Test
     fun zeroOrMoreCanReturnEmptyList() {
         val parser = (+'z').zeroOrMore
-        assertEquals(emptyList<Char>(), parser.parseAllOrThrow(""))
+        assertEquals(emptyList<Char>(), parser.parseAll("").getOrThrow())
     }
 
     @Test
     fun optionalReturnsTupleWithNull() {
         val parser = (+'k').optional
-        val result = parser.parseAllOrThrow("")
+        val result = parser.parseAll("").getOrThrow()
         assertNull(result.a)
     }
 }

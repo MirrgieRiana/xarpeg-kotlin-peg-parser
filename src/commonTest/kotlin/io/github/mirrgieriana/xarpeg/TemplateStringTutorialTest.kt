@@ -63,36 +63,36 @@ class TemplateStringTutorialTest {
 
     @Test
     fun simpleString() {
-        assertEquals("hello", templateStringParser.parseAllOrThrow(""""hello""""))
+        assertEquals("hello", templateStringParser.parseAll(""""hello"""").getOrThrow())
     }
 
     @Test
     fun stringWithOneExpression() {
-        assertEquals("result: 3", templateStringParser.parseAllOrThrow(""""result: $(1+2)""""))
+        assertEquals("result: 3", templateStringParser.parseAll(""""result: $(1+2)"""").getOrThrow())
     }
 
     @Test
     fun expressionAtStart() {
-        assertEquals("14 = answer", templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer""""))
+        assertEquals("14 = answer", templateStringParser.parseAll(""""$(2*(3+4)) = answer"""").getOrThrow())
     }
 
     @Test
     fun multipleExpressions() {
-        assertEquals("a1b2c3d", templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d""""))
+        assertEquals("a1b2c3d", templateStringParser.parseAll(""""a$(1)b$(2)c$(3)d"""").getOrThrow())
     }
 
     @Test
     fun emptyString() {
-        assertEquals("", templateStringParser.parseAllOrThrow(""""""""))
+        assertEquals("", templateStringParser.parseAll("""""""").getOrThrow())
     }
 
     @Test
     fun onlyExpression() {
-        assertEquals("42", templateStringParser.parseAllOrThrow(""""$(42)""""))
+        assertEquals("42", templateStringParser.parseAll(""""$(42)"""").getOrThrow())
     }
 
     @Test
     fun complexExpression() {
-        assertEquals("result is 19", templateStringParser.parseAllOrThrow(""""result is $(2*(3+4)+5)""""))
+        assertEquals("result is 19", templateStringParser.parseAll(""""result is $(2*(3+4)+5)"""").getOrThrow())
     }
 }
