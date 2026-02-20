@@ -25,7 +25,10 @@ interface SuggestingParseContext {
 }
 
 val ParseContext.errorPosition get() = (this as? SuggestingParseContext)?.errorPosition
-val ParseContext.suggestedParsers get() = (this as? SuggestingParseContext)?.suggestedParsers
+val ParseContext.suggestedParsers: Set<Parser<*>> get() = (this as? SuggestingParseContext)?.suggestedParsers ?: emptySet()
+
+fun ParseContext(src: String, useMemoization: Boolean = true): DefaultParseContext =
+    DefaultParseContext(src).also { it.useMemoization = useMemoization }
 
 open class DefaultParseContext(override val src: String) :
     ParseContext,

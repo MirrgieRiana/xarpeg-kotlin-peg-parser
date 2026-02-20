@@ -4,6 +4,7 @@ import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.parseAll
+import io.github.mirrgieriana.xarpeg.suggestedParsers
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
