@@ -9,7 +9,7 @@ title: ステップ4 – 実行時の動作
 
 ## 解析メソッド
 
-### `parseAllOrThrow`
+### `parseAll().getOrThrow()`
 
 入力全体が消費されることを要求します：
 
@@ -20,9 +20,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
-    number.parseAllOrThrow("123")      // ✓ 123を返す
-    // number.parseAllOrThrow("123abc") // ✗ ParseException
-    // number.parseAllOrThrow("abc")    // ✗ ParseException
+    number.parseAll("123").getOrThrow()      // ✓ 123を返す
+    // number.parseAll("123abc").getOrThrow() // ✗ ParseException
+    // number.parseAll("abc").getOrThrow()    // ✗ ParseException
 }
 ```
 
@@ -52,10 +52,10 @@ fun main() {
     check(exception.context.errorPosition == 0)  // 位置0で失敗
     
     val expected = exception.context.suggestedParsers
-        .mapNotNull { it.name }
-        .distinct()
-        .sorted()
-        .joinToString(", ")
+        ?.mapNotNull { it.name }
+        ?.distinct()
+        ?.sorted()
+        ?.joinToString(", ") ?: ""
     
     check(expected == "letter")  // "letter"が期待される
 }
@@ -86,8 +86,8 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
-    check(exception.context.errorPosition > 0)  // エラー位置が追跡される
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    check((exception.context.errorPosition ?: 0) > 0)  // エラー位置が追跡される
+    val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(suggestions.isNotEmpty())  // 提案がある
 }
 ```
@@ -107,7 +107,7 @@ val expr = number * operator * number
 fun main() {
     val input = "42*10"
     try {
-        expr.parseAllOrThrow(input)
+        expr.parseAll(input).getOrThrow()
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
@@ -141,7 +141,9 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // メモ化有効（デフォルト）
-    parser.parseAllOrThrow("hello", useMemoization = true)
+    parser.parseAll("hello") { ctx -> 
+        DefaultParseContext(ctx).apply { useMemoization = true }
+    }.getOrThrow()
 }
 ```
 
@@ -158,7 +160,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAllOrThrow("hello", useMemoization = false)
+    parser.parseAll("hello") { ctx -> 
+        DefaultParseContext(ctx).apply { useMemoization = false }
+    }.getOrThrow()
 }
 ```
 
@@ -181,8 +185,8 @@ val divisionByZero = +Regex("[0-9]+") map { value ->
 } named "number"
 
 fun main() {
-    divisionByZero.parseAllOrThrow("10")  // ✓ 10を返す
-    // divisionByZero.parseAllOrThrow("0")  // ✗ IllegalStateException
+    divisionByZero.parseAll("10").getOrThrow()  // ✓ 10を返す
+    // divisionByZero.parseAll("0").getOrThrow()  // ✗ IllegalStateException
 }
 ```
 
@@ -206,7 +210,7 @@ fun main() {
     
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0でエラー
-    check(exception.context.suggestedParsers.any { it.name == "word" })  // "word"を提案
+    check(exception.context.suggestedParsers?.any { it.name == "word" } ?: false)  // "word"を提案
 }
 ```
 
@@ -222,7 +226,7 @@ val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") name
 
 fun main() {
     // optionalは失敗するが巻き戻し、数値パーサが成功できる
-    val result = parser.parseAllOrThrow("123")
+    val result = parser.parseAll("123").getOrThrow()
     check(result != null)  // 成功
 }
 ```
@@ -239,19 +243,21 @@ fun main() {
 
 ### 例：インデント方式言語のサポート
 
-Python風の言語のインデントレベルを追跡するために`ParseContext`を拡張できます：
+Python風の言語のインデントレベルを追跡するために`DefaultParseContext`を拡張できます：
 
 ```kotlin
-import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 fun main() {
-    class OnlineParserParseContext(
+    class IndentParseContext(
         src: String,
-        useMemoization: Boolean = true,
-    ) : ParseContext(src, useMemoization) {
+    ) : DefaultParseContext(src) {
         private val indentStack = mutableListOf(0)
         
         val currentIndent: Int get() = indentStack.last()
+        val isInIndentBlock: Boolean get() = indentStack.size > 1
         
         fun pushIndent(indent: Int) {
             require(indent > currentIndent)
@@ -263,20 +269,12 @@ fun main() {
             indentStack.removeLast()
         }
     }
-}
-```
 
-このカスタムコンテキストをパーサで使用してインデントを検証できます：
-
-```kotlin
-import io.github.mirrgieriana.xarpeg.*
-import io.github.mirrgieriana.xarpeg.parsers.*
-
-fun main() {
-    fun indent(): Parser<String> = Parser { context, start ->
-        if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
+    // このカスタムコンテキストをパーサで使用してインデントを検証できます：
+    fun indent(context: IndentParseContext, start: Int): ParseResult<String>? {
         val expectedIndent = context.currentIndent
         // インデントを解析して検証...
+        return null
     }
 }
 ```
@@ -285,13 +283,13 @@ fun main() {
 
 ## 重要なポイント
 
-- **`parseAllOrThrow`** 完全な消費を要求し、失敗時にスロー
+- **`parseAll().getOrThrow()`** 完全な消費を要求し、失敗時にスロー
 - **エラーコンテキスト** `errorPosition`と`suggestedParsers`を提供
 - **名前付きパーサ** 割り当てられた名前でエラーメッセージに表示
 - **メモ化** デフォルトで有効；`useMemoization = false`で無効化
 - **`map`での例外** 伝播して解析を中止
 - **`parseOrNull`** `ParseContext`とともに詳細なデバッグを可能にする
-- **`ParseContext`は拡張可能** カスタム解析要件に対応
+- **`DefaultParseContext`は拡張可能** カスタム解析要件に対応
 
 ## 次のステップ
 

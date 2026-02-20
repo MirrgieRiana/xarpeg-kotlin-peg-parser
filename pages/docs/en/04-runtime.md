@@ -9,7 +9,7 @@ Understand how parsers handle errors, consume input, and control caching for opt
 
 ## Parsing Methods
 
-### `parseAllOrThrow`
+### `parseAll().getOrThrow()`
 
 Requires the entire input to be consumed:
 
@@ -20,9 +20,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
-    number.parseAllOrThrow("123")      // ✓ Returns 123
-    // number.parseAllOrThrow("123abc") // ✗ ParseException
-    // number.parseAllOrThrow("abc")    // ✗ ParseException
+    number.parseAll("123").getOrThrow()      // ✓ Returns 123
+    // number.parseAll("123abc").getOrThrow() // ✗ ParseException
+    // number.parseAll("abc").getOrThrow()    // ✗ ParseException
 }
 ```
 
@@ -52,10 +52,10 @@ fun main() {
     check(exception.context.errorPosition == 0)  // Failed at position 0
     
     val expected = exception.context.suggestedParsers
-        .mapNotNull { it.name }
-        .distinct()
-        .sorted()
-        .joinToString(", ")
+        ?.mapNotNull { it.name }
+        ?.distinct()
+        ?.sorted()
+        ?.joinToString(", ") ?: ""
     
     check(expected == "letter")  // Expected "letter"
 }
@@ -86,8 +86,8 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // Parsing fails
-    check(exception.context.errorPosition > 0)  // Error position tracked
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
+    check((exception.context.errorPosition ?: 0) > 0)  // Error position tracked
+    val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(suggestions.isNotEmpty())  // Has suggestions
 }
 ```
@@ -107,7 +107,7 @@ val expr = number * operator * number
 fun main() {
     val input = "42*10"
     try {
-        expr.parseAllOrThrow(input)
+        expr.parseAll(input).getOrThrow()
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
@@ -141,7 +141,9 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // Memoization enabled (default)
-    parser.parseAllOrThrow("hello", useMemoization = true)
+    parser.parseAll("hello") { ctx -> 
+        DefaultParseContext(ctx).apply { useMemoization = true }
+    }.getOrThrow()
 }
 ```
 
@@ -158,7 +160,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAllOrThrow("hello", useMemoization = false)
+    parser.parseAll("hello") { ctx -> 
+        DefaultParseContext(ctx).apply { useMemoization = false }
+    }.getOrThrow()
 }
 ```
 
@@ -181,8 +185,8 @@ val divisionByZero = +Regex("[0-9]+") map { value ->
 } named "number"
 
 fun main() {
-    divisionByZero.parseAllOrThrow("10")  // ✓ Returns 10
-    // divisionByZero.parseAllOrThrow("0")  // ✗ IllegalStateException
+    divisionByZero.parseAll("10").getOrThrow()  // ✓ Returns 10
+    // divisionByZero.parseAll("0").getOrThrow()  // ✗ IllegalStateException
 }
 ```
 
@@ -206,7 +210,7 @@ fun main() {
     
     check(exception != null)  // Parsing fails
     check(exception.context.errorPosition == 0)  // Error at position 0
-    check(exception.context.suggestedParsers.any { it.name == "word" })  // Suggests "word"
+    check(exception.context.suggestedParsers?.any { it.name == "word" } ?: false)  // Suggests "word"
 }
 ```
 
@@ -222,7 +226,7 @@ val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") name
 
 fun main() {
     // optional fails but rewinds, allowing number parser to succeed
-    val result = parser.parseAllOrThrow("123")
+    val result = parser.parseAll("123").getOrThrow()
     check(result != null)  // Succeeds
 }
 ```
@@ -239,19 +243,21 @@ Check the test suite for observed behavior:
 
 ### Example: Indent-Based Language Support
 
-You can extend `ParseContext` to track indentation levels for Python-style languages:
+You can extend `DefaultParseContext` to track indentation levels for Python-style languages:
 
 ```kotlin
-import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 fun main() {
-    class OnlineParserParseContext(
+    class IndentParseContext(
         src: String,
-        useMemoization: Boolean = true,
-    ) : ParseContext(src, useMemoization) {
+    ) : DefaultParseContext(src) {
         private val indentStack = mutableListOf(0)
         
         val currentIndent: Int get() = indentStack.last()
+        val isInIndentBlock: Boolean get() = indentStack.size > 1
         
         fun pushIndent(indent: Int) {
             require(indent > currentIndent)
@@ -263,20 +269,12 @@ fun main() {
             indentStack.removeLast()
         }
     }
-}
-```
 
-You can then use this custom context in your parsers to validate indentation:
-
-```kotlin
-import io.github.mirrgieriana.xarpeg.*
-import io.github.mirrgieriana.xarpeg.parsers.*
-
-fun main() {
-    fun indent(): Parser<String> = Parser { context, start ->
-        if (context !is OnlineParserParseContext) error("Requires OnlineParserParseContext")
+    // You can then use this custom context in your parsers to validate indentation:
+    fun indent(context: IndentParseContext, start: Int): ParseResult<String>? {
         val expectedIndent = context.currentIndent
         // Parse and validate indentation...
+        return null
     }
 }
 ```
@@ -285,13 +283,13 @@ See the [online-parser sample's OnlineParser.kt](https://github.com/MirrgieRiana
 
 ## Key Takeaways
 
-- **`parseAllOrThrow`** requires full consumption, throws on failure
+- **`parseAll().getOrThrow()`** requires full consumption, throws on failure
 - **Error context** provides `errorPosition` and `suggestedParsers`
 - **Named parsers** appear in error messages with their assigned names
 - **Memoization** is enabled by default; disable with `useMemoization = false`
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
-- **`ParseContext` is extensible** for custom parsing requirements
+- **`DefaultParseContext` is extensible** for custom parsing requirements
 
 ## Next Steps
 
