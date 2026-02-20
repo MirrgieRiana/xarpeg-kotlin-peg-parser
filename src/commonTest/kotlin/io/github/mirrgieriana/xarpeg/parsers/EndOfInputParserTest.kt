@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.assertUnmatchedInput
 import io.github.mirrgieriana.xarpeg.parseAll
@@ -13,7 +14,7 @@ class EndOfInputParserTest {
     @Test
     fun endOfInputMatchesAtEndOfString() {
         val parser = endOfInput
-        val context = ParseContext("hello", useMemoization = true)
+        val context = DefaultParseContext("hello")
         val result = parser.parseOrNull(context, 5)
         assertNotNull(result)
         assertEquals(5, result.start)
@@ -23,7 +24,7 @@ class EndOfInputParserTest {
     @Test
     fun endOfInputFailsBeforeEndOfString() {
         val parser = endOfInput
-        val context = ParseContext("hello", useMemoization = true)
+        val context = DefaultParseContext("hello")
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -53,7 +54,7 @@ class EndOfInputParserTest {
     @Test
     fun endOfInputOnEmptyString() {
         val parser = endOfInput
-        val context = ParseContext("", useMemoization = true)
+        val context = DefaultParseContext("")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(0, result.start)

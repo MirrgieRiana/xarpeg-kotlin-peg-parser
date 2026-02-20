@@ -1,19 +1,14 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
-import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 /**
  * Custom ParseContext for the online parser.
- * This extends ParseContext to track the current indentation level for indent-based syntax.
- *
- * **Note:** This sample requires ParseContext to be `open class`.
- * After a release containing the `open class` change, update the version in
- * samples/libs.versions.toml to match the published version.
+ * Extends DefaultParseContext to track the current indentation level for indent-based syntax.
  */
 class OnlineParserParseContext(
     src: String,
-    useMemoization: Boolean = true,
-) : ParseContext(src, useMemoization) {
+) : DefaultParseContext(src) {
     private val indentStack = mutableListOf(0)
 
     /**

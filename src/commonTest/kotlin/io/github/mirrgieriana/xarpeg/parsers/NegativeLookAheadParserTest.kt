@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
@@ -13,7 +14,7 @@ class NegativeLookAheadParserTest {
     @Test
     fun negativeLookaheadParserMatchesWhenInnerParserFails() {
         val parser = (+'a').negativeLookAhead
-        val context = ParseContext("bcd", useMemoization = true)
+        val context = DefaultParseContext("bcd")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(0, result.start)
@@ -23,7 +24,7 @@ class NegativeLookAheadParserTest {
     @Test
     fun negativeLookaheadParserFailsWhenInnerParserSucceeds() {
         val parser = (+'a').negativeLookAhead
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -45,7 +46,7 @@ class NegativeLookAheadParserTest {
     @Test
     fun negativeLookaheadParserDoesNotConsumeInput() {
         val parser = (+'a').negativeLookAhead * +'b'
-        val context = ParseContext("b", useMemoization = true)
+        val context = DefaultParseContext("b")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(0, result.start)
@@ -76,7 +77,7 @@ class NegativeLookAheadParserTest {
         val parserB = +"B" named "B"
         val parser = !parserA * parserB
 
-        val context = ParseContext("C", useMemoization = true)
+        val context = DefaultParseContext("C")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result, "Parser should fail on input 'C'")
@@ -100,7 +101,7 @@ class NegativeLookAheadParserTest {
         val parserC = +"C" named "C"
         val parser = (!parserA * parserB) + parserC
 
-        val context = ParseContext("D", useMemoization = true)
+        val context = DefaultParseContext("D")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result, "Parser should fail on input 'D'")
@@ -128,7 +129,7 @@ class NegativeLookAheadParserTest {
         val parserB = +"B" named "B"
         val parser = (+parserA).lookAhead * parserB
 
-        val context = ParseContext("C", useMemoization = true)
+        val context = DefaultParseContext("C")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result, "Parser should fail on input 'C'")

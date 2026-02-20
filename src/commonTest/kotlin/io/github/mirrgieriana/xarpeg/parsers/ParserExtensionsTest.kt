@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.parseAll
@@ -16,7 +17,7 @@ class ParserExtensionsTest {
         val capturedWithOperator = +parser
         val capturedWithProperty = parser.capture
 
-        val context = ParseContext("hello world", useMemoization = true)
+        val context = DefaultParseContext("hello world")
 
         val resultOperator = capturedWithOperator.parseOrNull(context, 0)
         val resultProperty = capturedWithProperty.parseOrNull(context, 0)
@@ -42,7 +43,7 @@ class ParserExtensionsTest {
         val ignoredWithOperator = -parser
         val ignoredWithProperty = parser.ignore
 
-        val context = ParseContext("hello world", useMemoization = true)
+        val context = DefaultParseContext("hello world")
 
         val resultOperator = ignoredWithOperator.parseOrNull(context, 0)
         val resultProperty = ignoredWithProperty.parseOrNull(context, 0)
@@ -69,7 +70,7 @@ class ParserExtensionsTest {
         val notWithOperator = !parser
         val notWithProperty = parser.not
 
-        val context = ParseContext("world", useMemoization = true)
+        val context = DefaultParseContext("world")
 
         val resultOperator = notWithOperator.parseOrNull(context, 0)
         val resultProperty = notWithProperty.parseOrNull(context, 0)
@@ -86,7 +87,7 @@ class ParserExtensionsTest {
         val parser = +"hello"
         val notParser = parser.not
 
-        val context = ParseContext("hello world", useMemoization = true)
+        val context = DefaultParseContext("hello world")
         val result = notParser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -101,7 +102,7 @@ class ParserExtensionsTest {
 
         assertEquals("matched: c", parser.parseAll("ac").getOrThrow())
 
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
         assertNull(parser.parseOrNull(context, 0))
     }
 
@@ -137,7 +138,7 @@ class ParserExtensionsTest {
     fun stringCapturePropertyEquivalentToUnaryPlus() {
         val capturedWithProperty = "hello".capture
 
-        val context = ParseContext("hello world", useMemoization = true)
+        val context = DefaultParseContext("hello world")
 
         val resultProperty = capturedWithProperty.parseOrNull(context, 0)
 
@@ -151,7 +152,7 @@ class ParserExtensionsTest {
         val ignoredWithOperator = -"hello"
         val ignoredWithProperty = "hello".ignore
 
-        val context = ParseContext("hello world", useMemoization = true)
+        val context = DefaultParseContext("hello world")
 
         val resultOperator = ignoredWithOperator.parseOrNull(context, 0)
         val resultProperty = ignoredWithProperty.parseOrNull(context, 0)
@@ -167,7 +168,7 @@ class ParserExtensionsTest {
         val notWithOperator = !"hello"
         val notWithProperty = "hello".not
 
-        val context = ParseContext("world", useMemoization = true)
+        val context = DefaultParseContext("world")
 
         val resultOperator = notWithOperator.parseOrNull(context, 0)
         val resultProperty = notWithProperty.parseOrNull(context, 0)
@@ -192,7 +193,7 @@ class ParserExtensionsTest {
     fun charCapturePropertyEquivalentToUnaryPlus() {
         val capturedWithProperty = 'a'.capture
 
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
 
         val resultProperty = capturedWithProperty.parseOrNull(context, 0)
 
@@ -206,7 +207,7 @@ class ParserExtensionsTest {
         val ignoredWithOperator = -'a'
         val ignoredWithProperty = 'a'.ignore
 
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
 
         val resultOperator = ignoredWithOperator.parseOrNull(context, 0)
         val resultProperty = ignoredWithProperty.parseOrNull(context, 0)
@@ -222,7 +223,7 @@ class ParserExtensionsTest {
         val notWithOperator = !'a'
         val notWithProperty = 'a'.not
 
-        val context = ParseContext("bcd", useMemoization = true)
+        val context = DefaultParseContext("bcd")
 
         val resultOperator = notWithOperator.parseOrNull(context, 0)
         val resultProperty = notWithProperty.parseOrNull(context, 0)
@@ -248,7 +249,7 @@ class ParserExtensionsTest {
         val regex = Regex("[0-9]+")
         val capturedWithProperty = regex.capture
 
-        val context = ParseContext("123abc", useMemoization = true)
+        val context = DefaultParseContext("123abc")
 
         val resultProperty = capturedWithProperty.parseOrNull(context, 0)
 
@@ -263,7 +264,7 @@ class ParserExtensionsTest {
         val ignoredWithOperator = -regex
         val ignoredWithProperty = regex.ignore
 
-        val context = ParseContext("123abc", useMemoization = true)
+        val context = DefaultParseContext("123abc")
 
         val resultOperator = ignoredWithOperator.parseOrNull(context, 0)
         val resultProperty = ignoredWithProperty.parseOrNull(context, 0)
@@ -280,7 +281,7 @@ class ParserExtensionsTest {
         val notWithOperator = !regex
         val notWithProperty = regex.not
 
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
 
         val resultOperator = notWithOperator.parseOrNull(context, 0)
         val resultProperty = notWithProperty.parseOrNull(context, 0)

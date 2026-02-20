@@ -18,6 +18,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
+import io.github.mirrgieriana.xarpeg.SuggestingParseContext
+import io.github.mirrgieriana.xarpeg.errorPosition
 
 class ImportedParserCoverageTest {
 
@@ -61,7 +63,7 @@ class ImportedParserCoverageTest {
             counter++
             null
         }
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
 
         assertNull(context.parseOrNull(countingParser, 0))
         assertNull(context.parseOrNull(countingParser, 0))
@@ -76,7 +78,7 @@ class ImportedParserCoverageTest {
             if (start >= 3) return@Parser null
             ParseResult(start, start, start + 1)
         }
-        val context = ParseContext("abcd", useMemoization = true)
+        val context = DefaultParseContext("abcd")
 
         assertEquals(0, context.parseOrNull(countingParser, 0)?.value)
         assertEquals(0, context.parseOrNull(countingParser, 0)?.value)
@@ -88,7 +90,7 @@ class ImportedParserCoverageTest {
     @Test
     fun regexParserRespectsManualStartOffset() {
         val parser = +Regex("[ab]+")
-        val context = ParseContext("zab", useMemoization = true)
+        val context = DefaultParseContext("zab")
 
         assertNull(parser.parseOrNull(context, 0))
         val result = parser.parseOrNull(context, 1)
@@ -100,7 +102,7 @@ class ImportedParserCoverageTest {
     @Test
     fun regexParserCalculatesEndUsingMatchRange() {
         val parser = +Regex("a+")
-        val context = ParseContext("baaac", useMemoization = true)
+        val context = DefaultParseContext("baaac")
 
         val result = parser.parseOrNull(context, 1)
 
@@ -113,7 +115,7 @@ class ImportedParserCoverageTest {
         val parser = (+"cd") mapEx { ctx, result ->
             "${result.start}-${result.end}-${result.text(ctx)}"
         }
-        val context = ParseContext("xxcdyy", useMemoization = true)
+        val context = DefaultParseContext("xxcdyy")
 
         val result = parser.parseOrNull(context, 2)
 
@@ -124,7 +126,7 @@ class ImportedParserCoverageTest {
     @Test
     fun notParserProducesZeroWidthResult() {
         val parser = !+'a'
-        val context = ParseContext("b", useMemoization = true)
+        val context = DefaultParseContext("b")
 
         val result = parser.parseOrNull(context, 0)
 
@@ -137,7 +139,7 @@ class ImportedParserCoverageTest {
     @Test
     fun listParserRespectsMaxLimit() {
         val parser = (+'a').list(min = 1, max = 2)
-        val context = ParseContext("aaab", useMemoization = true)
+        val context = DefaultParseContext("aaab")
 
         val result = parser.parseOrNull(context, 0)
 
@@ -153,7 +155,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("1+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, exception.position)
+        assertEquals(2, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
     }
 
     @Test
@@ -163,7 +165,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("2+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, exception.position)
+        assertEquals(2, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
     }
 
     @Test
@@ -172,13 +174,13 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { parser.parseAll("").getOrThrow() }
 
-        assertEquals(0, exception.position)
+        assertEquals(0, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
     }
 
     @Test
     fun fixedParserDoesNotAdvanceIndex() {
         val parser = fixed("ok")
-        val context = ParseContext("zzz", useMemoization = true)
+        val context = DefaultParseContext("zzz")
 
         val result = parser.parseOrNull(context, 2)
 
@@ -240,7 +242,7 @@ class ImportedParserCoverageTest {
             counter++
             ParseResult(start, start, start + 1)
         }
-        val context = ParseContext("aaa", useMemoization = false)
+        val context = DefaultParseContext("aaa").also { it.useMemoization = false }
 
         assertNotNull(context.parseOrNull(countingParser, 0))
         assertNotNull(context.parseOrNull(countingParser, 0))

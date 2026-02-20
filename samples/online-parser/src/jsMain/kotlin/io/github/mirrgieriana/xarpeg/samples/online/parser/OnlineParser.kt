@@ -407,11 +407,11 @@ fun parseExpression(input: String): ExpressionResult {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-        val context = OnlineParserParseContext(input, useMemoization = true)
+        val context = OnlineParserParseContext(input)
         val parseResult = context.parseOrNull(ExpressionGrammar.programRoot, 0)
-            ?: throw ParseException(context, context.errorPosition)
+            ?: throw ParseException(context)
         context.parseOrNull(endOfInput, parseResult.end)
-            ?: throw ParseException(context, context.errorPosition)
+            ?: throw ParseException(context)
         val result = parseResult.value.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {

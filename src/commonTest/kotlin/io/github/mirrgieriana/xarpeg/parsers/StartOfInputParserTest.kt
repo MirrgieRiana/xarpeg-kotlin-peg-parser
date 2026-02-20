@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
@@ -12,7 +13,7 @@ class StartOfInputParserTest {
     @Test
     fun startOfInputMatchesAtPositionZero() {
         val parser = startOfInput
-        val context = ParseContext("hello", useMemoization = true)
+        val context = DefaultParseContext("hello")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(0, result.start)
@@ -22,7 +23,7 @@ class StartOfInputParserTest {
     @Test
     fun startOfInputFailsAtNonZeroPosition() {
         val parser = startOfInput
-        val context = ParseContext("hello", useMemoization = true)
+        val context = DefaultParseContext("hello")
         val result = parser.parseOrNull(context, 1)
         assertNull(result)
     }
@@ -52,7 +53,7 @@ class StartOfInputParserTest {
     @Test
     fun startOfInputOnEmptyString() {
         val parser = startOfInput
-        val context = ParseContext("", useMemoization = true)
+        val context = DefaultParseContext("")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals(0, result.start)
