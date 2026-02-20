@@ -145,7 +145,7 @@ val withDelimiters = +'(' * word * +')'
 val cleanResult = -'(' * word * -')' map { it.value }
 
 fun main() {
-    cleanResult.parseAll("(hello).getOrThrow()")  // => "hello"
+    cleanResult.parseAll("(hello)").getOrThrow()  // => "hello"
 }
 ```
 
@@ -226,12 +226,12 @@ fun main() {
 
     val result1 = namedComposite.parseAll("c")
     val exception1 = result1.exceptionOrNull() as? ParseException
-    val names1 = exception1?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()
+    val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
 
     val result2 = unnamedComposite.parseAll("c")
     val exception2 = result2.exceptionOrNull() as? ParseException
-    val names2 = exception2?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()
+    val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names2.contains("letter_a"))
 }
 ```

@@ -142,7 +142,7 @@ object TemplateWithNestedStrings {
 }
 
 fun main() {
-    TemplateWithNestedStrings.templateString.parseAll("\"nested $(1+2).getOrThrow()\"")
+    check(TemplateWithNestedStrings.templateString.parseAll("\"nested $(1+2)\"").getOrThrow() == "nested 3")
 }
 ```
 

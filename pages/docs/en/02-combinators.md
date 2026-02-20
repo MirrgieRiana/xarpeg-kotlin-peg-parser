@@ -145,7 +145,7 @@ val withDelimiters = +'(' * word * +')'
 val cleanResult = -'(' * word * -')' map { it.value }
 
 fun main() {
-    cleanResult.parseAll("(hello).getOrThrow()")  // => "hello"
+    cleanResult.parseAll("(hello)").getOrThrow()  // => "hello"
 }
 ```
 

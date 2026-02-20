@@ -141,7 +141,7 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // メモ化有効（デフォルト）
-    parser.parseAll("hello".getOrThrow()).getOrThrow()
+    parser.parseAll("hello").getOrThrow()
 }
 ```
 
@@ -158,7 +158,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAll("hello") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()).getOrThrow()
+    parser.parseAll("hello") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
 }
 ```
 
