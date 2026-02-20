@@ -267,7 +267,7 @@ class ParserTest {
         // キャッシュを使わない場合、計算回数が指数関数的に増加するのでキャンセルを踏む
         try {
             language.counter = 0
-            parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = false).getOrThrow()
+            parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
             fail("Expected CancellationException, but no exception was thrown.")
         } catch (_: CancellationException) {
             // ok
@@ -275,7 +275,7 @@ class ParserTest {
 
         // キャッシュを使うことで計算回数が下がり成功するようになる
         language.counter = 0
-        assertEquals(40, parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = true).getOrThrow())
+        assertEquals(40, parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa").getOrThrow())
 
     }
 

@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.formatMessage
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
@@ -320,7 +320,7 @@ fun parseExpression(input: String): ExpressionResult {
 
         val initialContext = EvaluationContext(sourceCode = input)
 
-        val resultExpr = ExpressionGrammar.programRoot.parseAllOrThrow(input)
+        val resultExpr = ExpressionGrammar.programRoot.parseAll(input).getOrThrow()
         val result = resultExpr.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {

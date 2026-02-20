@@ -1,6 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
-import io.github.mirrgieriana.xarpeg.ParseContext
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,7 +12,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserMatchesWithoutConsuming() {
         val parser = (+'a').lookAhead
-        val context = ParseContext("abc", useMemoization = true)
+        val context = DefaultParseContext("abc")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -23,7 +23,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserFailsWhenInnerParserFails() {
         val parser = (+'a').lookAhead
-        val context = ParseContext("bcd", useMemoization = true)
+        val context = DefaultParseContext("bcd")
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -49,7 +49,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserDoesNotConsumeInput() {
         val parser = (+'a').lookAhead * +'a' map { tuple -> tuple.b }
-        val context = ParseContext("a", useMemoization = true)
+        val context = DefaultParseContext("a")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -79,13 +79,13 @@ class LookAheadParserTest {
         val notWordChar = +Regex("[^a-zA-Z0-9_]")
         val ifKeyword = keyword * notWordChar.lookAhead map { tuple -> tuple.a }
 
-        val context1 = ParseContext("if ", useMemoization = true)
+        val context1 = DefaultParseContext("if ")
         val result1 = ifKeyword.parseOrNull(context1, 0)
         assertNotNull(result1)
         assertEquals("if", result1.value)
         assertEquals(2, result1.end)
 
-        val context2 = ParseContext("ifx", useMemoization = true)
+        val context2 = DefaultParseContext("ifx")
         val result2 = ifKeyword.parseOrNull(context2, 0)
         assertNull(result2)
     }

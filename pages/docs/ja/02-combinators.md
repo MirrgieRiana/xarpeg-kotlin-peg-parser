@@ -20,8 +20,8 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val keyword = (+"if" + +"while" + +"for") named "keyword"
 
 fun main() {
-    keyword.parseAllOrThrow("if")      // ✓ "if"にマッチ
-    keyword.parseAllOrThrow("while")   // ✓ "while"にマッチ
+    keyword.parseAll("if").getOrThrow()      // ✓ "if"にマッチ
+    keyword.parseAll("while").getOrThrow()   // ✓ "while"にマッチ
 }
 ```
 
@@ -41,8 +41,8 @@ val signedInt = signOpt * unsigned map { (s, value) ->
 }
 
 fun main() {
-    check(signedInt.parseAllOrThrow("-42") == -42)
-    check(signedInt.parseAllOrThrow("99") == 99)
+    check(signedInt.parseAll("-42").getOrThrow() == -42)
+    check(signedInt.parseAll("99").getOrThrow() == 99)
 }
 ```
 
@@ -63,11 +63,11 @@ val combined = optA * optB
 fun main() {
     // 結果の型は Tuple2<Char?, Char?> （フラット化）
     // Tuple2<Tuple1<Char?>, Tuple1<Char?>> （ネスト）ではない
-    val result1 = combined.parseAllOrThrow("ab")
+    val result1 = combined.parseAll("ab").getOrThrow()
     check(result1.a == 'a')  // nullable Charに直接アクセス
     check(result1.b == 'b')
-    
-    val result2 = combined.parseAllOrThrow("a")
+
+    val result2 = combined.parseAll("a").getOrThrow()
     check(result2.a == 'a')
     check(result2.b == null)  // 欠落したoptionalはnull
 }
@@ -83,18 +83,18 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches -> 
+val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches ->
     matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches -> 
+val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches ->
     matches
 }
 
 fun main() {
-    digits.parseAllOrThrow("123")    // => "123"
-    letters.parseAllOrThrow("abc")   // => ["a", "b", "c"]
-    letters.parseAllOrThrow("")      // => []
+    digits.parseAll("123").getOrThrow()    // => "123"
+    letters.parseAll("abc").getOrThrow()   // => ["a", "b", "c"]
+    letters.parseAll("").getOrThrow()      // => []
 }
 ```
 
@@ -117,8 +117,8 @@ val noun = +"fox" + +"dog"
 val phrase = serial(article, +" ", adjective, +" ", noun)
 
 fun main() {
-    check(phrase.parseAllOrThrow("the quick fox") == listOf("the", " ", "quick", " ", "fox"))
-    check(phrase.parseAllOrThrow("a lazy dog") == listOf("a", " ", "lazy", " ", "dog"))
+    check(phrase.parseAll("the quick fox").getOrThrow() == listOf("the", " ", "quick", " ", "fox"))
+    check(phrase.parseAll("a lazy dog").getOrThrow() == listOf("a", " ", "lazy", " ", "dog"))
 }
 ```
 
@@ -145,7 +145,7 @@ val withDelimiters = +'(' * word * +')'
 val cleanResult = -'(' * word * -')' map { it.value }
 
 fun main() {
-    cleanResult.parseAllOrThrow("(hello)")  // => "hello"
+    cleanResult.parseAll("(hello)").getOrThrow()  // => "hello"
 }
 ```
 
@@ -162,7 +162,7 @@ val pair = wordPart * -',' * numPart map { (word, num) ->
 }
 
 fun main() {
-    pair.parseAllOrThrow("hello,42")  // => ("hello", 42)
+    pair.parseAll("hello,42").getOrThrow()  // => ("hello", 42)
 }
 ```
 
@@ -178,12 +178,12 @@ val word = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // 入力の開始でマッチ
-    val atStart = (startOfInput * word).parseAllOrThrow("hello")
+    val atStart = (startOfInput * word).parseAll("hello").getOrThrow()
     check(atStart == "hello")  // 成功
 }
 ```
 
-**注意：** `parseAllOrThrow`を使用する場合、境界チェックは冗長です—入力全体が消費されることをすでに検証しています。これらのパーサは`parseOrNull`またはサブ文法内で使用してください。
+**注意：** `parseAll(...).getOrThrow()`を使用する場合、境界チェックは冗長です—入力全体が消費されることをすでに検証しています。これらのパーサは`parseOrNull`またはサブ文法内で使用してください。
 
 ## パーサへの名前付け
 
@@ -200,7 +200,7 @@ val identifier = (letter * (letter + digit).zeroOrMore) named "identifier"
 fun main() {
     val result = identifier.parseAll("123abc")
     val exception = result.exceptionOrNull() as? ParseException
-    
+
     check(exception != null)  // 解析失敗
     check(exception.message!!.contains("Syntax Error"))
 }
@@ -217,18 +217,18 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 fun main() {
     val parserA = +'a' named "letter_a"
     val parserB = +'b' named "letter_b"
-    
+
     // 名前付き複合：エラーには"ab_sequence"のみ
     val namedComposite = (parserA * parserB) named "ab_sequence"
-    
+
     // 名前なし複合：エラーには"letter_a"
     val unnamedComposite = parserA * parserB
-    
+
     val result1 = namedComposite.parseAll("c")
     val exception1 = result1.exceptionOrNull() as? ParseException
     val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
-    
+
     val result2 = unnamedComposite.parseAll("c")
     val exception2 = result2.exceptionOrNull() as? ParseException
     val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
@@ -259,7 +259,7 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     check(exception != null)
 
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+    val suggestions = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name?.ifEmpty { null } }
     // 意味のあるパーサを含むが、非表示の空白は含まない
     check(suggestions.contains("operator") || suggestions.contains("number"))
     check(!suggestions.contains(""))

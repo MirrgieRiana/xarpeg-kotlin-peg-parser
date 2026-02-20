@@ -3,7 +3,7 @@ package io.github.mirrgieriana.xarpeg.samples.interpreter
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.formatMessage
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.named
@@ -84,7 +84,7 @@ fun indexToPosition(text: String, index: Int): Pair<Int, Int> {
 }
 
 fun evaluate(expression: String): Int {
-    val lazyResult = ArithmeticParser.expr.parseAllOrThrow(expression)
+    val lazyResult = ArithmeticParser.expr.parseAll(expression).getOrThrow()
 
     try {
         return lazyResult.compute()

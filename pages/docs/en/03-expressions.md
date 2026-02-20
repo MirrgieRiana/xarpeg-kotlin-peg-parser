@@ -34,8 +34,8 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("2*(3+4)") == 14)
-    check(expr.parseAllOrThrow("5+3*2") == 11)
+    check(expr.parseAll("2*(3+4)").getOrThrow() == 14)
+    check(expr.parseAll("5+3*2").getOrThrow() == 11)
 }
 ```
 
@@ -88,9 +88,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
-    
+
     val factor = number + paren
-    val power = rightAssociative(factor, -'^') { a, _, b -> 
+    val power = rightAssociative(factor, -'^') { a, _, b ->
         var result = 1
         repeat(b) { result *= a }
         result
@@ -107,8 +107,8 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("2^3^2") == 512)  // Right-associative: 2^(3^2)
-    check(expr.parseAllOrThrow("10-3-2") == 5)   // Left-associative: (10-3)-2
+    check(expr.parseAll("2^3^2").getOrThrow() == 512)  // Right-associative: 2^(3^2)
+    check(expr.parseAll("10-3-2").getOrThrow() == 5)   // Left-associative: (10-3)-2
 }
 ```
 
@@ -123,18 +123,18 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val expr: Parser<Int> = object {
     val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
     val paren: Parser<Int> = -'(' * ref { root } * -')'
-    
+
     // Unary minus
     val unary: Parser<Int> = (-'-' * ref { unary } map { -it }) + number + paren
-    
+
     val mul = leftAssociative(unary, -'*') { a, _, b -> a * b }
     val add = leftAssociative(mul, -'+') { a, _, b -> a + b }
     val root = add
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("-5+3") == -2)
-    check(expr.parseAllOrThrow("-(2+3)") == -5)
+    check(expr.parseAll("-5+3").getOrThrow() == -2)
+    check(expr.parseAll("-(2+3)").getOrThrow() == -5)
 }
 ```
 
