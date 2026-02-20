@@ -28,45 +28,45 @@ class ParserTest {
     @Test
     fun parse() {
         val parser = +'a'
-        assertEquals('a', parser.parseAllOrThrow("a")) // 全体にマッチできる
-        assertExtraCharacters { parser.parseAllOrThrow("ab") } // 末尾にゴミがあると失敗
-        assertUnmatchedInput { parser.parseAllOrThrow("ba") } // 先頭にゴミがあると失敗
+        assertEquals('a', parser.parseAll("a").getOrThrow()) // 全体にマッチできる
+        assertExtraCharacters { parser.parseAll("ab").getOrThrow() } // 末尾にゴミがあると失敗
+        assertUnmatchedInput { parser.parseAll("ba").getOrThrow() } // 先頭にゴミがあると失敗
     }
 
     @Test
     fun charParser() {
         val parser = +'a'
-        assertEquals('a', parser.parseAllOrThrow("a")) // 同じ文字で成功
-        assertUnmatchedInput { parser.parseAllOrThrow("b") } // 異なる文字で失敗
+        assertEquals('a', parser.parseAll("a").getOrThrow()) // 同じ文字で成功
+        assertUnmatchedInput { parser.parseAll("b").getOrThrow() } // 異なる文字で失敗
     }
 
     @Test
     fun stringParser() {
         val parser = +"abc"
-        assertEquals("abc", parser.parseAllOrThrow("abc")) // 同じ文字列で成功
-        assertUnmatchedInput { parser.parseAllOrThrow("abd") } // 異なる文字列で失敗
+        assertEquals("abc", parser.parseAll("abc").getOrThrow()) // 同じ文字列で成功
+        assertUnmatchedInput { parser.parseAll("abd").getOrThrow() } // 異なる文字列で失敗
     }
 
     @Test
     fun regexParser() {
         val parser = +Regex("[1-9]+")
-        assertNotNull(parser.parseAllOrThrow("123")) // 正規表現にマッチする文字列で成功
-        assertUnmatchedInput { parser.parseAllOrThrow("abc") } // 正規表現にマッチしない文字列で失敗
-        assertUnmatchedInput { parser.parseAllOrThrow("a123") } // 先頭にゴミがあると失敗
+        assertNotNull(parser.parseAll("123").getOrThrow()) // 正規表現にマッチする文字列で成功
+        assertUnmatchedInput { parser.parseAll("abc").getOrThrow() } // 正規表現にマッチしない文字列で失敗
+        assertUnmatchedInput { parser.parseAll("a123").getOrThrow() } // 先頭にゴミがあると失敗
     }
 
     @Test
     fun unitParser() {
         val parser = fixed(1)
-        assertEquals(1, parser.parseAllOrThrow("")) // 空文字で成功
-        assertExtraCharacters { parser.parseAllOrThrow("a") } // 何も消費しない
+        assertEquals(1, parser.parseAll("").getOrThrow()) // 空文字で成功
+        assertExtraCharacters { parser.parseAll("a").getOrThrow() } // 何も消費しない
     }
 
     @Test
     fun nothingParser() {
         val parser = fail
-        assertUnmatchedInput { parser.parseAllOrThrow("") } // 何を与えても失敗
-        assertUnmatchedInput { parser.parseAllOrThrow("a") } // 何を与えても失敗
+        assertUnmatchedInput { parser.parseAll<Unit>("").getOrThrow() } // 何を与えても失敗
+        assertUnmatchedInput { parser.parseAll<Unit>("a").getOrThrow() } // 何を与えても失敗
     }
 
     @Test
@@ -79,15 +79,15 @@ class ParserTest {
             // それぞれ順番にマッチする文字列で成功
             assertEquals(
                 Tuple5('a', 'b', 'c', 'd', 'e'),
-                parser.parseAllOrThrow("abcde"),
+                parser.parseAll("abcde").getOrThrow(),
             )
 
             // どこかでマッチしないと失敗
-            assertUnmatchedInput { parser.parseAllOrThrow("fffff") }
-            assertUnmatchedInput { parser.parseAllOrThrow("affff") }
-            assertUnmatchedInput { parser.parseAllOrThrow("abfff") }
-            assertUnmatchedInput { parser.parseAllOrThrow("abcff") }
-            assertUnmatchedInput { parser.parseAllOrThrow("abcdf") }
+            assertUnmatchedInput { parser.parseAll("fffff").getOrThrow() }
+            assertUnmatchedInput { parser.parseAll("affff").getOrThrow() }
+            assertUnmatchedInput { parser.parseAll("abfff").getOrThrow() }
+            assertUnmatchedInput { parser.parseAll("abcff").getOrThrow() }
+            assertUnmatchedInput { parser.parseAll("abcdf").getOrThrow() }
         }
 
         // Tuple16
@@ -100,14 +100,14 @@ class ParserTest {
 
             assertEquals(
                 Tuple16('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'),
-                parser.parseAllOrThrow("abcdefghijklmnop"),
+                parser.parseAll("abcdefghijklmnop").getOrThrow(),
             )
         }
 
         // Tuple0同士の結合でも副作用は適用される
         run {
             val parser = (+'a' map { Tuple0 }) * (+'b' map { Tuple0 })
-            assertEquals(Tuple0, parser.parseAllOrThrow("ab")) // マッチする文字列で成功
+            assertEquals(Tuple0, parser.parseAll("ab").getOrThrow()) // マッチする文字列で成功
         }
 
     }
@@ -118,34 +118,34 @@ class ParserTest {
         // zeroOrMore
         run {
             val parser = (+'a').zeroOrMore
-            assertEquals(listOf(), parser.parseAllOrThrow("")) // 0回で成功
-            assertEquals(listOf('a'), parser.parseAllOrThrow("a")) // 1回で成功
-            assertEquals(listOf('a', 'a', 'a'), parser.parseAllOrThrow("aaa")) // 複数回で成功
-            assertExtraCharacters { parser.parseAllOrThrow("abc") } // 余計な文字があると失敗
+            assertEquals(listOf(), parser.parseAll("").getOrThrow()) // 0回で成功
+            assertEquals(listOf('a'), parser.parseAll("a").getOrThrow()) // 1回で成功
+            assertEquals(listOf('a', 'a', 'a'), parser.parseAll("aaa").getOrThrow()) // 複数回で成功
+            assertExtraCharacters { parser.parseAll("abc").getOrThrow() } // 余計な文字があると失敗
         }
 
         // oneOrMore
         run {
             val parser = (+'a').oneOrMore
-            assertUnmatchedInput { parser.parseAllOrThrow("") } // 0回で失敗
-            assertEquals(listOf('a'), parser.parseAllOrThrow("a"))
-            assertEquals(listOf('a', 'a', 'a'), parser.parseAllOrThrow("aaa"))
-            assertExtraCharacters { parser.parseAllOrThrow("abc") }
+            assertUnmatchedInput { parser.parseAll("").getOrThrow() } // 0回で失敗
+            assertEquals(listOf('a'), parser.parseAll("a").getOrThrow())
+            assertEquals(listOf('a', 'a', 'a'), parser.parseAll("aaa").getOrThrow())
+            assertExtraCharacters { parser.parseAll("abc").getOrThrow() }
         }
 
         // 範囲指定
         run {
             val parser1 = (+'a').list(min = 2, max = 4)
-            assertUnmatchedInput { parser1.parseAllOrThrow("a") }
-            assertEquals(listOf('a', 'a'), parser1.parseAllOrThrow("aa"))
-            assertEquals(listOf('a', 'a', 'a', 'a'), parser1.parseAllOrThrow("aaaa"))
-            assertExtraCharacters { parser1.parseAllOrThrow("aaaaa") }
+            assertUnmatchedInput { parser1.parseAll("a").getOrThrow() }
+            assertEquals(listOf('a', 'a'), parser1.parseAll("aa").getOrThrow())
+            assertEquals(listOf('a', 'a', 'a', 'a'), parser1.parseAll("aaaa").getOrThrow())
+            assertExtraCharacters { parser1.parseAll("aaaaa").getOrThrow() }
         }
 
         // 後続のマッチする部分を無視する
         run {
             val parser1 = (+'a').list(min = 2, max = 2).list(min = 2, max = 2)
-            assertEquals(listOf(listOf('a', 'a'), listOf('a', 'a')), parser1.parseAllOrThrow("aaaa"))
+            assertEquals(listOf(listOf('a', 'a'), listOf('a', 'a')), parser1.parseAll("aaaa").getOrThrow())
         }
 
     }
@@ -156,16 +156,16 @@ class ParserTest {
         // 単体
         run {
             val parser = (+'a').optional
-            assertEquals(Tuple1('a'), parser.parseAllOrThrow("a")) // マッチする場合に成功
-            assertEquals(Tuple1(null), parser.parseAllOrThrow("")) // 省略された場合に成功
-            assertExtraCharacters { parser.parseAllOrThrow("b") } // マッチしない文字で失敗
+            assertEquals(Tuple1('a'), parser.parseAll("a").getOrThrow()) // マッチする場合に成功
+            assertEquals(Tuple1(null), parser.parseAll("").getOrThrow()) // 省略された場合に成功
+            assertExtraCharacters { parser.parseAll("b").getOrThrow() } // マッチしない文字で失敗
         }
 
         // マッチしない場合は解析位置も変更しない
         run {
             val parser = (+'a').optional * +'b'
-            assertEquals(Tuple2('a', 'b'), parser.parseAllOrThrow("ab")) // マッチする場合に成功
-            assertEquals(Tuple2(null, 'b'), parser.parseAllOrThrow("b")) // 省略された場合に成功
+            assertEquals(Tuple2('a', 'b'), parser.parseAll("ab").getOrThrow()) // マッチする場合に成功
+            assertEquals(Tuple2(null, 'b'), parser.parseAll("b").getOrThrow()) // 省略された場合に成功
         }
 
     }
@@ -176,23 +176,23 @@ class ParserTest {
         // 0項
         run {
             val parser = or<Char>()
-            assertUnmatchedInput { parser.parseAllOrThrow("") } // 何を与えても失敗
-            assertUnmatchedInput { parser.parseAllOrThrow("a") }
+            assertUnmatchedInput { parser.parseAll("").getOrThrow() } // 何を与えても失敗
+            assertUnmatchedInput { parser.parseAll("a").getOrThrow() }
         }
 
         // 1項
         run {
             val parser = or(+'a')
-            assertEquals('a', parser.parseAllOrThrow("a")) // 最初の選択肢にマッチ
-            assertUnmatchedInput { parser.parseAllOrThrow("b") } // マッチしなかった
+            assertEquals('a', parser.parseAll("a").getOrThrow()) // 最初の選択肢にマッチ
+            assertUnmatchedInput { parser.parseAll("b").getOrThrow() } // マッチしなかった
         }
 
         // 2項
         run {
             val parser = +'a' + +'b'
-            assertEquals('a', parser.parseAllOrThrow("a"))
-            assertEquals('b', parser.parseAllOrThrow("b")) // 2番目の選択肢にマッチ
-            assertUnmatchedInput { parser.parseAllOrThrow("c") }
+            assertEquals('a', parser.parseAll("a").getOrThrow())
+            assertEquals('b', parser.parseAll("b").getOrThrow()) // 2番目の選択肢にマッチ
+            assertUnmatchedInput { parser.parseAll("c").getOrThrow() }
         }
 
     }
@@ -200,22 +200,22 @@ class ParserTest {
     @Test
     fun notParser() {
         val parser = !+'a' * +'b'
-        assertEquals('b', parser.parseAllOrThrow("b")) // 最初の子パーサーがマッチしない文字で成功
-        assertUnmatchedInput { parser.parseAllOrThrow("a") } // 最初の子パーサーがマッチする文字で失敗
+        assertEquals('b', parser.parseAll("b").getOrThrow()) // 最初の子パーサーがマッチしない文字で成功
+        assertUnmatchedInput { parser.parseAll("a").getOrThrow() } // 最初の子パーサーがマッチする文字で失敗
     }
 
     @Test
     fun map() {
         val parser = +Regex("[1-9a-z]+") map { it.value.toInt() }
-        assertEquals(123, parser.parseAllOrThrow("123")) // 正規表現にマッチしつつ数値に変換できる
-        assertFails { parser.parseAllOrThrow("123a") } // 数値化部分が失敗すると失敗
+        assertEquals(123, parser.parseAll("123").getOrThrow()) // 正規表現にマッチしつつ数値に変換できる
+        assertFails { parser.parseAll("123a").getOrThrow() } // 数値化部分が失敗すると失敗
     }
 
     @Test
     fun ignoreParser() {
         val parser = -'a'
-        assertEquals(Tuple0, parser.parseAllOrThrow("a")) // マッチする文字で成功
-        assertUnmatchedInput { parser.parseAllOrThrow("b") } // マッチしない文字で失敗
+        assertEquals(Tuple0, parser.parseAll("a").getOrThrow()) // マッチする文字で成功
+        assertUnmatchedInput { parser.parseAll("b").getOrThrow() } // マッチしない文字で失敗
     }
 
     @Test
@@ -229,9 +229,9 @@ class ParserTest {
             val root = add
         }.root
 
-        assertEquals(26, parser.parseAllOrThrow("2*3+4*5")) // まずはデリゲート使わない
-        assertEquals(70, parser.parseAllOrThrow("2*(3+4)*5")) // デリゲートを使う
-        assertEquals(7, parser.parseAllOrThrow("(((((((((((((((((((((((((3+4)))))))))))))))))))))))))")) // 大量の入れ子デリゲート
+        assertEquals(26, parser.parseAll("2*3+4*5").getOrThrow()) // まずはデリゲート使わない
+        assertEquals(70, parser.parseAll("2*(3+4)*5").getOrThrow()) // デリゲートを使う
+        assertEquals(7, parser.parseAll("(((((((((((((((((((((((((3+4)))))))))))))))))))))))))").getOrThrow()) // 大量の入れ子デリゲート
     }
 
     @Test
@@ -267,7 +267,7 @@ class ParserTest {
         // キャッシュを使わない場合、計算回数が指数関数的に増加するのでキャンセルを踏む
         try {
             language.counter = 0
-            parser.parseAllOrThrow("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = false)
+            parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = false).getOrThrow()
             fail("Expected CancellationException, but no exception was thrown.")
         } catch (_: CancellationException) {
             // ok
@@ -275,7 +275,7 @@ class ParserTest {
 
         // キャッシュを使うことで計算回数が下がり成功するようになる
         language.counter = 0
-        assertEquals(40, parser.parseAllOrThrow("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = true))
+        assertEquals(40, parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useMemoization = true).getOrThrow())
 
     }
 
@@ -287,10 +287,10 @@ class ParserTest {
             val number = +Regex("[0-9]+") map { it.value }
             val add = leftAssociative(number, -'+') { a, _, b -> "[$a+$b]" }
 
-            assertEquals("[[1+2]+3]", add.parseAllOrThrow("1+2+3")) // 左優先結合
-            assertEquals("[1+2]", add.parseAllOrThrow("1+2")) // 1回の場合
-            assertEquals("1", add.parseAllOrThrow("1")) // 0回の場合
-            assertUnmatchedInput { add.parseAllOrThrow("") } // どれも来ない場合は失敗
+            assertEquals("[[1+2]+3]", add.parseAll("1+2+3").getOrThrow()) // 左優先結合
+            assertEquals("[1+2]", add.parseAll("1+2").getOrThrow()) // 1回の場合
+            assertEquals("1", add.parseAll("1").getOrThrow()) // 0回の場合
+            assertUnmatchedInput { add.parseAll("").getOrThrow() } // どれも来ない場合は失敗
         }
 
         // rightAssociative
@@ -298,10 +298,10 @@ class ParserTest {
             val number = +Regex("[0-9]+") map { it.value }
             val add = rightAssociative(number, -'+') { a, _, b -> "[$a+$b]" }
 
-            assertEquals("[1+[2+3]]", add.parseAllOrThrow("1+2+3")) // 右優先結合
-            assertEquals("[1+2]", add.parseAllOrThrow("1+2")) // 1回の場合
-            assertEquals("1", add.parseAllOrThrow("1")) // 0回の場合
-            assertUnmatchedInput { add.parseAllOrThrow("") } // どれも来ない場合は失敗
+            assertEquals("[1+[2+3]]", add.parseAll("1+2+3").getOrThrow()) // 右優先結合
+            assertEquals("[1+2]", add.parseAll("1+2").getOrThrow()) // 1回の場合
+            assertEquals("1", add.parseAll("1").getOrThrow()) // 0回の場合
+            assertUnmatchedInput { add.parseAll("").getOrThrow() } // どれも来ない場合は失敗
         }
 
     }

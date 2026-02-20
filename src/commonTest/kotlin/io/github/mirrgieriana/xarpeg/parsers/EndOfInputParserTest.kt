@@ -2,7 +2,7 @@ package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.assertUnmatchedInput
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -31,14 +31,14 @@ class EndOfInputParserTest {
     @Test
     fun endOfInputDoesNotConsumeInput() {
         val parser = +"hello" * endOfInput
-        val result = parser.parseAllOrThrow("hello")
+        val result = parser.parseAll("hello").getOrThrow()
         assertEquals("hello", result)
     }
 
     @Test
     fun endOfInputInSequence() {
         val parser = +'a' * +'b' * endOfInput
-        val result = parser.parseAllOrThrow("ab")
+        val result = parser.parseAll("ab").getOrThrow()
         assertEquals('a', result.a)
         assertEquals('b', result.b)
     }
@@ -46,7 +46,7 @@ class EndOfInputParserTest {
     @Test
     fun endOfInputWithRegex() {
         val parser = +Regex("[0-9]+") * endOfInput map { it.value }
-        val result = parser.parseAllOrThrow("123")
+        val result = parser.parseAll("123").getOrThrow()
         assertEquals("123", result)
     }
 
@@ -63,24 +63,24 @@ class EndOfInputParserTest {
     @Test
     fun multipleEndOfInputParsers() {
         val parser = +"test" * endOfInput * endOfInput
-        val result = parser.parseAllOrThrow("test")
+        val result = parser.parseAll("test").getOrThrow()
         assertEquals("test", result)
     }
 
     @Test
     fun endOfInputDetectsTrailingCharacters() {
         val parser = +"hello" * endOfInput
-        assertUnmatchedInput { parser.parseAllOrThrow("hello world") }
+        assertUnmatchedInput { parser.parseAll("hello world").getOrThrow() }
     }
 
     @Test
     fun endOfInputWithOptional() {
         val parser = +'a' * (+'b').optional * endOfInput
-        val result1 = parser.parseAllOrThrow("ab")
+        val result1 = parser.parseAll("ab").getOrThrow()
         assertEquals('a', result1.a)
         assertEquals('b', result1.b)
 
-        val result2 = parser.parseAllOrThrow("a")
+        val result2 = parser.parseAll("a").getOrThrow()
         assertEquals('a', result2.a)
         assertNull(result2.b)
     }
@@ -88,7 +88,7 @@ class EndOfInputParserTest {
     @Test
     fun startAndEndOfInputTogether() {
         val parser = startOfInput * +"test" * endOfInput
-        val result = parser.parseAllOrThrow("test")
+        val result = parser.parseAll("test").getOrThrow()
         assertEquals("test", result)
     }
 }

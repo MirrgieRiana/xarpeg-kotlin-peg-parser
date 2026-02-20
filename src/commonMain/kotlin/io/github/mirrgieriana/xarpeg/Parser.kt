@@ -1,5 +1,7 @@
 package io.github.mirrgieriana.xarpeg
 
+import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
+import io.github.mirrgieriana.xarpeg.internal.truncateWithCaret
 import io.github.mirrgieriana.xarpeg.parsers.endOfInput
 import io.github.mirrgieriana.xarpeg.parsers.normalize
 
@@ -24,25 +26,101 @@ data class ParseResult<out T : Any>(val value: T, val start: Int, val end: Int)
 fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.start, this.end).normalize()
 
 
-open class ParseException(val context: ParseContext, val position: Int) : Exception(run {
-    val matrixPosition = context.toMatrixPosition(position)
-    "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+open class ParseException(val context: ParseContext) : Exception(run {
+    val errorPosition = context.errorPosition
+    if (errorPosition != null) {
+        val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(errorPosition)
+        "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+    } else {
+        "Syntax Error"
+    }
 })
 
 /**
- * Formats a [ParseException] into a user-friendly error message with context.
- * @see [ParseContext.formatMessage]
+ * Formats a parse error into a user-friendly error message with context.
+ *
+ * The formatted message includes:
+ * - Error line and column number
+ * - Expected parsers (if named parsers are available)
+ * - Actual character found (or EOF)
+ * - The source line where the error occurred (truncated to maxLineLength if needed)
+ * - A caret (^) indicating the error position
+ *
+ * @param exception The parse exception to format
+ * @param maxLineLength Maximum length for the source line display (default 80)
+ * @return A formatted error message with context
  */
-fun ParseException.formatMessage() = context.formatMessage(this, 80)
+fun ParseException.formatMessage(maxLineLength: Int = 80): String {
+    val suggestingParseContext = this.context as? SuggestingParseContext
+    val matrixPositionCalculator = this.context.matrixPositionCalculator
+    val sb = StringBuilder()
 
 
-fun <T : Any> Parser<T>.parseAllOrThrow(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrThrow()
+    // Build error message header with position
+    if (suggestingParseContext != null) {
+        val matrixPosition = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition)
+        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    } else {
+        sb.append("Syntax Error")
+    }
 
-fun <T : Any> Parser<T>.parseAllOrNull(src: String, useMemoization: Boolean = true) = this.parseAll(src, useMemoization).getOrNull()
 
-fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
-    val context = ParseContext(src, useMemoization)
-    val result = context.parseOrNull(this, 0) ?: return Result.failure(ParseException(context, context.errorPosition))
-    context.parseOrNull(endOfInput, result.end) ?: return Result.failure(ParseException(context, context.errorPosition))
+    // Add expected parsers
+    if (suggestingParseContext != null) {
+        val candidates = suggestingParseContext.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
+        if (candidates.isNotEmpty()) {
+            sb.append("\nExpect: ${candidates.joinToString(", ")}")
+        } else {
+            sb.append("\nExpect:")
+        }
+    }
+
+
+    // Add actual character
+    if (suggestingParseContext != null) {
+        val actualChar = this.context.src.getOrNull(suggestingParseContext.errorPosition)
+        if (actualChar != null) {
+            sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
+        } else {
+            sb.append("\nActual: EOF")
+        }
+    }
+
+
+    // Add source line and caret
+    if (suggestingParseContext != null) {
+        val lineIndex = matrixPositionCalculator.getMatrixPosition(suggestingParseContext.errorPosition).row - 1
+        val lineRange = matrixPositionCalculator.getLineRange(lineIndex + 1)
+        val lineStartIndex = lineRange.start
+        val line = this.context.src.substring(lineStartIndex, lineRange.endInclusive + 1)
+
+        val caretPosition = (suggestingParseContext.errorPosition - lineStartIndex).coerceAtMost(line.length)
+        val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
+
+        sb.append("\n")
+
+        sb.append(displayLine)
+        sb.append("\n")
+
+        sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
+        sb.append("^")
+    }
+
+
+    return sb.toString()
+}
+
+
+fun <T : Any> Parser<T>.parseAll(
+    src: String,
+): Result<T> = this.parseAll(src) { DefaultParseContext(src) }
+
+fun <T : Any, C : ParseContext> Parser<T>.parseAll(
+    src: String,
+    contextFactory: (String) -> C,
+): Result<T> {
+    val context = contextFactory(src)
+    val result = context.parseOrNull(this, 0) ?: return Result.failure(ParseException(context))
+    context.parseOrNull(endOfInput, result.end) ?: return Result.failure(ParseException(context))
     return Result.success(result.value)
 }

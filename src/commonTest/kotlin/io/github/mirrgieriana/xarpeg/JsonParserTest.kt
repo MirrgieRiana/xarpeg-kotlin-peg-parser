@@ -138,67 +138,67 @@ class JsonParserTest {
 
     @Test
     fun testJsonString() {
-        val result = jsonValue.parseAllOrThrow("\"hello\"")
+        val result = jsonValue.parseAll("\"hello\"").getOrThrow()
         assertEquals(JsonValue.JsonString("hello"), result)
     }
 
     @Test
     fun testJsonStringWithEscapes() {
-        val result = jsonValue.parseAllOrThrow("\"hello\\nworld\\t!\"")
+        val result = jsonValue.parseAll("\"hello\\nworld\\t!\"").getOrThrow()
         assertEquals(JsonValue.JsonString("hello\nworld\t!"), result)
     }
 
     @Test
     fun testJsonStringWithUnicode() {
-        val result = jsonValue.parseAllOrThrow("\"\\u0048\\u0065\\u006C\\u006C\\u006F\"")
+        val result = jsonValue.parseAll("\"\\u0048\\u0065\\u006C\\u006C\\u006F\"").getOrThrow()
         assertEquals(JsonValue.JsonString("Hello"), result)
     }
 
     @Test
     fun testJsonNumber() {
-        val result = jsonValue.parseAllOrThrow("42")
+        val result = jsonValue.parseAll("42").getOrThrow()
         assertEquals(JsonValue.JsonNumber(42.0), result)
     }
 
     @Test
     fun testJsonNumberNegative() {
-        val result = jsonValue.parseAllOrThrow("-123.45")
+        val result = jsonValue.parseAll("-123.45").getOrThrow()
         assertEquals(JsonValue.JsonNumber(-123.45), result)
     }
 
     @Test
     fun testJsonNumberScientific() {
-        val result = jsonValue.parseAllOrThrow("1.23e10")
+        val result = jsonValue.parseAll("1.23e10").getOrThrow()
         assertEquals(JsonValue.JsonNumber(1.23e10), result)
     }
 
     @Test
     fun testJsonBooleanTrue() {
-        val result = jsonValue.parseAllOrThrow("true")
+        val result = jsonValue.parseAll("true").getOrThrow()
         assertEquals(JsonValue.JsonBoolean(true), result)
     }
 
     @Test
     fun testJsonBooleanFalse() {
-        val result = jsonValue.parseAllOrThrow("false")
+        val result = jsonValue.parseAll("false").getOrThrow()
         assertEquals(JsonValue.JsonBoolean(false), result)
     }
 
     @Test
     fun testJsonNull() {
-        val result = jsonValue.parseAllOrThrow("null")
+        val result = jsonValue.parseAll("null").getOrThrow()
         assertEquals(JsonValue.JsonNull, result)
     }
 
     @Test
     fun testJsonEmptyArray() {
-        val result = jsonValue.parseAllOrThrow("[]")
+        val result = jsonValue.parseAll("[]").getOrThrow()
         assertEquals(JsonValue.JsonArray(emptyList()), result)
     }
 
     @Test
     fun testJsonArrayWithNumbers() {
-        val result = jsonValue.parseAllOrThrow("[1, 2, 3]")
+        val result = jsonValue.parseAll("[1, 2, 3]").getOrThrow()
         assertEquals(
             JsonValue.JsonArray(
                 listOf(
@@ -213,7 +213,7 @@ class JsonParserTest {
 
     @Test
     fun testJsonArrayMixed() {
-        val result = jsonValue.parseAllOrThrow("[1, \"hello\", true, null]")
+        val result = jsonValue.parseAll("[1, \"hello\", true, null]").getOrThrow()
         assertEquals(
             JsonValue.JsonArray(
                 listOf(
@@ -229,13 +229,13 @@ class JsonParserTest {
 
     @Test
     fun testJsonEmptyObject() {
-        val result = jsonValue.parseAllOrThrow("{}")
+        val result = jsonValue.parseAll("{}").getOrThrow()
         assertEquals(JsonValue.JsonObject(emptyMap()), result)
     }
 
     @Test
     fun testJsonSimpleObject() {
-        val result = jsonValue.parseAllOrThrow("{\"name\": \"John\", \"age\": 30}")
+        val result = jsonValue.parseAll("{\"name\": \"John\", \"age\": 30}").getOrThrow()
         assertEquals(
             JsonValue.JsonObject(
                 mapOf(
@@ -259,7 +259,7 @@ class JsonParserTest {
             }
         """.trimIndent()
 
-        val result = jsonValue.parseAllOrThrow(json)
+        val result = jsonValue.parseAll(json).getOrThrow()
         assertEquals(
             JsonValue.JsonObject(
                 mapOf(
@@ -278,7 +278,7 @@ class JsonParserTest {
 
     @Test
     fun testJsonNestedArray() {
-        val result = jsonValue.parseAllOrThrow("[[1, 2], [3, 4], [5]]")
+        val result = jsonValue.parseAll("[[1, 2], [3, 4], [5]]").getOrThrow()
         assertEquals(
             JsonValue.JsonArray(
                 listOf(
@@ -320,7 +320,7 @@ class JsonParserTest {
             }
         """.trimIndent()
 
-        val result = jsonValue.parseAllOrThrow(json)
+        val result = jsonValue.parseAll(json).getOrThrow()
 
         // Verify structure exists and is correct type
         when (result) {
@@ -349,7 +349,7 @@ class JsonParserTest {
             }
         """.trimIndent()
 
-        val result = jsonValue.parseAllOrThrow(json)
+        val result = jsonValue.parseAll(json).getOrThrow()
         assertEquals(
             JsonValue.JsonObject(
                 mapOf(

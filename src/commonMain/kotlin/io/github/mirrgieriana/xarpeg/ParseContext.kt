@@ -1,22 +1,50 @@
 package io.github.mirrgieriana.xarpeg
 
-import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
-import io.github.mirrgieriana.xarpeg.internal.truncateWithCaret
+interface ParseContext {
+    val src: String
+    fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>?
+}
 
-open class ParseContext(val src: String, val useMemoization: Boolean) {
+interface MemoizationParseContext {
+    var useMemoization: Boolean
+}
 
+interface MatrixPositionCalculatorHolderParseContext {
+    val matrixPositionCalculator: MatrixPositionCalculator
+}
+
+val ParseContext.matrixPositionCalculator get() = (this as? MatrixPositionCalculatorHolderParseContext)?.matrixPositionCalculator ?: MatrixPositionCalculator(src)
+
+interface LookAheadHolderParseContext {
+    var isInLookAhead: Boolean
+}
+
+interface SuggestingParseContext {
+    val errorPosition: Int
+    val suggestedParsers: Set<Parser<*>>
+}
+
+val ParseContext.errorPosition get() = (this as? SuggestingParseContext)?.errorPosition
+val ParseContext.suggestedParsers get() = (this as? SuggestingParseContext)?.suggestedParsers
+
+open class DefaultParseContext(override val src: String) :
+    ParseContext,
+    MemoizationParseContext,
+    MatrixPositionCalculatorHolderParseContext,
+    LookAheadHolderParseContext,
+    SuggestingParseContext {
+
+    override var useMemoization: Boolean = true
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 
-    var isInNamedParser = false
-    var isInLookAhead = false
-    var errorPosition: Int = 0
-    val suggestedParsers = mutableSetOf<Parser<*>>()
+    private var isInNamedParser = false
+    override var isInLookAhead = false
+    override var errorPosition: Int = 0
+    override val suggestedParsers = mutableSetOf<Parser<*>>()
 
-    private val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
-    fun toMatrixPosition(index: Int) = matrixPositionCalculator.toMatrixPosition(index)
-    val errorMatrixPosition get() = toMatrixPosition(errorPosition)
+    override val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
 
-    fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
+    override fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
         fun parse(): ParseResult<T>? {
             return if (!isInNamedParser && parser.name != null) {
                 isInNamedParser = true
@@ -57,97 +85,4 @@ open class ParseContext(val src: String, val useMemoization: Boolean) {
         return result
     }
 
-    /**
-     * Formats a [ParseException] into a user-friendly error message.
-     * @see [MatrixPositionCalculator.formatMessage]
-     */
-    fun formatMessage(exception: ParseException, maxLineLength: Int) = matrixPositionCalculator.formatMessage(exception, maxLineLength)
-
-}
-
-data class MatrixPosition(val row: Int, val column: Int)
-
-class MatrixPositionCalculator(private val src: String) {
-    private val lineStartIndices = mutableListOf<Int>()
-    private val lineExclusiveEndIndices = mutableListOf<Int>()
-
-    init {
-        lineStartIndices += 0
-        var result = """\n|\r\n?""".toRegex().find(src)
-        while (result != null) {
-            lineExclusiveEndIndices += result.range.first
-            lineStartIndices += result.range.last + 1
-            result = result.next()
-        }
-        lineExclusiveEndIndices += src.length
-    }
-
-    fun toMatrixPosition(index: Int): MatrixPosition {
-        require(index in 0..src.length) { "index ($index) is out of range for src of length ${src.length}" }
-        val lineIndex = lineStartIndices.binarySearch(index).let { if (it >= 0) it else (-it - 1) - 1 }
-        val lineStartIndex = lineStartIndices[lineIndex]
-        return MatrixPosition(row = lineIndex + 1, column = index - lineStartIndex + 1)
-    }
-
-    /**
-     * Formats a parse error into a user-friendly error message with context.
-     *
-     * The formatted message includes:
-     * - Error line and column number
-     * - Expected parsers (if named parsers are available)
-     * - Actual character found (or EOF)
-     * - The source line where the error occurred (truncated to maxLineLength if needed)
-     * - A caret (^) indicating the error position
-     *
-     * @param exception The parse exception to format
-     * @param maxLineLength Maximum length for the source line display (default 80)
-     * @return A formatted error message with context
-     */
-    fun formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
-        val sb = StringBuilder()
-        val matrixPosition = toMatrixPosition(exception.position)
-
-
-        // Build error message header with position
-        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
-
-
-        // Add expected parsers
-        val candidates = exception.context.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
-        if (candidates.isNotEmpty()) {
-            sb.append("\nExpect: ${candidates.joinToString(", ")}")
-        } else {
-            sb.append("\nExpect:")
-        }
-
-
-        // Add actual character
-        val actualChar = exception.context.src.getOrNull(exception.position)
-        if (actualChar != null) {
-            sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
-        } else {
-            sb.append("\nActual: EOF")
-        }
-
-
-        // Add source line and caret
-        val lineIndex = matrixPosition.row - 1
-        val lineStartIndex = lineStartIndices[lineIndex]
-        val lineExclusiveEndIndex = lineExclusiveEndIndices[lineIndex]
-        val line = src.substring(lineStartIndex, lineExclusiveEndIndex)
-
-        val caretPosition = (exception.position - lineStartIndex).coerceAtMost(line.length)
-        val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
-
-        sb.append("\n")
-
-        sb.append(displayLine)
-        sb.append("\n")
-
-        sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
-        sb.append("^")
-
-
-        return sb.toString()
-    }
 }

@@ -191,7 +191,7 @@ class ErrorContextTest {
         val parser = letter
 
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow("123")
+            parser.parseAll("123").getOrThrow()
         }
 
         // Exception contains the context with error information
@@ -208,7 +208,7 @@ class ErrorContextTest {
         val parser = +"hello" named "greeting"
 
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow("helloworld")
+            parser.parseAll("helloworld").getOrThrow()
         }
 
         // Exception contains the context
@@ -264,7 +264,7 @@ class ErrorContextTest {
 
         val input = "123"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val formatted = exception.formatMessage()
@@ -289,7 +289,7 @@ class ErrorContextTest {
 
         val input = "hello test\nline2"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val formatted = exception.formatMessage()
@@ -309,7 +309,7 @@ class ErrorContextTest {
 
         val input = "helloworld"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val formatted = exception.formatMessage()
@@ -330,7 +330,7 @@ class ErrorContextTest {
 
         val input = "fail"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val formatted = exception.formatMessage()
@@ -349,7 +349,7 @@ class ErrorContextTest {
         val parser = +"test"
         val input = "\n"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val message = exception.formatMessage()
@@ -375,7 +375,7 @@ class ErrorContextTest {
 
         val input = "fail"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val message = exception.formatMessage()
@@ -394,7 +394,7 @@ class ErrorContextTest {
         val parser = +"test"
         val input = "hello\r\nworld\ntest\rfail"
         val exception = assertFailsWith<ParseException> {
-            parser.parseAllOrThrow(input)
+            parser.parseAll(input).getOrThrow()
         }
 
         val message = exception.formatMessage()
@@ -432,7 +432,7 @@ class ErrorContextTest {
 
         val input = "42*10"
         val exception = assertFailsWith<ParseException> {
-            expr.parseAllOrThrow(input)
+            expr.parseAll(input).getOrThrow()
         }
 
         val message = exception.formatMessage()

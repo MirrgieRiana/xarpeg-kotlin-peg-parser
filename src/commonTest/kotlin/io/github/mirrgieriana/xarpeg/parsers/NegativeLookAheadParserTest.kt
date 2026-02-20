@@ -1,7 +1,7 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.ParseContext
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -31,14 +31,14 @@ class NegativeLookAheadParserTest {
     @Test
     fun negativeLookaheadParserInSequence() {
         val parser = (+'a').negativeLookAhead * +'b'
-        val result = parser.parseAllOrThrow("b")
+        val result = parser.parseAll("b").getOrThrow()
         assertEquals('b', result)
     }
 
     @Test
     fun negativeLookaheadParserWithString() {
         val parser = (+"hello").negativeLookAhead * +"world"
-        val result = parser.parseAllOrThrow("world")
+        val result = parser.parseAll("world").getOrThrow()
         assertEquals("world", result)
     }
 
@@ -55,14 +55,14 @@ class NegativeLookAheadParserTest {
     @Test
     fun negativeLookaheadParserUsingNotOperator() {
         val parser = !(+'a') * +'b'
-        val result = parser.parseAllOrThrow("b")
+        val result = parser.parseAll("b").getOrThrow()
         assertEquals('b', result)
     }
 
     @Test
     fun negativeLookaheadParserUsingNotProperty() {
         val parser = (+'a').not * +'b'
-        val result = parser.parseAllOrThrow("b")
+        val result = parser.parseAll("b").getOrThrow()
         assertEquals('b', result)
     }
 

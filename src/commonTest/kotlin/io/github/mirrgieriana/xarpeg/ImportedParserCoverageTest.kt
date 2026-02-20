@@ -49,8 +49,8 @@ class ImportedParserCoverageTest {
             +'x'
         }
 
-        assertEquals('x', delegating.parseAllOrThrow("x"))
-        assertEquals('x', delegating.parseAllOrThrow("x"))
+        assertEquals('x', delegating.parseAll("x").getOrThrow())
+        assertEquals('x', delegating.parseAll("x").getOrThrow())
         assertEquals(1, invoked)
     }
 
@@ -151,7 +151,7 @@ class ImportedParserCoverageTest {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = leftAssociative(num, -'+') { a, _, b -> a + b }
 
-        val exception = assertFailsWith<ParseException> { add.parseAllOrThrow("1+") }
+        val exception = assertFailsWith<ParseException> { add.parseAll("1+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
         assertEquals(2, exception.position)
     }
@@ -161,7 +161,7 @@ class ImportedParserCoverageTest {
         val num = +Regex("\\d+") mapEx { ctx, result -> result.text(ctx).toInt() }
         val add = rightAssociative(num, -'+') { a, _, b -> a + b }
 
-        val exception = assertFailsWith<ParseException> { add.parseAllOrThrow("2+") }
+        val exception = assertFailsWith<ParseException> { add.parseAll("2+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
         assertEquals(2, exception.position)
     }
@@ -170,7 +170,7 @@ class ImportedParserCoverageTest {
     fun parseAllOrThrowUnmatchedInputHasPosition() {
         val parser = +'a'
 
-        val exception = assertFailsWith<ParseException> { parser.parseAllOrThrow("") }
+        val exception = assertFailsWith<ParseException> { parser.parseAll("").getOrThrow() }
 
         assertEquals(0, exception.position)
     }
@@ -193,8 +193,8 @@ class ImportedParserCoverageTest {
         val base = or(+'a', +'b')
         val parser = base + +'c'
 
-        assertEquals('c', parser.parseAllOrThrow("c"))
-        assertEquals('a', parser.parseAllOrThrow("a"))
+        assertEquals('c', parser.parseAll("c").getOrThrow())
+        assertEquals('a', parser.parseAll("a").getOrThrow())
     }
 
     @Test
@@ -203,7 +203,7 @@ class ImportedParserCoverageTest {
         val right = +'c' * +'d' * +'e'
         val parser = left * right
 
-        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAllOrThrow("abcde"))
+        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAll("abcde").getOrThrow())
     }
 
     @Test
@@ -212,7 +212,7 @@ class ImportedParserCoverageTest {
         val right = +'d' * +'e'
         val parser = left * right
 
-        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAllOrThrow("abcde"))
+        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAll("abcde").getOrThrow())
     }
 
     @Test
@@ -221,7 +221,7 @@ class ImportedParserCoverageTest {
         val right = +'b' * +'c' * +'d' * +'e'
         val parser = left * right
 
-        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAllOrThrow("abcde"))
+        assertEquals(Tuple5('a', 'b', 'c', 'd', 'e'), parser.parseAll("abcde").getOrThrow())
     }
 
     @Test
@@ -230,7 +230,7 @@ class ImportedParserCoverageTest {
         val right: Parser<Tuple1<Char>> = +(+'y')
         val parser = left * right
 
-        assertEquals(Tuple1('y'), parser.parseAllOrThrow("xy"))
+        assertEquals(Tuple1('y'), parser.parseAll("xy").getOrThrow())
     }
 
     @Test

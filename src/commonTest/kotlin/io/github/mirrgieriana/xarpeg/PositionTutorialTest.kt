@@ -25,7 +25,7 @@ class PositionTutorialTest {
     @Test
     fun simpleMapExample() {
         val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
-        assertEquals(42, number.parseAllOrThrow("42"))
+        assertEquals(42, number.parseAll("42").getOrThrow())
     }
 
     @Test
@@ -34,7 +34,7 @@ class PositionTutorialTest {
         val identifierWithPosition = identifier mapEx { ctx, result ->
             "${result.value.value}@${result.start}-${result.end}"
         }
-        assertEquals("hello@0-5", identifierWithPosition.parseAllOrThrow("hello"))
+        assertEquals("hello@0-5", identifierWithPosition.parseAll("hello").getOrThrow())
     }
 
     @Test
@@ -42,7 +42,7 @@ class PositionTutorialTest {
         val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
         val keywordWithLocation = keyword.withLocation()
 
-        val result = keywordWithLocation.parseAllOrThrow("hello")
+        val result = keywordWithLocation.parseAll("hello").getOrThrow()
         val expected: Located<String> = Located("hello", 1, 1)
         assertEquals<Located<String>>(expected, result)
     }
@@ -53,7 +53,7 @@ class PositionTutorialTest {
         val keywordWithLocation = keyword.withLocation()
 
         // Parse keyword on line 1, column 1
-        val result1 = keywordWithLocation.parseAllOrThrow("hello")
+        val result1 = keywordWithLocation.parseAll("hello").getOrThrow()
         val expected1: Located<String> = Located("hello", 1, 1)
         assertEquals<Located<String>>(expected1, result1)
 
@@ -69,6 +69,6 @@ class PositionTutorialTest {
             val value = matched.toInt()
             "Parsed '$matched' as $value"
         }
-        assertEquals("Parsed '123' as 123", numberWithText.parseAllOrThrow("123"))
+        assertEquals("Parsed '123' as 123", numberWithText.parseAll("123").getOrThrow())
     }
 }

@@ -179,6 +179,7 @@ tasks.register("generateSrc") {
                         val outputFile = generatedSrc.file("${packageName.replace(".", "/")}/Test.kt").asFile
                         outputFile.parentFile.mkdirs()
                         outputFile.writeText(fileContent)
+                        /*
                         println(
                             buildString {
                                 appendLine("===== Doc-test block before (${relativePath}#$index) =====")
@@ -188,10 +189,11 @@ tasks.register("generateSrc") {
                                 appendLine("===== End =====")
                             }
                         )
+                        */
                         println("Generated: ${outputFile.absolutePath}")
                     }
                 } else {
-                    println("Skipped (no Kotlin blocks): ${relativePath}")
+                    println("Skipped (no Kotlin blocks): $relativePath")
                 }
             }
 

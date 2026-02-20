@@ -1,7 +1,7 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.ParseContext
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -31,7 +31,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserInSequence() {
         val parser = (+'a').lookAhead * +'a' * +'b'
-        val result = parser.parseAllOrThrow("ab")
+        val result = parser.parseAll("ab").getOrThrow()
         assertEquals('a', result.a)
         assertEquals('a', result.b)
         assertEquals('b', result.c)
@@ -40,7 +40,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserWithString() {
         val parser = (+"hello").lookAhead * +"hello" * +"world"
-        val result = parser.parseAllOrThrow("helloworld")
+        val result = parser.parseAll("helloworld").getOrThrow()
         assertEquals("hello", result.a)
         assertEquals("hello", result.b)
         assertEquals("world", result.c)
@@ -60,7 +60,7 @@ class LookAheadParserTest {
     @Test
     fun multipleLookaheadParsersInSequence() {
         val parser = (+'a').lookAhead * (+'a').lookAhead * +'a'
-        val result = parser.parseAllOrThrow("a")
+        val result = parser.parseAll("a").getOrThrow()
         assertEquals('a', result.a)
         assertEquals('a', result.b)
         assertEquals('a', result.c)
@@ -69,7 +69,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserWithRegex() {
         val parser = (+Regex("[0-9]+")).lookAhead * +Regex("[0-9]+") map { tuple -> tuple.b.value }
-        val result = parser.parseAllOrThrow("123")
+        val result = parser.parseAll("123").getOrThrow()
         assertEquals("123", result)
     }
 
@@ -93,7 +93,7 @@ class LookAheadParserTest {
     @Test
     fun lookaheadParserVsCharSequence() {
         val parser = (+'a').lookAhead * +'a' * (+'b').lookAhead * +'b' * +'c'
-        val result = parser.parseAllOrThrow("abc")
+        val result = parser.parseAll("abc").getOrThrow()
         assertEquals('a', result.a)
         assertEquals('a', result.b)
         assertEquals('b', result.c)

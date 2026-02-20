@@ -2,7 +2,7 @@ package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.Parser
-import io.github.mirrgieriana.xarpeg.parseAllOrThrow
+import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -20,7 +20,7 @@ class NamedParserTest {
     @Test
     fun namedParserParsesSuccessfully() {
         val parser = +'a' named "letter_a"
-        val result = parser.parseAllOrThrow("a")
+        val result = parser.parseAll("a").getOrThrow()
         assertEquals('a', result)
     }
 
@@ -37,7 +37,7 @@ class NamedParserTest {
         val parserA = +'a' named "letter_a"
         val parserB = +'b' named "letter_b"
         val combined = parserA * parserB
-        val result = combined.parseAllOrThrow("ab")
+        val result = combined.parseAll("ab").getOrThrow()
         assertEquals('a', result.a)
         assertEquals('b', result.b)
     }
@@ -47,48 +47,48 @@ class NamedParserTest {
         val parserA = +'a' named "letter_a"
         val parserB = +'b' named "letter_b"
         val combined = parserA + parserB
-        val result1 = combined.parseAllOrThrow("a")
+        val result1 = combined.parseAll("a").getOrThrow()
         assertEquals('a', result1)
-        val result2 = combined.parseAllOrThrow("b")
+        val result2 = combined.parseAll("b").getOrThrow()
         assertEquals('b', result2)
     }
 
     @Test
     fun namedParserWithMap() {
         val parser = +'a' named "letter_a" map { it.uppercaseChar() }
-        val result = parser.parseAllOrThrow("a")
+        val result = parser.parseAll("a").getOrThrow()
         assertEquals('A', result)
     }
 
     @Test
     fun namedParserWithString() {
         val parser = +"hello" named "greeting"
-        val result = parser.parseAllOrThrow("hello")
+        val result = parser.parseAll("hello").getOrThrow()
         assertEquals("hello", result)
     }
 
     @Test
     fun namedParserWithRegex() {
         val parser = +Regex("[0-9]+") named "number" map { it.value.toInt() }
-        val result = parser.parseAllOrThrow("123")
+        val result = parser.parseAll("123").getOrThrow()
         assertEquals(123, result)
     }
 
     @Test
     fun namedParserWithOptional() {
         val parser = (+'a' named "letter_a").optional
-        val result1 = parser.parseAllOrThrow("a")
+        val result1 = parser.parseAll("a").getOrThrow()
         assertNotNull(result1.a)
         assertEquals('a', result1.a)
 
-        val result2 = parser.parseAllOrThrow("")
+        val result2 = parser.parseAll("").getOrThrow()
         assertNull(result2.a)
     }
 
     @Test
     fun namedParserWithRepetition() {
         val parser = (+'a' named "letter_a").oneOrMore
-        val result = parser.parseAllOrThrow("aaa")
+        val result = parser.parseAll("aaa").getOrThrow()
         assertEquals(listOf('a', 'a', 'a'), result)
     }
 
@@ -98,7 +98,7 @@ class NamedParserTest {
         val operator = (+'+' + +'-') named "operator" map { it }
         val expression = digit * operator * digit
 
-        val result = expression.parseAllOrThrow("3+5")
+        val result = expression.parseAll("3+5").getOrThrow()
         assertEquals(3, result.a)
         assertEquals('+', result.b)
         assertEquals(5, result.c)
@@ -134,7 +134,7 @@ class NamedParserTest {
         val rparen = -')'
         val expr = lparen * number * rparen
 
-        val result = expr.parseAllOrThrow("(42)")
+        val result = expr.parseAll("(42)").getOrThrow()
         assertEquals(42, result)
     }
 
@@ -147,10 +147,10 @@ class NamedParserTest {
             val expr: Parser<Int> = ((digit) + (lparen * ref { expr } * rparen)) named "expression"
         }
 
-        val result1 = grammar.expr.parseAllOrThrow("5")
+        val result1 = grammar.expr.parseAll("5").getOrThrow()
         assertEquals(5, result1)
 
-        val result2 = grammar.expr.parseAllOrThrow("((3))")
+        val result2 = grammar.expr.parseAll("((3))").getOrThrow()
         assertEquals(3, result2)
     }
 
@@ -175,11 +175,11 @@ class NamedParserTest {
         val parser = +Regex("[a-z]+") named "word" map { it.value }
 
         // Test with cache enabled
-        val result1 = parser.parseAllOrThrow("hello", useMemoization = true)
+        val result1 = parser.parseAll("hello", useMemoization = true).getOrThrow()
         assertEquals("hello", result1)
 
         // Test with cache disabled
-        val result2 = parser.parseAllOrThrow("world", useMemoization = false)
+        val result2 = parser.parseAll("world", useMemoization = false).getOrThrow()
         assertEquals("world", result2)
     }
 
@@ -198,7 +198,7 @@ class NamedParserTest {
         val named2 = named1 named "second_name"
 
         assertEquals("second_name", named2.name)
-        val result = named2.parseAllOrThrow("a")
+        val result = named2.parseAll("a").getOrThrow()
         assertEquals('a', result)
     }
 
@@ -260,7 +260,7 @@ class NamedParserTest {
     @Test
     fun hiddenParserParsesSuccessfully() {
         val parser = (+'a').hidden
-        val result = parser.parseAllOrThrow("a")
+        val result = parser.parseAll("a").getOrThrow()
         assertEquals('a', result)
     }
 
@@ -295,10 +295,10 @@ class NamedParserTest {
         val expr = number * (whitespace.optional * plus * whitespace.optional * number).optional
 
         // Should parse successfully
-        val result1 = expr.parseAllOrThrow("42")
+        val result1 = expr.parseAll("42").getOrThrow()
         assertEquals(42, result1.a)
 
-        val result2 = expr.parseAllOrThrow("3+5")
+        val result2 = expr.parseAll("3+5").getOrThrow()
         assertEquals(3, result2.a)
     }
 
