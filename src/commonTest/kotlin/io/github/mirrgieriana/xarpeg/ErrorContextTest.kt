@@ -120,9 +120,9 @@ class ErrorContextTest {
         // Parsing succeeded up to "hello ", then "world" was attempted at position 6
         assertEquals(6, context.errorPosition)
         // Only "world" should be in suggestions since it failed at the furthest position
-        assertTrue(context.suggestedParsers.any { it.name == "world" })
+        assertTrue(context.suggestedParsers?.any { it.name == "world" } == true)
         // "hello" should not be in suggestions since it succeeded
-        assertTrue(context.suggestedParsers.none { it.name == "hello" })
+        assertTrue(context.suggestedParsers?.none { it.name == "hello" } == true)
     }
 
     @Test
@@ -138,7 +138,7 @@ class ErrorContextTest {
         assertNull(result)
         assertEquals(0, context.errorPosition)
         // Should suggest "letter" at the start
-        assertTrue(context.suggestedParsers.any { it.name == "letter" })
+        assertTrue(context.suggestedParsers?.any { it.name == "letter" } == true)
     }
 
     @Test
@@ -161,7 +161,7 @@ class ErrorContextTest {
         // Should fail after "(42+"
         assertEquals(4, context.errorPosition)
         // Should suggest "number" at position 4
-        assertTrue(context.suggestedParsers.any { it.name == "number" })
+        assertTrue(context.suggestedParsers?.any { it.name == "number" } == true)
     }
 
     @Test
@@ -186,7 +186,7 @@ class ErrorContextTest {
 
     @Test
     fun errorContextWithParseException() {
-        // When using parseAllOrThrow, you can catch the exception and inspect its context
+        // When using parseAll(...).getOrThrow(), you can catch the exception and inspect its context
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val parser = letter
 
@@ -228,7 +228,7 @@ class ErrorContextTest {
         assertNull(result)
         assertEquals(5, context.errorPosition)
         // suggestedParsers will contain unnamed parsers
-        assertTrue(context.suggestedParsers.isNotEmpty())
+        assertTrue(context.suggestedParsers?.isNotEmpty() == true)
     }
 
     @Test
