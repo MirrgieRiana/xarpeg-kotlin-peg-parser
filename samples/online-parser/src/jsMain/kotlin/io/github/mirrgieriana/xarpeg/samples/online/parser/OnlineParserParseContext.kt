@@ -1,0 +1,42 @@
+package io.github.mirrgieriana.xarpeg.samples.online.parser
+
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
+
+/**
+ * Custom ParseContext for the online parser.
+ * Extends DefaultParseContext to track the current indentation level for indent-based syntax.
+ */
+class OnlineParserParseContext(
+    src: String,
+) : DefaultParseContext(src) {
+    private val indentStack = mutableListOf(0)
+
+    /**
+     * Get the current required indent level
+     */
+    val currentIndent: Int
+        get() = indentStack.last()
+
+    /**
+     * Push a new indent level onto the stack
+     */
+    fun pushIndent(indent: Int) {
+        require(indent > currentIndent) { "New indent ($indent) must be greater than current indent ($currentIndent)" }
+        indentStack.add(indent)
+    }
+
+    /**
+     * Whether parsing is currently inside an indent block.
+     * True when the indent stack has been pushed at least once.
+     */
+    val isInIndentBlock: Boolean
+        get() = indentStack.size > 1
+
+    /**
+     * Pop the current indent level from the stack
+     */
+    fun popIndent() {
+        require(indentStack.size > 1) { "Cannot pop base indent level" }
+        indentStack.removeLast()
+    }
+}

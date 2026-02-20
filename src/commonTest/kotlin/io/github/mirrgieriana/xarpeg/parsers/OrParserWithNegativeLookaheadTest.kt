@@ -1,7 +1,9 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.ParseException
+import io.github.mirrgieriana.xarpeg.errorPosition
 import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
@@ -33,11 +35,11 @@ class OrParserWithNegativeLookaheadTest {
         }
 
         // The parser matched empty string at position 0, so extra characters start at 0
-        assertEquals(0, exception.position, "Extra characters should start at position 0")
+        assertEquals(0, exception.context.errorPosition ?: -1, "Extra characters should start at position 0")
 
         // parseAllOrThrow expects EOF at position 0 (after the empty match)
         // So suggestedParsers should contain "EOF"
-        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        val suggestedNames = ((exception.context as? io.github.mirrgieriana.xarpeg.SuggestingParseContext)?.suggestedParsers ?: emptySet<io.github.mirrgieriana.xarpeg.Parser<*>>()).mapNotNull { it.name?.ifEmpty { null } }
         assertTrue(suggestedNames.contains("EOF"), "Should suggest EOF")
         assertTrue(!suggestedNames.contains("A"), "Should NOT contain A (inside lookahead)")
     }
@@ -50,7 +52,7 @@ class OrParserWithNegativeLookaheadTest {
         val parserB = +"B" named "B"
         val parser = !parserA + parserB
 
-        val context = ParseContext("A", useMemoization = true)
+        val context = DefaultParseContext("A")
         val result = parser.parseOrNull(context, 0)
 
         // !"A" fails (A IS A), +"B" fails (A is not B)
@@ -77,8 +79,8 @@ class OrParserWithNegativeLookaheadTest {
             parser.parseAll("B").getOrThrow()
         }
 
-        assertEquals(0, exception.position)
-        val suggestedNames = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        assertEquals(0, exception.context.errorPosition ?: -1)
+        val suggestedNames = ((exception.context as? io.github.mirrgieriana.xarpeg.SuggestingParseContext)?.suggestedParsers ?: emptySet<io.github.mirrgieriana.xarpeg.Parser<*>>()).mapNotNull { it.name?.ifEmpty { null } }
         // parseAllOrThrow expects EOF, so "EOF" should be in suggestions
         assertTrue(suggestedNames.contains("EOF"), "Should suggest EOF")
     }
@@ -105,7 +107,7 @@ class OrParserWithNegativeLookaheadTest {
         val parserB1 = +"B" named "B"
         val serialParser = !parserA1 * parserB1
 
-        val context1 = ParseContext("C", useMemoization = true)
+        val context1 = DefaultParseContext("C")
         val result1 = serialParser.parseOrNull(context1, 0)
 
         assertNull(result1, "Serial parser should fail (first part succeeds but second part fails)")
@@ -123,7 +125,7 @@ class OrParserWithNegativeLookaheadTest {
             orParser.parseAll("C").getOrThrow()
         }
 
-        val suggestedNames2 = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+        val suggestedNames2 = ((exception.context as? io.github.mirrgieriana.xarpeg.SuggestingParseContext)?.suggestedParsers ?: emptySet<io.github.mirrgieriana.xarpeg.Parser<*>>()).mapNotNull { it.name?.ifEmpty { null } }
         // parseAllOrThrow expects EOF at position 0
         assertTrue(suggestedNames2.contains("EOF"), "Or: Should contain EOF")
         assertTrue(!suggestedNames2.contains("A"), "Or: Should NOT contain A")

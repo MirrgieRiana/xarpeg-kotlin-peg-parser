@@ -34,8 +34,8 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("2*(3+4)") == 14)
-    check(expr.parseAllOrThrow("5+3*2") == 11)
+    check(expr.parseAll("2*(3+4)").getOrThrow() == 14)
+    check(expr.parseAll("5+3*2").getOrThrow() == 11)
 }
 ```
 
@@ -107,8 +107,8 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("2^3^2") == 512)  // 右結合：2^(3^2)
-    check(expr.parseAllOrThrow("10-3-2") == 5)   // 左結合：(10-3)-2
+    check(expr.parseAll("2^3^2").getOrThrow() == 512)  // 右結合：2^(3^2)
+    check(expr.parseAll("10-3-2").getOrThrow() == 5)   // 左結合：(10-3)-2
 }
 ```
 
@@ -133,8 +133,8 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAllOrThrow("-5+3") == -2)
-    check(expr.parseAllOrThrow("-(2+3)") == -5)
+    check(expr.parseAll("-5+3").getOrThrow() == -2)
+    check(expr.parseAll("-(2+3)").getOrThrow() == -5)
 }
 ```
 

@@ -27,7 +27,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
-    val result = number.parseAllOrThrow("42")
+    val result = number.parseAll("42").getOrThrow()
     check(result == 42)  // Just the value, no position info
 }
 ```
@@ -47,7 +47,7 @@ val identifierWithPosition = identifier mapEx { ctx, result ->
 }
 
 fun main() {
-    val result = identifierWithPosition.parseAllOrThrow("hello")
+    val result = identifierWithPosition.parseAll("hello").getOrThrow()
     check(result == "hello@0-5")  // Includes position info
 }
 ```
@@ -66,7 +66,7 @@ val word = +"hello"
 val wordWithResult = word.result
 
 fun main() {
-    val result = wordWithResult.parseAllOrThrow("hello")
+    val result = wordWithResult.parseAll("hello").getOrThrow()
     check(result.value == "hello")
     check(result.start == 0)
     check(result.end == 5)
@@ -92,7 +92,7 @@ val numberWithText = number mapEx { ctx, result ->
 }
 
 fun main() {
-    val result = numberWithText.parseAllOrThrow("123")
+    val result = numberWithText.parseAll("123").getOrThrow()
     check(result == "Parsed '123' as 123")  // Matched text extracted
 }
 ```
@@ -118,7 +118,7 @@ val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
 val keywordWithLocation = keyword.withLocation()
 
 fun main() {
-    val result = keywordWithLocation.parseAllOrThrow("hello")
+    val result = keywordWithLocation.parseAll("hello").getOrThrow()
     check(result.value == "hello" && result.line == 1 && result.column == 1)
 }
 ```
@@ -145,7 +145,7 @@ fun main() {
     val wordWithPos = word.withPos()
     
     // Parse tracks position in input
-    val result = wordWithPos.parseAllOrThrow("hello")
+    val result = wordWithPos.parseAll("hello").getOrThrow()
     check(result == Token("hello", 1, 1))
 }
 ```
@@ -166,11 +166,11 @@ fun main() {
         val exception = result.exceptionOrNull() as? ParseException
         
         return if (exception != null) {
-            val pos = exception.context.errorPosition
+            val pos = exception.context.errorPosition ?: 0
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-            val expected = exception.context.suggestedParsers.mapNotNull { it.name }
+            val expected = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
             
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"

@@ -10,7 +10,7 @@ class ParserUtilityTest {
 
     @Test
     fun parseResultTextNormalizesNewlines() {
-        val context = ParseContext("line1\r\nline2", useMemoization = true)
+        val context = DefaultParseContext("line1\r\nline2")
         val parser = +"line1\r\nline2"
 
         val result = parser.parseOrNull(context, 0)

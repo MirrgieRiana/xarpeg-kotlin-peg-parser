@@ -1,5 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
+import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.parseAll
@@ -27,7 +28,7 @@ class NamedParserTest {
     @Test
     fun namedParserFailsOnMismatch() {
         val parser = +'a' named "letter_a"
-        val context = ParseContext("b", useMemoization = true)
+        val context = DefaultParseContext("b")
         val result = parser.parseOrNull(context, 0)
         assertNull(result)
     }
@@ -107,7 +108,7 @@ class NamedParserTest {
     @Test
     fun namedParserWithLookAhead() {
         val parser = (+'a' named "letter_a").lookAhead
-        val context = ParseContext("a", useMemoization = true)
+        val context = DefaultParseContext("a")
         val result = parser.parseOrNull(context, 0)
         assertNotNull(result)
         assertEquals('a', result.value)
@@ -118,11 +119,11 @@ class NamedParserTest {
     @Test
     fun namedParserWithNegativeLookAhead() {
         val parser = (+'a' named "letter_a").negativeLookAhead
-        val context1 = ParseContext("b", useMemoization = true)
+        val context1 = DefaultParseContext("b")
         val result1 = parser.parseOrNull(context1, 0)
         assertNotNull(result1)
 
-        val context2 = ParseContext("a", useMemoization = true)
+        val context2 = DefaultParseContext("a")
         val result2 = parser.parseOrNull(context2, 0)
         assertNull(result2)
     }
@@ -161,7 +162,7 @@ class NamedParserTest {
         val digit = +Regex("[0-9]") named "digit" map { it.value }
         val identifier = letter * (letter + digit).zeroOrMore
 
-        val context = ParseContext("1abc", useMemoization = true)
+        val context = DefaultParseContext("1abc")
         val result = identifier.parseOrNull(context, 0)
 
         assertNull(result)
@@ -175,11 +176,11 @@ class NamedParserTest {
         val parser = +Regex("[a-z]+") named "word" map { it.value }
 
         // Test with cache enabled
-        val result1 = parser.parseAll("hello", useMemoization = true).getOrThrow()
+        val result1 = parser.parseAll("hello").getOrThrow()
         assertEquals("hello", result1)
 
         // Test with cache disabled
-        val result2 = parser.parseAll("world", useMemoization = false).getOrThrow()
+        val result2 = parser.parseAll("world") { DefaultParseContext(it).also { c -> c.useMemoization = false } }.getOrThrow()
         assertEquals("world", result2)
     }
 
@@ -213,7 +214,7 @@ class NamedParserTest {
 
         // Try to parse with input that doesn't match
         // Important: Call through context.parseOrNull to get proper named parser handling
-        val context = ParseContext("c", useMemoization = true)
+        val context = DefaultParseContext("c")
         val result = context.parseOrNull(composite, 0)
 
         // The parse should fail
@@ -239,7 +240,7 @@ class NamedParserTest {
         val composite = parserA * parserB
 
         // Try to parse with input that doesn't match
-        val context = ParseContext("c", useMemoization = true)
+        val context = DefaultParseContext("c")
         val result = composite.parseOrNull(context, 0)
 
         // The parse should fail
@@ -271,7 +272,7 @@ class NamedParserTest {
         val visibleParser = +'b' named "letter_b"
         val combined = hiddenParser + visibleParser
 
-        val context = ParseContext("c", useMemoization = true)
+        val context = DefaultParseContext("c")
         val result = combined.parseOrNull(context, 0)
 
         // The parse should fail
@@ -312,7 +313,7 @@ class NamedParserTest {
         // Grammar that expects letter or digit, with optional whitespace before
         val token = whitespace * (letter + digit)
 
-        val context = ParseContext("!", useMemoization = true)
+        val context = DefaultParseContext("!")
         val result = token.parseOrNull(context, 0)
 
         assertNull(result)
