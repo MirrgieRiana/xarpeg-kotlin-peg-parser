@@ -21,7 +21,7 @@ val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
 fun main() {
-    val result = kv.parseAllOrThrow("count=42")
+    val result = kv.parseAll("count=42").getOrThrow()
     check(result == ("count" to 42))  // Verifies result is (count, 42)
 }
 ```
@@ -58,13 +58,13 @@ val kv: Parser<Pair<String, Int>> =
 
 fun main() {
     // Success cases
-    check(kv.parseAllOrThrow("count=42") == ("count" to 42))  // ✓
-    check(kv.parseAllOrThrow("x=100") == ("x" to 100))        // ✓
+    check(kv.parseAll("count=42").getOrThrow() == ("count" to 42))  // ✓
+    check(kv.parseAll("x=100").getOrThrow() == ("x" to 100))        // ✓
     
     // Error cases would throw exceptions:
-    // kv.parseAllOrThrow("=42")        // ✗ ParseException
-    // kv.parseAllOrThrow("count")      // ✗ ParseException
-    // kv.parseAllOrThrow("count=42x")  // ✗ ParseException
+    // kv.parseAll("=42").getOrThrow()        // ✗ ParseException
+    // kv.parseAll("count").getOrThrow()      // ✗ ParseException
+    // kv.parseAll("count=42x").getOrThrow()  // ✗ ParseException
 }
 ```
 
