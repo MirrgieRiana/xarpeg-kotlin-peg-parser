@@ -9,7 +9,7 @@ title: ステップ4 – 実行時の動作
 
 ## 解析メソッド
 
-### `parseAllOrThrow`
+### `parseAll(...).getOrThrow()`
 
 入力全体が消費されることを要求します：
 
@@ -20,9 +20,9 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
-    number.parseAllOrThrow("123")      // ✓ 123を返す
-    // number.parseAllOrThrow("123abc") // ✗ ParseException
-    // number.parseAllOrThrow("abc")    // ✗ ParseException
+    number.parseAll("123").getOrThrow()      // ✓ 123を返す
+    // number.parseAll("123abc").getOrThrow() // ✗ ParseException
+    // number.parseAll("abc").getOrThrow()    // ✗ ParseException
 }
 ```
 
@@ -86,7 +86,7 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     
     check(exception != null)  // 解析失敗
-    check(exception.context.errorPosition > 0)  // エラー位置が追跡される
+    check((exception.context.errorPosition ?: 0) > 0)  // エラー位置が追跡される
     val suggestions = exception.context.suggestedParsers.mapNotNull { it.name }
     check(suggestions.isNotEmpty())  // 提案がある
 }
@@ -107,7 +107,7 @@ val expr = number * operator * number
 fun main() {
     val input = "42*10"
     try {
-        expr.parseAllOrThrow(input)
+        expr.parseAll(input).getOrThrow()
     } catch (exception: ParseException) {
         val message = exception.formatMessage()
         val lines = message.lines()
@@ -141,7 +141,7 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // メモ化有効（デフォルト）
-    parser.parseAllOrThrow("hello", useMemoization = true)
+    parser.parseAll("hello", useMemoization = true).getOrThrow()
 }
 ```
 
@@ -158,7 +158,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAllOrThrow("hello", useMemoization = false)
+    parser.parseAll("hello", useMemoization = false).getOrThrow()
 }
 ```
 
@@ -181,8 +181,8 @@ val divisionByZero = +Regex("[0-9]+") map { value ->
 } named "number"
 
 fun main() {
-    divisionByZero.parseAllOrThrow("10")  // ✓ 10を返す
-    // divisionByZero.parseAllOrThrow("0")  // ✗ IllegalStateException
+    divisionByZero.parseAll("10").getOrThrow()  // ✓ 10を返す
+    // divisionByZero.parseAll("0").getOrThrow()  // ✗ IllegalStateException
 }
 ```
 
@@ -222,7 +222,7 @@ val parser = (+Regex("[a-z]+") named "letters").optional * +Regex("[0-9]+") name
 
 fun main() {
     // optionalは失敗するが巻き戻し、数値パーサが成功できる
-    val result = parser.parseAllOrThrow("123")
+    val result = parser.parseAll("123").getOrThrow()
     check(result != null)  // 成功
 }
 ```
@@ -235,7 +235,7 @@ fun main() {
 
 ## 重要なポイント
 
-- **`parseAllOrThrow`** 完全な消費を要求し、失敗時にスロー
+- **`parseAll(...).getOrThrow()`** 完全な消費を要求し、失敗時にスロー
 - **エラーコンテキスト** `errorPosition`と`suggestedParsers`を提供
 - **名前付きパーサ** 割り当てられた名前でエラーメッセージに表示
 - **メモ化** デフォルトで有効；`useMemoization = false`で無効化

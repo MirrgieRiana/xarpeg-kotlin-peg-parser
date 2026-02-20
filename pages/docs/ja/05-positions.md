@@ -27,7 +27,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
 
 fun main() {
-    val result = number.parseAllOrThrow("42")
+    val result = number.parseAll("42").getOrThrow()
     check(result == 42)  // 値だけ、位置情報なし
 }
 ```
@@ -47,7 +47,7 @@ val identifierWithPosition = identifier mapEx { ctx, result ->
 }
 
 fun main() {
-    val result = identifierWithPosition.parseAllOrThrow("hello")
+    val result = identifierWithPosition.parseAll("hello").getOrThrow()
     check(result == "hello@0-5")  // 位置情報を含む
 }
 ```
@@ -66,7 +66,7 @@ val word = +"hello"
 val wordWithResult = word.result
 
 fun main() {
-    val result = wordWithResult.parseAllOrThrow("hello")
+    val result = wordWithResult.parseAll("hello").getOrThrow()
     check(result.value == "hello")
     check(result.start == 0)
     check(result.end == 5)
@@ -92,7 +92,7 @@ val numberWithText = number mapEx { ctx, result ->
 }
 
 fun main() {
-    val result = numberWithText.parseAllOrThrow("123")
+    val result = numberWithText.parseAll("123").getOrThrow()
     check(result == "Parsed '123' as 123")  // マッチしたテキストが抽出される
 }
 ```
@@ -118,7 +118,7 @@ val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
 val keywordWithLocation = keyword.withLocation()
 
 fun main() {
-    val result = keywordWithLocation.parseAllOrThrow("hello")
+    val result = keywordWithLocation.parseAll("hello").getOrThrow()
     check(result.value == "hello" && result.line == 1 && result.column == 1)
 }
 ```
@@ -145,7 +145,7 @@ fun main() {
     val wordWithPos = word.withPos()
     
     // 解析は入力内の位置を追跡
-    val result = wordWithPos.parseAllOrThrow("hello")
+    val result = wordWithPos.parseAll("hello").getOrThrow()
     check(result == Token("hello", 1, 1))
 }
 ```

@@ -68,10 +68,10 @@ val templateStringParser: Parser<String> = object {
 }.root
 
 fun main() {
-    check(templateStringParser.parseAllOrThrow(""""hello"""") == "hello")
-    check(templateStringParser.parseAllOrThrow(""""result: $(1+2)"""") == "result: 3")
-    check(templateStringParser.parseAllOrThrow(""""$(2*(3+4)) = answer"""") == "14 = answer")
-    check(templateStringParser.parseAllOrThrow(""""a$(1)b$(2)c$(3)d"""") == "a1b2c3d")
+    check(templateStringParser.parseAll(""""hello"""").getOrThrow() == "hello")
+    check(templateStringParser.parseAll(""""result: $(1+2).getOrThrow()"""") == "result: 3")
+    check(templateStringParser.parseAll(""""$(2*(3+4).getOrThrow()) = answer"""") == "14 = answer")
+    check(templateStringParser.parseAll(""""a$(1).getOrThrow()b$(2)c$(3)d"""") == "a1b2c3d")
 }
 ```
 
@@ -142,7 +142,7 @@ object TemplateWithNestedStrings {
 }
 
 fun main() {
-    TemplateWithNestedStrings.templateString.parseAllOrThrow("\"nested $(1+2)\"")
+    TemplateWithNestedStrings.templateString.parseAll("\"nested $(1+2).getOrThrow()\"")
 }
 ```
 

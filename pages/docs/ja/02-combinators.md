@@ -20,8 +20,8 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val keyword = (+"if" + +"while" + +"for") named "keyword"
 
 fun main() {
-    keyword.parseAllOrThrow("if")      // ✓ "if"にマッチ
-    keyword.parseAllOrThrow("while")   // ✓ "while"にマッチ
+    keyword.parseAll("if").getOrThrow()      // ✓ "if"にマッチ
+    keyword.parseAll("while").getOrThrow()   // ✓ "while"にマッチ
 }
 ```
 
@@ -41,8 +41,8 @@ val signedInt = signOpt * unsigned map { (s, value) ->
 }
 
 fun main() {
-    check(signedInt.parseAllOrThrow("-42") == -42)
-    check(signedInt.parseAllOrThrow("99") == 99)
+    check(signedInt.parseAll("-42").getOrThrow() == -42)
+    check(signedInt.parseAll("99").getOrThrow() == 99)
 }
 ```
 
@@ -63,11 +63,11 @@ val combined = optA * optB
 fun main() {
     // 結果の型は Tuple2<Char?, Char?> （フラット化）
     // Tuple2<Tuple1<Char?>, Tuple1<Char?>> （ネスト）ではない
-    val result1 = combined.parseAllOrThrow("ab")
+    val result1 = combined.parseAll("ab").getOrThrow()
     check(result1.a == 'a')  // nullable Charに直接アクセス
     check(result1.b == 'b')
     
-    val result2 = combined.parseAllOrThrow("a")
+    val result2 = combined.parseAll("a").getOrThrow()
     check(result2.a == 'a')
     check(result2.b == null)  // 欠落したoptionalはnull
 }
@@ -92,9 +92,9 @@ val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map {
 }
 
 fun main() {
-    digits.parseAllOrThrow("123")    // => "123"
-    letters.parseAllOrThrow("abc")   // => ["a", "b", "c"]
-    letters.parseAllOrThrow("")      // => []
+    digits.parseAll("123").getOrThrow()    // => "123"
+    letters.parseAll("abc").getOrThrow()   // => ["a", "b", "c"]
+    letters.parseAll("").getOrThrow()      // => []
 }
 ```
 
@@ -117,8 +117,8 @@ val noun = +"fox" + +"dog"
 val phrase = serial(article, +" ", adjective, +" ", noun)
 
 fun main() {
-    check(phrase.parseAllOrThrow("the quick fox") == listOf("the", " ", "quick", " ", "fox"))
-    check(phrase.parseAllOrThrow("a lazy dog") == listOf("a", " ", "lazy", " ", "dog"))
+    check(phrase.parseAll("the quick fox").getOrThrow() == listOf("the", " ", "quick", " ", "fox"))
+    check(phrase.parseAll("a lazy dog").getOrThrow() == listOf("a", " ", "lazy", " ", "dog"))
 }
 ```
 
@@ -145,7 +145,7 @@ val withDelimiters = +'(' * word * +')'
 val cleanResult = -'(' * word * -')' map { it.value }
 
 fun main() {
-    cleanResult.parseAllOrThrow("(hello)")  // => "hello"
+    cleanResult.parseAll("(hello).getOrThrow()")  // => "hello"
 }
 ```
 
@@ -162,7 +162,7 @@ val pair = wordPart * -',' * numPart map { (word, num) ->
 }
 
 fun main() {
-    pair.parseAllOrThrow("hello,42")  // => ("hello", 42)
+    pair.parseAll("hello,42").getOrThrow()  // => ("hello", 42)
 }
 ```
 
@@ -178,12 +178,12 @@ val word = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // 入力の開始でマッチ
-    val atStart = (startOfInput * word).parseAllOrThrow("hello")
+    val atStart = (startOfInput * word).parseAll("hello").getOrThrow()
     check(atStart == "hello")  // 成功
 }
 ```
 
-**注意：** `parseAllOrThrow`を使用する場合、境界チェックは冗長です—入力全体が消費されることをすでに検証しています。これらのパーサは`parseOrNull`またはサブ文法内で使用してください。
+**注意：** `parseAll(...).getOrThrow()`を使用する場合、境界チェックは冗長です—入力全体が消費されることをすでに検証しています。これらのパーサは`parseOrNull`またはサブ文法内で使用してください。
 
 ## パーサへの名前付け
 
