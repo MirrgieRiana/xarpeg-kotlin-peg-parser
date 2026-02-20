@@ -34,7 +34,7 @@ fun main() {
 
 ## `mapEx`による位置へのアクセス
 
-位置情報が必要な場合は`mapEx`を使用します。`ParseContext`と完全な`ParseResult`を受け取ります：
+位置情報が必要な場合は`mapEx`を使用します。`DefaultParseContext`と完全な`ParseResult`を受け取ります：
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -170,7 +170,7 @@ fun main() {
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-            val expected = exception.context.suggestedParsers.mapNotNull { it.name }
+            val expected = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name }
             
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"

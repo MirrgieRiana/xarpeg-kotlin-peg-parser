@@ -226,12 +226,12 @@ fun main() {
     
     val result1 = namedComposite.parseAll("c")
     val exception1 = result1.exceptionOrNull() as? ParseException
-    val names1 = exception1?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    val names1 = exception1?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()
     check(names1.contains("ab_sequence"))
     
     val result2 = unnamedComposite.parseAll("c")
     val exception2 = result2.exceptionOrNull() as? ParseException
-    val names2 = exception2?.context?.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    val names2 = exception2?.context?.suggestedParsers.orEmpty().mapNotNull { it.name } ?: emptyList()
     check(names2.contains("letter_a"))
 }
 ```
@@ -259,7 +259,7 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     check(exception != null)
 
-    val suggestions = exception.context.suggestedParsers.mapNotNull { it.name?.ifEmpty { null } }
+    val suggestions = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name?.ifEmpty { null } }
     // 意味のあるパーサを含むが、非表示の空白は含まない
     check(suggestions.contains("operator") || suggestions.contains("number"))
     check(!suggestions.contains(""))
