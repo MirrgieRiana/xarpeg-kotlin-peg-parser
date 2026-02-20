@@ -24,9 +24,14 @@ data class ParseResult<out T : Any>(val value: T, val start: Int, val end: Int)
 fun ParseResult<*>.text(context: ParseContext) = context.src.substring(this.start, this.end).normalize()
 
 
-open class ParseException(val context: ParseContext, val position: Int) : Exception(run {
-    val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(position)
-    "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+open class ParseException(val context: ParseContext) : Exception(run {
+    val errorPosition = context.errorPosition
+    if (errorPosition != null) {
+        val matrixPosition = context.matrixPositionCalculator.getMatrixPosition(errorPosition)
+        "Syntax Error at ${matrixPosition.row}:${matrixPosition.column}"
+    } else {
+        "Syntax Error"
+    }
 })
 
 /**
@@ -35,9 +40,17 @@ open class ParseException(val context: ParseContext, val position: Int) : Except
  */
 fun ParseException.formatMessage() = context.matrixPositionCalculator.formatMessage(this, 80)
 
-fun <T : Any> Parser<T>.parseAll(src: String, useMemoization: Boolean = true): Result<T> {
-    val context = ParseContext(src, useMemoization)
-    val result = context.parseOrNull(this, 0) ?: return Result.failure(ParseException(context, context.errorPosition))
-    context.parseOrNull(endOfInput, result.end) ?: return Result.failure(ParseException(context, context.errorPosition))
+
+fun <T : Any> Parser<T>.parseAll(
+    src: String,
+): Result<T> = this.parseAll(src) { DefaultParseContext(src) }
+
+fun <T : Any, C : ParseContext> Parser<T>.parseAll(
+    src: String,
+    contextFactory: (String) -> C,
+): Result<T> {
+    val context = contextFactory(src)
+    val result = context.parseOrNull(this, 0) ?: return Result.failure(ParseException(context))
+    context.parseOrNull(endOfInput, result.end) ?: return Result.failure(ParseException(context))
     return Result.success(result.value)
 }

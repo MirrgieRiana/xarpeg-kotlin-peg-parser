@@ -3,18 +3,51 @@ package io.github.mirrgieriana.xarpeg
 import io.github.mirrgieriana.xarpeg.internal.escapeDoubleQuote
 import io.github.mirrgieriana.xarpeg.internal.truncateWithCaret
 
-class ParseContext(val src: String, val useMemoization: Boolean) {
+interface ParseContext {
+    val src: String
+    fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>?
+}
 
+interface MemoizationParseContext {
+    var useMemoization: Boolean
+}
+
+interface MatrixPositionCalculatorHolderParseContext {
+    val matrixPositionCalculator: MatrixPositionCalculator
+}
+
+val ParseContext.matrixPositionCalculator get() = (this as? MatrixPositionCalculatorHolderParseContext)?.matrixPositionCalculator ?: MatrixPositionCalculator(src)
+
+interface LookAheadHolderParseContext {
+    var isInLookAhead: Boolean
+}
+
+interface SuggestingParseContext {
+    val errorPosition: Int
+    val suggestedParsers: Set<Parser<*>>
+}
+
+val ParseContext.errorPosition get() = (this as? SuggestingParseContext)?.errorPosition
+val ParseContext.suggestedParsers get() = (this as? SuggestingParseContext)?.suggestedParsers
+
+open class DefaultParseContext(override val src: String) :
+    ParseContext,
+    MemoizationParseContext,
+    MatrixPositionCalculatorHolderParseContext,
+    LookAheadHolderParseContext,
+    SuggestingParseContext {
+
+    override var useMemoization: Boolean = true
     private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
 
-    var isInNamedParser = false
-    var isInLookAhead = false
-    var errorPosition: Int = 0
-    val suggestedParsers = mutableSetOf<Parser<*>>()
+    private var isInNamedParser = false
+    override var isInLookAhead = false
+    override var errorPosition: Int = 0
+    override val suggestedParsers = mutableSetOf<Parser<*>>()
 
-    val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
+    override val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
 
-    fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
+    override fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
         fun parse(): ParseResult<T>? {
             return if (!isInNamedParser && parser.name != null) {
                 isInNamedParser = true
@@ -104,17 +137,22 @@ class MatrixPositionCalculator(val src: String) {
  * @return A formatted error message with context
  */
 fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
+    val suggestingParseContext = exception.context as? SuggestingParseContext
     val sb = StringBuilder()
-    val matrixPosition = this.getMatrixPosition(exception.position)
 
 
     // Build error message header with position
-    sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    if (suggestingParseContext != null) {
+        val matrixPosition = this.getMatrixPosition(suggestingParseContext.errorPosition)
+        sb.append("Syntax Error at ${matrixPosition.row}:${matrixPosition.column}")
+    } else {
+        sb.append("Syntax Error")
+    }
 
 
     // Add expected parsers
-    if (exception.context is SuggestingParseContext) {
-        val candidates = exception.context.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
+    if (suggestingParseContext != null) {
+        val candidates = suggestingParseContext.suggestedParsers.mapNotNull { it.name!!.ifEmpty { null } }.distinct()
         if (candidates.isNotEmpty()) {
             sb.append("\nExpect: ${candidates.joinToString(", ")}")
         } else {
@@ -124,30 +162,34 @@ fun MatrixPositionCalculator.formatMessage(exception: ParseException, maxLineLen
 
 
     // Add actual character
-    val actualChar = exception.context.src.getOrNull(exception.position)
-    if (actualChar != null) {
-        sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
-    } else {
-        sb.append("\nActual: EOF")
+    if (suggestingParseContext != null) {
+        val actualChar = exception.context.src.getOrNull(suggestingParseContext.errorPosition)
+        if (actualChar != null) {
+            sb.append("\nActual: \"${actualChar.toString().escapeDoubleQuote()}\"")
+        } else {
+            sb.append("\nActual: EOF")
+        }
     }
 
 
     // Add source line and caret
-    val lineIndex = matrixPosition.row - 1
-    val lineRange = this.getLineRange(lineIndex + 1)
-    val lineStartIndex = lineRange.start
-    val line = this.src.substring(lineStartIndex, lineRange.endInclusive + 1)
+    if (suggestingParseContext != null) {
+        val lineIndex = this.getMatrixPosition(suggestingParseContext.errorPosition).row - 1
+        val lineRange = this.getLineRange(lineIndex + 1)
+        val lineStartIndex = lineRange.start
+        val line = this.src.substring(lineStartIndex, lineRange.endInclusive + 1)
 
-    val caretPosition = (exception.position - lineStartIndex).coerceAtMost(line.length)
-    val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
+        val caretPosition = (suggestingParseContext.errorPosition - lineStartIndex).coerceAtMost(line.length)
+        val (displayLine, displayCaretPos) = line.truncateWithCaret(maxLineLength, caretPosition)
 
-    sb.append("\n")
+        sb.append("\n")
 
-    sb.append(displayLine)
-    sb.append("\n")
+        sb.append(displayLine)
+        sb.append("\n")
 
-    sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
-    sb.append("^")
+        sb.append(" ".repeat(displayCaretPos.coerceAtLeast(0)))
+        sb.append("^")
+    }
 
 
     return sb.toString()
