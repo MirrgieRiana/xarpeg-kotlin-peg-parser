@@ -34,7 +34,7 @@ val expr: Parser<Int> = object {
 }.root
 
 fun main() {
-    check(expr.parseAll("2*(3+4).getOrThrow()") == 14)
+    check(expr.parseAll("2*(3+4)").getOrThrow() == 14)
     check(expr.parseAll("5+3*2").getOrThrow() == 11)
 }
 ```

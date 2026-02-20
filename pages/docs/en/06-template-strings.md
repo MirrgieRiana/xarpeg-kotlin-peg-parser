@@ -69,9 +69,9 @@ val templateStringParser: Parser<String> = object {
 
 fun main() {
     check(templateStringParser.parseAll(""""hello"""").getOrThrow() == "hello")
-    check(templateStringParser.parseAll(""""result: $(1+2).getOrThrow()"""") == "result: 3")
-    check(templateStringParser.parseAll(""""$(2*(3+4).getOrThrow()) = answer"""") == "14 = answer")
-    check(templateStringParser.parseAll(""""a$(1).getOrThrow()b$(2)c$(3)d"""") == "a1b2c3d")
+    check(templateStringParser.parseAll(""""result: $(1+2)"""").getOrThrow() == "result: 3")
+    check(templateStringParser.parseAll(""""$(2*(3+4)) = answer"""").getOrThrow() == "14 = answer")
+    check(templateStringParser.parseAll(""""a$(1)b$(2)c$(3)d"""").getOrThrow() == "a1b2c3d")
 }
 ```
 

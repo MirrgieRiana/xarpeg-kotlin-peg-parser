@@ -166,11 +166,11 @@ fun main() {
         val exception = result.exceptionOrNull() as? ParseException
         
         return if (exception != null) {
-            val pos = exception.context.errorPosition
+            val pos = exception.context.errorPosition ?: 0
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-            val expected = exception.context.suggestedParsers.mapNotNull { it.name }
+            val expected = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name }
             
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"
