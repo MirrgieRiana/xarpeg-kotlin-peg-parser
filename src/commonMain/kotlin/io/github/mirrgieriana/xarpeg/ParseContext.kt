@@ -65,7 +65,7 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
 
 data class MatrixPosition(val row: Int, val column: Int)
 
-class MatrixPositionCalculator(private val src: String) {
+class MatrixPositionCalculator(val src: String) {
     private val lineStartIndices = mutableListOf<Int>()
     private val lineExclusiveEndIndices = mutableListOf<Int>()
 
@@ -78,6 +78,12 @@ class MatrixPositionCalculator(private val src: String) {
             result = result.next()
         }
         lineExclusiveEndIndices += src.length
+    }
+
+    fun getLineRange(lineNumber: Int): IntRange {
+        require(lineNumber in 1..lineStartIndices.size) { "lineNumber ($lineNumber) is out of range (1..${lineStartIndices.size})" }
+        val lineIndex = lineNumber - 1
+        return lineStartIndices[lineIndex] until lineExclusiveEndIndices[lineIndex]
     }
 
     fun getMatrixPosition(index: Int): MatrixPosition {
