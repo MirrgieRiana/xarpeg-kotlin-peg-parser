@@ -13,8 +13,8 @@ class ParseContext(val src: String, val useMemoization: Boolean) {
     val suggestedParsers = mutableSetOf<Parser<*>>()
 
     private val matrixPositionCalculator by lazy { MatrixPositionCalculator(src) }
-    fun toMatrixPosition(index: Int) = matrixPositionCalculator.toMatrixPosition(index)
-    val errorMatrixPosition get() = toMatrixPosition(errorPosition)
+    fun getMatrixPosition(index: Int) = matrixPositionCalculator.getMatrixPosition(index)
+    val errorMatrixPosition get() = getMatrixPosition(errorPosition)
 
     fun <T : Any> parseOrNull(parser: Parser<T>, start: Int): ParseResult<T>? {
         fun parse(): ParseResult<T>? {
@@ -82,7 +82,7 @@ class MatrixPositionCalculator(private val src: String) {
         lineExclusiveEndIndices += src.length
     }
 
-    fun toMatrixPosition(index: Int): MatrixPosition {
+    fun getMatrixPosition(index: Int): MatrixPosition {
         require(index in 0..src.length) { "index ($index) is out of range for src of length ${src.length}" }
         val lineIndex = lineStartIndices.binarySearch(index).let { if (it >= 0) it else (-it - 1) - 1 }
         val lineStartIndex = lineStartIndices[lineIndex]
@@ -105,7 +105,7 @@ class MatrixPositionCalculator(private val src: String) {
      */
     fun formatMessage(exception: ParseException, maxLineLength: Int = 80): String {
         val sb = StringBuilder()
-        val matrixPosition = toMatrixPosition(exception.position)
+        val matrixPosition = getMatrixPosition(exception.position)
 
 
         // Build error message header with position
