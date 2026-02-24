@@ -47,16 +47,16 @@ val identifier = letter * (letter + digit).zeroOrMore
 fun main() {
     val result = identifier.parseAll("1abc")
     val exception = result.exceptionOrNull() as? ParseException
-    
+
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0で失敗
-    
+
     val expected = exception.context.suggestedParsers
         ?.mapNotNull { it.name }
         ?.distinct()
         ?.sorted()
         ?.joinToString(", ") ?: ""
-    
+
     check(expected == "letter")  // "letter"が期待される
 }
 ```
@@ -84,7 +84,7 @@ val expr = number * operator * number
 fun main() {
     val result = expr.parseAll("42 + 10")
     val exception = result.exceptionOrNull() as? ParseException
-    
+
     check(exception != null)  // 解析失敗
     check((exception.context.errorPosition ?: 0) > 0)  // エラー位置が追跡される
     val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
@@ -141,7 +141,7 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // メモ化有効（デフォルト）
-    parser.parseAll("hello") { ctx -> 
+    parser.parseAll("hello") { ctx ->
         DefaultParseContext(ctx).apply { useMemoization = true }
     }.getOrThrow()
 }
@@ -160,7 +160,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAll("hello") { ctx -> 
+    parser.parseAll("hello") { ctx ->
         DefaultParseContext(ctx).apply { useMemoization = false }
     }.getOrThrow()
 }
@@ -207,7 +207,7 @@ val parser = +Regex("[a-z]+") named "word"
 fun main() {
     val result = parser.parseAll("123")
     val exception = result.exceptionOrNull() as? ParseException
-    
+
     check(exception != null)  // 解析失敗
     check(exception.context.errorPosition == 0)  // 位置0でエラー
     check(exception.context.suggestedParsers?.any { it.name == "word" } ?: false)  // "word"を提案
@@ -255,15 +255,15 @@ fun main() {
         src: String,
     ) : DefaultParseContext(src) {
         private val indentStack = mutableListOf(0)
-        
+
         val currentIndent: Int get() = indentStack.last()
         val isInIndentBlock: Boolean get() = indentStack.size > 1
-        
+
         fun pushIndent(indent: Int) {
             require(indent > currentIndent)
             indentStack.add(indent)
         }
-        
+
         fun popIndent() {
             require(indentStack.size > 1)
             indentStack.removeLast()
