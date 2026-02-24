@@ -28,7 +28,7 @@ class ErrorContextTest {
     fun errorPositionTracksFailurePoint() {
         // When parsing fails, errorPosition tells you where the parser was attempted
         val parser = +"hello"
-        val context = ParseContext("help", useMemoization = true)
+        val context = DefaultParseContext("help")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -40,7 +40,7 @@ class ErrorContextTest {
     fun errorPositionWithSimpleChoice() {
         // With choice operators, errorPosition shows where parsing was attempted
         val parser = (+"hello" + +"world")
-        val context = ParseContext("help", useMemoization = true)
+        val context = DefaultParseContext("help")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -56,12 +56,12 @@ class ErrorContextTest {
         val world = +"world"
         val parser = hello * space * world
 
-        val context = ParseContext("hello world!", useMemoization = true)
+        val context = DefaultParseContext("hello world!")
         // Note: This will succeed
         assertNotNull(parser.parseOrNull(context, 0))
 
         // Now test a failing case - sequence succeeds up to "hello " then fails
-        val context2 = ParseContext("hello goodbye", useMemoization = true)
+        val context2 = DefaultParseContext("hello goodbye")
         val result2 = parser.parseOrNull(context2, 0)
         assertNull(result2)
         // "world" was attempted at position 6 (after "hello ") and failed
@@ -75,7 +75,7 @@ class ErrorContextTest {
         val digit = +Regex("[0-9]") named "digit" map { it.value }
         val parser = letter + digit
 
-        val context = ParseContext("@invalid", useMemoization = true)
+        val context = DefaultParseContext("@invalid")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -93,7 +93,7 @@ class ErrorContextTest {
         val underscore = +'_' named "underscore"
         val parser = letter + digit + underscore
 
-        val context = ParseContext("@invalid", useMemoization = true)
+        val context = DefaultParseContext("@invalid")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -113,16 +113,16 @@ class ErrorContextTest {
         val world = +"world" named "world"
         val parser = hello * space * world
 
-        val context = ParseContext("hello test", useMemoization = true)
+        val context = DefaultParseContext("hello test")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
         // Parsing succeeded up to "hello ", then "world" was attempted at position 6
         assertEquals(6, context.errorPosition)
         // Only "world" should be in suggestions since it failed at the furthest position
-        assertTrue(context.suggestedParsers.any { it.name == "world" })
+        assertTrue(context.suggestedParsers?.any { it.name == "world" } == true)
         // "hello" should not be in suggestions since it succeeded
-        assertTrue(context.suggestedParsers.none { it.name == "hello" })
+        assertTrue(context.suggestedParsers?.none { it.name == "hello" } == true)
     }
 
     @Test
@@ -132,13 +132,13 @@ class ErrorContextTest {
         val letterOrDigit = +Regex("[a-zA-Z0-9]") named "letter_or_digit" map { it.value }
         val identifier = letter * letterOrDigit.zeroOrMore
 
-        val context = ParseContext("123abc", useMemoization = true)
+        val context = DefaultParseContext("123abc")
         val result = identifier.parseOrNull(context, 0)
 
         assertNull(result)
         assertEquals(0, context.errorPosition)
         // Should suggest "letter" at the start
-        assertTrue(context.suggestedParsers.any { it.name == "letter" })
+        assertTrue(context.suggestedParsers?.any { it.name == "letter" } == true)
     }
 
     @Test
@@ -154,14 +154,14 @@ class ErrorContextTest {
         val complex = lparen * number * plus * number * rparen map { it.b }
         val expr = simple + complex
 
-        val context = ParseContext("(42+", useMemoization = true)
+        val context = DefaultParseContext("(42+")
         val result = expr.parseOrNull(context, 0)
 
         assertNull(result)
         // Should fail after "(42+"
         assertEquals(4, context.errorPosition)
         // Should suggest "number" at position 4
-        assertTrue(context.suggestedParsers.any { it.name == "number" })
+        assertTrue(context.suggestedParsers?.any { it.name == "number" } == true)
     }
 
     @Test
@@ -171,7 +171,7 @@ class ErrorContextTest {
         val digit = +Regex("[0-9]") named "digit" map { it.value }
         val parser = letter * digit
 
-        val context = ParseContext("a@", useMemoization = true)
+        val context = DefaultParseContext("a@")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
@@ -186,7 +186,7 @@ class ErrorContextTest {
 
     @Test
     fun errorContextWithParseException() {
-        // When using parseAllOrThrow, you can catch the exception and inspect its context
+        // When using parseAll(...).getOrThrow(), you can catch the exception and inspect its context
         val letter = +Regex("[a-z]") named "letter" map { it.value }
         val parser = letter
 
@@ -197,9 +197,9 @@ class ErrorContextTest {
         // Exception contains the context with error information
         assertEquals(0, exception.context.errorPosition)
         // suggestedParsers should contain parsers that failed
-        assertTrue(exception.context.suggestedParsers.isNotEmpty())
-        assertTrue(exception.context.suggestedParsers.any { it.name == "letter" })
-        assertEquals(0, exception.position)
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "letter" } == true)
+        assertEquals(0, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -213,22 +213,22 @@ class ErrorContextTest {
 
         // Exception contains the context
         // Position points to errorPosition (where EOF was expected after "hello")
-        assertEquals(5, exception.position)
+        assertEquals(5, exception.context.errorPosition ?: 0)
         // suggestedParsers should contain "EOF"
-        assertTrue(exception.context.suggestedParsers.any { it.name == "EOF" })
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "EOF" } == true)
     }
 
     @Test
     fun errorContextWithUnnamedParsers() {
         // Even without named parsers, errorPosition is tracked
         val parser = +"hello" * +"world"
-        val context = ParseContext("hellotest", useMemoization = true)
+        val context = DefaultParseContext("hellotest")
         val result = parser.parseOrNull(context, 0)
 
         assertNull(result)
         assertEquals(5, context.errorPosition)
         // suggestedParsers will contain unnamed parsers
-        assertTrue(context.suggestedParsers.isNotEmpty())
+        assertTrue(context.suggestedParsers?.isNotEmpty() == true)
     }
 
     @Test
@@ -240,12 +240,12 @@ class ErrorContextTest {
         // Test with partial match advancing error position
         val parser = hello * +' ' * world
 
-        val context1 = ParseContext("hello test", useMemoization = true)
+        val context1 = DefaultParseContext("hello test")
         parser.parseOrNull(context1, 0)
         // Failed at position 6 (after "hello ")
         assertEquals(6, context1.errorPosition)
 
-        val context2 = ParseContext("goodbye", useMemoization = true)
+        val context2 = DefaultParseContext("goodbye")
         parser.parseOrNull(context2, 0)
         // Failed at position 0 (first parser didn't match)
         assertEquals(0, context2.errorPosition)
@@ -382,7 +382,7 @@ class ErrorContextTest {
         val lines = message.lines()
 
         // Should have suggested parsers and Expect line
-        assertTrue(exception.context.suggestedParsers.isNotEmpty())
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
         val expectLine = lines.find { it.startsWith("Expect:") }
         assertNotNull(expectLine)
         assertTrue(expectLine.contains("test"))
@@ -410,7 +410,7 @@ class ErrorContextTest {
 
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
-        val suggestions = context.suggestedParsers
+        val suggestions = context.suggestedParsers.orEmpty()
             .mapNotNull { it.name }
             .distinct()
             .sorted()
