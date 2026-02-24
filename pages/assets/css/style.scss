@@ -274,19 +274,19 @@ tr:hover {
   .page-header {
     padding: 2rem 1rem;
   }
-  
+
   .project-name {
     font-size: 2rem;
   }
-  
+
   h1 {
     font-size: 2rem;
   }
-  
+
   h2 {
     font-size: 1.5rem;
   }
-  
+
   .main-content {
     padding: 1rem;
   }
@@ -395,11 +395,11 @@ nav a:contains("Previous"):hover::before {
   .page-header, nav, footer {
     display: none;
   }
-  
+
   body {
     color: black;
   }
-  
+
   a {
     text-decoration: underline;
   }
@@ -416,20 +416,20 @@ nav a:contains("Previous"):hover::before {
     --link-color: #cf7b00;
     --link-hover: #d28400;
   }
-  
+
   body {
     background: #0f0b08;
     color: var(--text-color);
   }
-  
+
   .feature-item, .doc-nav-item {
     background: #18110c;
   }
-  
+
   pre {
     background: var(--code-bg);
   }
-  
+
   code {
     background: var(--code-bg);
     color: #f2c58b;
