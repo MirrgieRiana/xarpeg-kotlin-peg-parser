@@ -16,4 +16,4 @@ jobs:
 
       - name: Install Xarpite
         run: |
-          curl https://mirrgieriana.github.io/xarpite/install-native.sh | (cd /usr/lib; sudo bash)
+          curl -s https://mirrgieriana.github.io/xarpite/install.sh | sudo bash -s /usr/local/lib/xarpite /usr/local/bin
