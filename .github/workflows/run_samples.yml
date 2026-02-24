@@ -35,10 +35,10 @@ jobs:
         # Run the sample using java command directly
         OUTPUT=$(java -cp "build/install/minimal-jvm-sample/lib/*" mirrg.xarpite.samples.java_run.MainKt)
         echo "Sample output: $OUTPUT"
-        
+
         # Expected output
         EXPECTED="2*(3+4)+5 = 19"
-        
+
         # Verify the output matches expected
         if [ "$OUTPUT" = "$EXPECTED" ]; then
           echo "✓ Output matches expected: $EXPECTED"
