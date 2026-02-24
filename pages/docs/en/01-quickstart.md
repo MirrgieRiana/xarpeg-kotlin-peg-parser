@@ -45,7 +45,7 @@ fun main() {
 
 ## Running the Parser
 
-`parseAllOrThrow` requires the entire input to be consumed:
+`parseAll(...).getOrThrow()` requires the entire input to be consumed:
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -78,7 +78,7 @@ fun main() {
 - **Unary `-`** matches but drops values from results
 - **`map`** transforms parsed values to your domain types
 - **`named`** improves error messages
-- **`parseAllOrThrow`** parses complete input or throws exceptions
+- **`parseAll(...).getOrThrow()`** parses complete input or throws exceptions
 
 ## Best Practices
 

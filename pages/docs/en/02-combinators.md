@@ -183,7 +183,7 @@ fun main() {
 }
 ```
 
-**Note:** When using `parseAllOrThrow`, boundary checks are redundant—it already verifies the entire input is consumed. Use these parsers with `parseOrNull` or within sub-grammars.
+**Note:** When using `parseAll(...).getOrThrow()`, boundary checks are redundant—it already verifies the entire input is consumed. Use these parsers with `parseOrNull` or within sub-grammars.
 
 ## Naming Parsers
 

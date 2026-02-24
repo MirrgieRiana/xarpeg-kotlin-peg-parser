@@ -45,7 +45,7 @@ fun main() {
 
 ## パーサの実行
 
-`parseAllOrThrow`は、入力全体が消費されることを要求します：
+`parseAll(...).getOrThrow()`は、入力全体が消費されることを要求します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -78,7 +78,7 @@ fun main() {
 - **単項`-`** 値にマッチするが結果からドロップ
 - **`map`** 解析された値をドメイン型に変換
 - **`named`** エラーメッセージを改善
-- **`parseAllOrThrow`** 完全な入力を解析するか、例外をスロー
+- **`parseAll(...).getOrThrow()`** 完全な入力を解析するか、例外をスロー
 
 ## ベストプラクティス
 

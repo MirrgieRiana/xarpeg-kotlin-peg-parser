@@ -118,7 +118,7 @@ Interactive browser-based parser that demonstrates:
 
 ### Parsing Methods
 
-- **`parseAllOrThrow(input)`** - Parse entire input or throw exception
+- **`parseAll(input).getOrThrow()`** - Parse entire input or throw exception
 - **`parseOrNull(context, start)`** - Attempt parse at position; return `ParseResult<T>?`
 
 ### Error Handling
