@@ -77,10 +77,10 @@ jobs:
         # Run the sample using java command directly
         OUTPUT=$(java -cp "build/install/minimal-jvm-sample/lib/*" io.github.mirrgieriana.xarpeg.samples.java_run.MainKt)
         echo "Sample output: $OUTPUT"
-        
+
         # Expected output
         EXPECTED="2*(3+4)+5 = 19"
-        
+
         # Verify the output matches expected
         if [ "$OUTPUT" = "$EXPECTED" ]; then
           echo "✓ Output matches expected: $EXPECTED"
@@ -117,10 +117,10 @@ jobs:
         # Run the sample using java command directly
         OUTPUT=$(java -cp "build/install/interpreter/lib/*" io.github.mirrgieriana.xarpeg.samples.interpreter.MainKt -e "2+3*4")
         echo "Sample output: $OUTPUT"
-        
+
         # Expected output
         EXPECTED="14"
-        
+
         # Verify the output matches expected
         if [ "$OUTPUT" = "$EXPECTED" ]; then
           echo "✓ Output matches expected: $EXPECTED"
