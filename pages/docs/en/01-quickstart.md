@@ -45,7 +45,7 @@ fun main() {
 
 ## Running the Parser
 
-`parseAll(...).getOrThrow()` requires the entire input to be consumed:
+Use `parseAll(...).getOrThrow()` to parse and require the entire input to be consumed:
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
