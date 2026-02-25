@@ -9,7 +9,7 @@ title: ステップ4 – 実行時の動作
 
 ## 解析メソッド
 
-### `parseAll().getOrThrow()`
+### `parseAll(...).getOrThrow()`
 
 入力全体が消費されることを要求します：
 
@@ -34,7 +34,7 @@ fun main() {
 
 ## エラーコンテキスト
 
-`ParseContext`は、ユーザーフレンドリーなエラーメッセージを構築するために解析の失敗を追跡します：
+`DefaultParseContext`は、ユーザーフレンドリーなエラーメッセージを構築するために解析の失敗を追跡します：
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -49,13 +49,13 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
 
     check(exception != null)  // 解析失敗
-    check(exception.context.errorPosition == 0)  // 位置0で失敗
+    check((exception.context.errorPosition ?: 0) == 0)  // 位置0で失敗
 
     val expected = exception.context.suggestedParsers
-        ?.mapNotNull { it.name }
-        ?.distinct()
-        ?.sorted()
-        ?.joinToString(", ") ?: ""
+        .mapNotNull { it.name }
+        .distinct()
+        .sorted()
+        .joinToString(", ")
 
     check(expected == "letter")  // "letter"が期待される
 }
@@ -87,7 +87,7 @@ fun main() {
 
     check(exception != null)  // 解析失敗
     check((exception.context.errorPosition ?: 0) > 0)  // エラー位置が追跡される
-    val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    val suggestions = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name }
     check(suggestions.isNotEmpty())  // 提案がある
 }
 ```
@@ -131,7 +131,7 @@ fun main() {
 
 ### デフォルトの動作
 
-`ParseContext`はデフォルトでメモ化を使用して、バックトラッキングを予測可能にします：
+`DefaultParseContext`はデフォルトでメモ化を使用して、バックトラッキングを予測可能にします：
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -141,9 +141,7 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // メモ化有効（デフォルト）
-    parser.parseAll("hello") { ctx ->
-        DefaultParseContext(ctx).apply { useMemoization = true }
-    }.getOrThrow()
+    parser.parseAll("hello").getOrThrow()
 }
 ```
 
@@ -160,9 +158,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAll("hello") { ctx ->
-        DefaultParseContext(ctx).apply { useMemoization = false }
-    }.getOrThrow()
+    parser.parseAll("hello") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
 }
 ```
 
@@ -209,8 +205,8 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
 
     check(exception != null)  // 解析失敗
-    check(exception.context.errorPosition == 0)  // 位置0でエラー
-    check(exception.context.suggestedParsers?.any { it.name == "word" } ?: false)  // "word"を提案
+    check((exception.context.errorPosition ?: 0) == 0)  // 位置0でエラー
+    check(exception.context.suggestedParsers?.any { it.name == "word" })  // "word"を提案
 }
 ```
 
@@ -283,13 +279,12 @@ fun main() {
 
 ## 重要なポイント
 
-- **`parseAll().getOrThrow()`** 完全な消費を要求し、失敗時にスロー
+- **`parseAll(...).getOrThrow()`** 完全な消費を要求し、失敗時にスロー
 - **エラーコンテキスト** `errorPosition`と`suggestedParsers`を提供
 - **名前付きパーサ** 割り当てられた名前でエラーメッセージに表示
 - **メモ化** デフォルトで有効；`useMemoization = false`で無効化
 - **`map`での例外** 伝播して解析を中止
-- **`parseOrNull`** `ParseContext`とともに詳細なデバッグを可能にする
-- **`DefaultParseContext`は拡張可能** カスタム解析要件に対応
+- **`parseOrNull`** `DefaultParseContext`とともに詳細なデバッグを可能にする
 
 ## 次のステップ
 

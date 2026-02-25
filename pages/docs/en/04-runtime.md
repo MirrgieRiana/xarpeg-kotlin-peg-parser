@@ -9,7 +9,7 @@ Understand how parsers handle errors, consume input, and control caching for opt
 
 ## Parsing Methods
 
-### `parseAll().getOrThrow()`
+### `parseAll(...).getOrThrow()`
 
 Requires the entire input to be consumed:
 
@@ -49,13 +49,13 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
 
     check(exception != null)  // Parsing fails
-    check(exception.context.errorPosition == 0)  // Failed at position 0
+    check((exception.context.errorPosition ?: 0) == 0)  // Failed at position 0
 
-    val expected = exception.context.suggestedParsers
-        ?.mapNotNull { it.name }
-        ?.distinct()
-        ?.sorted()
-        ?.joinToString(", ") ?: ""
+    val expected = exception.context.suggestedParsers.orEmpty()
+        .mapNotNull { it.name }
+        .distinct()
+        .sorted()
+        .joinToString(", ")
 
     check(expected == "letter")  // Expected "letter"
 }
@@ -87,7 +87,7 @@ fun main() {
 
     check(exception != null)  // Parsing fails
     check((exception.context.errorPosition ?: 0) > 0)  // Error position tracked
-    val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+    val suggestions = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name }
     check(suggestions.isNotEmpty())  // Has suggestions
 }
 ```
@@ -131,7 +131,7 @@ The `formatMessage` function provides:
 
 ### Default Behavior
 
-`ParseContext` uses memoization by default to make backtracking predictable:
+`DefaultParseContext` uses memoization by default to make backtracking predictable:
 
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
@@ -141,9 +141,7 @@ val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
     // Memoization enabled (default)
-    parser.parseAll("hello") { ctx ->
-        DefaultParseContext(ctx).apply { useMemoization = true }
-    }.getOrThrow()
+    parser.parseAll("hello").getOrThrow()
 }
 ```
 
@@ -160,9 +158,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 val parser = +Regex("[a-z]+") map { it.value } named "word"
 
 fun main() {
-    parser.parseAll("hello") { ctx ->
-        DefaultParseContext(ctx).apply { useMemoization = false }
-    }.getOrThrow()
+    parser.parseAll("hello") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
 }
 ```
 
@@ -209,8 +205,8 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
 
     check(exception != null)  // Parsing fails
-    check(exception.context.errorPosition == 0)  // Error at position 0
-    check(exception.context.suggestedParsers?.any { it.name == "word" } ?: false)  // Suggests "word"
+    check((exception.context.errorPosition ?: 0) == 0)  // Error at position 0
+    check(exception.context.suggestedParsers?.any { it.name == "word" } == true)  // Suggests "word"
 }
 ```
 
@@ -283,10 +279,10 @@ See the [online-parser sample's OnlineParser.kt](https://github.com/MirrgieRiana
 
 ## Key Takeaways
 
-- **`parseAll().getOrThrow()`** requires full consumption, throws on failure
+- **`parseAll(...).getOrThrow()`** requires full consumption, throws on failure
 - **Error context** provides `errorPosition` and `suggestedParsers`
 - **Named parsers** appear in error messages with their assigned names
-- **Memoization** is enabled by default; disable with `useMemoization = false`
+- **Memoization** is enabled by default; disable by providing a custom context factory
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
 - **`DefaultParseContext` is extensible** for custom parsing requirements
