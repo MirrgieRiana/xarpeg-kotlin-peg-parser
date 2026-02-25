@@ -170,7 +170,7 @@ fun main() {
             val prefix = input.substring(0, pos)
             val line = prefix.count { it == '\n' } + 1
             val column = prefix.length - (prefix.lastIndexOf('\n') + 1) + 1
-            val expected = exception.context.suggestedParsers?.mapNotNull { it.name } ?: emptyList()
+            val expected = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name }
 
             Result.failure(Exception(
                 "Syntax error at line $line, column $column. Expected: ${expected.joinToString()}"

@@ -12,8 +12,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import io.github.mirrgieriana.xarpeg.SuggestingParseContext
-import io.github.mirrgieriana.xarpeg.errorPosition
 
 /**
  * Tests demonstrating how to use error context information from ParseContext.
@@ -199,9 +197,9 @@ class ErrorContextTest {
         // Exception contains the context with error information
         assertEquals(0, exception.context.errorPosition)
         // suggestedParsers should contain parsers that failed
-        assertTrue((exception.context as? SuggestingParseContext)?.suggestedParsers?.isNotEmpty() ?: false)
-        assertTrue((exception.context as? SuggestingParseContext)?.suggestedParsers?.any { it.name == "letter" } ?: false)
-        assertEquals(0, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "letter" } == true)
+        assertEquals(0, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -215,9 +213,9 @@ class ErrorContextTest {
 
         // Exception contains the context
         // Position points to errorPosition (where EOF was expected after "hello")
-        assertEquals(5, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
+        assertEquals(5, exception.context.errorPosition ?: 0)
         // suggestedParsers should contain "EOF"
-        assertTrue((exception.context as? SuggestingParseContext)?.suggestedParsers?.any { it.name == "EOF" } ?: false)
+        assertTrue(exception.context.suggestedParsers?.any { it.name == "EOF" } == true)
     }
 
     @Test
@@ -384,7 +382,7 @@ class ErrorContextTest {
         val lines = message.lines()
 
         // Should have suggested parsers and Expect line
-        assertTrue((exception.context as? SuggestingParseContext)?.suggestedParsers?.isNotEmpty() ?: false)
+        assertTrue(exception.context.suggestedParsers?.isNotEmpty() == true)
         val expectLine = lines.find { it.startsWith("Expect:") }
         assertNotNull(expectLine)
         assertTrue(expectLine.contains("test"))
@@ -412,15 +410,16 @@ class ErrorContextTest {
 
     // Helper function to build error messages from context
     private fun buildErrorMessage(context: ParseContext): String {
-        val suggestions = (context as? SuggestingParseContext)?.suggestedParsers?.mapNotNull { it.name }
-            ?.distinct()
-            ?.sorted()
-            ?.joinToString(", ") ?: ""
+        val suggestions = context.suggestedParsers.orEmpty()
+            .mapNotNull { it.name }
+            .distinct()
+            .sorted()
+            .joinToString(", ")
 
         return if (suggestions.isNotEmpty()) {
-            "Failed to parse at position ${(context as? SuggestingParseContext)?.errorPosition ?: 0}. Expected: $suggestions"
+            "Failed to parse at position ${context.errorPosition}. Expected: $suggestions"
         } else {
-            "Failed to parse at position ${(context as? SuggestingParseContext)?.errorPosition ?: 0}."
+            "Failed to parse at position ${context.errorPosition}."
         }
     }
 

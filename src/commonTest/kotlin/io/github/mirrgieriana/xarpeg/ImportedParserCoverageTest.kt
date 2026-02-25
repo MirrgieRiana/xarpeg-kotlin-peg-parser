@@ -18,8 +18,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
-import io.github.mirrgieriana.xarpeg.SuggestingParseContext
-import io.github.mirrgieriana.xarpeg.errorPosition
 
 class ImportedParserCoverageTest {
 
@@ -155,7 +153,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("1+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
+        assertEquals(2, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -165,7 +163,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { add.parseAll("2+").getOrThrow() }
         // errorPosition points to position 2 (after "+"), where the parser attempted to find another number
-        assertEquals(2, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
+        assertEquals(2, exception.context.errorPosition ?: 0)
     }
 
     @Test
@@ -174,7 +172,7 @@ class ImportedParserCoverageTest {
 
         val exception = assertFailsWith<ParseException> { parser.parseAll("").getOrThrow() }
 
-        assertEquals(0, (exception.context as? SuggestingParseContext)?.errorPosition ?: 0)
+        assertEquals(0, exception.context.errorPosition ?: 0)
     }
 
     @Test

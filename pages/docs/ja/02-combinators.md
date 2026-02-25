@@ -259,7 +259,7 @@ fun main() {
     val exception = result.exceptionOrNull() as? ParseException
     check(exception != null)
 
-    val suggestions = exception.context.suggestedParsers?.mapNotNull { it.name?.ifEmpty { null } } ?: emptyList()
+    val suggestions = exception.context.suggestedParsers.orEmpty().mapNotNull { it.name?.ifEmpty { null } }
     // 意味のあるパーサを含むが、非表示の空白は含まない
     check(suggestions.contains("operator") || suggestions.contains("number"))
     check(!suggestions.contains(""))
