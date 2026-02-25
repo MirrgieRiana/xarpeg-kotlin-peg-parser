@@ -1,6 +1,5 @@
 package io.github.mirrgieriana.xarpeg
 
-import io.github.mirrgieriana.xarpeg.DefaultParseContext
 import io.github.mirrgieriana.xarpeg.parsers.fail
 import io.github.mirrgieriana.xarpeg.parsers.fixed
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
@@ -268,7 +267,7 @@ class ParserTest {
         // キャッシュを使わない場合、計算回数が指数関数的に増加するのでキャンセルを踏む
         try {
             language.counter = 0
-            parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") { DefaultParseContext(it).also { c -> c.useMemoization = false } }.getOrThrow()
+            parser.parseAll("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
             fail("Expected CancellationException, but no exception was thrown.")
         } catch (_: CancellationException) {
             // ok

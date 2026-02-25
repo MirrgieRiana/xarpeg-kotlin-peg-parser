@@ -1,7 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.DefaultParseContext
-import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.parseAll
 import kotlin.test.Test
@@ -175,12 +174,12 @@ class NamedParserTest {
     fun namedParserCaching() {
         val parser = +Regex("[a-z]+") named "word" map { it.value }
 
-        // Test with cache enabled
+        // Test with cache enabled (default)
         val result1 = parser.parseAll("hello").getOrThrow()
         assertEquals("hello", result1)
 
         // Test with cache disabled
-        val result2 = parser.parseAll("world") { DefaultParseContext(it).also { c -> c.useMemoization = false } }.getOrThrow()
+        val result2 = parser.parseAll("world") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
         assertEquals("world", result2)
     }
 

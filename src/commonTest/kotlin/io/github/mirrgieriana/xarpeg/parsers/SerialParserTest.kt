@@ -1,7 +1,6 @@
 package io.github.mirrgieriana.xarpeg.parsers
 
 import io.github.mirrgieriana.xarpeg.DefaultParseContext
-import io.github.mirrgieriana.xarpeg.ParseContext
 import io.github.mirrgieriana.xarpeg.assertExtraCharacters
 import io.github.mirrgieriana.xarpeg.assertUnmatchedInput
 import io.github.mirrgieriana.xarpeg.parseAll
