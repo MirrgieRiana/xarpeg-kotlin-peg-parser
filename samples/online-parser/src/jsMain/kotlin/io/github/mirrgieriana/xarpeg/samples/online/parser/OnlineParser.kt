@@ -7,7 +7,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.formatMessage
-import io.github.mirrgieriana.xarpeg.parsers.endOfInput
+import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.mapEx
@@ -407,12 +407,8 @@ fun parseExpression(input: String): ExpressionResult {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-        val context = OnlineParserParseContext(input)
-        val parseResult = context.parseOrNull(ExpressionGrammar.programRoot, 0)
-            ?: throw ParseException(context)
-        context.parseOrNull(endOfInput, parseResult.end)
-            ?: throw ParseException(context)
-        val result = parseResult.value.evaluate(initialContext)
+        val resultExpr = ExpressionGrammar.programRoot.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
+        val result = resultExpr.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
         val errorMessage = if (e.context != null && e.context.callStack.isNotEmpty()) {
