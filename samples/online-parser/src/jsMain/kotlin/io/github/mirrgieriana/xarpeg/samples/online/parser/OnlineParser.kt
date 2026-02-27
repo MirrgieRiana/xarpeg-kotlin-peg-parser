@@ -144,23 +144,19 @@ private object ExpressionGrammar {
             val ch = context.src[current]
             when {
                 ch == ' ' || ch == '\t' -> current++
-                (ch == '\n' || (ch == '\r' && context.src.getOrNull(current + 1) == '\n')) &&
-                        context is OnlineParserParseContext && context.isInIndentBlock -> {
+                ch == '\n' || (ch == '\r' && context.src.getOrNull(current + 1) == '\n') -> {
                     val nlEnd = if (ch == '\r') current + 2 else current + 1
-                    var spaceEnd = nlEnd
-                    while (spaceEnd < context.src.length &&
-                        (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
-                    ) {
-                        spaceEnd++
-                    }
-                    if (spaceEnd - nlEnd >= context.currentIndent) {
+                    if (context is OnlineParserParseContext && context.isInIndentBlock) {
+                        var spaceEnd = nlEnd
+                        while (spaceEnd < context.src.length &&
+                            (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
+                        ) spaceEnd++
+                        if (spaceEnd - nlEnd < context.currentIndent) break
                         current = spaceEnd
                     } else {
-                        break
+                        current = nlEnd
                     }
                 }
-                ch == '\r' && context.src.getOrNull(current + 1) == '\n' -> current += 2
-                ch == '\n' -> current++
                 else -> break
             }
         }
@@ -317,6 +313,7 @@ private object ExpressionGrammar {
     }
 
     private val horizontalSpace = +Regex("[ \\t]*")
+    private val newline = +Regex("\\r?\\n")
 
     private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null
@@ -327,50 +324,30 @@ private object ExpressionGrammar {
         val wsResult2 = context.parseOrNull(whitespace, paramListResult.end) ?: return@Parser null
 
         if (context.src.getOrNull(wsResult2.end) != ':') return@Parser null
-        var pos = wsResult2.end + 1
+        val posAfterColon = wsResult2.end + 1
 
-        val wsResult3 = context.parseOrNull(horizontalSpace, pos) ?: return@Parser null
-        pos = wsResult3.end
-
-        val ch = context.src.getOrNull(pos) ?: return@Parser null
-        if (ch == '\r') {
-            if (context.src.getOrNull(pos + 1) == '\n') {
-                pos += 2
-            } else {
-                return@Parser null
-            }
-        } else if (ch == '\n') {
-            pos++
-        } else {
-            return@Parser null
-        }
-
-        val indentSpaces = context.parseOrNull(horizontalSpace, pos) ?: return@Parser null
-        val indentLevel = indentSpaces.value.value.length
+        val wsResult3 = context.parseOrNull(horizontalSpace, posAfterColon) ?: return@Parser null
+        val nlResult = context.parseOrNull(newline, wsResult3.end) ?: return@Parser null
+        val indentResult = context.parseOrNull(horizontalSpace, nlResult.end) ?: return@Parser null
+        val indentLevel = indentResult.end - indentResult.start
 
         if (indentLevel <= context.currentIndent) return@Parser null
 
         context.pushIndent(indentLevel)
-        pos = indentSpaces.end
-
         val bodyResult: ParseResult<Expression>?
         try {
-            bodyResult = context.parseOrNull(ref { expression }, pos)
+            bodyResult = context.parseOrNull(ref { expression }, indentResult.end)
         } finally {
             context.popIndent()
         }
 
-        if (bodyResult == null) {
-            return@Parser null
-        }
+        if (bodyResult == null) return@Parser null
 
         val name = nameResult.value
         val params = paramListResult.value
         val body = bodyResult.value
         val lambda = LambdaExpression(params, body, SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end)))
-        val assignment = AssignmentExpression(name, lambda)
-
-        ParseResult(assignment, start, bodyResult.end)
+        ParseResult(AssignmentExpression(name, lambda), start, bodyResult.end)
     }
 
     private val assignment: Parser<Expression> = run {
