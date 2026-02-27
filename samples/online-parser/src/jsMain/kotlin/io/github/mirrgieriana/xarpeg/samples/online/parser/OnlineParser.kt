@@ -3,7 +3,9 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
 import io.github.mirrgieriana.xarpeg.ParseException
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
+import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
@@ -136,7 +138,30 @@ class EvaluationException(
 }
 
 private object ExpressionGrammar {
-    private val whitespace = -Regex("[ \\t\\r\\n]*")
+    private val whitespace: Parser<Tuple0> = Parser { context, pos ->
+        var current = pos
+        while (current < context.src.length) {
+            val ch = context.src[current]
+            when {
+                ch == ' ' || ch == '\t' -> current++
+                ch == '\n' || (ch == '\r' && context.src.getOrNull(current + 1) == '\n') -> {
+                    val nlEnd = if (ch == '\r') current + 2 else current + 1
+                    if (context is OnlineParserParseContext && context.isInIndentBlock) {
+                        var spaceEnd = nlEnd
+                        while (spaceEnd < context.src.length &&
+                            (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
+                        ) spaceEnd++
+                        if (spaceEnd - nlEnd < context.currentIndent) break
+                        current = spaceEnd
+                    } else {
+                        current = nlEnd
+                    }
+                }
+                else -> break
+            }
+        }
+        ParseResult(Tuple0, pos, current)
+    }
 
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
@@ -287,7 +312,52 @@ private object ExpressionGrammar {
         }) + equalityComparison)
     }
 
+    private val horizontalSpace = +Regex("[ \\t]*")
+    private val newline = +Regex("\\r?\\n")
+
+    private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) return@Parser null
+
+        val nameResult = context.parseOrNull(identifier, start) ?: return@Parser null
+        val afterNameWs = context.parseOrNull(whitespace, nameResult.end)?.end ?: return@Parser null
+        val paramListResult = context.parseOrNull(paramList, afterNameWs) ?: return@Parser null
+        val afterParamsWs = context.parseOrNull(whitespace, paramListResult.end)?.end ?: return@Parser null
+
+        if (context.src.getOrNull(afterParamsWs) != ':') return@Parser null
+
+        val afterColonWs = context.parseOrNull(horizontalSpace, afterParamsWs + 1)?.end ?: return@Parser null
+        val afterNl = context.parseOrNull(newline, afterColonWs)?.end ?: return@Parser null
+        val indentResult = context.parseOrNull(horizontalSpace, afterNl) ?: return@Parser null
+        val indentLevel = indentResult.end - indentResult.start
+
+        if (indentLevel <= context.currentIndent) return@Parser null
+
+        context.pushIndent(indentLevel)
+        val bodyResult: ParseResult<Expression>?
+        try {
+            bodyResult = context.parseOrNull(ref { expression }, indentResult.end)
+        } finally {
+            context.popIndent()
+        }
+
+        bodyResult ?: return@Parser null
+
+        ParseResult(
+            AssignmentExpression(
+                nameResult.value,
+                LambdaExpression(
+                    paramListResult.value,
+                    bodyResult.value,
+                    SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end))
+                )
+            ),
+            start,
+            bodyResult.end
+        )
+    }
+
     private val assignment: Parser<Expression> = run {
+        indentFunctionDef +
         ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueExpr) ->
             AssignmentExpression(name, valueExpr)
         }) + ternary
@@ -319,8 +389,7 @@ fun parseExpression(input: String): ExpressionResult {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-
-        val resultExpr = ExpressionGrammar.programRoot.parseAll(input).getOrThrow()
+        val resultExpr = ExpressionGrammar.programRoot.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
         val result = resultExpr.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {

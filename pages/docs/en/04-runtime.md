@@ -233,6 +233,54 @@ Check the test suite for observed behavior:
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior tests
 
+## Extending ParseContext
+
+`ParseContext` is declared as `open class`, allowing you to extend it with custom state for specialized parsing needs.
+
+### Example: Indent-Based Language Support
+
+You can extend `DefaultParseContext` to track indentation levels for Python-style languages:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    class IndentParseContext(
+        src: String,
+    ) : DefaultParseContext(src) {
+        private val indentStack = mutableListOf(0)
+
+        val currentIndent: Int get() = indentStack.last()
+        val isInIndentBlock: Boolean get() = indentStack.size > 1
+
+        fun pushIndent(indent: Int) {
+            require(indent > currentIndent)
+            indentStack.add(indent)
+        }
+
+        fun popIndent() {
+            require(indentStack.size > 1)
+            indentStack.removeLast()
+        }
+    }
+
+    val ctx = IndentParseContext("source")
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+
+    ctx.pushIndent(4)
+    check(ctx.currentIndent == 4)
+    check(ctx.isInIndentBlock)
+
+    ctx.popIndent()
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+}
+```
+
+See the [online-parser sample's OnlineParser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParser.kt) and [OnlineParserParseContext.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParserParseContext.kt) for a complete implementation.
+
 ## Key Takeaways
 
 - **`parseAll(...).getOrThrow()`** requires full consumption, throws on failure
@@ -241,6 +289,7 @@ Check the test suite for observed behavior:
 - **Memoization** is enabled by default; disable by providing a custom context factory
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
+- **`DefaultParseContext` is extensible** for custom parsing requirements
 
 ## Next Steps
 

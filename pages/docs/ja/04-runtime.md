@@ -233,6 +233,54 @@ fun main() {
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作テスト
 
+## ParseContextの拡張
+
+`ParseContext`は`open class`として宣言されているため、特殊な解析ニーズに応じてカスタム状態を持つ拡張が可能です。
+
+### 例：インデント方式言語のサポート
+
+Python風の言語のインデントレベルを追跡するために`DefaultParseContext`を拡張できます：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    class IndentParseContext(
+        src: String,
+    ) : DefaultParseContext(src) {
+        private val indentStack = mutableListOf(0)
+
+        val currentIndent: Int get() = indentStack.last()
+        val isInIndentBlock: Boolean get() = indentStack.size > 1
+
+        fun pushIndent(indent: Int) {
+            require(indent > currentIndent)
+            indentStack.add(indent)
+        }
+
+        fun popIndent() {
+            require(indentStack.size > 1)
+            indentStack.removeLast()
+        }
+    }
+
+    val ctx = IndentParseContext("source")
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+
+    ctx.pushIndent(4)
+    check(ctx.currentIndent == 4)
+    check(ctx.isInIndentBlock)
+
+    ctx.popIndent()
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+}
+```
+
+完全な実装については[online-parserサンプルのOnlineParser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParser.kt)と[OnlineParserParseContext.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParserParseContext.kt)を参照してください。
+
 ## 重要なポイント
 
 - **`parseAll(...).getOrThrow()`** 完全な消費を要求し、失敗時にスロー
