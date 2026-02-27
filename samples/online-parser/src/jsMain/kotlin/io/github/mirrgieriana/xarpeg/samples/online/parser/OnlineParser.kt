@@ -36,7 +36,6 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ProgramEx
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
-
 import io.github.mirrgieriana.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -407,12 +406,7 @@ fun parseExpression(input: String): ExpressionResult {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-<<<<<< copilot/support-indentation-language
         val resultExpr = ExpressionGrammar.programRoot.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
-======
-
-        val resultExpr = ExpressionGrammar.programRoot.parseAll(input).getOrThrow()
->>>>>> main
         val result = resultExpr.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
