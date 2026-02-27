@@ -244,7 +244,6 @@ Python風の言語のインデントレベルを追跡するために`DefaultPar
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
-import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 fun main() {
     class IndentParseContext(
@@ -266,12 +265,17 @@ fun main() {
         }
     }
 
-    // このカスタムコンテキストをパーサで使用してインデントを検証できます：
-    fun indent(context: IndentParseContext, start: Int): ParseResult<String>? {
-        val expectedIndent = context.currentIndent
-        // インデントを解析して検証...
-        return null
-    }
+    val ctx = IndentParseContext("source")
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+
+    ctx.pushIndent(4)
+    check(ctx.currentIndent == 4)
+    check(ctx.isInIndentBlock)
+
+    ctx.popIndent()
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
 }
 ```
 

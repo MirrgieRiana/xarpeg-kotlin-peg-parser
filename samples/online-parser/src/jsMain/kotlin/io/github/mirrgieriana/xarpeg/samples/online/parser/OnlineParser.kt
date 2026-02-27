@@ -319,16 +319,15 @@ private object ExpressionGrammar {
         if (context !is OnlineParserParseContext) return@Parser null
 
         val nameResult = context.parseOrNull(identifier, start) ?: return@Parser null
-        val wsResult1 = context.parseOrNull(whitespace, nameResult.end) ?: return@Parser null
-        val paramListResult = context.parseOrNull(paramList, wsResult1.end) ?: return@Parser null
-        val wsResult2 = context.parseOrNull(whitespace, paramListResult.end) ?: return@Parser null
+        val afterNameWs = context.parseOrNull(whitespace, nameResult.end)?.end ?: return@Parser null
+        val paramListResult = context.parseOrNull(paramList, afterNameWs) ?: return@Parser null
+        val afterParamsWs = context.parseOrNull(whitespace, paramListResult.end)?.end ?: return@Parser null
 
-        if (context.src.getOrNull(wsResult2.end) != ':') return@Parser null
-        val posAfterColon = wsResult2.end + 1
+        if (context.src.getOrNull(afterParamsWs) != ':') return@Parser null
 
-        val wsResult3 = context.parseOrNull(horizontalSpace, posAfterColon) ?: return@Parser null
-        val nlResult = context.parseOrNull(newline, wsResult3.end) ?: return@Parser null
-        val indentResult = context.parseOrNull(horizontalSpace, nlResult.end) ?: return@Parser null
+        val afterColonWs = context.parseOrNull(horizontalSpace, afterParamsWs + 1)?.end ?: return@Parser null
+        val afterNl = context.parseOrNull(newline, afterColonWs)?.end ?: return@Parser null
+        val indentResult = context.parseOrNull(horizontalSpace, afterNl) ?: return@Parser null
         val indentLevel = indentResult.end - indentResult.start
 
         if (indentLevel <= context.currentIndent) return@Parser null
@@ -341,13 +340,20 @@ private object ExpressionGrammar {
             context.popIndent()
         }
 
-        if (bodyResult == null) return@Parser null
+        bodyResult ?: return@Parser null
 
-        val name = nameResult.value
-        val params = paramListResult.value
-        val body = bodyResult.value
-        val lambda = LambdaExpression(params, body, SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end)))
-        ParseResult(AssignmentExpression(name, lambda), start, bodyResult.end)
+        ParseResult(
+            AssignmentExpression(
+                nameResult.value,
+                LambdaExpression(
+                    paramListResult.value,
+                    bodyResult.value,
+                    SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end))
+                )
+            ),
+            start,
+            bodyResult.end
+        )
     }
 
     private val assignment: Parser<Expression> = run {

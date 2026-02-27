@@ -244,7 +244,6 @@ You can extend `DefaultParseContext` to track indentation levels for Python-styl
 ```kotlin
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
-import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 fun main() {
     class IndentParseContext(
@@ -266,12 +265,17 @@ fun main() {
         }
     }
 
-    // You can then use this custom context in your parsers to validate indentation:
-    fun indent(context: IndentParseContext, start: Int): ParseResult<String>? {
-        val expectedIndent = context.currentIndent
-        // Parse and validate indentation...
-        return null
-    }
+    val ctx = IndentParseContext("source")
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+
+    ctx.pushIndent(4)
+    check(ctx.currentIndent == 4)
+    check(ctx.isInIndentBlock)
+
+    ctx.popIndent()
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
 }
 ```
 
