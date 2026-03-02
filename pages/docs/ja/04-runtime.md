@@ -235,7 +235,7 @@ fun main() {
 
 ## ParseContextの拡張
 
-`ParseContext`は`open class`として宣言されているため、特殊な解析ニーズに応じてカスタム状態を持つ拡張が可能です。
+`ParseContext`はインターフェースであり、その基本実装である`DefaultParseContext`は`open class`として宣言されています。そのため、特殊な解析ニーズに応じてカスタム状態を持つ拡張（`DefaultParseContext`の継承や`ParseContext`の直接実装）が可能です。
 
 ### 例：インデント方式言語のサポート
 

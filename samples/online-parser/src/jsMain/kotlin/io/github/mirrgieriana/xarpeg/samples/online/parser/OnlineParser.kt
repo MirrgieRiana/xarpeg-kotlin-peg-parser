@@ -138,30 +138,23 @@ class EvaluationException(
 }
 
 private object ExpressionGrammar {
-    private val whitespace: Parser<Tuple0> = Parser { context, pos ->
-        var current = pos
-        while (current < context.src.length) {
-            val ch = context.src[current]
-            when {
-                ch == ' ' || ch == '\t' -> current++
-                ch == '\n' || (ch == '\r' && context.src.getOrNull(current + 1) == '\n') -> {
-                    val nlEnd = if (ch == '\r') current + 2 else current + 1
-                    if (context is OnlineParserParseContext && context.isInIndentBlock) {
-                        var spaceEnd = nlEnd
-                        while (spaceEnd < context.src.length &&
-                            (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
-                        ) spaceEnd++
-                        if (spaceEnd - nlEnd < context.currentIndent) break
-                        current = spaceEnd
-                    } else {
-                        current = nlEnd
-                    }
-                }
-                else -> break
-            }
+    private val newline = -Regex("\\r\\n|[\\r\\n]")
+
+    private val newlineAndIndent: Parser<Tuple0> = Parser { context, pos ->
+        val nlResult = context.parseOrNull(newline, pos) ?: return@Parser null
+        if (context is OnlineParserParseContext && context.isInIndentBlock) {
+            var spaceEnd = nlResult.end
+            while (spaceEnd < context.src.length &&
+                (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
+            ) spaceEnd++
+            if (spaceEnd - nlResult.end < context.currentIndent) return@Parser null
+            ParseResult(Tuple0, pos, spaceEnd)
+        } else {
+            ParseResult(Tuple0, pos, nlResult.end)
         }
-        ParseResult(Tuple0, pos, current)
     }
+
+    private val whitespace = (-Regex("[ \t]*") * newlineAndIndent).zeroOrMore.ignore * -Regex("[ \t]*")
 
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
@@ -313,7 +306,6 @@ private object ExpressionGrammar {
     }
 
     private val horizontalSpace = +Regex("[ \\t]*")
-    private val newline = +Regex("\\r?\\n")
 
     private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null

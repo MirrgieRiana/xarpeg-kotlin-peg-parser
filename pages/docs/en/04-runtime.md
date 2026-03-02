@@ -235,7 +235,7 @@ Check the test suite for observed behavior:
 
 ## Extending ParseContext
 
-`ParseContext` is declared as `open class`, allowing you to extend it with custom state for specialized parsing needs.
+`ParseContext` is an interface. Its default implementation, `DefaultParseContext`, is declared as `open class`, allowing you to extend it with custom state for specialized parsing needs.
 
 ### Example: Indent-Based Language Support
 
