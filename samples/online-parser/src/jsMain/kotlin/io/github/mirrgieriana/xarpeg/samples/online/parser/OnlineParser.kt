@@ -140,19 +140,20 @@ class EvaluationException(
 private object ExpressionGrammar {
     private val newline = -Regex("\\r\\n|[\\r\\n]")
 
-    private val newlineAndIndent: Parser<Tuple0> = Parser { context, pos ->
-        val nlResult = context.parseOrNull(newline, pos) ?: return@Parser null
+    private val indent: Parser<Tuple0> = Parser { context, pos ->
         if (context is OnlineParserParseContext && context.isInIndentBlock) {
-            var spaceEnd = nlResult.end
+            var spaceEnd = pos
             while (spaceEnd < context.src.length &&
                 (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
             ) spaceEnd++
-            if (spaceEnd - nlResult.end < context.currentIndent) return@Parser null
+            if (spaceEnd - pos < context.currentIndent) return@Parser null
             ParseResult(Tuple0, pos, spaceEnd)
         } else {
-            ParseResult(Tuple0, pos, nlResult.end)
+            ParseResult(Tuple0, pos, pos)
         }
     }
+
+    private val newlineAndIndent = newline * indent
 
     private val whitespace = (-Regex("[ \t]*") * newlineAndIndent).zeroOrMore.ignore * -Regex("[ \t]*")
 
