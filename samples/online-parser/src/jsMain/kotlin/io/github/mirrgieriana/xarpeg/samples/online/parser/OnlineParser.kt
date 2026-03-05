@@ -5,7 +5,6 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
-import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
@@ -18,6 +17,8 @@ import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
 import io.github.mirrgieriana.xarpeg.parsers.zeroOrMore
+import io.github.mirrgieriana.xarpeg.samples.online.parser.IndentParsers.newline
+import io.github.mirrgieriana.xarpeg.samples.online.parser.IndentParsers.whitespace
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AddExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AssignmentExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.DivideExpression
@@ -138,25 +139,6 @@ class EvaluationException(
 }
 
 private object ExpressionGrammar {
-    private val newline = -Regex("\\r\\n|[\\r\\n]")
-
-    private val indent: Parser<Tuple0> = Parser { context, pos ->
-        if (context is OnlineParserParseContext && context.isInIndentBlock) {
-            var spaceEnd = pos
-            while (spaceEnd < context.src.length &&
-                (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
-            ) spaceEnd++
-            if (spaceEnd - pos < context.currentIndent) return@Parser null
-            ParseResult(Tuple0, pos, spaceEnd)
-        } else {
-            ParseResult(Tuple0, pos, pos)
-        }
-    }
-
-    private val newlineAndIndent = newline * indent
-
-    private val whitespace = (-Regex("[ \t]*") * newlineAndIndent).zeroOrMore.ignore * -Regex("[ \t]*")
-
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
     private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) } named "number"
