@@ -191,16 +191,6 @@ The `xarpeg` artifact uses Gradle module metadata to automatically resolve to th
 
 ---
 
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- Development setup and workflow
-- Building and testing across platforms
-- Running samples and examples
-- Code style guidelines
-
----
-
 ## Resources
 
 - **Documentation** - Complete tutorial [[English](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/)] [[日本語](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/ja/)]

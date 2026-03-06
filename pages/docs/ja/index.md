@@ -128,4 +128,3 @@ dependencies {
 
 - **[GitHub Issues](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/issues)** - バグ報告や機能リクエスト
 - **[メインREADME](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - クイックリファレンスと概要
-- **[コントリビューティングガイド](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/CONTRIBUTING.md)** - 開発環境のセットアップ
