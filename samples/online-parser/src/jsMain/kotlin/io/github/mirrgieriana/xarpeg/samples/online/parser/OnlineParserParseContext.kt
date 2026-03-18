@@ -8,8 +8,10 @@ import io.github.mirrgieriana.xarpeg.DefaultParseContext
  */
 class OnlineParserParseContext(
     src: String,
-) : DefaultParseContext(src, useMemoization = false) {
+) : DefaultParseContext(src) {
     private val indentStack = mutableListOf(0)
+
+    override fun memoStateKey(): Any = indentStack.toList()
 
     /**
      * Get the current required indent level
