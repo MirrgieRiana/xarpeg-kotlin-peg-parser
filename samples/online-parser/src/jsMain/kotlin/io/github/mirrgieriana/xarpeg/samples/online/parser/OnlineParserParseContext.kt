@@ -11,7 +11,7 @@ class OnlineParserParseContext(
 ) : DefaultParseContext(src) {
     private val indentStack = mutableListOf(0)
 
-    override fun memoStateKey(): Any = indentStack.toList()
+    override fun getState(): Any = indentStack.toList()
 
     /**
      * Get the current required indent level

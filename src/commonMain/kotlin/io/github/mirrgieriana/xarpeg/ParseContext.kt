@@ -35,7 +35,7 @@ open class DefaultParseContext(override val src: String) :
     SuggestingParseContext {
 
     override var useMemoization: Boolean = true
-    private val memos = mutableMapOf<Any, MutableMap<Pair<Parser<*>, Int>, ParseResult<Any>?>>()
+    private val memoTable = mutableMapOf<Any, MutableMap<Pair<Parser<*>, Int>, ParseResult<Any>?>>()
 
     /**
      * Returns a key representing the current parser state for memoization table selection.
@@ -45,7 +45,7 @@ open class DefaultParseContext(override val src: String) :
      * The default implementation returns [Unit], which means a single shared memo table is used
      * (equivalent to the previous behaviour).
      */
-    open fun memoStateKey(): Any = Unit
+    open fun getState(): Any = Unit
 
     private var isInNamedParser = false
     override var isInLookAhead = false
@@ -70,14 +70,14 @@ open class DefaultParseContext(override val src: String) :
         }
 
         val result = if (useMemoization) {
-            val table = memos.getOrPut(memoStateKey()) { mutableMapOf() }
+            val memo = memoTable.getOrPut(getState()) { mutableMapOf() }
             val key = Pair(parser, start)
-            if (key in table) {
+            if (key in memo) {
                 @Suppress("UNCHECKED_CAST")
-                table[key] as ParseResult<T>?
+                memo[key] as ParseResult<T>?
             } else {
                 val result = parse()
-                table[key] = result
+                memo[key] = result
                 result
             }
         } else {
