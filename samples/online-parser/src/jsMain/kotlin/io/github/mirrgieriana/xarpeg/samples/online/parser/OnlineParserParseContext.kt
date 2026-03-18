@@ -8,7 +8,7 @@ import io.github.mirrgieriana.xarpeg.DefaultParseContext
  */
 class OnlineParserParseContext(
     src: String,
-) : DefaultParseContext(src) {
+) : DefaultParseContext(src, useMemoization = false) {
     private val indentStack = mutableListOf(0)
 
     /**

@@ -323,7 +323,7 @@ private object ExpressionGrammar {
                 LambdaExpression(
                     paramListResult.value,
                     bodyResult.value,
-                    SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end))
+                    SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end).normalize())
                 )
             ),
             start,
