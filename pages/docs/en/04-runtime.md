@@ -291,6 +291,10 @@ fun main() {
             require(indentStack.size > 1)
             indentStack.removeLast()
         }
+
+        // Required: return a snapshot of mutable state so that memoization
+        // uses a separate cache table for each distinct indentation state.
+        override fun getState(): Any = indentStack.toList()
     }
 
     val ctx = IndentParseContext("source")

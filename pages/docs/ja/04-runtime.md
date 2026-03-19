@@ -291,6 +291,10 @@ fun main() {
             require(indentStack.size > 1)
             indentStack.removeLast()
         }
+
+        // 必須: 可変状態のスナップショットを返すことで、インデント状態ごとに
+        // 独立したメモ化テーブルが使われるようになります。
+        override fun getState(): Any = indentStack.toList()
     }
 
     val ctx = IndentParseContext("source")
