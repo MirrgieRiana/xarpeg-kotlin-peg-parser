@@ -38,12 +38,17 @@ open class DefaultParseContext(override val src: String) :
     private val memoTable = mutableMapOf<Any, MutableMap<Pair<Parser<*>, Int>, ParseResult<Any>?>>()
 
     /**
-     * Returns a key representing the current parser state for memoization table selection.
-     * Override this in subclasses with custom parse state (e.g. indent level stack) so that
-     * memoized results from a different state are never reused.
+     * Returns a key representing the current parse state for memoization.
      *
-     * The default implementation returns [Unit], which means a single shared memo table is used
-     * (equivalent to the previous behaviour).
+     * The memoization table is partitioned by this key: cached results are only reused
+     * when the key matches. Override this in subclasses with mutable state that affects
+     * parsing results (e.g. an indent level stack) to return a value that reflects
+     * the current state.
+     *
+     * The returned value is used as a [Map] key, so it must implement
+     * [equals][Any.equals] and [hashCode][Any.hashCode] consistently.
+     *
+     * The default returns [Unit], meaning all results share a single memo table.
      */
     open fun getState(): Any = Unit
 
