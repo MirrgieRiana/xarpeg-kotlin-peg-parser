@@ -128,7 +128,7 @@ Interactive browser-based parser that demonstrates:
 
 ### Performance
 
-- **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage
+- **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage. Subclasses can override `getState()` for state-dependent memo table partitioning
 - **Backtracking** - Memoized results make repeated attempts predictable; alternatives backtrack automatically
 
 ---
@@ -188,16 +188,6 @@ dependencies {
 The `xarpeg` artifact uses Gradle module metadata to automatically resolve to the correct platform-specific variant (JVM, JS, Native, etc.) based on your project configuration.
 
 > **Note:** The API may evolve as we refine the DSL. Pin a specific version for production use.
-
----
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- Development setup and workflow
-- Building and testing across platforms
-- Running samples and examples
-- Code style guidelines
 
 ---
 

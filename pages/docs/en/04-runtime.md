@@ -166,6 +166,33 @@ fun main() {
 - **Memoization enabled** - Higher memory, predictable performance with heavy backtracking
 - **Memoization disabled** - Lower memory, potential performance issues with alternatives
 
+### State-Dependent Memoization
+
+`DefaultParseContext` can be subclassed with custom mutable state. If that state affects parsing results, override `getState()` to partition the memo table by state. This prevents cached results from one state being reused when the state changes:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+class IndentAwareContext(src: String) : DefaultParseContext(src) {
+    var indentLevel: Int = 0
+    override fun getState(): Any = indentLevel
+}
+
+fun main() {
+    val parser = +"hello"
+    val context = IndentAwareContext("hello")
+
+    context.indentLevel = 0
+    check(context.parseOrNull(parser, 0) != null)  // Cached under indentLevel=0
+
+    context.indentLevel = 1
+    check(context.parseOrNull(parser, 0) != null)  // Re-evaluated under indentLevel=1
+}
+```
+
+The default `getState()` returns `Unit`, so all results share a single memo table — equivalent to standard memoization. The returned value is used as a `Map` key, so it must implement `equals` and `hashCode` consistently.
+
 ## Error Propagation
 
 If a `map` function throws an exception, it bubbles up and aborts parsing:
@@ -232,6 +259,7 @@ fun main() {
 Check the test suite for observed behavior:
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior tests
+- **[MemoizationStateTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/MemoizationStateTest.kt)** - State-dependent memoization tests
 
 ## Extending ParseContext
 
@@ -286,7 +314,7 @@ See the [online-parser sample's OnlineParser.kt](https://github.com/MirrgieRiana
 - **`parseAll(...).getOrThrow()`** requires full consumption, throws on failure
 - **Error context** provides `errorPosition` and `suggestedParsers`
 - **Named parsers** appear in error messages with their assigned names
-- **Memoization** is enabled by default; disable by providing a custom context factory
+- **Memoization** is enabled by default; disable by providing a custom context factory. Override `getState()` in subclasses for state-dependent memoization
 - **Exceptions in `map`** bubble up and abort parsing
 - **`parseOrNull`** with `ParseContext` enables detailed debugging
 - **`DefaultParseContext` is extensible** for custom parsing requirements
