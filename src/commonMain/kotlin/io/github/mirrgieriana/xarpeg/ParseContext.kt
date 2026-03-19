@@ -35,7 +35,22 @@ open class DefaultParseContext(override val src: String) :
     SuggestingParseContext {
 
     override var useMemoization: Boolean = true
-    private val memo = mutableMapOf<Pair<Parser<*>, Int>, ParseResult<Any>?>()
+    private val memoTable = mutableMapOf<Any, MutableMap<Pair<Parser<*>, Int>, ParseResult<Any>?>>()
+
+    /**
+     * Returns a key representing the current parse state for memoization.
+     *
+     * The memoization table is partitioned by this key: cached results are only reused
+     * when the key matches. Override this in subclasses with mutable state that affects
+     * parsing results (e.g. an indent level stack) to return a value that reflects
+     * the current state.
+     *
+     * The returned value is used as a [Map] key, so it must implement
+     * [equals][Any.equals] and [hashCode][Any.hashCode] consistently.
+     *
+     * The default returns [Unit], meaning all results share a single memo table.
+     */
+    open fun getState(): Any = Unit
 
     private var isInNamedParser = false
     override var isInLookAhead = false
@@ -60,6 +75,7 @@ open class DefaultParseContext(override val src: String) :
         }
 
         val result = if (useMemoization) {
+            val memo = memoTable.getOrPut(getState()) { mutableMapOf() }
             val key = Pair(parser, start)
             if (key in memo) {
                 @Suppress("UNCHECKED_CAST")

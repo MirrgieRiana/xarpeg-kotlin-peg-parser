@@ -118,6 +118,7 @@ dependencies {
 ### テスト
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作例
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
+- **[MemoizationStateTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/MemoizationStateTest.kt)** - 状態依存メモ化の例
 
 ### 実際の使用例
 - **[Xarpite](https://github.com/MirrgieRiana/Xarpite)** - 複雑な文法解析にXarpegを使用している本番アプリケーション

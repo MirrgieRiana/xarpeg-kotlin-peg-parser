@@ -118,6 +118,7 @@ Interactive browser-based parser demonstrating real-time parsing and evaluation.
 ### Tests
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - Comprehensive behavior examples
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - Error tracking examples
+- **[MemoizationStateTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/MemoizationStateTest.kt)** - State-dependent memoization examples
 
 ### Real-World Usage
 - **[Xarpite](https://github.com/MirrgieRiana/Xarpite)** - Production application using Xarpeg for complex grammar parsing
