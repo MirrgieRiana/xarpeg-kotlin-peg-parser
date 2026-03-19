@@ -166,6 +166,33 @@ fun main() {
 - **メモ化有効** - 高メモリ、大量のバックトラックで予測可能なパフォーマンス
 - **メモ化無効** - 低メモリ、代替案で潜在的なパフォーマンス問題
 
+### 状態依存メモ化
+
+`DefaultParseContext`をサブクラス化して可変状態を持たせる場合、その状態が解析結果に影響するなら`getState()`をオーバーライドしてメモテーブルを状態ごとに分離します。これにより、ある状態でキャッシュされた結果が異なる状態で再利用されることを防ぎます：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+class IndentAwareContext(src: String) : DefaultParseContext(src) {
+    var indentLevel: Int = 0
+    override fun getState(): Any = indentLevel
+}
+
+fun main() {
+    val parser = +"hello"
+    val context = IndentAwareContext("hello")
+
+    context.indentLevel = 0
+    check(context.parseOrNull(parser, 0) != null)  // indentLevel=0でキャッシュ
+
+    context.indentLevel = 1
+    check(context.parseOrNull(parser, 0) != null)  // indentLevel=1で再評価
+}
+```
+
+デフォルトの`getState()`は`Unit`を返すため、すべての結果が単一のメモテーブルを共有します。これは標準的なメモ化と同等です。戻り値は`Map`のキーとして使用されるため、`equals`と`hashCode`を適切に実装する必要があります。
+
 ## エラー伝播
 
 `map`関数が例外をスローした場合、それは伝播して解析を中止します：
@@ -232,13 +259,14 @@ fun main() {
 観測された動作についてはテストスイートを確認：
 - **[ErrorContextTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ErrorContextTest.kt)** - エラー追跡の例
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作テスト
+- **[MemoizationStateTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/MemoizationStateTest.kt)** - 状態依存メモ化のテスト
 
 ## 重要なポイント
 
 - **`parseAll(...).getOrThrow()`** 完全な消費を要求し、失敗時にスロー
 - **エラーコンテキスト** `errorPosition`と`suggestedParsers`を提供
 - **名前付きパーサ** 割り当てられた名前でエラーメッセージに表示
-- **メモ化** デフォルトで有効；`useMemoization = false`で無効化
+- **メモ化** デフォルトで有効；`useMemoization = false`で無効化。サブクラスで`getState()`をオーバーライドすることで状態依存メモ化が可能
 - **`map`での例外** 伝播して解析を中止
 - **`parseOrNull`** `DefaultParseContext`とともに詳細なデバッグを可能にする
 

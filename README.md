@@ -128,7 +128,7 @@ Interactive browser-based parser that demonstrates:
 
 ### Performance
 
-- **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage
+- **Memoization** - Enabled by default (`useMemoization = true`); disable with `useMemoization = false` for lower memory usage. Subclasses can override `getState()` for state-dependent memo table partitioning
 - **Backtracking** - Memoized results make repeated attempts predictable; alternatives backtrack automatically
 
 ---
