@@ -341,7 +341,7 @@ private object ExpressionGrammar {
     val expression: Parser<Expression> = assignment
 
     val program: Parser<Expression> = run {
-        val newlineSep = -Regex("[ \\t]*\\r?\\n[ \\t\\r\\n]*")
+        val newlineSep = -Regex("[ \\t]*(?:\\r\\n|[\\r\\n])[ \\t\\r\\n]*")
         ((expression * (newlineSep * expression).zeroOrMore) map { (first, rest) ->
             ProgramExpression(listOf(first) + rest)
         })
