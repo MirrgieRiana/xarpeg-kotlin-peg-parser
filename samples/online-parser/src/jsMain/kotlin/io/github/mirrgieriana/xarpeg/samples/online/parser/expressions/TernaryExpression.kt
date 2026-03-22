@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -15,7 +15,7 @@ class TernaryExpression(
     private val condition: Expression,
     private val trueExpression: Expression,
     private val falseExpression: Expression,
-    private val position: SourcePosition
+    private val position: ParseResult<*>
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val condVal = condition.evaluate(ctx)

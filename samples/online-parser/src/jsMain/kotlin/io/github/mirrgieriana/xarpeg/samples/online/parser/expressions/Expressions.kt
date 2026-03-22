@@ -4,7 +4,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -30,7 +30,7 @@ class AssignmentExpression(private val name: String, private val valueExpression
 }
 
 @JsExport
-class LambdaExpression(private val params: List<String>, private val body: Expression, private val position: SourcePosition) : Expression {
+class LambdaExpression(private val params: List<String>, private val body: Expression, private val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         Value.LambdaValue(params, body, mutableMapOf(), definitionPosition = position)
 }

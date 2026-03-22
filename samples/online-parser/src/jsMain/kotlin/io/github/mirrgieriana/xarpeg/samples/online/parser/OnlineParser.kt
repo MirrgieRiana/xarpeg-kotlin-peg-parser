@@ -37,7 +37,6 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ProgramEx
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
-import io.github.mirrgieriana.xarpeg.text
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -59,40 +58,38 @@ data class EvaluationContext(
     val sourceCode: String? = null,
     val variableTable: VariableTable = VariableTable()
 ) {
-    fun pushFrame(functionName: String, callPosition: SourcePosition) =
+    fun pushFrame(functionName: String, callPosition: ParseResult<*>) =
         copy(callStack = callStack + CallFrame(functionName, callPosition))
 
     fun withNewScope() = copy(variableTable = variableTable.createChild())
 }
 
-data class CallFrame(val functionName: String, val position: SourcePosition)
+data class CallFrame(val functionName: String, val position: ParseResult<*>)
 
-data class SourcePosition(val start: Int, val end: Int, val text: String) {
-    fun formatLineColumn(source: String): String {
-        val beforeStart = source.substring(0, start.coerceAtMost(source.length))
-        val line = beforeStart.count { it == '\n' } + 1
-        val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
-        return "line $line, column $column"
-    }
+fun ParseResult<*>.formatLineColumn(source: String): String {
+    val beforeStart = source.substring(0, start.coerceAtMost(source.length))
+    val line = beforeStart.count { it == '\n' } + 1
+    val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
+    return "line $line, column $column"
+}
 
-    fun formatWithContext(source: String): String {
-        val beforeStart = source.substring(0, start.coerceAtMost(source.length))
-        val line = beforeStart.count { it == '\n' } + 1
-        val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
+fun ParseResult<*>.formatWithContext(source: String): String {
+    val beforeStart = source.substring(0, start.coerceAtMost(source.length))
+    val line = beforeStart.count { it == '\n' } + 1
+    val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
 
-        val lineStart = beforeStart.lastIndexOf('\n') + 1
-        val lineEnd = source.indexOf('\n', start).let { if (it == -1) source.length else it }
-        val sourceLine = source.substring(lineStart, lineEnd)
+    val lineStart = beforeStart.lastIndexOf('\n') + 1
+    val lineEnd = source.indexOf('\n', start).let { if (it == -1) source.length else it }
+    val sourceLine = source.substring(lineStart, lineEnd)
 
-        val highlightStart = start - lineStart
-        val highlightEnd = (end - lineStart).coerceAtMost(sourceLine.length)
+    val highlightStart = start - lineStart
+    val highlightEnd = (end - lineStart).coerceAtMost(sourceLine.length)
 
-        val before = sourceLine.substring(0, highlightStart)
-        val highlighted = sourceLine.substring(highlightStart, highlightEnd)
-        val after = sourceLine.substring(highlightEnd)
+    val before = sourceLine.substring(0, highlightStart)
+    val highlighted = sourceLine.substring(highlightStart, highlightEnd)
+    val after = sourceLine.substring(highlightEnd)
 
-        return "line $line, column $column: $before[$highlighted]$after"
-    }
+    return "line $line, column $column: $before[$highlighted]$after"
 }
 
 sealed class Value {
@@ -107,7 +104,7 @@ sealed class Value {
         val body: Expression,
         val capturedVars: MutableMap<String, Value>,
         val name: String? = null,
-        val definitionPosition: SourcePosition? = null
+        val definitionPosition: ParseResult<*>? = null
     ) : Value() {
         override fun toString() = "<lambda(${params.joinToString(", ")})>"
     }
@@ -128,7 +125,7 @@ class EvaluationException(
                 val location = if (sourceCode != null) {
                     frame.position.formatWithContext(sourceCode)
                 } else {
-                    "position ${frame.position.start}-${frame.position.end}: ${frame.position.text}"
+                    "position ${frame.position.start}-${frame.position.end}"
                 }
                 sb.append("\n  at $location")
             }
@@ -165,7 +162,7 @@ private object ExpressionGrammar {
     private val lambda: Parser<Expression> =
         (paramList * whitespace * -Regex("->") * whitespace * ref { expression }) mapEx { parseCtx, result ->
             val (params, bodyParser) = result.value
-            LambdaExpression(params, bodyParser, SourcePosition(result.start, result.end, result.text(parseCtx)))
+            LambdaExpression(params, bodyParser, result)
         }
 
     private val exprList: Parser<List<Expression>> = run {
@@ -179,7 +176,7 @@ private object ExpressionGrammar {
     private val functionCall: Parser<Expression> =
         (identifier * whitespace * argList) mapEx { parseCtx, result ->
             val (name, args) = result.value
-            FunctionCallExpression(name, args, SourcePosition(result.start, result.end, result.text(parseCtx)), parseCtx.src)
+            FunctionCallExpression(name, args, result, parseCtx.src)
         }
 
     private val primary: Parser<Expression> =
@@ -191,14 +188,14 @@ private object ExpressionGrammar {
     private val multiplyOp = (whitespace * +'*' * whitespace * factor) mapEx { parseCtx, result ->
         val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '*' }
         val (_, rightExpr: Expression) = result.value
-        val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+        val opPosition = ParseResult(Unit, opStart, result.end)
         return@mapEx { left: Expression -> MultiplyExpression(left, rightExpr, opPosition) }
     }
 
     private val divideOp = (whitespace * +'/' * whitespace * factor) mapEx { parseCtx, result ->
         val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '/' }
         val (_, rightExpr: Expression) = result.value
-        val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+        val opPosition = ParseResult(Unit, opStart, result.end)
         return@mapEx { left: Expression -> DivideExpression(left, rightExpr, opPosition) }
     }
 
@@ -208,14 +205,14 @@ private object ExpressionGrammar {
     private val addOp = (whitespace * +'+' * whitespace * product) mapEx { parseCtx, result ->
         val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '+' }
         val (_, rightExpr: Expression) = result.value
-        val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+        val opPosition = ParseResult(Unit, opStart, result.end)
         return@mapEx { left: Expression -> AddExpression(left, rightExpr, opPosition) }
     }
 
     private val subtractOp = (whitespace * +'-' * whitespace * product) mapEx { parseCtx, result ->
         val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '-' }
         val (_, rightExpr: Expression) = result.value
-        val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+        val opPosition = ParseResult(Unit, opStart, result.end)
         return@mapEx { left: Expression -> SubtractExpression(left, rightExpr, opPosition) }
     }
 
@@ -226,28 +223,28 @@ private object ExpressionGrammar {
         val lessEqualOp = (whitespace * +"<=" * whitespace * sum) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("<=")
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> LessThanOrEqualExpression(left, rightExpr, opPosition) }
         }
 
         val greaterEqualOp = (whitespace * +">=" * whitespace * sum) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf(">=")
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> GreaterThanOrEqualExpression(left, rightExpr, opPosition) }
         }
 
         val lessOp = (whitespace * +'<' * whitespace * sum) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '<' }
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> LessThanExpression(left, rightExpr, opPosition) }
         }
 
         val greaterOp = (whitespace * +'>' * whitespace * sum) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '>' }
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> GreaterThanExpression(left, rightExpr, opPosition) }
         }
 
@@ -260,14 +257,14 @@ private object ExpressionGrammar {
         val equalOp = (whitespace * +"==" * whitespace * orderingComparison) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("==")
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> EqualsExpression(left, rightExpr, opPosition) }
         }
 
         val notEqualOp = (whitespace * +"!=" * whitespace * orderingComparison) mapEx { parseCtx, result ->
             val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("!=")
             val (_, rightExpr: Expression) = result.value
-            val opPosition = SourcePosition(opStart, result.end, result.text(parseCtx).trimStart())
+            val opPosition = ParseResult(Unit, opStart, result.end)
             return@mapEx { left: Expression -> NotEqualsExpression(left, rightExpr, opPosition) }
         }
 
@@ -282,9 +279,7 @@ private object ExpressionGrammar {
             ref { equalityComparison }
         ((ternaryExpr mapEx { parseCtx, result ->
             val (cond, trueExpr, falseExpr) = result.value
-            val ternaryText = result.text(parseCtx)
-            val ternaryPosition = SourcePosition(result.start, result.end, ternaryText)
-            TernaryExpression(cond, trueExpr, falseExpr, ternaryPosition)
+            TernaryExpression(cond, trueExpr, falseExpr, result)
         }) + equalityComparison)
     }
 
@@ -323,7 +318,7 @@ private object ExpressionGrammar {
                 LambdaExpression(
                     paramListResult.value,
                     bodyResult.value,
-                    SourcePosition(start, bodyResult.end, context.src.substring(start, bodyResult.end).normalize())
+                    ParseResult(Unit, start, bodyResult.end)
                 )
             ),
             start,

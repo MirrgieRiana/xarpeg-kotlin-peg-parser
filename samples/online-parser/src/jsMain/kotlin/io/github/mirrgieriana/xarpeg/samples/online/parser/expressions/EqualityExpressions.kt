@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -14,7 +14,7 @@ import kotlin.js.JsExport
 abstract class EqualityOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: SourcePosition
+    protected val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compareValues(result: Boolean): Boolean
@@ -37,14 +37,14 @@ abstract class EqualityOperatorExpression(
 }
 
 @JsExport
-class EqualsExpression(left: Expression, right: Expression, position: SourcePosition) :
+class EqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "=="
     override fun compareValues(result: Boolean) = result
 }
 
 @JsExport
-class NotEqualsExpression(left: Expression, right: Expression, position: SourcePosition) :
+class NotEqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "!="
     override fun compareValues(result: Boolean) = !result

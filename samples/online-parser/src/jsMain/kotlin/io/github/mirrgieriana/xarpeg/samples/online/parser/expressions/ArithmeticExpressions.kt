@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -14,7 +14,7 @@ import kotlin.js.JsExport
 abstract class ArithmeticOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: SourcePosition
+    protected val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double
@@ -29,28 +29,28 @@ abstract class ArithmeticOperatorExpression(
 }
 
 @JsExport
-class AddExpression(left: Expression, right: Expression, position: SourcePosition) :
+class AddExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "+"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue + rightValue
 }
 
 @JsExport
-class SubtractExpression(left: Expression, right: Expression, position: SourcePosition) :
+class SubtractExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "-"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue - rightValue
 }
 
 @JsExport
-class MultiplyExpression(left: Expression, right: Expression, position: SourcePosition) :
+class MultiplyExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "*"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue * rightValue
 }
 
 @JsExport
-class DivideExpression(left: Expression, right: Expression, position: SourcePosition) :
+class DivideExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "/"
 

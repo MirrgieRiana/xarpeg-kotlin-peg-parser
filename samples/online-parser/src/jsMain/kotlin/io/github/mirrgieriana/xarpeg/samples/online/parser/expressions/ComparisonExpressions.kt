@@ -4,7 +4,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -13,7 +13,7 @@ import kotlin.js.JsExport
 abstract class ComparisonOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: SourcePosition
+    protected val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compare(leftValue: Double, rightValue: Double): Boolean
@@ -29,28 +29,28 @@ abstract class ComparisonOperatorExpression(
 }
 
 @JsExport
-class LessThanExpression(left: Expression, right: Expression, position: SourcePosition) :
+class LessThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonOperatorExpression(left, right, position) {
     override val operatorSymbol = "<"
     override fun compare(leftValue: Double, rightValue: Double) = leftValue < rightValue
 }
 
 @JsExport
-class LessThanOrEqualExpression(left: Expression, right: Expression, position: SourcePosition) :
+class LessThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonOperatorExpression(left, right, position) {
     override val operatorSymbol = "<="
     override fun compare(leftValue: Double, rightValue: Double) = leftValue <= rightValue
 }
 
 @JsExport
-class GreaterThanExpression(left: Expression, right: Expression, position: SourcePosition) :
+class GreaterThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonOperatorExpression(left, right, position) {
     override val operatorSymbol = ">"
     override fun compare(leftValue: Double, rightValue: Double) = leftValue > rightValue
 }
 
 @JsExport
-class GreaterThanOrEqualExpression(left: Expression, right: Expression, position: SourcePosition) :
+class GreaterThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonOperatorExpression(left, right, position) {
     override val operatorSymbol = ">="
     override fun compare(leftValue: Double, rightValue: Double) = leftValue >= rightValue

@@ -4,7 +4,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -13,7 +13,7 @@ import kotlin.js.JsExport
 class FunctionCallExpression(
     private val name: String,
     private val args: List<Expression>,
-    private val position: SourcePosition,
+    private val position: ParseResult<*>,
     private val sourceCode: String
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
