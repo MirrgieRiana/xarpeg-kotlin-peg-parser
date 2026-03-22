@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(samples/**)",
+      "Write(samples/**)"
+    ]
+  }
+}
