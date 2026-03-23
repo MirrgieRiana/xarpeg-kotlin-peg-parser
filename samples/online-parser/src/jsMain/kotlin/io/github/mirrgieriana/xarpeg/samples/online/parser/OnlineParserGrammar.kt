@@ -3,8 +3,6 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
-import io.github.mirrgieriana.xarpeg.Tuple2
-import io.github.mirrgieriana.xarpeg.parsers.ignore
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.named
