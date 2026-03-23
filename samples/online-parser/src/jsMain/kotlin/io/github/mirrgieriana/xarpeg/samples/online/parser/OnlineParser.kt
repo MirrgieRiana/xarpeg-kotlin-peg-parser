@@ -2,7 +2,6 @@
 
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
-import io.github.mirrgieriana.xarpeg.MatrixPositionCalculator
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.formatMessage
@@ -38,23 +37,6 @@ data class EvaluationContext(
 
 data class CallFrame(val functionName: String, val position: ParseResult<*>)
 
-fun ParseResult<*>.formatWithContext(source: String): String {
-    val calc = MatrixPositionCalculator(source)
-    val pos = calc.getMatrixPosition(start.coerceAtMost(source.length))
-
-    val lineRange = calc.getLineRange(pos.row)
-    val sourceLine = source.substring(lineRange)
-
-    val highlightStart = start - lineRange.first
-    val highlightEnd = (end - lineRange.first).coerceAtMost(sourceLine.length)
-
-    val before = sourceLine.substring(0, highlightStart)
-    val highlighted = sourceLine.substring(highlightStart, highlightEnd)
-    val after = sourceLine.substring(highlightEnd)
-
-    return "line ${pos.row}, column ${pos.column}: $before[$highlighted]$after"
-}
-
 sealed class Value {
     data class NumberValue(val value: Double) : Value() {
         override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
@@ -72,31 +54,6 @@ sealed class Value {
         val definitionPosition: ParseResult<*>? = null
     ) : Value() {
         override fun toString() = "<lambda(${params.joinToString(", ")})>"
-    }
-}
-
-class EvaluationException(
-    message: String,
-    val context: EvaluationContext? = null,
-    val sourceCode: String? = null,
-    cause: Throwable? = null
-) : Exception(message, cause) {
-    fun formatWithCallStack(): String {
-        val sb = StringBuilder()
-        sb.append("Error: $message")
-
-        if (context != null && context.callStack.isNotEmpty()) {
-            context.callStack.asReversed().forEach { frame ->
-                val location = if (sourceCode != null) {
-                    frame.position.formatWithContext(sourceCode)
-                } else {
-                    "position ${frame.position.start}-${frame.position.end}"
-                }
-                sb.append("\n  at $location")
-            }
-        }
-
-        return sb.toString()
     }
 }
 
