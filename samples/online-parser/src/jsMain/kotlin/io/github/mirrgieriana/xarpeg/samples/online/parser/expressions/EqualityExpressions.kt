@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
@@ -9,10 +7,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 
-@JsExport
 abstract class EqualityOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
@@ -38,14 +33,12 @@ abstract class EqualityOperatorExpression(
     }
 }
 
-@JsExport
 class EqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "=="
     override fun compareValues(result: Boolean) = result
 }
 
-@JsExport
 class NotEqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "!="

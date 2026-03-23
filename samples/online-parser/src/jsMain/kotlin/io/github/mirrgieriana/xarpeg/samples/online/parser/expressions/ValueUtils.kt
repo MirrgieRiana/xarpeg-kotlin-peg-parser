@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
@@ -7,7 +5,6 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
-import kotlin.js.ExperimentalJsExport
 
 fun Value.requireNumber(ctx: EvaluationContext, operatorSymbol: String, side: String): Double {
     require(this is NumberValue) {
