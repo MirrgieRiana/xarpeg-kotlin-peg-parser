@@ -12,7 +12,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.requireNumber
 /**
  * Base class for binary arithmetic operators (+, -, *, /).
  */
-abstract class ArithmeticOperatorExpression(
+abstract class ArithmeticExpression(
     protected val left: Expression,
     protected val right: Expression,
     override val position: ParseResult<*>,
@@ -33,7 +33,7 @@ abstract class ArithmeticOperatorExpression(
  * Addition expression (`left + right`).
  */
 class AddExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ArithmeticOperatorExpression(left, right, position) {
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "+"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue + rightValue
 }
@@ -42,7 +42,7 @@ class AddExpression(left: Expression, right: Expression, position: ParseResult<*
  * Subtraction expression (`left - right`).
  */
 class SubtractExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ArithmeticOperatorExpression(left, right, position) {
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "-"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue - rightValue
 }
@@ -51,7 +51,7 @@ class SubtractExpression(left: Expression, right: Expression, position: ParseRes
  * Multiplication expression (`left * right`).
  */
 class MultiplyExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ArithmeticOperatorExpression(left, right, position) {
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "*"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue * rightValue
 }
@@ -60,7 +60,7 @@ class MultiplyExpression(left: Expression, right: Expression, position: ParseRes
  * Division expression (`left / right`). Throws on division by zero.
  */
 class DivideExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ArithmeticOperatorExpression(left, right, position) {
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "/"
 
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double {

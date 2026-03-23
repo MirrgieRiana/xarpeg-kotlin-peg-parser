@@ -11,7 +11,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.requireNumber
 /**
  * Base class for ordering comparison operators (<, <=, >, >=).
  */
-abstract class ComparisonOperatorExpression(
+abstract class ComparisonExpression(
     protected val left: Expression,
     protected val right: Expression,
     override val position: ParseResult<*>,
@@ -33,7 +33,7 @@ abstract class ComparisonOperatorExpression(
  * Less-than expression (`left < right`).
  */
 class LessThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ComparisonOperatorExpression(left, right, position) {
+    ComparisonExpression(left, right, position) {
     override val operatorSymbol = "<"
     override fun compare(leftValue: Double, rightValue: Double) = leftValue < rightValue
 }
@@ -42,7 +42,7 @@ class LessThanExpression(left: Expression, right: Expression, position: ParseRes
  * Less-than-or-equal expression (`left <= right`).
  */
 class LessThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ComparisonOperatorExpression(left, right, position) {
+    ComparisonExpression(left, right, position) {
     override val operatorSymbol = "<="
     override fun compare(leftValue: Double, rightValue: Double) = leftValue <= rightValue
 }
@@ -51,7 +51,7 @@ class LessThanOrEqualExpression(left: Expression, right: Expression, position: P
  * Greater-than expression (`left > right`).
  */
 class GreaterThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ComparisonOperatorExpression(left, right, position) {
+    ComparisonExpression(left, right, position) {
     override val operatorSymbol = ">"
     override fun compare(leftValue: Double, rightValue: Double) = leftValue > rightValue
 }
@@ -60,7 +60,7 @@ class GreaterThanExpression(left: Expression, right: Expression, position: Parse
  * Greater-than-or-equal expression (`left >= right`).
  */
 class GreaterThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    ComparisonOperatorExpression(left, right, position) {
+    ComparisonExpression(left, right, position) {
     override val operatorSymbol = ">="
     override fun compare(leftValue: Double, rightValue: Double) = leftValue >= rightValue
 }

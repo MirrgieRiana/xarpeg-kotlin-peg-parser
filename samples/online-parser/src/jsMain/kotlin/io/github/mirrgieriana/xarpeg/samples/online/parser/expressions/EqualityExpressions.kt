@@ -11,7 +11,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 /**
  * Base class for equality operators (==, !=).
  */
-abstract class EqualityOperatorExpression(
+abstract class EqualityExpression(
     protected val left: Expression,
     protected val right: Expression,
     override val position: ParseResult<*>,
@@ -42,7 +42,7 @@ abstract class EqualityOperatorExpression(
  * Equality expression (`left == right`).
  */
 class EqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    EqualityOperatorExpression(left, right, position) {
+    EqualityExpression(left, right, position) {
     override val operatorSymbol = "=="
     override fun compareValues(left: Value, right: Value) = left.isEqualTo(right)
 }
@@ -51,7 +51,7 @@ class EqualsExpression(left: Expression, right: Expression, position: ParseResul
  * Inequality expression (`left != right`).
  */
 class NotEqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
-    EqualityOperatorExpression(left, right, position) {
+    EqualityExpression(left, right, position) {
     override val operatorSymbol = "!="
     override fun compareValues(left: Value, right: Value) = left.isEqualTo(right)?.let { !it }
 }
