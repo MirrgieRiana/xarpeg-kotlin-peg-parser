@@ -45,7 +45,7 @@ internal object OnlineParserGrammar {
     // -- Spacing --
 
     /** Matches a single line break: `\r\n`, `\n`, or bare `\r`. */
-    val lineBreak: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""")
+    val lineBreak: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""") named "line-break"
 
     /**
      * Matches the required indentation after a line break.
@@ -65,7 +65,7 @@ internal object OnlineParserGrammar {
     }
 
     /** Horizontal spacing: spaces and tabs, no line breaks. */
-    val s: Parser<Tuple0> = -Regex("""[ \t]*""")
+    val s: Parser<Tuple0> = -Regex("""[ \t]*""") named "whitespace"
 
     /** Whitespace that may span multiple lines. Line breaks require sufficient indentation in indent blocks. */
     val b: Parser<Tuple0> = -((s * lineBreak).oneOrMore * indent).zeroOrMore * s
