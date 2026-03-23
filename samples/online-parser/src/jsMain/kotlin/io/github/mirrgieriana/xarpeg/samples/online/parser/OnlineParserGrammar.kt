@@ -220,6 +220,5 @@ internal object OnlineParserGrammar {
         ProgramExpression(listOf(first) + rest, result)
     }
 
-    val root: Parser<Expression> = whitespace * expression * whitespace
-    val programRoot: Parser<Expression> = whitespace * program * whitespace
+    val root: Parser<Expression> = whitespace * program * whitespace
 }
