@@ -402,7 +402,7 @@ class OnlineParserTest {
     fun showsErrorWhenComparingNumberWithBoolean() {
         val result = evaluateExpression("5 == (3 > 2)")
         assertFalse(result.success)
-        assertTrue(result.output.contains("must be both numbers or both booleans"))
+        assertTrue(result.output.contains("are not comparable"))
     }
 
     // Recursive function tests

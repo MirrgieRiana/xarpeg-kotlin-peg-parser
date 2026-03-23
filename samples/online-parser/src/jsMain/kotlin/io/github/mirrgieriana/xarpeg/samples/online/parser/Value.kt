@@ -5,12 +5,19 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 /**
  * Base type for all runtime values produced by expression evaluation.
  */
-sealed class Value
+sealed class Value {
+    /**
+     * Tests equality with [other]. Returns `true`/`false` if the types are compatible,
+     * or `null` if the types cannot be compared.
+     */
+    abstract fun isEqualTo(other: Value): Boolean?
+}
 
 /**
  * A numeric value. Integers are displayed without a decimal point.
  */
 data class NumberValue(val value: Double) : Value() {
+    override fun isEqualTo(other: Value) = if (other is NumberValue) value == other.value else null
     override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
 }
 
@@ -18,6 +25,7 @@ data class NumberValue(val value: Double) : Value() {
  * A boolean value.
  */
 data class BooleanValue(val value: Boolean) : Value() {
+    override fun isEqualTo(other: Value) = if (other is BooleanValue) value == other.value else null
     override fun toString() = value.toString()
 }
 
@@ -31,6 +39,7 @@ data class LambdaValue(
     val name: String? = null,
     val definitionPosition: ParseResult<*>? = null,
 ) : Value() {
+    override fun isEqualTo(other: Value): Boolean? = null
     override fun toString() = "<lambda(${params.joinToString(", ")})>"
 }
 
