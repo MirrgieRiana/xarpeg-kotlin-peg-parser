@@ -44,7 +44,7 @@ internal object OnlineParserGrammar {
 
     // -- Whitespace & indentation --
 
-    val newline: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""")
+    val lineBreak: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""")
 
     val indent: Parser<Tuple0> = -Parser { context, pos ->
         if (context !is OnlineParserParseContext || !context.isInIndentBlock) {
@@ -60,8 +60,8 @@ internal object OnlineParserGrammar {
 
     val horizontalSpace: Parser<Tuple0> = -Regex("""[ \t]*""")
 
-    val whitespace: Parser<Tuple0> = -((horizontalSpace * newline).oneOrMore * indent).zeroOrMore * horizontalSpace
-    val newlineSep: Parser<Tuple0> = -((horizontalSpace * newline).oneOrMore * indent).oneOrMore * horizontalSpace
+    val whitespace: Parser<Tuple0> = -((horizontalSpace * lineBreak).oneOrMore * indent).zeroOrMore * horizontalSpace
+    val newline: Parser<Tuple0> = -((horizontalSpace * lineBreak).oneOrMore * indent).oneOrMore * horizontalSpace
 
     // -- Terminals --
 
@@ -174,7 +174,7 @@ internal object OnlineParserGrammar {
         if (context.src.getOrNull(afterParamsWs) != ':') return@Parser null
 
         val afterColonWs = context.parseOrNull(horizontalSpace, afterParamsWs + 1)?.end ?: return@Parser null
-        val afterNl = context.parseOrNull(newline, afterColonWs)?.end ?: return@Parser null
+        val afterNl = context.parseOrNull(lineBreak, afterColonWs)?.end ?: return@Parser null
         val indentResult = context.parseOrNull(horizontalSpace, afterNl) ?: return@Parser null
         val indentLevel = indentResult.end - indentResult.start
 
@@ -215,7 +215,7 @@ internal object OnlineParserGrammar {
 
     val expression: Parser<Expression> = assignment
 
-    val program: Parser<Expression> = (expression * (newlineSep * expression).zeroOrMore).result map { result ->
+    val program: Parser<Expression> = (expression * (newline * expression).zeroOrMore).result map { result ->
         val (first, rest) = result.value
         ProgramExpression(listOf(first) + rest, result)
     }
