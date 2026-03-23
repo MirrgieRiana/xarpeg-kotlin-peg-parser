@@ -3,24 +3,12 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseResult
 
 /**
- * Runtime context for expression evaluation, holding call stack, source code reference, and variable bindings.
+ * A single frame in the evaluation call stack, used for error reporting.
  */
-data class EvaluationContext(
-    val callStack: List<CallFrame> = emptyList(),
-    val sourceCode: String? = null,
-    val variableTable: VariableTable = VariableTable(),
-) {
-    /**
-     * Creates a new context with an additional call frame pushed onto the stack.
-     */
-    fun pushFrame(functionName: String, callPosition: ParseResult<*>) =
-        copy(callStack = callStack + CallFrame(functionName, callPosition))
-
-    /**
-     * Creates a new context with a fresh child variable scope.
-     */
-    fun withNewScope() = copy(variableTable = variableTable.createChild())
-}
+data class CallFrame(
+    val functionName: String,
+    val position: ParseResult<*>,
+)
 
 /**
  * Scoped variable table with parent chain for lexical scoping.
@@ -48,9 +36,21 @@ data class VariableTable(
 }
 
 /**
- * A single frame in the evaluation call stack, used for error reporting.
+ * Runtime context for expression evaluation, holding call stack, source code reference, and variable bindings.
  */
-data class CallFrame(
-    val functionName: String,
-    val position: ParseResult<*>,
-)
+data class EvaluationContext(
+    val callStack: List<CallFrame> = emptyList(),
+    val sourceCode: String? = null,
+    val variableTable: VariableTable = VariableTable(),
+) {
+    /**
+     * Creates a new context with an additional call frame pushed onto the stack.
+     */
+    fun pushFrame(functionName: String, callPosition: ParseResult<*>) =
+        copy(callStack = callStack + CallFrame(functionName, callPosition))
+
+    /**
+     * Creates a new context with a fresh child variable scope.
+     */
+    fun withNewScope() = copy(variableTable = variableTable.createChild())
+}

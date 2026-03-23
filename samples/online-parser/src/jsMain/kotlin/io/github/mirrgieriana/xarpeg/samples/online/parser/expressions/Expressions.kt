@@ -10,6 +10,8 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import io.github.mirrgieriana.xarpeg.samples.online.parser.requireBoolean
 
+// -- Atoms --
+
 /**
  * A numeric literal expression.
  */
@@ -32,21 +34,6 @@ class VariableReferenceExpression(
 }
 
 /**
- * A variable assignment expression. Evaluates the right-hand side and binds it to the name.
- */
-class AssignmentExpression(
-    private val name: String,
-    private val valueExpression: Expression,
-    override val position: ParseResult<*>,
-) : Expression {
-    override fun evaluate(ctx: EvaluationContext): Value {
-        val value = valueExpression.evaluate(ctx)
-        ctx.variableTable.set(name, value)
-        return value
-    }
-}
-
-/**
  * A lambda expression that captures the current scope.
  */
 class LambdaExpression(
@@ -56,34 +43,6 @@ class LambdaExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         LambdaValue(params, body, mutableMapOf(), definitionPosition = position)
-}
-
-/**
- * A sequence of expressions (program). Evaluates all expressions and returns the last result.
- */
-class ProgramExpression(
-    private val expressions: List<Expression>,
-    override val position: ParseResult<*>,
-) : Expression {
-    override fun evaluate(ctx: EvaluationContext) =
-        expressions.fold(NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
-}
-
-/**
- * A ternary conditional expression (`condition ? trueExpr : falseExpr`).
- */
-class TernaryExpression(
-    private val condition: Expression,
-    private val trueExpression: Expression,
-    private val falseExpression: Expression,
-    override val position: ParseResult<*>,
-) : Expression {
-    override fun evaluate(ctx: EvaluationContext): Value {
-        val condVal = condition.evaluate(ctx)
-        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("ternary operator", position))
-        val condBool = condVal.requireBoolean(newCtx, "Condition in ternary operator")
-        return if (condBool) trueExpression.evaluate(ctx) else falseExpression.evaluate(ctx)
-    }
 }
 
 /**
@@ -132,4 +91,51 @@ class FunctionCallExpression(
         var functionCallCount = 0
         private const val MAX_FUNCTION_CALLS = 100
     }
+}
+
+// -- Control flow --
+
+/**
+ * A ternary conditional expression (`condition ? trueExpr : falseExpr`).
+ */
+class TernaryExpression(
+    private val condition: Expression,
+    private val trueExpression: Expression,
+    private val falseExpression: Expression,
+    override val position: ParseResult<*>,
+) : Expression {
+    override fun evaluate(ctx: EvaluationContext): Value {
+        val condVal = condition.evaluate(ctx)
+        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("ternary operator", position))
+        val condBool = condVal.requireBoolean(newCtx, "Condition in ternary operator")
+        return if (condBool) trueExpression.evaluate(ctx) else falseExpression.evaluate(ctx)
+    }
+}
+
+// -- Top-level --
+
+/**
+ * A variable assignment expression. Evaluates the right-hand side and binds it to the name.
+ */
+class AssignmentExpression(
+    private val name: String,
+    private val valueExpression: Expression,
+    override val position: ParseResult<*>,
+) : Expression {
+    override fun evaluate(ctx: EvaluationContext): Value {
+        val value = valueExpression.evaluate(ctx)
+        ctx.variableTable.set(name, value)
+        return value
+    }
+}
+
+/**
+ * A sequence of expressions (program). Evaluates all expressions and returns the last result.
+ */
+class ProgramExpression(
+    private val expressions: List<Expression>,
+    override val position: ParseResult<*>,
+) : Expression {
+    override fun evaluate(ctx: EvaluationContext) =
+        expressions.fold(NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
 }
