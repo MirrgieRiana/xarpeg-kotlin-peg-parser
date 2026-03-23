@@ -1,10 +1,11 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.LambdaValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
 class NumberLiteralExpression(private val value: NumberValue, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value = value
