@@ -3,6 +3,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
 import io.github.mirrgieriana.xarpeg.Tuple0
+import io.github.mirrgieriana.xarpeg.Tuple2
 import io.github.mirrgieriana.xarpeg.parsers.ignore
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
@@ -69,6 +70,7 @@ internal object OnlineParserGrammar {
 
     /** Whitespace that may span multiple lines. Line breaks require sufficient indentation in indent blocks. */
     val b: Parser<Tuple0> = -((s * lineBreak).oneOrMore * indent).zeroOrMore * s
+
     /** Whitespace that must contain at least one line break. Used as a statement separator. */
     val newline: Parser<Tuple0> = -((s * lineBreak).oneOrMore * indent).oneOrMore * s
 
@@ -172,44 +174,29 @@ internal object OnlineParserGrammar {
 
     // -- Indent-based function definition --
 
-    val indentFunctionDef: Parser<Expression> = Parser { context, start ->
+    /**
+     * Creates a parser that expects indented content.
+     * Measures the indentation at the current position using [indentParser],
+     * verifies it exceeds the current indent level, then parses [body] within that indent scope.
+     */
+    fun <T : Any> indented(indentParser: Parser<*>, body: Parser<T>): Parser<T> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null
-
-        val nameResult = context.parseOrNull(identifier, start) ?: return@Parser null
-        val afterNameWs = context.parseOrNull(b, nameResult.end)?.end ?: return@Parser null
-        val paramListResult = context.parseOrNull(paramList, afterNameWs) ?: return@Parser null
-        val afterParamsWs = context.parseOrNull(b, paramListResult.end)?.end ?: return@Parser null
-
-        if (context.src.getOrNull(afterParamsWs) != ':') return@Parser null
-
-        val afterColonWs = context.parseOrNull(s, afterParamsWs + 1)?.end ?: return@Parser null
-        val afterNl = context.parseOrNull(lineBreak, afterColonWs)?.end ?: return@Parser null
-        val indentResult = context.parseOrNull(s, afterNl) ?: return@Parser null
+        val indentResult = context.parseOrNull(indentParser, start) ?: return@Parser null
         val indentLevel = indentResult.end - indentResult.start
-
         if (indentLevel <= context.currentIndent) return@Parser null
-
         context.pushIndent(indentLevel)
-        val bodyResult: ParseResult<Expression>?
         try {
-            bodyResult = context.parseOrNull(ref { expression }, indentResult.end)
+            context.parseOrNull(body, indentResult.end)
         } finally {
             context.popIndent()
         }
-
-        bodyResult ?: return@Parser null
-
-        val wholePosition = ParseResult(Unit, start, bodyResult.end)
-        ParseResult(
-            AssignmentExpression(
-                nameResult.value,
-                LambdaExpression(paramListResult.value, bodyResult.value, wholePosition),
-                wholePosition,
-            ),
-            start,
-            bodyResult.end,
-        )
     }
+
+    val indentFunctionDef: Parser<Expression> =
+        (identifier * b * paramList * b * -':' * s * lineBreak * indented(s, ref { expression })).result map { result ->
+            val (name, params, body) = result.value
+            AssignmentExpression(name, LambdaExpression(params, body, result), result)
+        }
 
     // -- Top-level rules --
 
