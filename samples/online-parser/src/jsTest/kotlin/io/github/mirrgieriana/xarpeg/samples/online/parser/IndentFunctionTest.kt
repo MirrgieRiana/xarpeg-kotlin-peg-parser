@@ -12,10 +12,9 @@ class IndentFunctionTest {
     // -----------------------------------------------------------------------
 
     @Test
-    fun parseContextInitiallyHasZeroIndentAndIsNotInBlock() {
+    fun parseContextInitiallyHasZeroIndent() {
         val ctx = OnlineParserParseContext("source")
         assertEquals(0, ctx.currentIndent)
-        assertFalse(ctx.isInIndentBlock)
     }
 
     @Test
@@ -23,13 +22,6 @@ class IndentFunctionTest {
         val ctx = OnlineParserParseContext("source")
         ctx.pushIndent(4)
         assertEquals(4, ctx.currentIndent)
-    }
-
-    @Test
-    fun parseContextIsInIndentBlockAfterPush() {
-        val ctx = OnlineParserParseContext("source")
-        ctx.pushIndent(4)
-        assertTrue(ctx.isInIndentBlock)
     }
 
     @Test
@@ -41,26 +33,15 @@ class IndentFunctionTest {
     }
 
     @Test
-    fun parseContextIsNotInIndentBlockAfterPop() {
-        val ctx = OnlineParserParseContext("source")
-        ctx.pushIndent(4)
-        ctx.popIndent()
-        assertFalse(ctx.isInIndentBlock)
-    }
-
-    @Test
     fun parseContextStacksMultipleIndentLevels() {
         val ctx = OnlineParserParseContext("source")
         ctx.pushIndent(4)
         ctx.pushIndent(8)
         assertEquals(8, ctx.currentIndent)
-        assertTrue(ctx.isInIndentBlock)
         ctx.popIndent()
         assertEquals(4, ctx.currentIndent)
-        assertTrue(ctx.isInIndentBlock)
         ctx.popIndent()
         assertEquals(0, ctx.currentIndent)
-        assertFalse(ctx.isInIndentBlock)
     }
 
     // -----------------------------------------------------------------------

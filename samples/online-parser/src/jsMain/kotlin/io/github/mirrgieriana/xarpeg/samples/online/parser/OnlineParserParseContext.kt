@@ -20,12 +20,6 @@ class OnlineParserParseContext(src: String) : DefaultParseContext(src) {
         get() = indentStack.last()
 
     /**
-     * Whether parsing is currently inside an indent block (stack depth > 1).
-     */
-    val isInIndentBlock: Boolean
-        get() = indentStack.size > 1
-
-    /**
      * Pushes a new indentation level onto the stack. Must be greater than [currentIndent].
      */
     fun pushIndent(indent: Int) {

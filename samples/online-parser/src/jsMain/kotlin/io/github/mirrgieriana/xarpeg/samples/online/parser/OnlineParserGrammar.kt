@@ -58,7 +58,7 @@ internal object OnlineParserGrammar {
      */
     val indent: Parser<Tuple0> = Parser { context, pos ->
         val result = context.parseOrNull(s, pos) ?: return@Parser ParseResult(Tuple0, pos, pos)
-        if (context is OnlineParserParseContext && context.isInIndentBlock && result.end - pos < context.currentIndent) {
+        if (context is OnlineParserParseContext && result.end - pos < context.currentIndent) {
             return@Parser null
         }
         result
