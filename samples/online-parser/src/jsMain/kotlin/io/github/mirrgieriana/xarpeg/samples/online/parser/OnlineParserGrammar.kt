@@ -213,16 +213,16 @@ internal object OnlineParserGrammar {
 
     // -- Top-level rules --
 
-    val assignment: Parser<Expression> = or(
+    val valueExpression: Parser<Expression> = ternary
+
+    val expression: Parser<Expression> = or(
         indentFunctionDef,
         (identifier * b * -'=' * b * ref { expression }).result map { result ->
             val (name, valueExpr) = result.value
             AssignmentExpression(name, valueExpr, result)
         },
-        ternary,
+        valueExpression,
     )
-
-    val expression: Parser<Expression> = assignment
 
     val program: Parser<Expression> = (expression * (newline * expression).zeroOrMore).result map { result ->
         val (first, rest) = result.value
