@@ -8,6 +8,7 @@ import io.github.mirrgieriana.xarpeg.parsers.ignore
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.named
+import io.github.mirrgieriana.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpeg.parsers.or
 import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.ref
@@ -157,14 +158,15 @@ internal object OnlineParserGrammar {
 
     // -- Ternary --
 
-    val ternaryExpr: Parser<Expression> = ref { equalityComparison } * b * -'?' * b *
-        ref { equalityComparison } * b * -':' * b *
-        ref { equalityComparison }
-    val ternary: Parser<Expression> = or(
-        ternaryExpr.result map { result ->
+    val ternaryExpr: Parser<Expression> =
+        (ref { equalityComparison } * b * -'?' * b *
+            ref { equalityComparison } * b * -':' * b *
+            ref { equalityComparison }).result map { result ->
             val (cond, trueExpr, falseExpr) = result.value
             TernaryExpression(cond, trueExpr, falseExpr, result)
-        },
+        }
+    val ternary: Parser<Expression> = or(
+        ternaryExpr,
         equalityComparison,
     )
 
