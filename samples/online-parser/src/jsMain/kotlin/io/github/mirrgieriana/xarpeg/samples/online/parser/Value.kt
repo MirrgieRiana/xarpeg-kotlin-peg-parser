@@ -21,3 +21,17 @@ data class LambdaValue(
 ) : Value() {
     override fun toString() = "<lambda(${params.joinToString(", ")})>"
 }
+
+fun Value.requireNumber(ctx: EvaluationContext, operatorSymbol: String, side: String): Double {
+    require(this is NumberValue) {
+        throw EvaluationException("$side operand of $operatorSymbol must be a number", ctx, ctx.sourceCode)
+    }
+    return value
+}
+
+fun Value.requireBoolean(ctx: EvaluationContext, description: String): Boolean {
+    require(this is BooleanValue) {
+        throw EvaluationException("$description must be a boolean", ctx, ctx.sourceCode)
+    }
+    return value
+}
