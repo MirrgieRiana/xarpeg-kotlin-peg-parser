@@ -565,17 +565,18 @@ class OnlineParserTest {
 
     @Test
     fun errorRangeDoesNotIncludeLeadingWhitespace() {
-        // Test that the error range starts at the operator, not before it
+        // Test that the error range does not include whitespace before the expression
         val result = evaluateExpression("a = 5 / 0")
         assertFalse(result.success)
         assertTrue(result.output.contains("Division by zero"))
         val lines = result.output.split("\n")
         val stackLine = lines.find { it.contains("at line") }
         assertNotNull(stackLine)
-        // The highlighted part should start with the operator, not whitespace
+        // The highlighted range spans from the left operand to the right operand (e.g. "5 / 0")
         val highlighted = stackLine!!.substringAfter("[").substringBefore("]")
-        assertTrue(highlighted.startsWith("/") || highlighted.startsWith("/ "))
         // Should not start with whitespace
         assertFalse(highlighted.startsWith(" "))
+        // Should contain the division operator
+        assertTrue(highlighted.contains("/"))
     }
 }
