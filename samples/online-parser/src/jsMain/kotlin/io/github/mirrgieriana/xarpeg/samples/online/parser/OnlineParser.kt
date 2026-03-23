@@ -89,9 +89,11 @@ sealed class Value {
     data class NumberValue(val value: Double) : Value() {
         override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
     }
+
     data class BooleanValue(val value: Boolean) : Value() {
         override fun toString() = value.toString()
     }
+
     data class LambdaValue(
         val params: List<String>,
         val body: Expression,
@@ -266,10 +268,10 @@ private object ExpressionGrammar {
 
     private val assignment: Parser<Expression> = run {
         indentFunctionDef +
-        ((identifier * whitespace * -'=' * whitespace * ref { expression }).result map { result ->
-            val (name, valueExpr) = result.value
-            AssignmentExpression(name, valueExpr, result)
-        }) + ternary
+            ((identifier * whitespace * -'=' * whitespace * ref { expression }).result map { result ->
+                val (name, valueExpr) = result.value
+                AssignmentExpression(name, valueExpr, result)
+            }) + ternary
     }
 
     val expression: Parser<Expression> = assignment
