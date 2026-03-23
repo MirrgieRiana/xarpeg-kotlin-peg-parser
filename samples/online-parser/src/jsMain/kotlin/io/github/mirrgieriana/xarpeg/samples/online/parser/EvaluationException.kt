@@ -23,7 +23,7 @@ class EvaluationException(
         if (context != null && context.callStack.isNotEmpty()) {
             context.callStack.asReversed().forEach { frame ->
                 val location = if (sourceCode != null) {
-                    formatWithContext(frame.position, sourceCode)
+                    formatPositionHighlight(frame.position, sourceCode)
                 } else {
                     "position ${frame.position.start}-${frame.position.end}"
                 }
@@ -34,7 +34,7 @@ class EvaluationException(
         return sb.toString()
     }
 
-    private fun formatWithContext(position: ParseResult<*>, source: String): String {
+    private fun formatPositionHighlight(position: ParseResult<*>, source: String): String {
         val calc = MatrixPositionCalculator(source)
         val pos = calc.getMatrixPosition(position.start.coerceAtMost(source.length))
 
