@@ -68,7 +68,7 @@ internal object ExpressionGrammar {
 
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
-    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) } named "number"
+    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { NumberValue(it.value.toDouble()) } named "number"
 
     private val variableRef: Parser<Expression> = identifier.result map { result ->
         VariableReferenceExpression(result.value, result)

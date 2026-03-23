@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
+import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -24,7 +24,7 @@ abstract class ComparisonOperatorExpression(
         val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
         val leftNum = leftVal.requireNumber(newCtx, operatorSymbol, "Left")
         val rightNum = rightVal.requireNumber(newCtx, operatorSymbol, "Right")
-        return Value.BooleanValue(compare(leftNum, rightNum))
+        return BooleanValue(compare(leftNum, rightNum))
     }
 }
 

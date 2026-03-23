@@ -5,7 +5,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
+import io.github.mirrgieriana.xarpeg.samples.online.parser.LambdaValue
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -19,7 +19,7 @@ class FunctionCallExpression(
         val func = ctx.variableTable.get(name)
             ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
 
-        if (func !is Value.LambdaValue) {
+        if (func !is LambdaValue) {
             throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
         }
 

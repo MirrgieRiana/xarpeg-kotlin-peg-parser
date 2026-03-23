@@ -6,6 +6,8 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
+import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -24,15 +26,15 @@ abstract class EqualityOperatorExpression(
         val rightVal = right.evaluate(ctx)
 
         val compareResult = when {
-            leftVal is Value.NumberValue && rightVal is Value.NumberValue -> leftVal.value == rightVal.value
-            leftVal is Value.BooleanValue && rightVal is Value.BooleanValue -> leftVal.value == rightVal.value
+            leftVal is NumberValue && rightVal is NumberValue -> leftVal.value == rightVal.value
+            leftVal is BooleanValue && rightVal is BooleanValue -> leftVal.value == rightVal.value
             else -> {
                 val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
                 throw EvaluationException("Operands of $operatorSymbol must be both numbers or both booleans", newCtx, ctx.sourceCode)
             }
         }
 
-        return Value.BooleanValue(compareValues(compareResult))
+        return BooleanValue(compareValues(compareResult))
     }
 }
 

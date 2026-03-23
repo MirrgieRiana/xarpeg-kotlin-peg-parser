@@ -6,7 +6,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
+import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -24,7 +24,7 @@ abstract class ArithmeticOperatorExpression(
         val rightVal = right.evaluate(ctx)
         val leftNum = leftVal.requireNumber(ctx, operatorSymbol, "Left")
         val rightNum = rightVal.requireNumber(ctx, operatorSymbol, "Right")
-        return Value.NumberValue(compute(ctx, leftNum, rightNum))
+        return NumberValue(compute(ctx, leftNum, rightNum))
     }
 }
 
