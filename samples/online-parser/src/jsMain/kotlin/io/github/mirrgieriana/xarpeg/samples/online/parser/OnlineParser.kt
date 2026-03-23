@@ -141,13 +141,6 @@ private object ExpressionGrammar {
 
     private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { Value.NumberValue(it.value.toDouble()) } named "number"
 
-    private fun leftAssociativeBinaryOp(
-        term: Parser<Expression>,
-        operators: Parser<(Expression) -> Expression>
-    ) = (term * operators.zeroOrMore) map { (first, rest) ->
-        rest.fold(first) { acc, opFunc -> opFunc(acc) }
-    }
-
     private val variableRef: Parser<Expression> = identifier.result map { result ->
         VariableReferenceExpression(result.value, result)
     }
@@ -186,63 +179,43 @@ private object ExpressionGrammar {
 
     private val factor = primary
 
-    private val multiplyOp = (whitespace * +'*' * whitespace * factor) map { (_, rightExpr: Expression) ->
-        return@map { left: Expression -> MultiplyExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-    }
-
-    private val divideOp = (whitespace * +'/' * whitespace * factor) map { (_, rightExpr: Expression) ->
-        return@map { left: Expression -> DivideExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-    }
-
     private val product: Parser<Expression> =
-        leftAssociativeBinaryOp(factor, multiplyOp + divideOp)
-
-    private val addOp = (whitespace * +'+' * whitespace * product) map { (_, rightExpr: Expression) ->
-        return@map { left: Expression -> AddExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-    }
-
-    private val subtractOp = (whitespace * +'-' * whitespace * product) map { (_, rightExpr: Expression) ->
-        return@map { left: Expression -> SubtractExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-    }
+        leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { left, op, right ->
+            val position = ParseResult(Unit, left.position.start, right.position.end)
+            when (op) {
+                '*' -> MultiplyExpression(left, right, position)
+                else -> DivideExpression(left, right, position)
+            }
+        }
 
     private val sum: Parser<Expression> =
-        leftAssociativeBinaryOp(product, addOp + subtractOp)
-
-    private val orderingComparison: Parser<Expression> = run {
-        val lessEqualOp = (whitespace * +"<=" * whitespace * sum) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> LessThanOrEqualExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
+        leftAssociative(product, whitespace * (+'+' + +'-') * whitespace) { left, op, right ->
+            val position = ParseResult(Unit, left.position.start, right.position.end)
+            when (op) {
+                '+' -> AddExpression(left, right, position)
+                else -> SubtractExpression(left, right, position)
+            }
         }
 
-        val greaterEqualOp = (whitespace * +">=" * whitespace * sum) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> GreaterThanOrEqualExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
+    private val orderingComparison: Parser<Expression> =
+        leftAssociative(sum, whitespace * (+"<=" + +">=" + +"<" + +">") * whitespace) { left, op, right ->
+            val position = ParseResult(Unit, left.position.start, right.position.end)
+            when (op) {
+                "<=" -> LessThanOrEqualExpression(left, right, position)
+                ">=" -> GreaterThanOrEqualExpression(left, right, position)
+                "<" -> LessThanExpression(left, right, position)
+                else -> GreaterThanExpression(left, right, position)
+            }
         }
 
-        val lessOp = (whitespace * +'<' * whitespace * sum) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> LessThanExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
+    private val equalityComparison: Parser<Expression> =
+        leftAssociative(orderingComparison, whitespace * (+"==" + +"!=") * whitespace) { left, op, right ->
+            val position = ParseResult(Unit, left.position.start, right.position.end)
+            when (op) {
+                "==" -> EqualsExpression(left, right, position)
+                else -> NotEqualsExpression(left, right, position)
+            }
         }
-
-        val greaterOp = (whitespace * +'>' * whitespace * sum) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> GreaterThanExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-        }
-
-        val restItem = lessEqualOp + greaterEqualOp + lessOp + greaterOp
-
-        leftAssociativeBinaryOp(sum, restItem)
-    }
-
-    private val equalityComparison: Parser<Expression> = run {
-        val equalOp = (whitespace * +"==" * whitespace * orderingComparison) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> EqualsExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-        }
-
-        val notEqualOp = (whitespace * +"!=" * whitespace * orderingComparison) map { (_, rightExpr: Expression) ->
-            return@map { left: Expression -> NotEqualsExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
-        }
-
-        val restItem = equalOp + notEqualOp
-
-        leftAssociativeBinaryOp(orderingComparison, restItem)
-    }
 
     private val ternary: Parser<Expression> = run {
         val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
