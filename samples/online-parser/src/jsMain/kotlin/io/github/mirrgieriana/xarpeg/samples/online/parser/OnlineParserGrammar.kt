@@ -32,42 +32,61 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractE
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
 
+/**
+ * PEG grammar for the online parser's expression language.
+ *
+ * Supports arithmetic, comparison, equality, ternary operators, lambda expressions,
+ * function calls, variable assignment, and indent-based function definitions.
+ */
 internal object OnlineParserGrammar {
 
-    // --- Indent-aware whitespace parsers ---
+    // -- Whitespace & indentation --
 
-    /** Matches a single newline sequence: \r\n, \n, or bare \r */
+    /**
+     * Matches a single newline: `\r\n`, `\n`, or bare `\r`.
+     */
     private val newline = -Regex("\\r\\n|[\\r\\n]")
 
     /**
      * Matches the required indentation after a newline.
-     * Inside an indent block, requires at least the current indent level of spaces/tabs.
-     * Outside an indent block, matches zero characters (always succeeds).
+     * Inside an indent block, requires at least [OnlineParserParseContext.currentIndent] spaces/tabs.
+     * Outside an indent block, succeeds without consuming input.
      */
     private val indent: Parser<Tuple0> = Parser { context, pos ->
-        if (context is OnlineParserParseContext && context.isInIndentBlock) {
-            var spaceEnd = pos
-            while (spaceEnd < context.src.length &&
-                (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')
-            ) spaceEnd++
-            if (spaceEnd - pos < context.currentIndent) return@Parser null
-            ParseResult(Tuple0, pos, spaceEnd)
-        } else {
-            ParseResult(Tuple0, pos, pos)
+        if (context !is OnlineParserParseContext || !context.isInIndentBlock) {
+            return@Parser ParseResult(Tuple0, pos, pos)
         }
+        var spaceEnd = pos
+        while (spaceEnd < context.src.length && (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')) {
+            spaceEnd++
+        }
+        if (spaceEnd - pos < context.currentIndent) return@Parser null
+        ParseResult(Tuple0, pos, spaceEnd)
     }
 
-    /** Matches a newline followed by required indentation */
+    /**
+     * Matches a newline followed by the required indentation.
+     */
     private val newlineAndIndent = newline * indent
 
-    /** Matches any amount of whitespace including newlines. Within indent blocks, newlines must be followed by the required indentation. */
+    /**
+     * Matches whitespace including newlines.
+     * Within indent blocks, each newline must be followed by sufficient indentation.
+     */
     private val whitespace = (-Regex("[ \t]*") * newlineAndIndent).zeroOrMore.ignore * -Regex("[ \t]*")
 
-    // --- Expression grammar ---
+    /**
+     * Matches horizontal whitespace only (spaces and tabs, no newlines).
+     */
+    private val horizontalSpace = +Regex("[ \\t]*")
+
+    // -- Terminals --
 
     private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
 
     private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { NumberValue(it.value.toDouble()) } named "number"
+
+    // -- Atoms --
 
     private val variableRef: Parser<Expression> = identifier.result map { result ->
         VariableReferenceExpression(result.value, result)
@@ -82,9 +101,9 @@ internal object OnlineParserGrammar {
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
     private val lambda: Parser<Expression> =
-        (paramList * whitespace * -Regex("->") * whitespace * ref { expression }).result map { result ->
-            val (params, bodyParser) = result.value
-            LambdaExpression(params, bodyParser, result)
+        (paramList * whitespace * -"->" * whitespace * ref { expression }).result map { result ->
+            val (params, body) = result.value
+            LambdaExpression(params, body, result)
         }
 
     private val exprList: Parser<List<Expression>> = run {
@@ -102,10 +121,13 @@ internal object OnlineParserGrammar {
         }
 
     private val primary: Parser<Expression> =
-        lambda + functionCall + variableRef + (number.result map { NumberLiteralExpression(it.value, it) }) +
+        lambda + functionCall + variableRef +
+            (number.result map { NumberLiteralExpression(it.value, it) }) +
             (-'(' * whitespace * ref { expression } * whitespace * -')')
 
     private val factor = primary
+
+    // -- Binary operators --
 
     private val product: Parser<Expression> =
         leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { left, op, right ->
@@ -145,6 +167,8 @@ internal object OnlineParserGrammar {
             }
         }
 
+    // -- Ternary --
+
     private val ternary: Parser<Expression> = run {
         val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
             ref { equalityComparison } * whitespace * -':' * whitespace *
@@ -155,7 +179,7 @@ internal object OnlineParserGrammar {
         }) + equalityComparison)
     }
 
-    private val horizontalSpace = +Regex("[ \\t]*")
+    // -- Indent-based function definition --
 
     private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null
@@ -188,17 +212,15 @@ internal object OnlineParserGrammar {
         ParseResult(
             AssignmentExpression(
                 nameResult.value,
-                LambdaExpression(
-                    paramListResult.value,
-                    bodyResult.value,
-                    wholePosition
-                ),
-                wholePosition
+                LambdaExpression(paramListResult.value, bodyResult.value, wholePosition),
+                wholePosition,
             ),
             start,
-            bodyResult.end
+            bodyResult.end,
         )
     }
+
+    // -- Top-level rules --
 
     private val assignment: Parser<Expression> = run {
         indentFunctionDef +

@@ -9,10 +9,13 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import io.github.mirrgieriana.xarpeg.samples.online.parser.requireNumber
 
+/**
+ * Base class for binary arithmetic operators (+, -, *, /).
+ */
 abstract class ArithmeticOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    override val position: ParseResult<*>
+    override val position: ParseResult<*>,
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double
@@ -26,24 +29,36 @@ abstract class ArithmeticOperatorExpression(
     }
 }
 
+/**
+ * Addition expression (`left + right`).
+ */
 class AddExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "+"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue + rightValue
 }
 
+/**
+ * Subtraction expression (`left - right`).
+ */
 class SubtractExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "-"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue - rightValue
 }
 
+/**
+ * Multiplication expression (`left * right`).
+ */
 class MultiplyExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "*"
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue * rightValue
 }
 
+/**
+ * Division expression (`left / right`). Throws on division by zero.
+ */
 class DivideExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ArithmeticOperatorExpression(left, right, position) {
     override val operatorSymbol = "/"

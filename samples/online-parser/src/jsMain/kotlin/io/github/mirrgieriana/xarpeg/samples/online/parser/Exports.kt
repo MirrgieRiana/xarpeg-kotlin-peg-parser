@@ -9,12 +9,19 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.FunctionC
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
+/**
+ * Result of evaluating an expression, containing success status and output string.
+ */
 @JsExport
 data class ExpressionResult(
     val success: Boolean,
-    val output: String
+    val output: String,
 )
 
+/**
+ * Parses and evaluates the given [input] string as an expression program.
+ * Returns an [ExpressionResult] with the evaluation output or an error message.
+ */
 @JsExport
 fun evaluateExpression(input: String): ExpressionResult {
     return try {

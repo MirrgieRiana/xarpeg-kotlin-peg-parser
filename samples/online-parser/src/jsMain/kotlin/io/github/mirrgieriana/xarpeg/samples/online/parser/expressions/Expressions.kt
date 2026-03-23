@@ -10,16 +10,35 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 import io.github.mirrgieriana.xarpeg.samples.online.parser.requireBoolean
 
-class NumberLiteralExpression(private val value: NumberValue, override val position: ParseResult<*>) : Expression {
+/**
+ * A numeric literal expression.
+ */
+class NumberLiteralExpression(
+    private val value: NumberValue,
+    override val position: ParseResult<*>,
+) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value = value
 }
 
-class VariableReferenceExpression(private val name: String, override val position: ParseResult<*>) : Expression {
+/**
+ * A variable reference expression. Throws if the variable is undefined.
+ */
+class VariableReferenceExpression(
+    private val name: String,
+    override val position: ParseResult<*>,
+) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
 }
 
-class AssignmentExpression(private val name: String, private val valueExpression: Expression, override val position: ParseResult<*>) : Expression {
+/**
+ * A variable assignment expression. Evaluates the right-hand side and binds it to the name.
+ */
+class AssignmentExpression(
+    private val name: String,
+    private val valueExpression: Expression,
+    override val position: ParseResult<*>,
+) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val value = valueExpression.evaluate(ctx)
         ctx.variableTable.set(name, value)
@@ -27,21 +46,37 @@ class AssignmentExpression(private val name: String, private val valueExpression
     }
 }
 
-class LambdaExpression(private val params: List<String>, private val body: Expression, override val position: ParseResult<*>) : Expression {
+/**
+ * A lambda expression that captures the current scope.
+ */
+class LambdaExpression(
+    private val params: List<String>,
+    private val body: Expression,
+    override val position: ParseResult<*>,
+) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         LambdaValue(params, body, mutableMapOf(), definitionPosition = position)
 }
 
-class ProgramExpression(private val expressions: List<Expression>, override val position: ParseResult<*>) : Expression {
+/**
+ * A sequence of expressions (program). Evaluates all expressions and returns the last result.
+ */
+class ProgramExpression(
+    private val expressions: List<Expression>,
+    override val position: ParseResult<*>,
+) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         expressions.fold(NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
 }
 
+/**
+ * A ternary conditional expression (`condition ? trueExpr : falseExpr`).
+ */
 class TernaryExpression(
     private val condition: Expression,
     private val trueExpression: Expression,
     private val falseExpression: Expression,
-    override val position: ParseResult<*>
+    override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val condVal = condition.evaluate(ctx)
@@ -51,10 +86,13 @@ class TernaryExpression(
     }
 }
 
+/**
+ * A function call expression. Evaluates arguments, binds them to parameters, and evaluates the body.
+ */
 class FunctionCallExpression(
     private val name: String,
     private val args: List<Expression>,
-    override val position: ParseResult<*>
+    override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val func = ctx.variableTable.get(name)
@@ -68,7 +106,7 @@ class FunctionCallExpression(
             throw EvaluationException(
                 "Function $name expects ${func.params.size} arguments, but got ${args.size}",
                 ctx,
-                ctx.sourceCode
+                ctx.sourceCode,
             )
         }
 
@@ -77,7 +115,7 @@ class FunctionCallExpression(
             throw EvaluationException(
                 "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
                 ctx,
-                ctx.sourceCode
+                ctx.sourceCode,
             )
         }
 

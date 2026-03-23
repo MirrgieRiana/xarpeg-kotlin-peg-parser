@@ -3,12 +3,19 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.MatrixPositionCalculator
 import io.github.mirrgieriana.xarpeg.ParseResult
 
+/**
+ * Exception thrown during expression evaluation, with optional call stack for error reporting.
+ */
 class EvaluationException(
     message: String,
     val context: EvaluationContext? = null,
     val sourceCode: String? = null,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : Exception(message, cause) {
+
+    /**
+     * Formats the error message with a full call stack trace, showing source positions.
+     */
     fun formatWithCallStack(): String {
         val sb = StringBuilder()
         sb.append("Error: $message")

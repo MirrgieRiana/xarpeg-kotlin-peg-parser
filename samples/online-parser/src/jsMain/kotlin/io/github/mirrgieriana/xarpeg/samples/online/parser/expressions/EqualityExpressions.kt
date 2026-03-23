@@ -9,10 +9,13 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
+/**
+ * Base class for equality operators (==, !=).
+ */
 abstract class EqualityOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    override val position: ParseResult<*>
+    override val position: ParseResult<*>,
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compareValues(result: Boolean): Boolean
@@ -34,12 +37,18 @@ abstract class EqualityOperatorExpression(
     }
 }
 
+/**
+ * Equality expression (`left == right`).
+ */
 class EqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "=="
     override fun compareValues(result: Boolean) = result
 }
 
+/**
+ * Inequality expression (`left != right`).
+ */
 class NotEqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityOperatorExpression(left, right, position) {
     override val operatorSymbol = "!="
