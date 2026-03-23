@@ -69,49 +69,49 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionDefNoParams() {
-        val result = parseExpression("f():\n    42\nf()")
+        val result = evaluateExpression("f():\n    42\nf()")
         assertTrue(result.success)
         assertEquals("42", result.output)
     }
 
     @Test
     fun indentFunctionDefOneParam() {
-        val result = parseExpression("double(x):\n    x * 2\ndouble(5)")
+        val result = evaluateExpression("double(x):\n    x * 2\ndouble(5)")
         assertTrue(result.success)
         assertEquals("10", result.output)
     }
 
     @Test
     fun indentFunctionDefTwoParams() {
-        val result = parseExpression("add(a, b):\n    a + b\nadd(3, 4)")
+        val result = evaluateExpression("add(a, b):\n    a + b\nadd(3, 4)")
         assertTrue(result.success)
         assertEquals("7", result.output)
     }
 
     @Test
     fun indentFunctionDefThreeParams() {
-        val result = parseExpression("sumThree(a, b, c):\n    a + b + c\nsumThree(1, 2, 3)")
+        val result = evaluateExpression("sumThree(a, b, c):\n    a + b + c\nsumThree(1, 2, 3)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
 
     @Test
     fun indentFunctionDefProducesLambdaOutput() {
-        val result = parseExpression("f(x):\n    x + 1")
+        val result = evaluateExpression("f(x):\n    x + 1")
         assertTrue(result.success)
         assertTrue(result.output.contains("lambda"))
     }
 
     @Test
     fun indentFunctionDefResultIsCallable() {
-        val result = parseExpression("inc(x):\n    x + 1\ninc(9)")
+        val result = evaluateExpression("inc(x):\n    x + 1\ninc(9)")
         assertTrue(result.success)
         assertEquals("10", result.output)
     }
 
     @Test
     fun indentFunctionDefWithParamListWhitespace() {
-        val result = parseExpression("add( a , b ):\n    a + b\nadd(10, 20)")
+        val result = evaluateExpression("add( a , b ):\n    a + b\nadd(10, 20)")
         assertTrue(result.success)
         assertEquals("30", result.output)
     }
@@ -122,35 +122,35 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionDefWith2SpaceIndent() {
-        val result = parseExpression("f(x):\n  x * 3\nf(4)")
+        val result = evaluateExpression("f(x):\n  x * 3\nf(4)")
         assertTrue(result.success)
         assertEquals("12", result.output)
     }
 
     @Test
     fun indentFunctionDefWith4SpaceIndent() {
-        val result = parseExpression("f(x):\n    x * 3\nf(4)")
+        val result = evaluateExpression("f(x):\n    x * 3\nf(4)")
         assertTrue(result.success)
         assertEquals("12", result.output)
     }
 
     @Test
     fun indentFunctionDefWith8SpaceIndent() {
-        val result = parseExpression("f(x):\n        x * 3\nf(4)")
+        val result = evaluateExpression("f(x):\n        x * 3\nf(4)")
         assertTrue(result.success)
         assertEquals("12", result.output)
     }
 
     @Test
     fun indentFunctionDefWithTabIndent() {
-        val result = parseExpression("f(x):\n\tx * 3\nf(4)")
+        val result = evaluateExpression("f(x):\n\tx * 3\nf(4)")
         assertTrue(result.success)
         assertEquals("12", result.output)
     }
 
     @Test
     fun indentFunctionDefWith1SpaceIndent() {
-        val result = parseExpression("f(x):\n x * 2\nf(7)")
+        val result = evaluateExpression("f(x):\n x * 2\nf(7)")
         assertTrue(result.success)
         assertEquals("14", result.output)
     }
@@ -161,21 +161,21 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionBodyAdditionContinuedOnNextLine() {
-        val result = parseExpression("add(a, b):\n    a +\n    b\nadd(10, 5)")
+        val result = evaluateExpression("add(a, b):\n    a +\n    b\nadd(10, 5)")
         assertTrue(result.success)
         assertEquals("15", result.output)
     }
 
     @Test
     fun indentFunctionBodySubtractionContinuedOnNextLine() {
-        val result = parseExpression("sub(a, b):\n    a -\n    b\nsub(10, 4)")
+        val result = evaluateExpression("sub(a, b):\n    a -\n    b\nsub(10, 4)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
 
     @Test
     fun indentFunctionBodyMultiplicationContinuedOnNextLine() {
-        val result = parseExpression("mul(a, b):\n    a *\n    b\nmul(6, 7)")
+        val result = evaluateExpression("mul(a, b):\n    a *\n    b\nmul(6, 7)")
         assertTrue(result.success)
         assertEquals("42", result.output)
     }
@@ -183,21 +183,21 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionBodyChainedOperatorsContinuation() {
         // a + b * c: operator precedence means b * c evaluates first
-        val result = parseExpression("calc(a, b, c):\n    a +\n    b *\n    c\ncalc(2, 3, 4)")
+        val result = evaluateExpression("calc(a, b, c):\n    a +\n    b *\n    c\ncalc(2, 3, 4)")
         assertTrue(result.success)
         assertEquals("14", result.output)  // 2 + (3 * 4) = 14
     }
 
     @Test
     fun indentFunctionBodyTernaryAcrossLines() {
-        val result = parseExpression("check(a, b):\n    a > b ? a :\n    b\ncheck(7, 3)")
+        val result = evaluateExpression("check(a, b):\n    a > b ? a :\n    b\ncheck(7, 3)")
         assertTrue(result.success)
         assertEquals("7", result.output)
     }
 
     @Test
     fun indentFunctionBodyTernaryFalseBranchAcrossLines() {
-        val result = parseExpression("minOf(a, b):\n    a < b ? a :\n    b\nminOf(7, 3)")
+        val result = evaluateExpression("minOf(a, b):\n    a < b ? a :\n    b\nminOf(7, 3)")
         assertTrue(result.success)
         assertEquals("3", result.output)
     }
@@ -205,7 +205,7 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionBodyThreeLineExpression() {
         // Each part of addition on its own line
-        val result = parseExpression("sum3(a, b, c):\n    a +\n    b +\n    c\nsum3(1, 2, 3)")
+        val result = evaluateExpression("sum3(a, b, c):\n    a +\n    b +\n    c\nsum3(1, 2, 3)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
@@ -216,7 +216,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionRecursiveFactorial() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "factorial(n):\n    n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)"
         )
         assertTrue(result.success)
@@ -225,7 +225,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionRecursiveFactorialMultiLineBody() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "factorial(n):\n    n <= 1 ? 1 :\n    n * factorial(n - 1)\nfactorial(5)"
         )
         assertTrue(result.success)
@@ -234,7 +234,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionRecursiveFactorialBase() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "factorial(n):\n    n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(0)"
         )
         assertTrue(result.success)
@@ -243,7 +243,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionRecursiveFibonacci() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "fib(n):\n    n <= 1 ? n : fib(n - 1) + fib(n - 2)\nfib(7)"
         )
         assertTrue(result.success)
@@ -252,7 +252,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionRecursiveSumWithAccumulator() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "sum(n, acc):\n    n <= 0 ? acc : sum(n - 1, acc + n)\nsum(5, 0)"
         )
         assertTrue(result.success)
@@ -266,7 +266,7 @@ class IndentFunctionTest {
     @Test
     fun multipleIndentFunctionDefs() {
         val input = "double(x):\n    x * 2\ntriple(x):\n    x * 3\ndouble(4) + triple(2)"
-        val result = parseExpression(input)
+        val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("14", result.output)  // 8 + 6 = 14
     }
@@ -274,7 +274,7 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionMixedWithRegularVariableAssignment() {
         val input = "base = 10\naddBase(x):\n    x + base\naddBase(5)"
-        val result = parseExpression(input)
+        val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("15", result.output)
     }
@@ -282,7 +282,7 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionCallingRegularLambda() {
         val input = "square = (x) -> x * x\ncube(x):\n    x * square(x)\ncube(3)"
-        val result = parseExpression(input)
+        val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("27", result.output)
     }
@@ -290,7 +290,7 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionCalledByAnotherIndentFunction() {
         val input = "double(x):\n    x * 2\nquadruple(x):\n    double(double(x))\nquadruple(3)"
-        val result = parseExpression(input)
+        val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("12", result.output)
     }
@@ -298,7 +298,7 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionResultUsedInExpression() {
         val input = "f(x):\n    x + 1\nf(9) * 2"
-        val result = parseExpression(input)
+        val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("20", result.output)  // (9+1) * 2 = 20
     }
@@ -311,28 +311,28 @@ class IndentFunctionTest {
     fun issueScenarioOutdentedOperandAfterOperatorFails() {
         // The key scenario from the issue:
         // `n +` on properly indented line, `1` at less-indented column → should fail
-        val result = parseExpression("calc(n):\n    n +\n  1\ncalc(5)")
+        val result = evaluateExpression("calc(n):\n    n +\n  1\ncalc(5)")
         assertFalse(result.success)
     }
 
     @Test
     fun outdentedTernaryFalseBranchFails() {
         // Ternary false branch at insufficient indent → should fail
-        val result = parseExpression("f(n):\n    n > 0 ? n :\n  0\nf(5)")
+        val result = evaluateExpression("f(n):\n    n > 0 ? n :\n  0\nf(5)")
         assertFalse(result.success)
     }
 
     @Test
     fun zeroIndentBodyIsNotAnIndentBlock() {
         // Body at column 0 (indent 0 = current indent 0) → not accepted as indent block
-        val result = parseExpression("f():\n1\nf()")
+        val result = evaluateExpression("f():\n1\nf()")
         assertFalse(result.success)
     }
 
     @Test
     fun bodyWithCorrectIndentSucceeds() {
         // Positive counterpart: same structure but with sufficient indent
-        val result = parseExpression("calc(n):\n    n +\n    1\ncalc(5)")
+        val result = evaluateExpression("calc(n):\n    n +\n    1\ncalc(5)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
@@ -340,7 +340,7 @@ class IndentFunctionTest {
     @Test
     fun bodyExactlyAtRequiredIndentSucceeds() {
         // Continuation line at exactly the required indent level succeeds
-        val result = parseExpression("f(n):\n  n +\n  1\nf(5)")
+        val result = evaluateExpression("f(n):\n  n +\n  1\nf(5)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
@@ -348,7 +348,7 @@ class IndentFunctionTest {
     @Test
     fun bodyWithExtraIndentBeyondRequiredSucceeds() {
         // Continuation line with more than required indent also succeeds
-        val result = parseExpression("f(n):\n    n +\n        1\nf(5)")
+        val result = evaluateExpression("f(n):\n    n +\n        1\nf(5)")
         assertTrue(result.success)
         assertEquals("6", result.output)
     }
@@ -357,7 +357,7 @@ class IndentFunctionTest {
     fun outdentedLineBecomesNewProgramStatement() {
         // A line with less indentation than the body ends the function body
         // and becomes a new top-level statement
-        val result = parseExpression("f():\n    42\n5")
+        val result = evaluateExpression("f():\n    42\n5")
         assertTrue(result.success)
         assertEquals("5", result.output)
     }
@@ -368,14 +368,14 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionWithCRLFInFunctionDefinition() {
-        val result = parseExpression("f(x):\r\n    x + 1\r\nf(9)")
+        val result = evaluateExpression("f(x):\r\n    x + 1\r\nf(9)")
         assertTrue(result.success)
         assertEquals("10", result.output)
     }
 
     @Test
     fun indentFunctionBodyContinuationWithCRLF() {
-        val result = parseExpression("add(a, b):\r\n    a +\r\n    b\r\nadd(3, 7)")
+        val result = evaluateExpression("add(a, b):\r\n    a +\r\n    b\r\nadd(3, 7)")
         assertTrue(result.success)
         assertEquals("10", result.output)
     }
@@ -383,14 +383,14 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionBodyContinuationWithBareCR() {
         // bare \r as newline within multi-line body continuation
-        val result = parseExpression("add(a, b):\n    a +\r    b\nadd(3, 7)")
+        val result = evaluateExpression("add(a, b):\n    a +\r    b\nadd(3, 7)")
         assertTrue(result.success)
         assertEquals("10", result.output)
     }
 
     @Test
     fun indentFunctionWithCRLFMultiLineBody() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "factorial(n):\r\n    n <= 1 ? 1 : n * factorial(n - 1)\r\nfactorial(4)"
         )
         assertTrue(result.success)
@@ -403,7 +403,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionBodyReturnsBoolean() {
-        val result = parseExpression("isPositive(n):\n    n > 0\nisPositive(5)")
+        val result = evaluateExpression("isPositive(n):\n    n > 0\nisPositive(5)")
         assertTrue(result.success)
         assertEquals("true", result.output)
     }
@@ -411,21 +411,21 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionBodyReturnsBooleanFalse() {
         // Grammar doesn't support negative literals directly in args; use subtraction
-        val result = parseExpression("isPositive(n):\n    n > 0\nisPositive(0 - 5)")
+        val result = evaluateExpression("isPositive(n):\n    n > 0\nisPositive(0 - 5)")
         assertTrue(result.success)
         assertEquals("false", result.output)
     }
 
     @Test
     fun indentFunctionBodyWithComparisonResult() {
-        val result = parseExpression("cmp(a, b):\n    a == b\ncmp(3, 3)")
+        val result = evaluateExpression("cmp(a, b):\n    a == b\ncmp(3, 3)")
         assertTrue(result.success)
         assertEquals("true", result.output)
     }
 
     @Test
     fun indentFunctionWithDecimalArithmetic() {
-        val result = parseExpression("half(x):\n    x / 2\nhalf(5.0)")
+        val result = evaluateExpression("half(x):\n    x / 2\nhalf(5.0)")
         assertTrue(result.success)
         assertEquals("2.5", result.output)
     }
@@ -433,14 +433,14 @@ class IndentFunctionTest {
     @Test
     fun indentFunctionDefinedThenCalledImmediately() {
         // Inline: define and call in one program
-        val result = parseExpression("sq(x):\n    x * x\nsq(7)")
+        val result = evaluateExpression("sq(x):\n    x * x\nsq(7)")
         assertTrue(result.success)
         assertEquals("49", result.output)
     }
 
     @Test
     fun indentFunctionBodyWithNestedFunctionCall() {
-        val result = parseExpression(
+        val result = evaluateExpression(
             "triple(x):\n    x * 3\ndoubleThenTriple(x):\n    triple(x * 2)\ndoubleThenTriple(4)"
         )
         assertTrue(result.success)
@@ -449,7 +449,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionCallLimitExceeded() {
-        val result = parseExpression("inf(n):\n    inf(n + 1)\ninf(0)")
+        val result = evaluateExpression("inf(n):\n    inf(n + 1)\ninf(0)")
         assertFalse(result.success)
         assertTrue(result.output.contains("Maximum function call limit"))
     }

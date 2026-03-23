@@ -554,7 +554,7 @@ result</code>
     </footer>
 
     <script type="module">
-        import { parseExpression } from "./online-parser.mjs";
+        import { evaluateExpression } from "./online-parser.mjs";
 
         const input = document.getElementById("input");
         const output = document.getElementById("output");
@@ -565,7 +565,7 @@ result</code>
         const defaultInput = "x = 10";
 
         const updateOutput = () => {
-            const result = parseExpression(input.value);
+            const result = evaluateExpression(input.value);
             output.value = result.output;
 
             // Update output styling based on result type
