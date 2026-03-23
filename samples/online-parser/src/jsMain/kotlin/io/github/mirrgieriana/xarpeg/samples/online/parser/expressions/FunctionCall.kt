@@ -13,7 +13,7 @@ import kotlin.js.JsExport
 class FunctionCallExpression(
     private val name: String,
     private val args: List<Expression>,
-    private val position: ParseResult<*>,
+    override val position: ParseResult<*>,
     private val sourceCode: String
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {

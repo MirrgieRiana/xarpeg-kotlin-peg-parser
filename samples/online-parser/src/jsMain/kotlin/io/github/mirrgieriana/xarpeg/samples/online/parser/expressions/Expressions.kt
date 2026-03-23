@@ -10,18 +10,18 @@ import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 @JsExport
-class NumberLiteralExpression(private val value: Value.NumberValue) : Expression {
+class NumberLiteralExpression(private val value: Value.NumberValue, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value = value
 }
 
 @JsExport
-class VariableReferenceExpression(private val name: String) : Expression {
+class VariableReferenceExpression(private val name: String, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
 }
 
 @JsExport
-class AssignmentExpression(private val name: String, private val valueExpression: Expression) : Expression {
+class AssignmentExpression(private val name: String, private val valueExpression: Expression, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val value = valueExpression.evaluate(ctx)
         ctx.variableTable.set(name, value)
@@ -30,13 +30,13 @@ class AssignmentExpression(private val name: String, private val valueExpression
 }
 
 @JsExport
-class LambdaExpression(private val params: List<String>, private val body: Expression, private val position: ParseResult<*>) : Expression {
+class LambdaExpression(private val params: List<String>, private val body: Expression, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         Value.LambdaValue(params, body, mutableMapOf(), definitionPosition = position)
 }
 
 @JsExport
-class ProgramExpression(private val expressions: List<Expression>) : Expression {
+class ProgramExpression(private val expressions: List<Expression>, override val position: ParseResult<*>) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
         expressions.fold(Value.NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
 }

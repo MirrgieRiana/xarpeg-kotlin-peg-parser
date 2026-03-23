@@ -13,7 +13,7 @@ import kotlin.js.JsExport
 abstract class ComparisonOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: ParseResult<*>
+    override val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compare(leftValue: Double, rightValue: Double): Boolean

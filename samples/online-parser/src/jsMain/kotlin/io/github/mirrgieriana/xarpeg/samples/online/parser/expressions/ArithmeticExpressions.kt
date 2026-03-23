@@ -14,7 +14,7 @@ import kotlin.js.JsExport
 abstract class ArithmeticOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: ParseResult<*>
+    override val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double

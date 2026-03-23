@@ -14,7 +14,7 @@ import kotlin.js.JsExport
 abstract class EqualityOperatorExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: ParseResult<*>
+    override val position: ParseResult<*>
 ) : Expression {
     abstract val operatorSymbol: String
     abstract fun compareValues(result: Boolean): Boolean

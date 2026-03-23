@@ -15,7 +15,7 @@ class TernaryExpression(
     private val condition: Expression,
     private val trueExpression: Expression,
     private val falseExpression: Expression,
-    private val position: ParseResult<*>
+    override val position: ParseResult<*>
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val condVal = condition.evaluate(ctx)

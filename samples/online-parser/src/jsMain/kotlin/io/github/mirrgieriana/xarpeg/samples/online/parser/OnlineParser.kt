@@ -13,6 +13,7 @@ import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.ref
+import io.github.mirrgieriana.xarpeg.parsers.result
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
@@ -147,8 +148,8 @@ private object ExpressionGrammar {
         rest.fold(first) { acc, opFunc -> opFunc(acc) }
     }
 
-    private val variableRef: Parser<Expression> = identifier map { name ->
-        VariableReferenceExpression(name)
+    private val variableRef: Parser<Expression> = identifier.result map { result ->
+        VariableReferenceExpression(result.value, result)
     }
 
     private val identifierList: Parser<List<String>> = run {
@@ -160,7 +161,7 @@ private object ExpressionGrammar {
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
     private val lambda: Parser<Expression> =
-        (paramList * whitespace * -Regex("->") * whitespace * ref { expression }) mapEx { parseCtx, result ->
+        (paramList * whitespace * -Regex("->") * whitespace * ref { expression }).result map { result ->
             val (params, bodyParser) = result.value
             LambdaExpression(params, bodyParser, result)
         }
@@ -180,72 +181,48 @@ private object ExpressionGrammar {
         }
 
     private val primary: Parser<Expression> =
-        lambda + functionCall + variableRef + (number map { NumberLiteralExpression(it) }) +
+        lambda + functionCall + variableRef + (number.result map { NumberLiteralExpression(it.value, it) }) +
             (-'(' * whitespace * ref { expression } * whitespace * -')')
 
     private val factor = primary
 
-    private val multiplyOp = (whitespace * +'*' * whitespace * factor) mapEx { parseCtx, result ->
-        val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '*' }
-        val (_, rightExpr: Expression) = result.value
-        val opPosition = ParseResult(Unit, opStart, result.end)
-        return@mapEx { left: Expression -> MultiplyExpression(left, rightExpr, opPosition) }
+    private val multiplyOp = (whitespace * +'*' * whitespace * factor) map { (_, rightExpr: Expression) ->
+        return@map { left: Expression -> MultiplyExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
     }
 
-    private val divideOp = (whitespace * +'/' * whitespace * factor) mapEx { parseCtx, result ->
-        val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '/' }
-        val (_, rightExpr: Expression) = result.value
-        val opPosition = ParseResult(Unit, opStart, result.end)
-        return@mapEx { left: Expression -> DivideExpression(left, rightExpr, opPosition) }
+    private val divideOp = (whitespace * +'/' * whitespace * factor) map { (_, rightExpr: Expression) ->
+        return@map { left: Expression -> DivideExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
     }
 
     private val product: Parser<Expression> =
         leftAssociativeBinaryOp(factor, multiplyOp + divideOp)
 
-    private val addOp = (whitespace * +'+' * whitespace * product) mapEx { parseCtx, result ->
-        val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '+' }
-        val (_, rightExpr: Expression) = result.value
-        val opPosition = ParseResult(Unit, opStart, result.end)
-        return@mapEx { left: Expression -> AddExpression(left, rightExpr, opPosition) }
+    private val addOp = (whitespace * +'+' * whitespace * product) map { (_, rightExpr: Expression) ->
+        return@map { left: Expression -> AddExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
     }
 
-    private val subtractOp = (whitespace * +'-' * whitespace * product) mapEx { parseCtx, result ->
-        val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '-' }
-        val (_, rightExpr: Expression) = result.value
-        val opPosition = ParseResult(Unit, opStart, result.end)
-        return@mapEx { left: Expression -> SubtractExpression(left, rightExpr, opPosition) }
+    private val subtractOp = (whitespace * +'-' * whitespace * product) map { (_, rightExpr: Expression) ->
+        return@map { left: Expression -> SubtractExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
     }
 
     private val sum: Parser<Expression> =
         leftAssociativeBinaryOp(product, addOp + subtractOp)
 
     private val orderingComparison: Parser<Expression> = run {
-        val lessEqualOp = (whitespace * +"<=" * whitespace * sum) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("<=")
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> LessThanOrEqualExpression(left, rightExpr, opPosition) }
+        val lessEqualOp = (whitespace * +"<=" * whitespace * sum) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> LessThanOrEqualExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
-        val greaterEqualOp = (whitespace * +">=" * whitespace * sum) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf(">=")
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> GreaterThanOrEqualExpression(left, rightExpr, opPosition) }
+        val greaterEqualOp = (whitespace * +">=" * whitespace * sum) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> GreaterThanOrEqualExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
-        val lessOp = (whitespace * +'<' * whitespace * sum) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '<' }
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> LessThanExpression(left, rightExpr, opPosition) }
+        val lessOp = (whitespace * +'<' * whitespace * sum) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> LessThanExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
-        val greaterOp = (whitespace * +'>' * whitespace * sum) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOfFirst { it == '>' }
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> GreaterThanExpression(left, rightExpr, opPosition) }
+        val greaterOp = (whitespace * +'>' * whitespace * sum) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> GreaterThanExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
         val restItem = lessEqualOp + greaterEqualOp + lessOp + greaterOp
@@ -254,18 +231,12 @@ private object ExpressionGrammar {
     }
 
     private val equalityComparison: Parser<Expression> = run {
-        val equalOp = (whitespace * +"==" * whitespace * orderingComparison) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("==")
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> EqualsExpression(left, rightExpr, opPosition) }
+        val equalOp = (whitespace * +"==" * whitespace * orderingComparison) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> EqualsExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
-        val notEqualOp = (whitespace * +"!=" * whitespace * orderingComparison) mapEx { parseCtx, result ->
-            val opStart = result.start + parseCtx.src.substring(result.start, result.end).indexOf("!=")
-            val (_, rightExpr: Expression) = result.value
-            val opPosition = ParseResult(Unit, opStart, result.end)
-            return@mapEx { left: Expression -> NotEqualsExpression(left, rightExpr, opPosition) }
+        val notEqualOp = (whitespace * +"!=" * whitespace * orderingComparison) map { (_, rightExpr: Expression) ->
+            return@map { left: Expression -> NotEqualsExpression(left, rightExpr, ParseResult(Unit, left.position.start, rightExpr.position.end)) }
         }
 
         val restItem = equalOp + notEqualOp
@@ -277,7 +248,7 @@ private object ExpressionGrammar {
         val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
             ref { equalityComparison } * whitespace * -':' * whitespace *
             ref { equalityComparison }
-        ((ternaryExpr mapEx { parseCtx, result ->
+        ((ternaryExpr.result map { result ->
             val (cond, trueExpr, falseExpr) = result.value
             TernaryExpression(cond, trueExpr, falseExpr, result)
         }) + equalityComparison)
@@ -312,14 +283,16 @@ private object ExpressionGrammar {
 
         bodyResult ?: return@Parser null
 
+        val wholePosition = ParseResult(Unit, start, bodyResult.end)
         ParseResult(
             AssignmentExpression(
                 nameResult.value,
                 LambdaExpression(
                     paramListResult.value,
                     bodyResult.value,
-                    ParseResult(Unit, start, bodyResult.end)
-                )
+                    wholePosition
+                ),
+                wholePosition
             ),
             start,
             bodyResult.end
@@ -328,8 +301,9 @@ private object ExpressionGrammar {
 
     private val assignment: Parser<Expression> = run {
         indentFunctionDef +
-        ((identifier * whitespace * -'=' * whitespace * ref { expression }) map { (name, valueExpr) ->
-            AssignmentExpression(name, valueExpr)
+        ((identifier * whitespace * -'=' * whitespace * ref { expression }).result map { result ->
+            val (name, valueExpr) = result.value
+            AssignmentExpression(name, valueExpr, result)
         }) + ternary
     }
 
@@ -337,8 +311,9 @@ private object ExpressionGrammar {
 
     val program: Parser<Expression> = run {
         val newlineSep = -Regex("[ \\t]*(?:\\r\\n|[\\r\\n])[ \\t\\r\\n]*")
-        ((expression * (newlineSep * expression).zeroOrMore) map { (first, rest) ->
-            ProgramExpression(listOf(first) + rest)
+        ((expression * (newlineSep * expression).zeroOrMore).result map { result ->
+            val (first, rest) = result.value
+            ProgramExpression(listOf(first) + rest, result)
         })
     }
 
