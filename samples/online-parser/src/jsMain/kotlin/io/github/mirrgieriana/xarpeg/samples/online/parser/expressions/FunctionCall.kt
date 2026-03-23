@@ -13,8 +13,7 @@ import kotlin.js.JsExport
 class FunctionCallExpression(
     private val name: String,
     private val args: List<Expression>,
-    override val position: ParseResult<*>,
-    private val sourceCode: String
+    override val position: ParseResult<*>
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val func = ctx.variableTable.get(name)
@@ -28,7 +27,7 @@ class FunctionCallExpression(
             throw EvaluationException(
                 "Function $name expects ${func.params.size} arguments, but got ${args.size}",
                 ctx,
-                sourceCode
+                ctx.sourceCode
             )
         }
 
@@ -37,7 +36,7 @@ class FunctionCallExpression(
             throw EvaluationException(
                 "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
                 ctx,
-                sourceCode
+                ctx.sourceCode
             )
         }
 

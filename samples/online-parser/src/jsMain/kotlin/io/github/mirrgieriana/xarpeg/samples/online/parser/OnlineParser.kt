@@ -10,7 +10,6 @@ import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAll
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
-import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.named
 import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.ref
@@ -162,9 +161,9 @@ private object ExpressionGrammar {
         -'(' * whitespace * (exprList + (whitespace map { emptyList<Expression>() })) * whitespace * -')'
 
     private val functionCall: Parser<Expression> =
-        (identifier * whitespace * argList) mapEx { parseCtx, result ->
+        (identifier * whitespace * argList).result map { result ->
             val (name, args) = result.value
-            FunctionCallExpression(name, args, result, parseCtx.src)
+            FunctionCallExpression(name, args, result)
         }
 
     private val primary: Parser<Expression> =
