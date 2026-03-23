@@ -9,9 +9,9 @@ import io.github.mirrgieriana.xarpeg.DefaultParseContext
 class OnlineParserParseContext(
     src: String,
 ) : DefaultParseContext(src) {
-    private val indentStack = mutableListOf(0)
+    private var indentStack = listOf(0)
 
-    override fun getState(): Any = indentStack.toList()
+    override fun getState(): Any = indentStack
 
     /**
      * Get the current required indent level
@@ -24,7 +24,7 @@ class OnlineParserParseContext(
      */
     fun pushIndent(indent: Int) {
         require(indent > currentIndent) { "New indent ($indent) must be greater than current indent ($currentIndent)" }
-        indentStack.add(indent)
+        indentStack = indentStack + indent
     }
 
     /**
@@ -39,6 +39,6 @@ class OnlineParserParseContext(
      */
     fun popIndent() {
         require(indentStack.size > 1) { "Cannot pop base indent level" }
-        indentStack.removeLast()
+        indentStack = indentStack.dropLast(1)
     }
 }
