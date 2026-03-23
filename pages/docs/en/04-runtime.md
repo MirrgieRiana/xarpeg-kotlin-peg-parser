@@ -311,7 +311,7 @@ fun main() {
 }
 ```
 
-See the [online-parser sample's OnlineParser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParser.kt) and [OnlineParserParseContext.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParserParseContext.kt) for a complete implementation.
+See the [online-parser sample source code](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser) for a complete implementation.
 
 ## Key Takeaways
 

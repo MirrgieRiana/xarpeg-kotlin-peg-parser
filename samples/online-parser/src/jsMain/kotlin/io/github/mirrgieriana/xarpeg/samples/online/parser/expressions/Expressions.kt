@@ -34,7 +34,7 @@ class VariableReferenceExpression(
 }
 
 /**
- * A lambda expression that captures the current scope.
+ * A lambda expression. Produces a [LambdaValue] when evaluated.
  */
 class LambdaExpression(
     private val params: List<String>,

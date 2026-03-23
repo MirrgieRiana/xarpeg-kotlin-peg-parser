@@ -311,7 +311,7 @@ fun main() {
 }
 ```
 
-完全な実装については[online-parserサンプルのOnlineParser.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParser.kt)と[OnlineParserParseContext.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParserParseContext.kt)を参照してください。
+完全な実装については[online-parserサンプルのソースコード](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser)を参照してください。
 
 ## 重要なポイント
 
