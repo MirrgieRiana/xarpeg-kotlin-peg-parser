@@ -46,7 +46,7 @@ internal object OnlineParserGrammar {
 
     val newline: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""")
 
-    val indent: Parser<Tuple0> = Parser { context, pos ->
+    val indent: Parser<Tuple0> = -Parser { context, pos ->
         if (context !is OnlineParserParseContext || !context.isInIndentBlock) {
             return@Parser ParseResult(Tuple0, pos, pos)
         }
@@ -58,9 +58,10 @@ internal object OnlineParserGrammar {
         ParseResult(Tuple0, pos, spaceEnd)
     }
 
-    val newlineAndIndent: Parser<Tuple0> = newline * indent
-    val whitespace: Parser<Tuple0> = (-Regex("""[ \t]*""") * newlineAndIndent).zeroOrMore.ignore * -Regex("""[ \t]*""")
-    val horizontalSpace: Parser<String> = +Regex("""[ \t]*""")
+    val horizontalSpace: Parser<Tuple0> = -Regex("""[ \t]*""")
+
+    val whitespace: Parser<Tuple0> = -((horizontalSpace * newline).oneOrMore * indent).zeroOrMore * horizontalSpace
+    val newlineSep: Parser<Tuple0> = -((horizontalSpace * newline).oneOrMore * indent).oneOrMore * horizontalSpace
 
     // -- Terminals --
 
@@ -214,7 +215,6 @@ internal object OnlineParserGrammar {
 
     val expression: Parser<Expression> = assignment
 
-    val newlineSep: Parser<Tuple0> = -Regex("""[ \t]*(?:\r\n|[\r\n])[ \t\r\n]*""")
     val program: Parser<Expression> = (expression * (newlineSep * expression).zeroOrMore).result map { result ->
         val (first, rest) = result.value
         ProgramExpression(listOf(first) + rest, result)
