@@ -2,6 +2,7 @@
 
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
+import io.github.mirrgieriana.xarpeg.MatrixPositionCalculator
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.Parser
@@ -67,30 +68,21 @@ data class EvaluationContext(
 
 data class CallFrame(val functionName: String, val position: ParseResult<*>)
 
-fun ParseResult<*>.formatLineColumn(source: String): String {
-    val beforeStart = source.substring(0, start.coerceAtMost(source.length))
-    val line = beforeStart.count { it == '\n' } + 1
-    val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
-    return "line $line, column $column"
-}
-
 fun ParseResult<*>.formatWithContext(source: String): String {
-    val beforeStart = source.substring(0, start.coerceAtMost(source.length))
-    val line = beforeStart.count { it == '\n' } + 1
-    val column = start - (beforeStart.lastIndexOf('\n') + 1) + 1
+    val calc = MatrixPositionCalculator(source)
+    val pos = calc.getMatrixPosition(start.coerceAtMost(source.length))
 
-    val lineStart = beforeStart.lastIndexOf('\n') + 1
-    val lineEnd = source.indexOf('\n', start).let { if (it == -1) source.length else it }
-    val sourceLine = source.substring(lineStart, lineEnd)
+    val lineRange = calc.getLineRange(pos.row)
+    val sourceLine = source.substring(lineRange)
 
-    val highlightStart = start - lineStart
-    val highlightEnd = (end - lineStart).coerceAtMost(sourceLine.length)
+    val highlightStart = start - lineRange.first
+    val highlightEnd = (end - lineRange.first).coerceAtMost(sourceLine.length)
 
     val before = sourceLine.substring(0, highlightStart)
     val highlighted = sourceLine.substring(highlightStart, highlightEnd)
     val after = sourceLine.substring(highlightEnd)
 
-    return "line $line, column $column: $before[$highlighted]$after"
+    return "line ${pos.row}, column ${pos.column}: $before[$highlighted]$after"
 }
 
 sealed class Value {
