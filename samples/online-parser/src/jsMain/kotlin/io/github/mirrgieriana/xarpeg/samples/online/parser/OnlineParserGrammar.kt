@@ -48,25 +48,21 @@ internal object OnlineParserGrammar {
     /** Matches a single line break: `\r\n`, `\n`, or bare `\r`. */
     val lineBreak: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""") named "line-break"
 
+    /** Horizontal spacing: spaces and tabs, no line breaks. */
+    val s: Parser<Tuple0> = -Regex("""[ \t]*""") named "whitespace"
+
     /**
      * Matches the required indentation after a line break.
      * Inside an indent block, requires at least [OnlineParserParseContext.currentIndent] spaces/tabs.
      * Outside an indent block, succeeds without consuming input.
      */
-    val indent: Parser<Tuple0> = -Parser { context, pos ->
-        if (context !is OnlineParserParseContext || !context.isInIndentBlock) {
-            return@Parser ParseResult(Tuple0, pos, pos)
+    val indent: Parser<Tuple0> = Parser { context, pos ->
+        val result = context.parseOrNull(s, pos) ?: return@Parser ParseResult(Tuple0, pos, pos)
+        if (context is OnlineParserParseContext && context.isInIndentBlock && result.end - pos < context.currentIndent) {
+            return@Parser null
         }
-        var spaceEnd = pos
-        while (spaceEnd < context.src.length && (context.src[spaceEnd] == ' ' || context.src[spaceEnd] == '\t')) {
-            spaceEnd++
-        }
-        if (spaceEnd - pos < context.currentIndent) return@Parser null
-        ParseResult(Tuple0, pos, spaceEnd)
+        result
     }
-
-    /** Horizontal spacing: spaces and tabs, no line breaks. */
-    val s: Parser<Tuple0> = -Regex("""[ \t]*""") named "whitespace"
 
     /** Whitespace that may span multiple lines. Line breaks require sufficient indentation in indent blocks. */
     val b: Parser<Tuple0> = -((s * lineBreak).oneOrMore * indent).zeroOrMore * s
