@@ -7,6 +7,7 @@ import io.github.mirrgieriana.xarpeg.parsers.ignore
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.named
+import io.github.mirrgieriana.xarpeg.parsers.or
 import io.github.mirrgieriana.xarpeg.parsers.plus
 import io.github.mirrgieriana.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpeg.parsers.result
@@ -38,21 +39,14 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableR
  * Supports arithmetic, comparison, equality, ternary operators, lambda expressions,
  * function calls, variable assignment, and indent-based function definitions.
  */
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 internal object OnlineParserGrammar {
 
     // -- Whitespace & indentation --
 
-    /**
-     * Matches a single newline: `\r\n`, `\n`, or bare `\r`.
-     */
-    private val newline = -Regex("\\r\\n|[\\r\\n]")
+    val newline: Parser<Tuple0> = -Regex("""\r\n|[\r\n]""")
 
-    /**
-     * Matches the required indentation after a newline.
-     * Inside an indent block, requires at least [OnlineParserParseContext.currentIndent] spaces/tabs.
-     * Outside an indent block, succeeds without consuming input.
-     */
-    private val indent: Parser<Tuple0> = Parser { context, pos ->
+    val indent: Parser<Tuple0> = Parser { context, pos ->
         if (context !is OnlineParserParseContext || !context.isInIndentBlock) {
             return@Parser ParseResult(Tuple0, pos, pos)
         }
@@ -64,72 +58,58 @@ internal object OnlineParserGrammar {
         ParseResult(Tuple0, pos, spaceEnd)
     }
 
-    /**
-     * Matches a newline followed by the required indentation.
-     */
-    private val newlineAndIndent = newline * indent
-
-    /**
-     * Matches whitespace including newlines.
-     * Within indent blocks, each newline must be followed by sufficient indentation.
-     */
-    private val whitespace = (-Regex("[ \t]*") * newlineAndIndent).zeroOrMore.ignore * -Regex("[ \t]*")
-
-    /**
-     * Matches horizontal whitespace only (spaces and tabs, no newlines).
-     */
-    private val horizontalSpace = +Regex("[ \\t]*")
+    val newlineAndIndent: Parser<Tuple0> = newline * indent
+    val whitespace: Parser<Tuple0> = (-Regex("""[ \t]*""") * newlineAndIndent).zeroOrMore.ignore * -Regex("""[ \t]*""")
+    val horizontalSpace: Parser<String> = +Regex("""[ \t]*""")
 
     // -- Terminals --
 
-    private val identifier = +Regex("[a-zA-Z_][a-zA-Z0-9_]*") map { it.value } named "identifier"
-
-    private val number = +Regex("[0-9]+(?:\\.[0-9]+)?") map { NumberValue(it.value.toDouble()) } named "number"
+    val identifier: Parser<String> = +Regex("""[a-zA-Z_][a-zA-Z0-9_]*""") map { it.value } named "identifier"
+    val number: Parser<NumberValue> = +Regex("""[0-9]+(?:\.[0-9]+)?""") map { NumberValue(it.value.toDouble()) } named "number"
 
     // -- Atoms --
 
-    private val variableRef: Parser<Expression> = identifier.result map { result ->
+    val variableRef: Parser<Expression> = identifier.result map { result ->
         VariableReferenceExpression(result.value, result)
     }
 
-    private val identifierList: Parser<List<String>> = run {
-        val restItem = whitespace * -',' * whitespace * identifier
-        (identifier * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
-    }
+    val identifierListRestItem: Parser<String> = whitespace * -',' * whitespace * identifier
+    val identifierList: Parser<List<String>> = (identifier * identifierListRestItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
 
-    private val paramList: Parser<List<String>> =
+    val paramList: Parser<List<String>> =
         -'(' * whitespace * (identifierList + (whitespace map { emptyList<String>() })) * whitespace * -')'
 
-    private val lambda: Parser<Expression> =
+    val lambda: Parser<Expression> =
         (paramList * whitespace * -"->" * whitespace * ref { expression }).result map { result ->
             val (params, body) = result.value
             LambdaExpression(params, body, result)
         }
 
-    private val exprList: Parser<List<Expression>> = run {
-        val restItem = whitespace * -',' * whitespace * ref { expression }
-        (ref { expression } * restItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
-    }
+    val exprListRestItem: Parser<Expression> = whitespace * -',' * whitespace * ref { expression }
+    val exprList: Parser<List<Expression>> = (ref { expression } * exprListRestItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
 
-    private val argList: Parser<List<Expression>> =
+    val argList: Parser<List<Expression>> =
         -'(' * whitespace * (exprList + (whitespace map { emptyList<Expression>() })) * whitespace * -')'
 
-    private val functionCall: Parser<Expression> =
+    val functionCall: Parser<Expression> =
         (identifier * whitespace * argList).result map { result ->
             val (name, args) = result.value
             FunctionCallExpression(name, args, result)
         }
 
-    private val primary: Parser<Expression> =
-        lambda + functionCall + variableRef +
-            (number.result map { NumberLiteralExpression(it.value, it) }) +
-            (-'(' * whitespace * ref { expression } * whitespace * -')')
+    val primary: Parser<Expression> = or(
+        lambda,
+        functionCall,
+        variableRef,
+        number.result map { NumberLiteralExpression(it.value, it) },
+        -'(' * whitespace * ref { expression } * whitespace * -')',
+    )
 
-    private val factor = primary
+    val factor: Parser<Expression> = primary
 
     // -- Binary operators --
 
-    private val product: Parser<Expression> =
+    val product: Parser<Expression> =
         leftAssociative(factor, whitespace * (+'*' + +'/') * whitespace) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
@@ -138,7 +118,7 @@ internal object OnlineParserGrammar {
             }
         }
 
-    private val sum: Parser<Expression> =
+    val sum: Parser<Expression> =
         leftAssociative(product, whitespace * (+'+' + +'-') * whitespace) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
@@ -147,7 +127,7 @@ internal object OnlineParserGrammar {
             }
         }
 
-    private val orderingComparison: Parser<Expression> =
+    val orderingComparison: Parser<Expression> =
         leftAssociative(sum, whitespace * (+"<=" + +">=" + +"<" + +">") * whitespace) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
@@ -158,7 +138,7 @@ internal object OnlineParserGrammar {
             }
         }
 
-    private val equalityComparison: Parser<Expression> =
+    val equalityComparison: Parser<Expression> =
         leftAssociative(orderingComparison, whitespace * (+"==" + +"!=") * whitespace) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
@@ -169,19 +149,20 @@ internal object OnlineParserGrammar {
 
     // -- Ternary --
 
-    private val ternary: Parser<Expression> = run {
-        val ternaryExpr = ref { equalityComparison } * whitespace * -'?' * whitespace *
-            ref { equalityComparison } * whitespace * -':' * whitespace *
-            ref { equalityComparison }
-        ((ternaryExpr.result map { result ->
+    val ternaryExpr: Parser<Expression> = ref { equalityComparison } * whitespace * -'?' * whitespace *
+        ref { equalityComparison } * whitespace * -':' * whitespace *
+        ref { equalityComparison }
+    val ternary: Parser<Expression> = or(
+        ternaryExpr.result map { result ->
             val (cond, trueExpr, falseExpr) = result.value
             TernaryExpression(cond, trueExpr, falseExpr, result)
-        }) + equalityComparison)
-    }
+        },
+        equalityComparison,
+    )
 
     // -- Indent-based function definition --
 
-    private val indentFunctionDef: Parser<Expression> = Parser { context, start ->
+    val indentFunctionDef: Parser<Expression> = Parser { context, start ->
         if (context !is OnlineParserParseContext) return@Parser null
 
         val nameResult = context.parseOrNull(identifier, start) ?: return@Parser null
@@ -222,24 +203,23 @@ internal object OnlineParserGrammar {
 
     // -- Top-level rules --
 
-    private val assignment: Parser<Expression> = run {
-        indentFunctionDef +
-            ((identifier * whitespace * -'=' * whitespace * ref { expression }).result map { result ->
-                val (name, valueExpr) = result.value
-                AssignmentExpression(name, valueExpr, result)
-            }) + ternary
-    }
+    val assignment: Parser<Expression> = or(
+        indentFunctionDef,
+        (identifier * whitespace * -'=' * whitespace * ref { expression }).result map { result ->
+            val (name, valueExpr) = result.value
+            AssignmentExpression(name, valueExpr, result)
+        },
+        ternary,
+    )
 
     val expression: Parser<Expression> = assignment
 
-    val program: Parser<Expression> = run {
-        val newlineSep = -Regex("[ \\t]*(?:\\r\\n|[\\r\\n])[ \\t\\r\\n]*")
-        ((expression * (newlineSep * expression).zeroOrMore).result map { result ->
-            val (first, rest) = result.value
-            ProgramExpression(listOf(first) + rest, result)
-        })
+    val newlineSep: Parser<Tuple0> = -Regex("""[ \t]*(?:\r\n|[\r\n])[ \t\r\n]*""")
+    val program: Parser<Expression> = (expression * (newlineSep * expression).zeroOrMore).result map { result ->
+        val (first, rest) = result.value
+        ProgramExpression(listOf(first) + rest, result)
     }
 
-    val root = whitespace * expression * whitespace
-    val programRoot = whitespace * program * whitespace
+    val root: Parser<Expression> = whitespace * expression * whitespace
+    val programRoot: Parser<Expression> = whitespace * program * whitespace
 }
