@@ -32,7 +32,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractE
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
 
-internal object ExpressionGrammar {
+internal object OnlineParserGrammar {
 
     // --- Indent-aware whitespace parsers ---
 

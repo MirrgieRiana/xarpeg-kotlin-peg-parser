@@ -21,7 +21,7 @@ fun evaluateExpression(input: String): ExpressionResult {
         FunctionCallExpression.functionCallCount = 0
 
         val initialContext = EvaluationContext(sourceCode = input)
-        val resultExpr = ExpressionGrammar.programRoot.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
+        val resultExpr = OnlineParserGrammar.programRoot.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
         val result = resultExpr.evaluate(initialContext)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
