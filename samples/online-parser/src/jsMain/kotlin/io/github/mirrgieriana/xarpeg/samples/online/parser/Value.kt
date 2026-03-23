@@ -1,7 +1,6 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser
 
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.Expression
 
 sealed class Value
 

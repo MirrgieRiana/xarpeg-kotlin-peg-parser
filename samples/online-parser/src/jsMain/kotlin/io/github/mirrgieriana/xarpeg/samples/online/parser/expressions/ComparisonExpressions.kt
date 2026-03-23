@@ -4,6 +4,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 
 abstract class ComparisonOperatorExpression(
     protected val left: Expression,
