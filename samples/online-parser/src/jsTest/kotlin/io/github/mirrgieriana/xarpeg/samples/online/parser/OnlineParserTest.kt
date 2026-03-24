@@ -223,6 +223,11 @@ class OnlineParserTest {
         assertEquals("8", evaluateExpression("4\t+\t4").output)
     }
 
+    @Test
+    fun parsesExpressionWithNewlineAfterOperator() {
+        assertEquals("6", evaluateExpression("2 *\n3").output)
+    }
+
     // Lambda and assignment combination tests
     @Test
     fun parsesMultipleVariableAssignments() {
