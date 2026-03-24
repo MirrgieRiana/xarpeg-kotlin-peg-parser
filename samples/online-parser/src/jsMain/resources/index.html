@@ -243,6 +243,10 @@
             border: 1px solid var(--border);
             cursor: pointer;
             transition: all 150ms ease;
+            font: inherit;
+            color: inherit;
+            text-align: left;
+            width: 100%;
         }
         .example-card:hover {
             border-color: var(--accent);
@@ -533,8 +537,9 @@ _               &lt;- [ \t\r\n]*</code></pre>
 
         // Generate example cards from data
         examples.forEach(({ title, code }) => {
-            const card = document.createElement("div");
+            const card = document.createElement("button");
             card.className = "example-card";
+            card.type = "button";
 
             const titleEl = document.createElement("p");
             titleEl.className = "example-title";
