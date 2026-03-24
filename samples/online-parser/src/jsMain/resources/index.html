@@ -441,110 +441,7 @@ _               &lt;- [ \t\r\n]*</code></pre>
             <div class="section">
                 <label>Try Examples</label>
                 <p class="muted-text">Click any example below to try it in the parser:</p>
-                <div class="examples-grid">
-                    <div class="example-card" data-example="2 * (3 + 4)">
-                        <p class="example-title">Basic Arithmetic</p>
-                        <code class="example-code">2 * (3 + 4)</code>
-                    </div>
-                    <div class="example-card" data-example="x = 5 + 10">
-                        <p class="example-title">Variable Assignment</p>
-                        <code class="example-code">x = 5 + 10</code>
-                    </div>
-                    <div class="example-card" data-example="add = (a, b) -> a + b">
-                        <p class="example-title">Lambda Function</p>
-                        <code class="example-code">add = (a, b) -> a + b</code>
-                    </div>
-                    <div class="example-card" data-example="double = (x) -> x * 2&#10;double(7)">
-                        <p class="example-title">Single Parameter Lambda</p>
-                        <code class="example-code">double = (x) -> x * 2
-double(7)</code>
-                    </div>
-                    <div class="example-card" data-example="result = (10 + 5) * 2 - 8&#10;result">
-                        <p class="example-title">Complex Expression</p>
-                        <code class="example-code">result = (10 + 5) * 2 - 8
-result</code>
-                    </div>
-                    <div class="example-card" data-example="calc = (x, y) -> (x + y) * 2&#10;calc(3, 5)">
-                        <p class="example-title">Multi-param Lambda</p>
-                        <code class="example-code">calc = (x, y) -> (x + y) * 2
-calc(3, 5)</code>
-                    </div>
-                    <div class="example-card" data-example="pi = 3.14159&#10;pi * 2">
-                        <p class="example-title">Decimal Numbers</p>
-                        <code class="example-code">pi = 3.14159
-pi * 2</code>
-                    </div>
-                    <div class="example-card" data-example="my_var_123 = 42&#10;my_var_123 + 8">
-                        <p class="example-title">Identifier with Numbers</p>
-                        <code class="example-code">my_var_123 = 42
-my_var_123 + 8</code>
-                    </div>
-                    <div class="example-card" data-example="5 > 3">
-                        <p class="example-title">Comparison Operator</p>
-                        <code class="example-code">5 > 3</code>
-                    </div>
-                    <div class="example-card" data-example="x = 10&#10;y = 20&#10;x == y">
-                        <p class="example-title">Equality Check</p>
-                        <code class="example-code">x = 10
-y = 20
-x == y</code>
-                    </div>
-                    <div class="example-card" data-example="5 > 3 ? 100 : 200">
-                        <p class="example-title">Ternary Operator</p>
-                        <code class="example-code">5 > 3 ? 100 : 200</code>
-                    </div>
-                    <div class="example-card" data-example="x = 15&#10;x >= 10 ? 1 : 0">
-                        <p class="example-title">Conditional Expression</p>
-                        <code class="example-code">x = 15
-x >= 10 ? 1 : 0</code>
-                    </div>
-                    <div class="example-card" data-example="factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)&#10;factorial(5)">
-                        <p class="example-title">Recursive Factorial</p>
-                        <code class="example-code">factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)
-factorial(5)</code>
-                    </div>
-                    <div class="example-card" data-example="func1 = (a, b) -> a / b&#10;func2 = (a, b) -> func1(a + b, a - b)&#10;func2(10, 10)">
-                        <p class="example-title">Error Stack Trace</p>
-                        <code class="example-code">func1 = (a, b) -> a / b
-func2 = (a, b) -> func1(a + b, a - b)
-func2(10, 10)</code>
-                    </div>
-                    <div class="example-card" data-example="2 * (3 + 4">
-                        <p class="example-title">Syntax Error: Missing Paren</p>
-                        <code class="example-code">2 * (3 + 4</code>
-                    </div>
-                    <div class="example-card" data-example="5 + * 3">
-                        <p class="example-title">Syntax Error: Invalid Operator</p>
-                        <code class="example-code">5 + * 3</code>
-                    </div>
-                    <div class="example-card" data-example="x = ">
-                        <p class="example-title">Syntax Error: Incomplete Expression</p>
-                        <code class="example-code">x = </code>
-                    </div>
-                    <div class="example-card" data-example="123abc = 5">
-                        <p class="example-title">Syntax Error: Invalid Identifier</p>
-                        <code class="example-code">123abc = 5</code>
-                    </div>
-                    <div class="example-card" data-example="factorial(n):&#10;    n &lt;= 1 ? 1 : n * factorial(n - 1)&#10;factorial(5)">
-                        <p class="example-title">Indent-Style Factorial</p>
-                        <code class="example-code">factorial(n):
-    n &lt;= 1 ? 1 : n * factorial(n - 1)
-factorial(5)</code>
-                    </div>
-                    <div class="example-card" data-example="double(x):&#10;    x * 2&#10;double(7)">
-                        <p class="example-title">Indent-Style Function</p>
-                        <code class="example-code">double(x):
-    x * 2
-double(7)</code>
-                    </div>
-                    <div class="example-card" data-example="add(a, b):&#10;    a + b&#10;result = add(10, 20)&#10;result">
-                        <p class="example-title">Indent-Style Multi-param</p>
-                        <code class="example-code">add(a, b):
-    a + b
-result = add(10, 20)
-result</code>
-                    </div>
-                </div>
+                <div class="examples-grid" id="examples-grid"></div>
             </div>
         </aside>
     </div>
@@ -556,19 +453,42 @@ result</code>
     <script type="module">
         import { evaluateExpression } from "./online-parser.mjs";
 
+        const examples = [
+            { title: "Basic Arithmetic", code: "2 * (3 + 4)" },
+            { title: "Variable Assignment", code: "x = 5 + 10" },
+            { title: "Lambda Function", code: "add = (a, b) -> a + b" },
+            { title: "Single Parameter Lambda", code: "double = (x) -> x * 2\ndouble(7)" },
+            { title: "Complex Expression", code: "result = (10 + 5) * 2 - 8\nresult" },
+            { title: "Multi-param Lambda", code: "calc = (x, y) -> (x + y) * 2\ncalc(3, 5)" },
+            { title: "Decimal Numbers", code: "pi = 3.14159\npi * 2" },
+            { title: "Identifier with Numbers", code: "my_var_123 = 42\nmy_var_123 + 8" },
+            { title: "Comparison Operator", code: "5 > 3" },
+            { title: "Equality Check", code: "x = 10\ny = 20\nx == y" },
+            { title: "Ternary Operator", code: "5 > 3 ? 100 : 200" },
+            { title: "Conditional Expression", code: "x = 15\nx >= 10 ? 1 : 0" },
+            { title: "Recursive Factorial", code: "factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
+            { title: "Error Stack Trace", code: "func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)" },
+            { title: "Syntax Error: Missing Paren", code: "2 * (3 + 4" },
+            { title: "Syntax Error: Invalid Operator", code: "5 + * 3" },
+            { title: "Syntax Error: Incomplete Expression", code: "x = " },
+            { title: "Syntax Error: Invalid Identifier", code: "123abc = 5" },
+            { title: "Indent-Style Factorial", code: "factorial(n):\n    n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
+            { title: "Indent-Style Function", code: "double(x):\n    x * 2\ndouble(7)" },
+            { title: "Indent-Style Multi-param", code: "add(a, b):\n    a + b\nresult = add(10, 20)\nresult" },
+        ];
+
         const input = document.getElementById("input");
         const output = document.getElementById("output");
         const parseButton = document.getElementById("parse");
         const clearButton = document.getElementById("clear");
         const copyButton = document.getElementById("copy");
-        const exampleCards = document.querySelectorAll(".example-card");
+        const examplesGrid = document.getElementById("examples-grid");
         const defaultInput = "x = 10";
 
         const updateOutput = () => {
             const result = evaluateExpression(input.value);
             output.value = result.output;
 
-            // Update output styling based on result type
             if (result.success) {
                 output.classList.remove("output-error");
                 output.classList.add("output-success");
@@ -605,11 +525,30 @@ result</code>
             }
         };
 
-        const loadExample = (exampleText) => {
-            input.value = exampleText;
+        const loadExample = (code) => {
+            input.value = code;
             updateUrlQuery();
             updateOutput();
         };
+
+        // Generate example cards from data
+        examples.forEach(({ title, code }) => {
+            const card = document.createElement("div");
+            card.className = "example-card";
+
+            const titleEl = document.createElement("p");
+            titleEl.className = "example-title";
+            titleEl.textContent = title;
+
+            const codeEl = document.createElement("code");
+            codeEl.className = "example-code";
+            codeEl.textContent = code;
+
+            card.appendChild(titleEl);
+            card.appendChild(codeEl);
+            card.addEventListener("click", () => loadExample(code));
+            examplesGrid.appendChild(card);
+        });
 
         // Event listeners
         parseButton.addEventListener("click", updateOutput);
@@ -621,20 +560,11 @@ result</code>
             updateOutput();
         });
 
-        // Keyboard shortcuts
         input.addEventListener("keydown", (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
                 e.preventDefault();
                 updateOutput();
             }
-        });
-
-        // Example card click handlers
-        exampleCards.forEach(card => {
-            card.addEventListener("click", () => {
-                const example = card.getAttribute("data-example");
-                loadExample(example);
-            });
         });
 
         // Set default input value only if input is empty on page load
