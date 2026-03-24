@@ -13,6 +13,8 @@ class EvaluationException(
     cause: Throwable? = null,
 ) : Exception(message, cause) {
 
+    private val calculator by lazy { sourceCode?.let { MatrixPositionCalculator(it) } }
+
     /**
      * Formats the error message with a full call stack trace, showing source positions.
      */
@@ -21,9 +23,10 @@ class EvaluationException(
         sb.append("Error: $message")
 
         if (context != null && context.callStack.isNotEmpty()) {
+            val calc = calculator
             context.callStack.asReversed().forEach { frame ->
-                val location = if (sourceCode != null) {
-                    formatPositionHighlight(frame.position, sourceCode)
+                val location = if (calc != null) {
+                    formatPositionHighlight(frame.position, calc)
                 } else {
                     "position ${frame.position.start}-${frame.position.end}"
                 }
@@ -34,12 +37,11 @@ class EvaluationException(
         return sb.toString()
     }
 
-    private fun formatPositionHighlight(position: ParseResult<*>, source: String): String {
-        val calc = MatrixPositionCalculator(source)
-        val pos = calc.getMatrixPosition(position.start.coerceAtMost(source.length))
+    private fun formatPositionHighlight(position: ParseResult<*>, calc: MatrixPositionCalculator): String {
+        val pos = calc.getMatrixPosition(position.start.coerceAtMost(calc.src.length))
 
         val lineRange = calc.getLineRange(pos.row)
-        val sourceLine = source.substring(lineRange)
+        val sourceLine = calc.src.substring(lineRange)
 
         val highlightStart = position.start - lineRange.first
         val highlightEnd = (position.end - lineRange.first).coerceAtMost(sourceLine.length)
