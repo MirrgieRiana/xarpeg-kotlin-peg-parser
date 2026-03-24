@@ -80,26 +80,26 @@ internal object OnlineParserGrammar {
         VariableReferenceExpression(result.value, result)
     }
 
-    val identifierListRestItem: Parser<String> = b * -',' * b * identifier
+    val identifierListRestItem: Parser<String> = s * -',' * b * identifier
     val identifierList: Parser<List<String>> = (identifier * identifierListRestItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
 
     val paramList: Parser<List<String>> =
         -'(' * b * (identifierList + (b map { emptyList<String>() })) * b * -')'
 
     val lambda: Parser<Expression> =
-        (paramList * b * -"->" * b * ref { expression }).result map { result ->
+        (paramList * s * -"->" * b * ref { expression }).result map { result ->
             val (params, body) = result.value
             LambdaExpression(params, body, result)
         }
 
-    val exprListRestItem: Parser<Expression> = b * -',' * b * ref { expression }
+    val exprListRestItem: Parser<Expression> = s * -',' * b * ref { expression }
     val exprList: Parser<List<Expression>> = (ref { expression } * exprListRestItem.zeroOrMore) map { (first, rest) -> listOf(first) + rest }
 
     val argList: Parser<List<Expression>> =
         -'(' * b * (exprList + (b map { emptyList<Expression>() })) * b * -')'
 
     val functionCall: Parser<Expression> =
-        (identifier * b * argList).result map { result ->
+        (identifier * s * argList).result map { result ->
             val (name, args) = result.value
             FunctionCallExpression(name, args, result)
         }
@@ -117,7 +117,7 @@ internal object OnlineParserGrammar {
     // -- Binary operators --
 
     val product: Parser<Expression> =
-        leftAssociative(factor, b * (+'*' + +'/') * b) { left, op, right ->
+        leftAssociative(factor, s * (+'*' + +'/') * b) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
                 '*' -> MultiplyExpression(left, right, position)
@@ -126,7 +126,7 @@ internal object OnlineParserGrammar {
         }
 
     val sum: Parser<Expression> =
-        leftAssociative(product, b * (+'+' + +'-') * b) { left, op, right ->
+        leftAssociative(product, s * (+'+' + +'-') * b) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
                 '+' -> AddExpression(left, right, position)
@@ -135,7 +135,7 @@ internal object OnlineParserGrammar {
         }
 
     val orderingComparison: Parser<Expression> =
-        leftAssociative(sum, b * (+"<=" + +">=" + +"<" + +">") * b) { left, op, right ->
+        leftAssociative(sum, s * (+"<=" + +">=" + +"<" + +">") * b) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
                 "<=" -> LessThanOrEqualExpression(left, right, position)
@@ -146,7 +146,7 @@ internal object OnlineParserGrammar {
         }
 
     val equalityComparison: Parser<Expression> =
-        leftAssociative(orderingComparison, b * (+"==" + +"!=") * b) { left, op, right ->
+        leftAssociative(orderingComparison, s * (+"==" + +"!=") * b) { left, op, right ->
             val position = ParseResult(Unit, left.position.start, right.position.end)
             when (op) {
                 "==" -> EqualsExpression(left, right, position)
@@ -157,8 +157,8 @@ internal object OnlineParserGrammar {
     // -- Ternary --
 
     val ternaryExpr: Parser<Expression> =
-        (ref { equalityComparison } * b * -'?' * b *
-            ref { equalityComparison } * b * -':' * b *
+        (ref { equalityComparison } * s * -'?' * b *
+            ref { equalityComparison } * s * -':' * b *
             ref { equalityComparison }).result map { result ->
             val (cond, trueExpr, falseExpr) = result.value
             TernaryExpression(cond, trueExpr, falseExpr, result)
@@ -189,7 +189,7 @@ internal object OnlineParserGrammar {
     }
 
     val indentFunctionDef: Parser<Expression> =
-        (identifier * b * paramList * b * -':' * s * lineBreak * indented(s, ref { expression })).result map { result ->
+        (identifier * s * paramList * s * -':' * s * lineBreak * indented(s, ref { expression })).result map { result ->
             val (name, params, body) = result.value
             AssignmentExpression(name, LambdaExpression(params, body, result), result)
         }
@@ -200,7 +200,7 @@ internal object OnlineParserGrammar {
 
     val expression: Parser<Expression> = or(
         indentFunctionDef,
-        (identifier * b * -'=' * b * ref { expression }).result map { result ->
+        (identifier * s * -'=' * b * ref { expression }).result map { result ->
             val (name, valueExpr) = result.value
             AssignmentExpression(name, valueExpr, result)
         },
