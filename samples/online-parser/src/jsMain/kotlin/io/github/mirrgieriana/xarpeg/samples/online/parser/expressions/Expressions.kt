@@ -69,14 +69,7 @@ class FunctionCallExpression(
             )
         }
 
-        functionCallCount++
-        if (functionCallCount >= MAX_FUNCTION_CALLS) {
-            throw EvaluationException(
-                "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
-                ctx,
-                ctx.sourceCode,
-            )
-        }
+        ctx.incrementCallCount()
 
         val newContext = ctx.pushFrame(name, position).withNewScope()
 
@@ -85,11 +78,6 @@ class FunctionCallExpression(
         }
 
         return func.body.evaluate(newContext)
-    }
-
-    companion object {
-        var functionCallCount = 0
-        private const val MAX_FUNCTION_CALLS = 100
     }
 }
 

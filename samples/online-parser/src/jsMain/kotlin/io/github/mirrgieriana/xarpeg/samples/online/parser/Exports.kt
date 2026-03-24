@@ -5,7 +5,6 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.ParseException
 import io.github.mirrgieriana.xarpeg.formatMessage
 import io.github.mirrgieriana.xarpeg.parseAll
-import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.FunctionCallExpression
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -25,8 +24,6 @@ data class ExpressionResult(
 @JsExport
 fun evaluateExpression(input: String): ExpressionResult {
     return try {
-        FunctionCallExpression.functionCallCount = 0
-
         val initialContext = EvaluationContext(sourceCode = input)
         val resultExpr = OnlineParserGrammar.root.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
         val result = resultExpr.evaluate(initialContext)
