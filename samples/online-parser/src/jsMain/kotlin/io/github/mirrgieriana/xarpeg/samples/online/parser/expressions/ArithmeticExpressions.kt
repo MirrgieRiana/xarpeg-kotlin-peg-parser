@@ -23,8 +23,9 @@ abstract class ArithmeticExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val leftNum = leftVal.requireNumber(ctx, operatorSymbol, "Left")
-        val rightNum = rightVal.requireNumber(ctx, operatorSymbol, "Right")
+        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
+        val leftNum = leftVal.requireNumber(newCtx, operatorSymbol, "Left")
+        val rightNum = rightVal.requireNumber(newCtx, operatorSymbol, "Right")
         return NumberValue(compute(ctx, leftNum, rightNum))
     }
 }
