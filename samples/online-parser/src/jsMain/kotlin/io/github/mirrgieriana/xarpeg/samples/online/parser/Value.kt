@@ -47,18 +47,18 @@ data class LambdaValue(
  * Requires this value to be a [NumberValue], throwing an [EvaluationException] otherwise.
  */
 fun Value.requireNumber(ctx: EvaluationContext, operatorSymbol: String, side: String): Double {
-    require(this is NumberValue) {
+    if (this !is NumberValue) {
         throw EvaluationException("$side operand of $operatorSymbol must be a number", ctx, ctx.sourceCode)
     }
-    return value
+    return this.value
 }
 
 /**
  * Requires this value to be a [BooleanValue], throwing an [EvaluationException] otherwise.
  */
 fun Value.requireBoolean(ctx: EvaluationContext, description: String): Boolean {
-    require(this is BooleanValue) {
+    if (this !is BooleanValue) {
         throw EvaluationException("$description must be a boolean", ctx, ctx.sourceCode)
     }
-    return value
+    return this.value
 }
