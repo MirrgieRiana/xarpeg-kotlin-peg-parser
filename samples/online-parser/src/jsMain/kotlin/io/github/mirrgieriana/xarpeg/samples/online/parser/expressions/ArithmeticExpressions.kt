@@ -1,7 +1,6 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
@@ -23,10 +22,10 @@ abstract class ArithmeticExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
-        val leftNum = leftVal.requireNumber(newCtx, operatorSymbol, "Left")
-        val rightNum = rightVal.requireNumber(newCtx, operatorSymbol, "Right")
-        return NumberValue(compute(ctx, leftNum, rightNum))
+        val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
+        val leftNum = leftVal.requireNumber(opCtx, operatorSymbol, "Left")
+        val rightNum = rightVal.requireNumber(opCtx, operatorSymbol, "Right")
+        return NumberValue(compute(opCtx, leftNum, rightNum))
     }
 }
 
@@ -65,9 +64,8 @@ class DivideExpression(left: Expression, right: Expression, position: ParseResul
     override val operatorSymbol = "/"
 
     override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double {
-        require(rightValue != 0.0) {
-            val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", position))
-            throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
+        if (rightValue == 0.0) {
+            throw EvaluationException("Division by zero", ctx, ctx.sourceCode)
         }
         return leftValue / rightValue
     }

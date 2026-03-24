@@ -2,7 +2,6 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
-import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
@@ -27,12 +26,10 @@ abstract class EqualityExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
+        val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
 
         val result = compareValues(leftVal, rightVal)
-        if (result == null) {
-            val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("$operatorSymbol operator", position))
-            throw EvaluationException("Operands of $operatorSymbol are not comparable", newCtx, ctx.sourceCode)
-        }
+            ?: throw EvaluationException("Operands of $operatorSymbol are not comparable", opCtx, opCtx.sourceCode)
 
         return BooleanValue(result)
     }
