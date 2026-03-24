@@ -51,9 +51,9 @@ internal object OnlineParserGrammar {
     val s: Parser<Tuple0> = -Regex("""[ \t]*""") named "whitespace"
 
     /**
-     * Matches the required indentation after a line break.
+     * Matches horizontal whitespace and verifies indentation after a line break.
      * Inside an indent block, requires at least [OnlineParserParseContext.currentIndent] spaces/tabs.
-     * Outside an indent block, succeeds without consuming input.
+     * Outside an indent block, consumes any horizontal whitespace without restriction.
      */
     val indent: Parser<Tuple0> = Parser { context, pos ->
         val result = context.parseOrNull(s, pos) ?: return@Parser ParseResult(Tuple0, pos, pos)
