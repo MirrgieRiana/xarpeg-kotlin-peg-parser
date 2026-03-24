@@ -56,7 +56,7 @@ internal object OnlineParserGrammar {
      * Outside an indent block, consumes any horizontal whitespace without restriction.
      */
     val indent: Parser<Tuple0> = Parser { context, pos ->
-        val result = context.parseOrNull(s, pos) ?: return@Parser ParseResult(Tuple0, pos, pos)
+        val result = context.parseOrNull(s, pos)!!
         if (context is OnlineParserParseContext && result.end - pos < context.currentIndent) {
             return@Parser null
         }
