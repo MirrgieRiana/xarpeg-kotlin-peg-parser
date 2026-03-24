@@ -114,14 +114,3 @@ class AssignmentExpression(
         return value
     }
 }
-
-/**
- * A sequence of expressions (program). Evaluates all expressions and returns the last result.
- */
-class ProgramExpression(
-    private val expressions: List<Expression>,
-    override val position: ParseResult<*>,
-) : Expression {
-    override fun evaluate(ctx: EvaluationContext) =
-        expressions.fold(NumberValue(0.0) as Value) { _, expr -> expr.evaluate(ctx) }
-}

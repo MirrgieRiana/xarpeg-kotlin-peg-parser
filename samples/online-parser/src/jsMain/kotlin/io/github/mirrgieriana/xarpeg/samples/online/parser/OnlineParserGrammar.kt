@@ -19,6 +19,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AddExpres
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AssignmentExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.DivideExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.EqualsExpression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ExpressionStatement
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.FunctionCallExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanOrEqualExpression
@@ -28,7 +29,6 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.LessThanO
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.MultiplyExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NotEqualsExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NumberLiteralExpression
-import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ProgramExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
@@ -207,10 +207,11 @@ internal object OnlineParserGrammar {
         valueExpression,
     )
 
-    val program: Parser<Expression> = (expression * (newline * expression).zeroOrMore).result map { result ->
-        val (first, rest) = result.value
-        ProgramExpression(listOf(first) + rest, result)
+    val statement: Parser<Statement> = expression map { ExpressionStatement(it) }
+
+    val program: Parser<Program> = (statement * (newline * statement).zeroOrMore) map { (first, rest) ->
+        Program(listOf(first) + rest)
     }
 
-    val root: Parser<Expression> = b * program * b
+    val root: Parser<Program> = b * program * b
 }
