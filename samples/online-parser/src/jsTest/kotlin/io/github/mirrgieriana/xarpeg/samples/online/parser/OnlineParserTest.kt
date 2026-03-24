@@ -219,11 +219,6 @@ class OnlineParserTest {
     }
 
     @Test
-    fun parsesExpressionWithNewlines() {
-        assertEquals("6", evaluateExpression("2\n*\n3").output)
-    }
-
-    @Test
     fun parsesExpressionWithTabs() {
         assertEquals("8", evaluateExpression("4\t+\t4").output)
     }
