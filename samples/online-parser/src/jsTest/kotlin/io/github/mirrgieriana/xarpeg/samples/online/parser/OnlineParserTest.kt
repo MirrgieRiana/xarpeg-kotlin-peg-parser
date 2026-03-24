@@ -572,7 +572,8 @@ class OnlineParserTest {
         val lines = result.output.split("\n")
         val stackLine = lines.find { it.contains("at line") }
         assertNotNull(stackLine)
-        val highlighted = stackLine!!.substringAfter("[").substringBefore("]")
+        assertTrue(stackLine!!.contains("[") && stackLine.contains("]"))
+        val highlighted = stackLine.substringAfter("[").substringBefore("]")
         // Should contain the division operator and both operands
         assertTrue(highlighted.contains("/"))
         assertTrue(highlighted.contains("5"))
