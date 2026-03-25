@@ -3,12 +3,14 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
-import io.github.mirrgieriana.xarpeg.samples.online.parser.requireNumber
 
 /**
  * Base class for ordering comparison operators (<, <=, >, >=).
+ * Subclasses implement [compute] to handle supported type combinations.
  */
 abstract class ComparisonExpression(
     protected val left: Expression,
@@ -16,15 +18,23 @@ abstract class ComparisonExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     abstract val operatorSymbol: String
-    abstract fun compare(leftValue: Double, rightValue: Double): Boolean
+
+    /**
+     * Computes the result for the given operand values.
+     * Returns `null` if the type combination is not supported by this operator.
+     */
+    abstract fun compute(ctx: EvaluationContext, left: Value, right: Value): Value?
 
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
         val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
-        val leftNum = leftVal.requireNumber(opCtx, operatorSymbol, "Left")
-        val rightNum = rightVal.requireNumber(opCtx, operatorSymbol, "Right")
-        return BooleanValue(compare(leftNum, rightNum))
+        return compute(opCtx, leftVal, rightVal)
+            ?: throw EvaluationException(
+                "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
+                opCtx,
+                opCtx.sourceCode,
+            )
     }
 }
 
@@ -34,7 +44,10 @@ abstract class ComparisonExpression(
 class LessThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonExpression(left, right, position) {
     override val operatorSymbol = "<"
-    override fun compare(leftValue: Double, rightValue: Double) = leftValue < rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return BooleanValue(left.value < right.value)
+        return null
+    }
 }
 
 /**
@@ -43,7 +56,10 @@ class LessThanExpression(left: Expression, right: Expression, position: ParseRes
 class LessThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonExpression(left, right, position) {
     override val operatorSymbol = "<="
-    override fun compare(leftValue: Double, rightValue: Double) = leftValue <= rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return BooleanValue(left.value <= right.value)
+        return null
+    }
 }
 
 /**
@@ -52,7 +68,10 @@ class LessThanOrEqualExpression(left: Expression, right: Expression, position: P
 class GreaterThanExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonExpression(left, right, position) {
     override val operatorSymbol = ">"
-    override fun compare(leftValue: Double, rightValue: Double) = leftValue > rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return BooleanValue(left.value > right.value)
+        return null
+    }
 }
 
 /**
@@ -61,5 +80,8 @@ class GreaterThanExpression(left: Expression, right: Expression, position: Parse
 class GreaterThanOrEqualExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     ComparisonExpression(left, right, position) {
     override val operatorSymbol = ">="
-    override fun compare(leftValue: Double, rightValue: Double) = leftValue >= rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return BooleanValue(left.value >= right.value)
+        return null
+    }
 }

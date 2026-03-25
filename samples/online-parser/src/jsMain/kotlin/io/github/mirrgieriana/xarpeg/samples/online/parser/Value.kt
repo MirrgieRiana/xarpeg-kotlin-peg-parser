@@ -7,6 +7,11 @@ import io.github.mirrgieriana.xarpeg.ParseResult
  */
 sealed class Value {
     /**
+     * The name of this value's type, used in error messages.
+     */
+    abstract val typeName: String
+
+    /**
      * Tests equality with [other]. Returns `true`/`false` if the types are compatible,
      * or `null` if the types cannot be compared.
      */
@@ -17,6 +22,7 @@ sealed class Value {
  * A numeric value. Integers are displayed without a decimal point.
  */
 data class NumberValue(val value: Double) : Value() {
+    override val typeName = "Number"
     override fun isEqualTo(other: Value) = if (other is NumberValue) value == other.value else null
     override fun toString() = if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
 }
@@ -25,6 +31,7 @@ data class NumberValue(val value: Double) : Value() {
  * A boolean value.
  */
 data class BooleanValue(val value: Boolean) : Value() {
+    override val typeName = "Boolean"
     override fun isEqualTo(other: Value) = if (other is BooleanValue) value == other.value else null
     override fun toString() = value.toString()
 }
@@ -39,26 +46,7 @@ data class LambdaValue(
     val name: String? = null,
     val definitionPosition: ParseResult<*>? = null,
 ) : Value() {
+    override val typeName = "Lambda"
     override fun isEqualTo(other: Value): Boolean? = null
     override fun toString() = "<lambda(${params.joinToString(", ")})>"
-}
-
-/**
- * Requires this value to be a [NumberValue], throwing an [EvaluationException] otherwise.
- */
-fun Value.requireNumber(ctx: EvaluationContext, operatorSymbol: String, side: String): Double {
-    if (this !is NumberValue) {
-        throw EvaluationException("$side operand of $operatorSymbol must be a number", ctx, ctx.sourceCode)
-    }
-    return this.value
-}
-
-/**
- * Requires this value to be a [BooleanValue], throwing an [EvaluationException] otherwise.
- */
-fun Value.requireBoolean(ctx: EvaluationContext, description: String): Boolean {
-    if (this !is BooleanValue) {
-        throw EvaluationException("$description must be a boolean", ctx, ctx.sourceCode)
-    }
-    return this.value
 }

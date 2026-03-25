@@ -9,6 +9,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
 /**
  * Base class for equality operators (==, !=).
+ * Subclasses implement [compute] to handle supported type combinations.
  */
 abstract class EqualityExpression(
     protected val left: Expression,
@@ -18,20 +19,21 @@ abstract class EqualityExpression(
     abstract val operatorSymbol: String
 
     /**
-     * Compares two values using [Value.isEqualTo] and applies operator-specific logic
-     * (identity for `==`, negation for `!=`). Returns `null` if the types are incompatible.
+     * Computes the result for the given operand values.
+     * Returns `null` if the type combination is not supported by this operator.
      */
-    protected abstract fun compareValues(left: Value, right: Value): Boolean?
+    abstract fun compute(ctx: EvaluationContext, left: Value, right: Value): Value?
 
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
         val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
-
-        val result = compareValues(leftVal, rightVal)
-            ?: throw EvaluationException("Operands of $operatorSymbol are not comparable", opCtx, opCtx.sourceCode)
-
-        return BooleanValue(result)
+        return compute(opCtx, leftVal, rightVal)
+            ?: throw EvaluationException(
+                "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
+                opCtx,
+                opCtx.sourceCode,
+            )
     }
 }
 
@@ -41,7 +43,10 @@ abstract class EqualityExpression(
 class EqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityExpression(left, right, position) {
     override val operatorSymbol = "=="
-    override fun compareValues(left: Value, right: Value) = left.isEqualTo(right)
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        val result = left.isEqualTo(right) ?: return null
+        return BooleanValue(result)
+    }
 }
 
 /**
@@ -50,5 +55,8 @@ class EqualsExpression(left: Expression, right: Expression, position: ParseResul
 class NotEqualsExpression(left: Expression, right: Expression, position: ParseResult<*>) :
     EqualityExpression(left, right, position) {
     override val operatorSymbol = "!="
-    override fun compareValues(left: Value, right: Value) = left.isEqualTo(right)?.let { !it }
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        val result = left.isEqualTo(right) ?: return null
+        return BooleanValue(!result)
+    }
 }

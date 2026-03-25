@@ -1,13 +1,13 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
+import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.LambdaValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
-import io.github.mirrgieriana.xarpeg.samples.online.parser.requireBoolean
 
 // -- Atoms --
 
@@ -93,8 +93,14 @@ class TernaryExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val condVal = condition.evaluate(ctx)
         val opCtx = ctx.pushFrame("ternary operator", position)
-        val condBool = condVal.requireBoolean(opCtx, "Condition in ternary operator")
-        return if (condBool) trueExpression.evaluate(opCtx) else falseExpression.evaluate(opCtx)
+        if (condVal !is BooleanValue) {
+            throw EvaluationException(
+                "Condition of ternary operator must be Boolean, got ${condVal.typeName}",
+                opCtx,
+                opCtx.sourceCode,
+            )
+        }
+        return if (condVal.value) trueExpression.evaluate(opCtx) else falseExpression.evaluate(opCtx)
     }
 }
 
