@@ -2,9 +2,10 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
-import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
@@ -28,12 +29,11 @@ abstract class ComparisonExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
-        return compute(opCtx, leftVal, rightVal)
+        return compute(ctx, leftVal, rightVal)
             ?: throw EvaluationException(
                 "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
-                opCtx,
-                opCtx.session.sourceCode,
+                ctx.callStack + CallFrame("$operatorSymbol operator", position),
+                ctx.session.sourceCode,
             )
     }
 }

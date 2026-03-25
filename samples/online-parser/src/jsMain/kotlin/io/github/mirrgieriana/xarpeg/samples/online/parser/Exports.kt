@@ -30,7 +30,7 @@ fun evaluateExpression(input: String): ExpressionResult {
         val result = resultExpr.evaluate(ctx)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
-        val errorMessage = if (e.context != null && e.context.callStack.isNotEmpty()) {
+        val errorMessage = if (e.callStack.isNotEmpty()) {
             e.formatWithCallStack()
         } else {
             "Error: ${e.message}"

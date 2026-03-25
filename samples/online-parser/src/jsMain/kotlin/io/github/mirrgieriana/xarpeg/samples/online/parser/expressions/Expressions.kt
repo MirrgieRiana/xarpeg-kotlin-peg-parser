@@ -2,6 +2,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
+import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
@@ -30,7 +31,7 @@ class VariableReferenceExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
-        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.session.sourceCode)
+        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx.callStack, ctx.session.sourceCode)
 }
 
 /**
@@ -55,16 +56,16 @@ class FunctionCallExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val func = ctx.variableTable.get(name)
-            ?: throw EvaluationException("Undefined function: $name", ctx, ctx.session.sourceCode)
+            ?: throw EvaluationException("Undefined function: $name", ctx.callStack, ctx.session.sourceCode)
 
         if (func !is LambdaValue) {
-            throw EvaluationException("$name is not a function", ctx, ctx.session.sourceCode)
+            throw EvaluationException("$name is not a function", ctx.callStack, ctx.session.sourceCode)
         }
 
         if (args.size != func.params.size) {
             throw EvaluationException(
                 "Function $name expects ${func.params.size} arguments, but got ${args.size}",
-                ctx,
+                ctx.callStack,
                 ctx.session.sourceCode,
             )
         }
@@ -93,15 +94,14 @@ class TernaryExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val condVal = condition.evaluate(ctx)
-        val opCtx = ctx.pushFrame("ternary operator", position)
         if (condVal !is BooleanValue) {
             throw EvaluationException(
                 "Condition of ternary operator must be Boolean, got ${condVal.typeName}",
-                opCtx,
-                opCtx.session.sourceCode,
+                ctx.callStack + CallFrame("ternary operator", position),
+                ctx.session.sourceCode,
             )
         }
-        return if (condVal.value) trueExpression.evaluate(opCtx) else falseExpression.evaluate(opCtx)
+        return if (condVal.value) trueExpression.evaluate(ctx) else falseExpression.evaluate(ctx)
     }
 }
 

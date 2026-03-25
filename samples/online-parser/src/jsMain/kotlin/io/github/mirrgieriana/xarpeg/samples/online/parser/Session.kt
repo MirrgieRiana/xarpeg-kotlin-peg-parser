@@ -13,10 +13,14 @@ class Session(
      * Increments the function call count and throws if the limit is exceeded.
      * Prevents infinite recursion from freezing the page.
      */
-    fun incrementCallCount(ctx: Expression.EvaluationContext) {
+    fun incrementCallCount(callStack: List<CallFrame>) {
         callCount++
         if (callCount >= MAX_FUNCTION_CALLS) {
-            throw EvaluationException("Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded", ctx, sourceCode)
+            throw EvaluationException(
+                "Maximum function call limit ($MAX_FUNCTION_CALLS) exceeded",
+                callStack,
+                sourceCode,
+            )
         }
     }
 

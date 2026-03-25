@@ -4,11 +4,11 @@ import io.github.mirrgieriana.xarpeg.MatrixPositionCalculator
 import io.github.mirrgieriana.xarpeg.ParseResult
 
 /**
- * Exception thrown during expression evaluation, with optional call stack for error reporting.
+ * Exception thrown during expression evaluation, with call stack and source code for error reporting.
  */
 class EvaluationException(
     message: String,
-    val context: Expression.EvaluationContext? = null,
+    val callStack: List<CallFrame> = emptyList(),
     val sourceCode: String? = null,
     cause: Throwable? = null,
 ) : Exception(message, cause) {
@@ -22,9 +22,9 @@ class EvaluationException(
         val sb = StringBuilder()
         sb.append("Error: $message")
 
-        if (context != null && context.callStack.isNotEmpty()) {
+        if (callStack.isNotEmpty()) {
             val calc = calculator
-            context.callStack.asReversed().forEach { frame ->
+            callStack.asReversed().forEach { frame ->
                 val location = if (calc != null) {
                     formatPositionHighlight(frame.position, calc)
                 } else {

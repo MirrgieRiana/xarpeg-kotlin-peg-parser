@@ -26,13 +26,7 @@ interface Expression {
         val variableTable: VariableTable = VariableTable(),
     ) {
         /**
-         * Creates a new context with an additional call frame pushed onto the stack.
-         */
-        fun pushFrame(functionName: String, callPosition: ParseResult<*>) =
-            EvaluationContext(session, callStack + CallFrame(functionName, callPosition), variableTable)
-
-        /**
-         * Creates a new context with an additional call frame and a child scope derived from [closureScope].
+         * Creates a new context for a function call, with a call frame and a child scope derived from [closureScope].
          */
         fun pushFrame(functionName: String, callPosition: ParseResult<*>, closureScope: VariableTable) =
             EvaluationContext(session, callStack + CallFrame(functionName, callPosition), closureScope.createChild())
@@ -41,7 +35,7 @@ interface Expression {
          * Increments the function call count via the session.
          */
         fun incrementCallCount() {
-            session.incrementCallCount(this)
+            session.incrementCallCount(callStack)
         }
     }
 }

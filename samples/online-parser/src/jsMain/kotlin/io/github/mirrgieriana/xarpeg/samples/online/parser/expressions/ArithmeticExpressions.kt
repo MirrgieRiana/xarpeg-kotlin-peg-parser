@@ -1,9 +1,10 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
@@ -27,12 +28,11 @@ abstract class ArithmeticExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val opCtx = ctx.pushFrame("$operatorSymbol operator", position)
-        return compute(opCtx, leftVal, rightVal)
+        return compute(ctx, leftVal, rightVal)
             ?: throw EvaluationException(
                 "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
-                opCtx,
-                opCtx.session.sourceCode,
+                ctx.callStack + CallFrame("$operatorSymbol operator", position),
+                ctx.session.sourceCode,
             )
     }
 }
@@ -81,7 +81,11 @@ class DivideExpression(left: Expression, right: Expression, position: ParseResul
     override val operatorSymbol = "/"
     override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
         if (left is NumberValue && right is NumberValue) {
-            if (right.value == 0.0) throw EvaluationException("Division by zero", ctx, ctx.session.sourceCode)
+            if (right.value == 0.0) throw EvaluationException(
+                "Division by zero",
+                ctx.callStack + CallFrame("/ operator", position),
+                ctx.session.sourceCode,
+            )
             return NumberValue(left.value / right.value)
         }
         return null
