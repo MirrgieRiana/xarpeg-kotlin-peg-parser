@@ -1,4 +1,4 @@
-package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
+package io.github.mirrgieriana.xarpeg.samples.online.parser.statements
 
 import io.github.mirrgieriana.xarpeg.samples.online.parser.ExecutionFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression

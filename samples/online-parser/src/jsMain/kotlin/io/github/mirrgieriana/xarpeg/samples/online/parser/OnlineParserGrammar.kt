@@ -20,7 +20,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AddExpres
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AssignmentExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.DivideExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.EqualsExpression
-import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.ExpressionStatement
+import io.github.mirrgieriana.xarpeg.samples.online.parser.statements.ExpressionStatement
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.FunctionCallExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanOrEqualExpression
