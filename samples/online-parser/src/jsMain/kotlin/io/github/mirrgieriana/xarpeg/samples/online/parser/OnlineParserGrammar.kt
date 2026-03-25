@@ -6,6 +6,7 @@ import io.github.mirrgieriana.xarpeg.Tuple0
 import io.github.mirrgieriana.xarpeg.parsers.leftAssociative
 import io.github.mirrgieriana.xarpeg.parsers.map
 import io.github.mirrgieriana.xarpeg.parsers.named
+import io.github.mirrgieriana.xarpeg.parsers.not
 import io.github.mirrgieriana.xarpeg.parsers.oneOrMore
 import io.github.mirrgieriana.xarpeg.parsers.or
 import io.github.mirrgieriana.xarpeg.parsers.plus
@@ -31,6 +32,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NotEquals
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NumberLiteralExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.statements.VariableDeclarationStatement
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableReferenceExpression
 
 /**
@@ -68,6 +70,9 @@ internal object OnlineParserGrammar {
 
     /** Whitespace that must contain at least one line break. Used as a statement separator. */
     val newline: Parser<Tuple0> = -((s * lineBreak).oneOrMore * indent).oneOrMore * s
+
+    /** Matches a single identifier continuation character: letter, digit, or underscore. */
+    val identifierPart: Parser<Tuple0> = -Regex("""[a-zA-Z0-9_]""")
 
     // -- Terminals --
 
@@ -207,7 +212,15 @@ internal object OnlineParserGrammar {
         valueExpression,
     )
 
-    val statement: Parser<Statement> = expression map { ExpressionStatement(it) }
+    val varDeclaration: Parser<Statement> =
+        -"var" * !identifierPart * s * identifier * s * -'=' * b * ref { expression } map { (name, value) ->
+            VariableDeclarationStatement(name, value)
+        }
+
+    val statement: Parser<Statement> = or(
+        varDeclaration,
+        expression map { ExpressionStatement(it) },
+    )
 
     val program: Parser<Program> = (statement * (newline * statement).zeroOrMore) map { (first, rest) ->
         Program(listOf(first) + rest)
