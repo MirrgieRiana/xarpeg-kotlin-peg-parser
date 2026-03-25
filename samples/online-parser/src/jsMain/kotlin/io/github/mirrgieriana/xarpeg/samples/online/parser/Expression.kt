@@ -24,12 +24,5 @@ interface Expression {
         val session: Session,
         val callStack: List<CallFrame> = emptyList(),
         val variableTable: VariableTable = VariableTable(),
-    ) {
-        /**
-         * Increments the function call count via the session.
-         */
-        fun incrementCallCount() {
-            session.incrementCallCount(callStack)
-        }
-    }
+    )
 }

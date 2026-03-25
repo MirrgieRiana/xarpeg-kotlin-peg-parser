@@ -75,7 +75,7 @@ class FunctionCallExpression(
             ctx.callStack + CallFrame(name, position),
             func.closureScope.createChild(),
         )
-        bodyContext.incrementCallCount()
+        bodyContext.session.incrementCallCount(bodyContext.callStack)
 
         func.params.zip(args).forEach { (param, argExpr) ->
             bodyContext.variableTable.set(param, argExpr.evaluate(ctx))

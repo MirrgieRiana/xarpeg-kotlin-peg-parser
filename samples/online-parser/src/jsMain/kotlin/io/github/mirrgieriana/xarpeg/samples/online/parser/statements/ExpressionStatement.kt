@@ -10,6 +10,6 @@ class ExpressionStatement(
     private val expression: Expression,
 ) : Statement {
     override fun execute(ctx: Statement.ExecutionContext) {
-        ctx.lastValue = expression.evaluate(ctx.toEvaluationContext())
+        ctx.lastValue = expression.evaluate(Expression.EvaluationContext(ctx.session, ctx.callStack, ctx.variableTable))
     }
 }

@@ -19,10 +19,5 @@ interface Statement {
         val callStack: List<CallFrame>,
         var variableTable: VariableTable,
         var lastValue: Value? = null,
-    ) {
-        /**
-         * Creates an [Expression.EvaluationContext] from the current execution state.
-         */
-        fun toEvaluationContext() = Expression.EvaluationContext(session, callStack, variableTable)
-    }
+    )
 }

@@ -12,7 +12,7 @@ class VariableDeclarationStatement(
     private val value: Expression,
 ) : Statement {
     override fun execute(ctx: Statement.ExecutionContext) {
-        val evaluated = value.evaluate(ctx.toEvaluationContext())
+        val evaluated = value.evaluate(Expression.EvaluationContext(ctx.session, ctx.callStack, ctx.variableTable))
         ctx.variableTable.set(name, evaluated)
     }
 }
