@@ -70,7 +70,11 @@ class FunctionCallExpression(
             )
         }
 
-        val bodyContext = ctx.pushFrame(name, position, func.closureScope)
+        val bodyContext = EvaluationContext(
+            ctx.session,
+            ctx.callStack + CallFrame(name, position),
+            func.closureScope.createChild(),
+        )
         bodyContext.incrementCallCount()
 
         func.params.zip(args).forEach { (param, argExpr) ->
