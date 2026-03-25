@@ -8,7 +8,7 @@ import io.github.mirrgieriana.xarpeg.ParseResult
  */
 class EvaluationException(
     message: String,
-    val context: EvaluationContext? = null,
+    val context: Expression.EvaluationContext? = null,
     val sourceCode: String? = null,
     cause: Throwable? = null,
 ) : Exception(message, cause) {

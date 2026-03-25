@@ -24,9 +24,10 @@ data class ExpressionResult(
 @JsExport
 fun evaluateExpression(input: String): ExpressionResult {
     return try {
-        val initialContext = EvaluationContext(sourceCode = input)
-        val program = OnlineParserGrammar.root.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
-        val result = program.execute(initialContext)
+        val session = Session(sourceCode = input)
+        val ctx = Expression.EvaluationContext(session)
+        val resultExpr = OnlineParserGrammar.root.parseAll(input) { OnlineParserParseContext(it) }.getOrThrow()
+        val result = resultExpr.evaluate(ctx)
         ExpressionResult(success = true, output = result.toString())
     } catch (e: EvaluationException) {
         val errorMessage = if (e.context != null && e.context.callStack.isNotEmpty()) {

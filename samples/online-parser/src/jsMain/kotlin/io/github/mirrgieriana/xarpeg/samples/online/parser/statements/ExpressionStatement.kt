@@ -1,6 +1,5 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.statements
 
-import io.github.mirrgieriana.xarpeg.samples.online.parser.ExecutionFrame
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
 
@@ -10,7 +9,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
 class ExpressionStatement(
     private val expression: Expression,
 ) : Statement {
-    override fun execute(frame: ExecutionFrame) {
-        frame.lastValue = expression.evaluate(frame.context)
+    override fun execute(ctx: Statement.ExecutionContext) {
+        ctx.lastValue = expression.evaluate(ctx.toEvaluationContext())
     }
 }

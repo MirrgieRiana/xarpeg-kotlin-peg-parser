@@ -2,11 +2,12 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
-import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.LambdaValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
 // -- Atoms --
@@ -29,7 +30,7 @@ class VariableReferenceExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
-        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.sourceCode)
+        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx, ctx.session.sourceCode)
 }
 
 /**
@@ -54,29 +55,28 @@ class FunctionCallExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val func = ctx.variableTable.get(name)
-            ?: throw EvaluationException("Undefined function: $name", ctx, ctx.sourceCode)
+            ?: throw EvaluationException("Undefined function: $name", ctx, ctx.session.sourceCode)
 
         if (func !is LambdaValue) {
-            throw EvaluationException("$name is not a function", ctx, ctx.sourceCode)
+            throw EvaluationException("$name is not a function", ctx, ctx.session.sourceCode)
         }
 
         if (args.size != func.params.size) {
             throw EvaluationException(
                 "Function $name expects ${func.params.size} arguments, but got ${args.size}",
                 ctx,
-                ctx.sourceCode,
+                ctx.session.sourceCode,
             )
         }
 
-        val callScope = func.closureScope.createChild()
+        val bodyContext = ctx.pushFrame(name, position, func.closureScope)
+        bodyContext.incrementCallCount()
+
         func.params.zip(args).forEach { (param, argExpr) ->
-            callScope.set(param, argExpr.evaluate(ctx))
+            bodyContext.variableTable.set(param, argExpr.evaluate(ctx))
         }
 
-        val newContext = ctx.pushFrame(name, position).copy(variableTable = callScope)
-        newContext.incrementCallCount()
-
-        return func.body.evaluate(newContext)
+        return func.body.evaluate(bodyContext)
     }
 }
 
@@ -98,7 +98,7 @@ class TernaryExpression(
             throw EvaluationException(
                 "Condition of ternary operator must be Boolean, got ${condVal.typeName}",
                 opCtx,
-                opCtx.sourceCode,
+                opCtx.session.sourceCode,
             )
         }
         return if (condVal.value) trueExpression.evaluate(opCtx) else falseExpression.evaluate(opCtx)
@@ -119,5 +119,19 @@ class AssignmentExpression(
         val value = valueExpression.evaluate(ctx)
         ctx.variableTable.set(name, value)
         return value
+    }
+}
+
+/**
+ * A sequence of statements. Executes each statement in order and returns the last evaluated value.
+ */
+class StatementsExpression(
+    private val statements: List<Statement>,
+    override val position: ParseResult<*>,
+) : Expression {
+    override fun evaluate(ctx: EvaluationContext): Value {
+        val execCtx = Statement.ExecutionContext(ctx.session, ctx.callStack, ctx.variableTable)
+        statements.forEach { it.execute(execCtx) }
+        return execCtx.lastValue ?: NumberValue(0.0)
     }
 }

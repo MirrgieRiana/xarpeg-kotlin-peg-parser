@@ -1,7 +1,7 @@
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
-import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
@@ -32,7 +32,7 @@ abstract class ArithmeticExpression(
             ?: throw EvaluationException(
                 "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
                 opCtx,
-                opCtx.sourceCode,
+                opCtx.session.sourceCode,
             )
     }
 }
@@ -81,7 +81,7 @@ class DivideExpression(left: Expression, right: Expression, position: ParseResul
     override val operatorSymbol = "/"
     override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
         if (left is NumberValue && right is NumberValue) {
-            if (right.value == 0.0) throw EvaluationException("Division by zero", ctx, ctx.sourceCode)
+            if (right.value == 0.0) throw EvaluationException("Division by zero", ctx, ctx.session.sourceCode)
             return NumberValue(left.value / right.value)
         }
         return null

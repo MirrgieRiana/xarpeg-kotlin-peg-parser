@@ -30,6 +30,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.LessThanO
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.MultiplyExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NotEqualsExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.NumberLiteralExpression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.StatementsExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.SubtractExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.TernaryExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.statements.VariableDeclarationStatement
@@ -222,9 +223,10 @@ internal object OnlineParserGrammar {
         expression map { ExpressionStatement(it) },
     )
 
-    val program: Parser<Program> = (statement * (newline * statement).zeroOrMore) map { (first, rest) ->
-        Program(listOf(first) + rest)
+    val program: Parser<Expression> = (statement * (newline * statement).zeroOrMore).result map { result ->
+        val (first, rest) = result.value
+        StatementsExpression(listOf(first) + rest, result)
     }
 
-    val root: Parser<Program> = b * program * b
+    val root: Parser<Expression> = b * program * b
 }

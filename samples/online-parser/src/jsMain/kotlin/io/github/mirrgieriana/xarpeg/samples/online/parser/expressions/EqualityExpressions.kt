@@ -2,7 +2,7 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
 import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.BooleanValue
-import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
@@ -32,7 +32,7 @@ abstract class EqualityExpression(
             ?: throw EvaluationException(
                 "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
                 opCtx,
-                opCtx.sourceCode,
+                opCtx.session.sourceCode,
             )
     }
 }
