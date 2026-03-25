@@ -37,13 +37,13 @@ data class BooleanValue(val value: Boolean) : Value() {
 }
 
 /**
- * A callable lambda value with captured variable scope.
+ * A callable lambda value. Holds a reference to the [closureScope] where the lambda was defined,
+ * enabling lexical scoping when the lambda is called.
  */
 data class LambdaValue(
     val params: List<String>,
     val body: Expression,
-    val capturedVars: MutableMap<String, Value>,
-    val name: String? = null,
+    val closureScope: VariableTable,
     val definitionPosition: ParseResult<*>? = null,
 ) : Value() {
     override val typeName = "Lambda"

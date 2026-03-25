@@ -41,7 +41,7 @@ class LambdaExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
-        LambdaValue(params, body, mutableMapOf(), definitionPosition = position)
+        LambdaValue(params, body, ctx.variableTable, definitionPosition = position)
 }
 
 /**
@@ -68,12 +68,13 @@ class FunctionCallExpression(
             )
         }
 
-        val newContext = ctx.pushFrame(name, position).withNewScope()
-        newContext.incrementCallCount()
-
+        val callScope = func.closureScope.createChild()
         func.params.zip(args).forEach { (param, argExpr) ->
-            newContext.variableTable.set(param, argExpr.evaluate(ctx))
+            callScope.set(param, argExpr.evaluate(ctx))
         }
+
+        val newContext = ctx.pushFrame(name, position).copy(variableTable = callScope)
+        newContext.incrementCallCount()
 
         return func.body.evaluate(newContext)
     }
