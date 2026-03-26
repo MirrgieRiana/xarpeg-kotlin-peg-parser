@@ -194,18 +194,11 @@ internal object OnlineParserGrammar {
         }
     }
 
-    val indentFunctionDef: Parser<Expression> =
-        (identifier * s * paramList * s * -':' * s * lineBreak * indented(s, ref { statementBlock })).result map { result ->
-            val (name, params, body) = result.value
-            AssignmentExpression(name, LambdaExpression(params, body, result), result)
-        }
-
     // -- Top-level rules --
 
     val valueExpression: Parser<Expression> = ternary
 
     val expression: Parser<Expression> = or(
-        indentFunctionDef,
         (identifier * s * -'=' * b * ref { expression }).result map { result ->
             val (name, valueExpr) = result.value
             AssignmentExpression(name, valueExpr, result)
@@ -213,12 +206,19 @@ internal object OnlineParserGrammar {
         valueExpression,
     )
 
+    val indentFunctionDef: Parser<Statement> =
+        (identifier * s * paramList * s * -':' * s * lineBreak * indented(s, ref { statementBlock })).result map { result ->
+            val (name, params, body) = result.value
+            VariableDeclarationStatement(name, LambdaExpression(params, body, result))
+        }
+
     val varDeclaration: Parser<Statement> =
         -"var" * !identifierPart * s * identifier * s * -'=' * b * ref { expression } map { (name, value) ->
             VariableDeclarationStatement(name, value)
         }
 
     val statement: Parser<Statement> = or(
+        indentFunctionDef,
         varDeclaration,
         expression map { ExpressionStatement(it) },
     )
