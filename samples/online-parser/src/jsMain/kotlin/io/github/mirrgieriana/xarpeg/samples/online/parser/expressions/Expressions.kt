@@ -122,7 +122,9 @@ class AssignmentExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val value = valueExpression.evaluate(ctx)
-        ctx.variableTable.set(name, value)
+        if (!ctx.variableTable.set(name, value)) {
+            throw EvaluationException("Undefined variable: $name", ctx.callStack, ctx.session.sourceCode)
+        }
         return value
     }
 }

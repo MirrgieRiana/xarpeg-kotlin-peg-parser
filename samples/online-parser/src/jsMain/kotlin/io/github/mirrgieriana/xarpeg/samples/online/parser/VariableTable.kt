@@ -20,14 +20,14 @@ data class VariableTable(
     }
 
     /**
-     * Sets an existing variable by searching parent scopes. Throws if not found.
+     * Sets an existing variable by searching parent scopes. Returns `false` if not found.
      */
-    fun set(name: String, value: Value) {
+    fun set(name: String, value: Value): Boolean {
         if (variables.containsKey(name)) {
             variables[name] = value
-        } else {
-            parent?.set(name, value) ?: throw IllegalStateException("Undefined variable: $name")
+            return true
         }
+        return parent?.set(name, value) ?: false
     }
 
     /**
