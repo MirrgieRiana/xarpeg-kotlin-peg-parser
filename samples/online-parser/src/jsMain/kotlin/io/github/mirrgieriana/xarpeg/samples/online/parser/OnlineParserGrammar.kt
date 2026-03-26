@@ -42,7 +42,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableR
  * Supports arithmetic, comparison, equality, ternary operators, lambda expressions,
  * function calls, variable assignment, and indent-based function definitions.
  */
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate")
 internal object OnlineParserGrammar {
 
     // -- Spacing --
