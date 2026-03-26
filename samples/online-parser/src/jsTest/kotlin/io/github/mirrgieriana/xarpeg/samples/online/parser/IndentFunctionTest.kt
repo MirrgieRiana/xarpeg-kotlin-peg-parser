@@ -254,7 +254,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionMixedWithRegularVariableAssignment() {
-        val input = "base = 10\naddBase(x):\n    x + base\naddBase(5)"
+        val input = "var base = 10\naddBase(x):\n    x + base\naddBase(5)"
         val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("15", result.output)
@@ -262,7 +262,7 @@ class IndentFunctionTest {
 
     @Test
     fun indentFunctionCallingRegularLambda() {
-        val input = "square = (x) -> x * x\ncube(x):\n    x * square(x)\ncube(3)"
+        val input = "var square = (x) -> x * x\ncube(x):\n    x * square(x)\ncube(3)"
         val result = evaluateExpression(input)
         assertTrue(result.success)
         assertEquals("27", result.output)
