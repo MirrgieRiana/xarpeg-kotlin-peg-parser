@@ -5,7 +5,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
 
 /**
  * A variable declaration statement (`var name = value`).
- * Binds a new variable in the current scope. Does not update [Statement.ExecutionContext.lastValue].
+ * Binds a new variable in the current scope. Resets [Statement.ExecutionContext.lastValue].
  */
 class VariableDeclarationStatement(
     private val name: String,
@@ -16,5 +16,6 @@ class VariableDeclarationStatement(
         val newScope = ctx.variableTable.createChild()
         newScope.define(name, evaluated)
         ctx.variableTable = newScope
+        ctx.lastValue = null
     }
 }
