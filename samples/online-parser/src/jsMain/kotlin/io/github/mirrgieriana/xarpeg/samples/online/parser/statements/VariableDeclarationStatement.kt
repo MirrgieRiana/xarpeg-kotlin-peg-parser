@@ -13,6 +13,8 @@ class VariableDeclarationStatement(
 ) : Statement {
     override fun execute(ctx: Statement.ExecutionContext) {
         val evaluated = value.evaluate(Expression.EvaluationContext(ctx.session, ctx.callStack, ctx.variableTable))
-        ctx.variableTable.set(name, evaluated)
+        val newScope = ctx.variableTable.createChild()
+        newScope.define(name, evaluated)
+        ctx.variableTable = newScope
     }
 }

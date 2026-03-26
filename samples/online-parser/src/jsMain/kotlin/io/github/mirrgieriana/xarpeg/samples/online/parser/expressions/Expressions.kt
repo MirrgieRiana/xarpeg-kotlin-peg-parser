@@ -78,7 +78,7 @@ class FunctionCallExpression(
         bodyContext.session.incrementCallCount(bodyContext.callStack)
 
         func.params.zip(args).forEach { (param, argExpr) ->
-            bodyContext.variableTable.set(param, argExpr.evaluate(ctx))
+            bodyContext.variableTable.define(param, argExpr.evaluate(ctx))
         }
 
         return func.body.evaluate(bodyContext)
@@ -112,7 +112,8 @@ class TernaryExpression(
 // -- Top-level --
 
 /**
- * A variable assignment expression. Evaluates the right-hand side and binds it to the name.
+ * A variable reassignment expression. Updates an existing variable in the scope chain.
+ * Throws if the variable has not been declared.
  */
 class AssignmentExpression(
     private val name: String,

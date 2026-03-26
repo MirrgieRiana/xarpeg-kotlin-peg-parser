@@ -13,10 +13,21 @@ data class VariableTable(
     fun get(name: String): Value? = variables[name] ?: parent?.get(name)
 
     /**
-     * Sets a variable in the current scope.
+     * Defines a new variable in the current scope.
+     */
+    fun define(name: String, value: Value) {
+        variables[name] = value
+    }
+
+    /**
+     * Sets an existing variable by searching parent scopes. Throws if not found.
      */
     fun set(name: String, value: Value) {
-        variables[name] = value
+        if (variables.containsKey(name)) {
+            variables[name] = value
+        } else {
+            parent?.set(name, value) ?: throw IllegalStateException("Undefined variable: $name")
+        }
     }
 
     /**
