@@ -75,6 +75,24 @@ internal object OnlineParserGrammar {
     /** Matches a single identifier continuation character: letter, digit, or underscore. */
     val identifierPart: Parser<Tuple0> = -Regex("""[a-zA-Z0-9_]""")
 
+    /**
+     * Creates a parser that expects indented content.
+     * Measures the indentation at the current position using [indentParser],
+     * verifies it exceeds the current indent level, then parses [body] within that indent scope.
+     */
+    fun <T : Any> indented(indentParser: Parser<*>, body: Parser<T>): Parser<T> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) return@Parser null
+        val indentResult = context.parseOrNull(indentParser, start) ?: return@Parser null
+        val indentLevel = indentResult.end - indentResult.start
+        if (indentLevel <= context.currentIndent) return@Parser null
+        context.pushIndent(indentLevel)
+        try {
+            context.parseOrNull(body, indentResult.end)
+        } finally {
+            context.popIndent()
+        }
+    }
+
     // -- Terminals --
 
     val identifier: Parser<String> = +Regex("""[a-zA-Z_][a-zA-Z0-9_]*""") map { it.value } named "identifier"
@@ -173,26 +191,6 @@ internal object OnlineParserGrammar {
         ternaryExpr,
         equalityComparison,
     )
-
-    // -- Indent-based function definition --
-
-    /**
-     * Creates a parser that expects indented content.
-     * Measures the indentation at the current position using [indentParser],
-     * verifies it exceeds the current indent level, then parses [body] within that indent scope.
-     */
-    fun <T : Any> indented(indentParser: Parser<*>, body: Parser<T>): Parser<T> = Parser { context, start ->
-        if (context !is OnlineParserParseContext) return@Parser null
-        val indentResult = context.parseOrNull(indentParser, start) ?: return@Parser null
-        val indentLevel = indentResult.end - indentResult.start
-        if (indentLevel <= context.currentIndent) return@Parser null
-        context.pushIndent(indentLevel)
-        try {
-            context.parseOrNull(body, indentResult.end)
-        } finally {
-            context.popIndent()
-        }
-    }
 
     // -- Top-level rules --
 
