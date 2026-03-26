@@ -195,7 +195,7 @@ internal object OnlineParserGrammar {
     }
 
     val indentFunctionDef: Parser<Expression> =
-        (identifier * s * paramList * s * -':' * s * lineBreak * indented(s, ref { expression })).result map { result ->
+        (identifier * s * paramList * s * -':' * s * lineBreak * indented(s, ref { statementBlock })).result map { result ->
             val (name, params, body) = result.value
             AssignmentExpression(name, LambdaExpression(params, body, result), result)
         }
@@ -223,10 +223,10 @@ internal object OnlineParserGrammar {
         expression map { ExpressionStatement(it) },
     )
 
-    val program: Parser<Expression> = (statement * (newline * statement).zeroOrMore).result map { result ->
+    val statementBlock: Parser<Expression> = (statement * (newline * statement).zeroOrMore).result map { result ->
         val (first, rest) = result.value
         StatementsExpression(listOf(first) + rest, result)
     }
 
-    val root: Parser<Expression> = b * program * b
+    val root: Parser<Expression> = b * statementBlock * b
 }
