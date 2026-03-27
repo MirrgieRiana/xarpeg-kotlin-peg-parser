@@ -31,7 +31,7 @@ class VariableReferenceExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext) =
-        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx.callStack, ctx.session.sourceCode)
+        ctx.variableTable.get(name) ?: throw EvaluationException("Undefined variable: $name", ctx.callStack + CallFrame(name, position), ctx.session.sourceCode)
 }
 
 /**
@@ -56,16 +56,16 @@ class FunctionCallExpression(
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value {
         val func = ctx.variableTable.get(name)
-            ?: throw EvaluationException("Undefined function: $name", ctx.callStack, ctx.session.sourceCode)
+            ?: throw EvaluationException("Undefined function: $name", ctx.callStack + CallFrame(name, position), ctx.session.sourceCode)
 
         if (func !is LambdaValue) {
-            throw EvaluationException("$name is not a function", ctx.callStack, ctx.session.sourceCode)
+            throw EvaluationException("$name is not a function", ctx.callStack + CallFrame(name, position), ctx.session.sourceCode)
         }
 
         if (args.size != func.params.size) {
             throw EvaluationException(
                 "Function $name expects ${func.params.size} arguments, but got ${args.size}",
-                ctx.callStack,
+                ctx.callStack + CallFrame(name, position),
                 ctx.session.sourceCode,
             )
         }
@@ -123,7 +123,7 @@ class AssignmentExpression(
     override fun evaluate(ctx: EvaluationContext): Value {
         val value = valueExpression.evaluate(ctx)
         if (!ctx.variableTable.set(name, value)) {
-            throw EvaluationException("Undefined variable: $name", ctx.callStack, ctx.session.sourceCode)
+            throw EvaluationException("Undefined variable: $name", ctx.callStack + CallFrame(name, position), ctx.session.sourceCode)
         }
         return value
     }
