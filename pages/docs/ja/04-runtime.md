@@ -261,6 +261,58 @@ fun main() {
 - **[ParserTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/ParserTest.kt)** - 包括的な動作テスト
 - **[MemoizationStateTest.kt](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/src/commonTest/kotlin/io/github/mirrgieriana/xarpeg/MemoizationStateTest.kt)** - 状態依存メモ化のテスト
 
+## ParseContextの拡張
+
+`ParseContext`はインターフェースであり、その基本実装である`DefaultParseContext`は`open class`として宣言されています。そのため、特殊な解析ニーズに応じてカスタム状態を持つ拡張（`DefaultParseContext`の継承や`ParseContext`の直接実装）が可能です。
+
+### 例：インデント方式言語のサポート
+
+Python風の言語のインデントレベルを追跡するために`DefaultParseContext`を拡張できます：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    class IndentParseContext(
+        src: String,
+    ) : DefaultParseContext(src) {
+        private val indentStack = mutableListOf(0)
+
+        val currentIndent: Int get() = indentStack.last()
+        val isInIndentBlock: Boolean get() = indentStack.size > 1
+
+        fun pushIndent(indent: Int) {
+            require(indent > currentIndent)
+            indentStack.add(indent)
+        }
+
+        fun popIndent() {
+            require(indentStack.size > 1)
+            indentStack.removeLast()
+        }
+
+        // 必須: 可変状態のスナップショットを返すことで、インデント状態ごとに
+        // 独立したメモ化テーブルが使われるようになります。
+        override fun getState(): Any = indentStack.toList()
+    }
+
+    val ctx = IndentParseContext("source")
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+
+    ctx.pushIndent(4)
+    check(ctx.currentIndent == 4)
+    check(ctx.isInIndentBlock)
+
+    ctx.popIndent()
+    check(ctx.currentIndent == 0)
+    check(!ctx.isInIndentBlock)
+}
+```
+
+完全な実装については[online-parserサンプルのソースコード](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser)を参照してください。
+
 ## 重要なポイント
 
 - **`parseAll(...).getOrThrow()`** 完全な消費を要求し、失敗時にスロー

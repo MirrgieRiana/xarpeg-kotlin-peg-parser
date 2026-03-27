@@ -1,64 +1,93 @@
-@file:OptIn(ExperimentalJsExport::class)
-
 package io.github.mirrgieriana.xarpeg.samples.online.parser.expressions
 
+import io.github.mirrgieriana.xarpeg.ParseResult
 import io.github.mirrgieriana.xarpeg.samples.online.parser.CallFrame
-import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationContext
 import io.github.mirrgieriana.xarpeg.samples.online.parser.EvaluationException
-import io.github.mirrgieriana.xarpeg.samples.online.parser.SourcePosition
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.EvaluationContext
+import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 
-@JsExport
-abstract class ArithmeticOperatorExpression(
+/**
+ * Base class for binary arithmetic operators (+, -, *, /).
+ * Subclasses implement [compute] to handle supported type combinations.
+ */
+abstract class ArithmeticExpression(
     protected val left: Expression,
     protected val right: Expression,
-    protected val position: SourcePosition
+    override val position: ParseResult<*>,
 ) : Expression {
     abstract val operatorSymbol: String
-    abstract fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double
+
+    /**
+     * Computes the result for the given operand values.
+     * Returns `null` if the type combination is not supported by this operator.
+     */
+    abstract fun compute(ctx: EvaluationContext, left: Value, right: Value): Value?
 
     override fun evaluate(ctx: EvaluationContext): Value {
         val leftVal = left.evaluate(ctx)
         val rightVal = right.evaluate(ctx)
-        val leftNum = leftVal.requireNumber(ctx, operatorSymbol, "Left")
-        val rightNum = rightVal.requireNumber(ctx, operatorSymbol, "Right")
-        return Value.NumberValue(compute(ctx, leftNum, rightNum))
+        return compute(ctx, leftVal, rightVal)
+            ?: throw EvaluationException(
+                "Operator $operatorSymbol is not defined for ${leftVal.typeName} and ${rightVal.typeName}",
+                ctx.callStack + CallFrame("$operatorSymbol operator", position),
+                ctx.session.sourceCode,
+            )
     }
 }
 
-@JsExport
-class AddExpression(left: Expression, right: Expression, position: SourcePosition) :
-    ArithmeticOperatorExpression(left, right, position) {
+/**
+ * Addition expression (`left + right`).
+ */
+class AddExpression(left: Expression, right: Expression, position: ParseResult<*>) :
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "+"
-    override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue + rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return NumberValue(left.value + right.value)
+        return null
+    }
 }
 
-@JsExport
-class SubtractExpression(left: Expression, right: Expression, position: SourcePosition) :
-    ArithmeticOperatorExpression(left, right, position) {
+/**
+ * Subtraction expression (`left - right`).
+ */
+class SubtractExpression(left: Expression, right: Expression, position: ParseResult<*>) :
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "-"
-    override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue - rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return NumberValue(left.value - right.value)
+        return null
+    }
 }
 
-@JsExport
-class MultiplyExpression(left: Expression, right: Expression, position: SourcePosition) :
-    ArithmeticOperatorExpression(left, right, position) {
+/**
+ * Multiplication expression (`left * right`).
+ */
+class MultiplyExpression(left: Expression, right: Expression, position: ParseResult<*>) :
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "*"
-    override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double) = leftValue * rightValue
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) return NumberValue(left.value * right.value)
+        return null
+    }
 }
 
-@JsExport
-class DivideExpression(left: Expression, right: Expression, position: SourcePosition) :
-    ArithmeticOperatorExpression(left, right, position) {
+/**
+ * Division expression (`left / right`). Throws on division by zero.
+ */
+class DivideExpression(left: Expression, right: Expression, position: ParseResult<*>) :
+    ArithmeticExpression(left, right, position) {
     override val operatorSymbol = "/"
-
-    override fun compute(ctx: EvaluationContext, leftValue: Double, rightValue: Double): Double {
-        require(rightValue != 0.0) {
-            val newCtx = ctx.copy(callStack = ctx.callStack + CallFrame("division", position))
-            throw EvaluationException("Division by zero", newCtx, ctx.sourceCode)
+    override fun compute(ctx: EvaluationContext, left: Value, right: Value): Value? {
+        if (left is NumberValue && right is NumberValue) {
+            if (right.value == 0.0) throw EvaluationException(
+                "Division by zero",
+                ctx.callStack + CallFrame("/ operator", position),
+                ctx.session.sourceCode,
+            )
+            return NumberValue(left.value / right.value)
         }
-        return leftValue / rightValue
+        return null
     }
 }
