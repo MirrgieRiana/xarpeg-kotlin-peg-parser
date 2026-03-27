@@ -182,21 +182,8 @@ fun main() {
 - **再帰** - 文字列と式パーサ間の相互再帰
 - **スケーラブル** - 新しい区切り文字やエスケープシーケンスを簡単に拡張
 
-## おめでとうございます！
+## 次のステップ
 
-Xarpegチュートリアルを完了しました！以下の方法を習得しました：
-- 演算子ベースのDSLでパーサを構築
-- シーケンス、選択、繰り返しでパーサを組み合わせる
-- 再帰と演算子の優先順位を処理
-- エラー、キャッシング、デバッグを扱う
-- 位置情報を抽出
-- 複雑なネストした構造を解析
-
-### 次のステップ
-
-- **[例を探る](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - 完全なアプリケーションを学ぶ
-- **[テストを読む](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonTest/kotlin)** - すべての機能が動作しているのを見る
-- **[ソースを閲覧](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpeg)** - 実装の詳細を理解
-- **[何かを作る](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - 自分のパーサを作成！
+→ **[ステップ7：識別子デリミタ文字列](07-identifier-delimited-strings.html)** - 解析中に得た識別子をデリミタとして使う動的な文字列解析を学ぶ
 
 → **[チュートリアルインデックスに戻る](index.html)**

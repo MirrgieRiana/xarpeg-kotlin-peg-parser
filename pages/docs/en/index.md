@@ -77,6 +77,13 @@ Parse complex nested structures without tokenization.
 
 ---
 
+### 7. [Identifier-Delimited Strings](07-identifier-delimited-strings.html)
+Learn dynamic string parsing where a parsed identifier serves as the delimiter.
+
+**What you'll learn:** Dynamic parser construction with `Parser { }`, parsing XML elements and here-documents, choosing between static and dynamic parsers
+
+---
+
 ## Complete Examples
 
 ### JSON Parser

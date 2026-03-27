@@ -182,21 +182,8 @@ Each addition is a localized change to the relevant parser, not a redesign of th
 - **Recursion** - Mutual recursion between string and expression parsers
 - **Scalable** - Easy to extend with new delimiters or escape sequences
 
-## Congratulations!
+## Next Step
 
-You've completed the Xarpeg tutorial! You now know how to:
-- Build parsers with the operator-based DSL
-- Combine parsers with sequences, choices, and repetition
-- Handle recursion and operator precedence
-- Work with errors, caching, and debugging
-- Extract position information
-- Parse complex nested structures
-
-### Next Steps
-
-- **[Explore Examples](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples)** - Study complete applications
-- **[Read Tests](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/commonTest/kotlin)** - See all features in action
-- **[Browse Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/src/importedMain/kotlin/io/github/mirrgieriana/xarpeg)** - Understand implementation details
-- **[Build Something](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser)** - Create your own parser!
+→ **[Step 7: Identifier-Delimited Strings](07-identifier-delimited-strings.html)** - Learn dynamic string parsing where a parsed identifier serves as the delimiter
 
 → **[Back to Tutorial Index](index.html)**
