@@ -244,7 +244,7 @@ class OnlineParserTest {
     fun callStackInRecursiveError() {
         val result = evaluateExpression("var crash = (n) -> n <= 0 ? 1 / 0 : crash(n - 1)\ncrash(3)")
         assertFalse(result.success)
-        assertTrue(result.output.contains("at line"))
+        assertTrue(result.output.contains(", line "))
         assertTrue(result.output.contains("crash"))
     }
 
@@ -252,7 +252,7 @@ class OnlineParserTest {
     fun nestedCallStack() {
         val result = evaluateExpression("var g = (x) -> 1 / 0\nvar f = (x) -> g(x)\nf(5)")
         assertFalse(result.success)
-        assertTrue(result.output.contains("at line"))
+        assertTrue(result.output.contains(", line "))
         assertTrue(result.output.contains("f"))
         assertTrue(result.output.contains("g"))
     }
@@ -272,16 +272,22 @@ class OnlineParserTest {
     fun errorHighlighting() {
         val result = evaluateExpression("10 / 0")
         assertFalse(result.success)
-        val stackLine = assertNotNull(result.output.split("\n").find { it.contains("at line") })
-        assertTrue(stackLine.contains("[") && stackLine.contains("]"))
+        assertTrue(result.output.contains(", line "))
+        assertTrue(result.output.contains("^"))
     }
 
     @Test
     fun errorHighlightSpansOperands() {
         val result = evaluateExpression("var a = 5 / 0")
         assertFalse(result.success)
-        val highlighted = assertNotNull(result.output.split("\n").find { it.contains("at line") })
-            .substringAfter("[").substringBefore("]")
+        val lines = result.output.split("\n")
+        val sourceLine = assertNotNull(lines.find { it.contains("5 / 0") })
+        val caretLineIndex = lines.indexOf(sourceLine) + 1
+        assertTrue(caretLineIndex < lines.size)
+        val caretLine = lines[caretLineIndex]
+        val caretStart = caretLine.indexOf('^')
+        val caretEnd = caretLine.lastIndexOf('^') + 1
+        val highlighted = sourceLine.substring(caretStart, caretEnd)
         assertTrue(highlighted.contains("5"))
         assertTrue(highlighted.contains("/"))
         assertTrue(highlighted.contains("0"))
@@ -294,6 +300,6 @@ class OnlineParserTest {
         assertTrue(result.output.contains("Division by zero"))
         assertTrue(result.output.contains("func1"))
         assertTrue(result.output.contains("func2"))
-        assertTrue(result.output.contains("at line"))
+        assertTrue(result.output.contains(", line "))
     }
 }

@@ -25,19 +25,18 @@ class EvaluationException(
         if (callStack.isNotEmpty()) {
             val calc = calculator
             callStack.asReversed().forEach { frame ->
-                val location = if (calc != null) {
-                    formatPositionHighlight(frame.position, calc)
+                if (calc != null) {
+                    sb.append(formatPositionHighlight(frame.functionName, frame.position, calc))
                 } else {
-                    "position ${frame.position.start}-${frame.position.end}"
+                    sb.append("\n  at ${frame.functionName}, position ${frame.position.start}-${frame.position.end}")
                 }
-                sb.append("\n  at $location")
             }
         }
 
         return sb.toString()
     }
 
-    private fun formatPositionHighlight(position: ParseResult<*>, calc: MatrixPositionCalculator): String {
+    private fun formatPositionHighlight(name: String, position: ParseResult<*>, calc: MatrixPositionCalculator): String {
         val pos = calc.getMatrixPosition(position.start.coerceAtMost(calc.src.length))
 
         val lineRange = calc.getLineRange(pos.row)
@@ -45,11 +44,12 @@ class EvaluationException(
 
         val highlightStart = position.start - lineRange.first
         val highlightEnd = (position.end - lineRange.first).coerceAtMost(sourceLine.length)
+        val caretCount = (highlightEnd - highlightStart).coerceAtLeast(1)
 
-        val before = sourceLine.substring(0, highlightStart)
-        val highlighted = sourceLine.substring(highlightStart, highlightEnd)
-        val after = sourceLine.substring(highlightEnd)
-
-        return "line ${pos.row}, column ${pos.column}: $before[$highlighted]$after"
+        return buildString {
+            append("\n  at $name, line ${pos.row}, column ${pos.column}")
+            append("\n    $sourceLine")
+            append("\n    ${" ".repeat(highlightStart)}${"^".repeat(caretCount)}")
+        }
     }
 }
