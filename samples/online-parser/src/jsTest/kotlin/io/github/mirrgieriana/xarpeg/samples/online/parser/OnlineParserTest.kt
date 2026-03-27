@@ -68,6 +68,12 @@ class OnlineParserTest {
         assertEquals("55", evaluateExpression("var var2 = 55\nvar2").output)
     }
 
+    @Test
+    fun variableReassignment() {
+        assertEquals("10", evaluateExpression("var x = 5\nx = 10\nx").output)
+        assertEquals("3", evaluateExpression("var x = 1\nvar y = 2\nx = x + y\nx").output)
+    }
+
     // -- Lambda --
 
     @Test
@@ -136,6 +142,13 @@ class OnlineParserTest {
     // -- Functions --
 
     @Test
+    fun lambdaCall() {
+        assertEquals("42", evaluateExpression("var f = () -> 42\nf()").output)
+        assertEquals("10", evaluateExpression("var double = (x) -> x * 2\ndouble(5)").output)
+        assertEquals("9", evaluateExpression("var add = (a, b) -> a + b\nadd(4, 5)").output)
+    }
+
+    @Test
     fun recursion() {
         assertEquals("120", evaluateExpression("var factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)").output)
         assertEquals("1", evaluateExpression("var factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(0)").output)
@@ -144,8 +157,8 @@ class OnlineParserTest {
 
     @Test
     fun variableScoping() {
-        assertEquals("25", evaluateExpression("var outer = (a) -> inner(10) + a\nvar inner = (a) -> a * 2\nouter(5)").output)
-        assertEquals("6", evaluateExpression("var f = (x) -> g(x + 1) + x\nvar g = (x) -> h(x * 2) + x\nvar h = (x) -> x - 5\nf(2)").output)
+        assertEquals("25", evaluateExpression("var inner = (a) -> a * 2\nvar outer = (a) -> inner(10) + a\nouter(5)").output)
+        assertEquals("6", evaluateExpression("var h = (x) -> x - 5\nvar g = (x) -> h(x * 2) + x\nvar f = (x) -> g(x + 1) + x\nf(2)").output)
         assertEquals("15", evaluateExpression("var sum = (n, acc) -> n <= 0 ? acc : sum(n - 1, acc + n)\nsum(5, 0)").output)
     }
 
@@ -198,6 +211,13 @@ class OnlineParserTest {
     }
 
     @Test
+    fun undeclaredVariableAssignmentError() {
+        val result = evaluateExpression("x = 5")
+        assertFalse(result.success)
+        assertTrue(result.output.contains("Undefined variable"))
+    }
+
+    @Test
     fun undefinedFunctionError() {
         val result = evaluateExpression("f()")
         assertFalse(result.success)
@@ -230,7 +250,7 @@ class OnlineParserTest {
 
     @Test
     fun nestedCallStack() {
-        val result = evaluateExpression("var f = (x) -> g(x)\nvar g = (x) -> 1 / 0\nf(5)")
+        val result = evaluateExpression("var g = (x) -> 1 / 0\nvar f = (x) -> g(x)\nf(5)")
         assertFalse(result.success)
         assertTrue(result.output.contains("at line"))
         assertTrue(result.output.contains("f"))

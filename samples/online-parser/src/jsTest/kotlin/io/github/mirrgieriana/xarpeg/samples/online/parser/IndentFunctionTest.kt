@@ -94,6 +94,11 @@ class IndentFunctionTest {
         assertEquals("120", evaluateExpression("factorial(n):\n    n <= 1 ? 1 :\n    n * factorial(n - 1)\nfactorial(5)").output)
     }
 
+    @Test
+    fun multiStatementBody() {
+        assertEquals("11", evaluateExpression("f(x):\n    var y = x * 2\n    y + 1\nf(5)").output)
+    }
+
     // -- Multiple functions and mixing --
 
     @Test
