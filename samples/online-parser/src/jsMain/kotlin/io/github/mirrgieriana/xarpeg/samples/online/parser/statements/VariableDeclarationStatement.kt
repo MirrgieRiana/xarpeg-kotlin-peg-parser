@@ -5,7 +5,8 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
 
 /**
  * A variable declaration statement (`var name = value`).
- * Binds a new variable in the current scope. Resets [Statement.ExecutionContext.lastValue].
+ * Creates a child scope, evaluates the value within it, and defines the variable there.
+ * Replaces the current scope with the child. Resets [Statement.ExecutionContext.lastValue].
  */
 class VariableDeclarationStatement(
     private val name: String,

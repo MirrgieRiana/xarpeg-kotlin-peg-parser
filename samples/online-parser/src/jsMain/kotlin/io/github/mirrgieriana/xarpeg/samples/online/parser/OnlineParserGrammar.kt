@@ -40,7 +40,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.VariableR
  * PEG grammar for the online parser's expression language.
  *
  * Supports arithmetic, comparison, equality, ternary operators, lambda expressions,
- * function calls, variable assignment, and indent-based function definitions.
+ * function calls, variable declarations, reassignment, and indent-based function definitions.
  */
 @Suppress("MemberVisibilityCanBePrivate")
 internal object OnlineParserGrammar {

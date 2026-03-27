@@ -9,7 +9,7 @@ import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 /**
- * Result of evaluating an expression, containing success status and output string.
+ * Result of evaluating a program, containing success status and output string.
  */
 @JsExport
 data class ExpressionResult(
@@ -18,7 +18,7 @@ data class ExpressionResult(
 )
 
 /**
- * Parses and evaluates the given [input] string as an expression program.
+ * Parses and evaluates the given [input] string as a program.
  * Returns an [ExpressionResult] with the evaluation output or an error message.
  */
 @JsExport

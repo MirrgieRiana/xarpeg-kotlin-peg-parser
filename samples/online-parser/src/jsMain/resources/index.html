@@ -402,13 +402,15 @@
                         <a class="source" href="https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/docs/en/">Documentation</a>
                     </div>
                 </div>
-                <p class="muted-text">The parser evaluates expressions with arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls. Stack traces are shown for runtime errors.</p>
+                <p class="muted-text">The parser evaluates programs with arithmetic operations, comparison operators, ternary conditionals, variable declarations, lambda expressions, function calls, and indent-based function definitions. Stack traces are shown for runtime errors.</p>
                 <ul class="muted-list">
                     <li>Enter expressions using <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, and parentheses.</li>
                     <li>Compare values: <code>5 > 3</code>, <code>10 == 10</code>, <code>x != y</code>, <code>a &lt;= b</code></li>
                     <li>Use ternary operator: <code>condition ? valueIfTrue : valueIfFalse</code></li>
-                    <li>Assign variables: <code>x = 10</code></li>
-                    <li>Define lambdas: <code>add = (a, b) -&gt; a + b</code></li>
+                    <li>Declare variables: <code>var x = 10</code></li>
+                    <li>Reassign variables: <code>x = 20</code></li>
+                    <li>Define lambdas: <code>var add = (a, b) -&gt; a + b</code></li>
+                    <li>Define indent-style functions: <code>name(params):</code> followed by an indented body.</li>
                     <li>Call functions: <code>add(5, 3)</code></li>
                     <li>Identifiers can use letters, digits, and underscore (but cannot start with a digit).</li>
                     <li>Comparison operators return boolean values (<code>true</code>/<code>false</code>) with strict type checking.</li>
@@ -423,21 +425,26 @@
                         <a class="source" href="https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/blob/main/samples/online-parser/src/jsMain/kotlin/io/github/mirrgieriana/xarpeg/samples/online/parser/OnlineParserGrammar.kt">View Source Code</a>
                     </div>
                 </div>
-                <p class="muted-text">This grammar includes arithmetic operations, comparison operators, ternary conditionals, variables, lambda expressions, and function calls.</p>
-                <pre class="code-block"><code>Expression      &lt;- _ Assignment _
-Assignment      &lt;- (Identifier _ '=' _ Assignment) / Ternary
+                <p class="muted-text">This grammar includes arithmetic operations, comparison operators, ternary conditionals, variable declarations, reassignment, lambda expressions, function calls, and indent-based function definitions.</p>
+                <pre class="code-block"><code>Program         &lt;- _ Statement (NL Statement)* _
+Statement       &lt;- IndentFunction / VarDeclaration / Expression
+VarDeclaration  &lt;- 'var' _ Identifier _ '=' _ Expression
+IndentFunction  &lt;- Identifier _ ParamList _ ':' NL INDENT Program
+Expression      &lt;- (Identifier _ '=' _ Expression) / Ternary
 Ternary         &lt;- (Equality _ '?' _ Equality _ ':' _ Equality) / Equality
 Equality        &lt;- Ordering (_ ('==' / '!=') _ Ordering)*
 Ordering        &lt;- Sum (_ ('&lt;=' / '&gt;=' / '&lt;' / '&gt;') _ Sum)*
 Sum             &lt;- Product (_ ('+' / '-') _ Product)*
 Product         &lt;- Factor (_ ('*' / '/') _ Factor)*
 Factor          &lt;- Lambda / FunctionCall / Variable / Number / '(' _ Expression _ ')'
-Lambda          &lt;- '(' _ (Identifier _ (',' _ Identifier _)*)? ')' _ '-&gt;' _ Expression
-FunctionCall    &lt;- Identifier _ '(' _ (Expression _ (',' _ Expression _)*)? ')'
+Lambda          &lt;- ParamList _ '-&gt;' _ Expression
+ParamList       &lt;- '(' _ (Identifier (',' _ Identifier)*)? _ ')'
+FunctionCall    &lt;- Identifier _ '(' _ (Expression (',' _ Expression)*)? _ ')'
 Variable        &lt;- Identifier
 Identifier      &lt;- [a-zA-Z_][a-zA-Z0-9_]*
 Number          &lt;- [0-9]+ ('.' [0-9]+)?
-_               &lt;- [ \t\r\n]*</code></pre>
+_               &lt;- [ \t]*
+NL              &lt;- ('\r\n' / [\r\n]) _</code></pre>
             </div>
         </main>
 
@@ -459,26 +466,26 @@ _               &lt;- [ \t\r\n]*</code></pre>
 
         const examples = [
             { title: "Basic Arithmetic", code: "2 * (3 + 4)" },
-            { title: "Variable Assignment", code: "x = 5 + 10" },
-            { title: "Lambda Function", code: "add = (a, b) -> a + b" },
-            { title: "Single Parameter Lambda", code: "double = (x) -> x * 2\ndouble(7)" },
-            { title: "Complex Expression", code: "result = (10 + 5) * 2 - 8\nresult" },
-            { title: "Multi-param Lambda", code: "calc = (x, y) -> (x + y) * 2\ncalc(3, 5)" },
-            { title: "Decimal Numbers", code: "pi = 3.14159\npi * 2" },
-            { title: "Identifier with Numbers", code: "my_var_123 = 42\nmy_var_123 + 8" },
+            { title: "Variable Declaration", code: "var x = 5 + 10\nx" },
+            { title: "Lambda Function", code: "var add = (a, b) -> a + b\nadd(2, 3)" },
+            { title: "Single Parameter Lambda", code: "var double = (x) -> x * 2\ndouble(7)" },
+            { title: "Complex Expression", code: "var result = (10 + 5) * 2 - 8\nresult" },
+            { title: "Multi-param Lambda", code: "var calc = (x, y) -> (x + y) * 2\ncalc(3, 5)" },
+            { title: "Decimal Numbers", code: "var pi = 3.14159\npi * 2" },
+            { title: "Identifier with Numbers", code: "var my_var_123 = 42\nmy_var_123 + 8" },
             { title: "Comparison Operator", code: "5 > 3" },
-            { title: "Equality Check", code: "x = 10\ny = 20\nx == y" },
+            { title: "Equality Check", code: "var x = 10\nvar y = 20\nx == y" },
             { title: "Ternary Operator", code: "5 > 3 ? 100 : 200" },
-            { title: "Conditional Expression", code: "x = 15\nx >= 10 ? 1 : 0" },
-            { title: "Recursive Factorial", code: "factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
-            { title: "Error Stack Trace", code: "func1 = (a, b) -> a / b\nfunc2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)" },
+            { title: "Conditional Expression", code: "var x = 15\nx >= 10 ? 1 : 0" },
+            { title: "Recursive Factorial", code: "var factorial = (n) -> n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
+            { title: "Error Stack Trace", code: "var func1 = (a, b) -> a / b\nvar func2 = (a, b) -> func1(a + b, a - b)\nfunc2(10, 10)" },
             { title: "Syntax Error: Missing Paren", code: "2 * (3 + 4" },
             { title: "Syntax Error: Invalid Operator", code: "5 + * 3" },
-            { title: "Syntax Error: Incomplete Expression", code: "x = " },
+            { title: "Syntax Error: Incomplete Expression", code: "var x = " },
             { title: "Syntax Error: Invalid Identifier", code: "123abc = 5" },
             { title: "Indent-Style Factorial", code: "factorial(n):\n    n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
             { title: "Indent-Style Function", code: "double(x):\n    x * 2\ndouble(7)" },
-            { title: "Indent-Style Multi-param", code: "add(a, b):\n    a + b\nresult = add(10, 20)\nresult" },
+            { title: "Indent-Style Multi-param", code: "add(a, b):\n    a + b\nvar result = add(10, 20)\nresult" },
         ];
 
         const input = document.getElementById("input");
@@ -487,7 +494,7 @@ _               &lt;- [ \t\r\n]*</code></pre>
         const clearButton = document.getElementById("clear");
         const copyButton = document.getElementById("copy");
         const examplesGrid = document.getElementById("examples-grid");
-        const defaultInput = "x = 10";
+        const defaultInput = "var x = 10\nx";
 
         const updateOutput = () => {
             const result = evaluateExpression(input.value);
