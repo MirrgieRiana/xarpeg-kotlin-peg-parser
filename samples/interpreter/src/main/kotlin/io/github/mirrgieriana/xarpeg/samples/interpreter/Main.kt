@@ -12,6 +12,7 @@ import io.github.mirrgieriana.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
+import io.github.mirrgieriana.xarpeg.parsers.value
 
 class DivisionByZeroException(
     message: String,
@@ -25,8 +26,8 @@ data class LazyValue(val position: Int, val compute: () -> Int)
 data class OperatorInfo(val position: Int, val op: Char)
 
 private object ArithmeticParser {
-    val number: Parser<LazyValue> = +Regex("[0-9]+") mapEx { _, result ->
-        val value = result.value.value.toInt()
+    val number: Parser<LazyValue> = (+Regex("[0-9]+")).value mapEx { _, result ->
+        val value = result.value.toInt()
         LazyValue(result.start) { value }
     } named "number"
 

@@ -12,9 +12,10 @@ import io.github.mirrgieriana.xarpeg.parsers.ref
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
+import io.github.mirrgieriana.xarpeg.parsers.value
 
 private val expression: Parser<Int> = object {
-    val number = +Regex("[0-9]+") map { match -> match.value.toInt() } named "number"
+    val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
     val brackets: Parser<Int> = -'(' * ref { root } * -')'
     val factor = number + brackets
     val mul = leftAssociative(factor, -'*') { a, _, b -> a * b }

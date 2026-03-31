@@ -95,8 +95,8 @@ internal object OnlineParserGrammar {
 
     // -- Terminals --
 
-    val identifier: Parser<String> = +Regex("""[a-zA-Z_][a-zA-Z0-9_]*""") map { it.value } named "identifier"
-    val number: Parser<NumberValue> = +Regex("""[0-9]+(?:\.[0-9]+)?""") map { NumberValue(it.value.toDouble()) } named "number"
+    val identifier: Parser<String> = (+Regex("""[a-zA-Z_][a-zA-Z0-9_]*""")).value named "identifier"
+    val number: Parser<NumberValue> = (+Regex("""[0-9]+(?:\.[0-9]+)?""")).value map { NumberValue(it.toDouble()) } named "number"
 
     // -- Atoms --
 
