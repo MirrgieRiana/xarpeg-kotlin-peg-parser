@@ -35,7 +35,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 
 val sign = (+'+' map { '+' }) + (+'-' map { '-' })
 val signOpt = sign.optional map { it.a ?: '+' }
-val unsigned = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val unsigned = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val signedInt = signOpt * unsigned map { (s, value) ->
     if (s == '-') -value else value
 }
@@ -83,11 +83,11 @@ Collect multiple matches into a list:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches ->
+val digits = ((+Regex("[0-9]")).value named "digit").oneOrMore map { matches ->
     matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches ->
+val letters = ((+Regex("[a-z]")).value named "letter").zeroOrMore map { matches ->
     matches
 }
 
@@ -137,12 +137,12 @@ Sequences with `*` return tuples. Use `-parser` to drop unneeded values:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-// Without dropping: Tuple3<Char, MatchResult, Char>
-val word = +Regex("[a-z]+") named "word"
+// Without dropping: Tuple3<Char, String, Char>
+val word = (+Regex("[a-z]+")).value named "word"
 val withDelimiters = +'(' * word * +')'
 
-// With dropping: MatchResult (just the middle value)
-val cleanResult = -'(' * word * -')' map { it.value }
+// With dropping: String (just the middle value)
+val cleanResult = -'(' * word * -')'
 
 fun main() {
     cleanResult.parseAll("(hello)").getOrThrow()  // => "hello"
@@ -155,10 +155,10 @@ Destructure tuples in `map` to transform results:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val wordPart = +Regex("[a-z]+") named "word"
-val numPart = +Regex("[0-9]+") named "number"
+val wordPart = (+Regex("[a-z]+")).value named "word"
+val numPart = (+Regex("[0-9]+")).value named "number"
 val pair = wordPart * -',' * numPart map { (word, num) ->
-    word.value to num.value.toInt()
+    word to num.toInt()
 }
 
 fun main() {
@@ -174,7 +174,7 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val word = +Regex("[a-z]+") map { it.value } named "word"
+val word = (+Regex("[a-z]+")).value named "word"
 
 fun main() {
     // Matches at start of input
@@ -248,7 +248,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val whitespace = (+Regex("\\s+")).hidden
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
     val operator = (+'*' + +'+') named "operator"
 
     // Parser that optionally accepts whitespace

@@ -24,7 +24,7 @@ The `map` combinator works with just the value, keeping types simple:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
 fun main() {
     val result = number.parseAll("42").getOrThrow()
@@ -40,10 +40,10 @@ Use `mapEx` when you need position information. It receives the `ParseContext` a
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") named "identifier"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
 
 val identifierWithPosition = identifier mapEx { ctx, result ->
-    "${result.value.value}@${result.start}-${result.end}"
+    "${result.value}@${result.start}-${result.end}"
 }
 
 fun main() {
@@ -52,7 +52,7 @@ fun main() {
 }
 ```
 
-**Note:** `+Regex(...)` returns `Parser<MatchResult>`, so access the string with `result.value.value`.
+**Note:** `+Regex(...)` returns `Parser<MatchResult>`. Use `.value` to get `Parser<String>`, so `result.value` is already a `String`.
 
 ## Getting the Full ParseResult
 
@@ -83,7 +83,7 @@ Get the original matched substring using the `text()` extension:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") named "number"
+val number = (+Regex("[0-9]+")).value named "number"
 
 val numberWithText = number mapEx { ctx, result ->
     val matched = result.text(ctx)
@@ -114,7 +114,7 @@ fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, r
     Located(result.value, line, column)
 }
 
-val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
+val keyword = (+Regex("[a-z]+")).value named "keyword"
 val keywordWithLocation = keyword.withLocation()
 
 fun main() {
@@ -141,7 +141,7 @@ fun <T : Any> Parser<T>.withPos(): Parser<Token> = this mapEx { ctx, result ->
 }
 
 fun main() {
-    val word = +Regex("[a-z]+") map { it.value } named "word"
+    val word = (+Regex("[a-z]+")).value named "word"
     val wordWithPos = word.withPos()
 
     // Parse tracks position in input
@@ -159,7 +159,7 @@ import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
-    val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+    val parser = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
     fun parseWithErrors(input: String): Result<Int> {
         val result = parser.parseAll(input)
@@ -187,7 +187,7 @@ fun main() {
 
 ## Best Practices
 
-**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = +Regex("[0-9]+") map { it.value.toInt() } named "number"`).
+**Use `map` by default** - Keep types simple when positions aren't needed (example: `val simple = (+Regex("[0-9]+")).value map { it.toInt() } named "number"`).
 
 **Use `mapEx` when needed** - Extract positions only where required.
 

@@ -17,7 +17,7 @@ Requires the entire input to be consumed:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
 
 fun main() {
     number.parseAll("123").getOrThrow()      // ✓ Returns 123
@@ -40,8 +40,8 @@ This exception provides a `context` property for detailed error information.
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val letter = +Regex("[a-z]") map { it.value } named "letter"
-val digit = +Regex("[0-9]") map { it.value } named "digit"
+val letter = (+Regex("[a-z]")).value named "letter"
+val digit = (+Regex("[0-9]")).value named "digit"
 val identifier = letter * (letter + digit).zeroOrMore
 
 fun main() {
@@ -77,7 +77,7 @@ As parsing proceeds:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
 val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
@@ -100,7 +100,7 @@ Use the `formatMessage` extension function to generate user-friendly error messa
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
 val operator = +'+' + +'-'
 val expr = number * operator * number
 
@@ -137,7 +137,7 @@ The `formatMessage` function provides:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") map { it.value } named "word"
+val parser = (+Regex("[a-z]+")).value named "word"
 
 fun main() {
     // Memoization enabled (default)
@@ -155,7 +155,7 @@ Disable memoization for lower memory usage when your grammar doesn't backtrack h
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val parser = +Regex("[a-z]+") map { it.value } named "word"
+val parser = (+Regex("[a-z]+")).value named "word"
 
 fun main() {
     parser.parseAll("hello") { s -> DefaultParseContext(s).also { it.useMemoization = false } }.getOrThrow()
@@ -201,8 +201,8 @@ If a `map` function throws an exception, it bubbles up and aborts parsing:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val divisionByZero = +Regex("[0-9]+") map { value ->
-    val n = value.value.toInt()
+val divisionByZero = (+Regex("[0-9]+")).value map { value ->
+    val n = value.toInt()
     if (n == 0) error("Cannot divide by zero")
     100 / n
 } named "number"

@@ -46,3 +46,7 @@ val Regex.not: Parser<Tuple0> get() = this.toParser().not
 
 /** 解析位置直後の文字列がこの正規表現にマッチしないことを確認するパーサーを返します。 */
 operator fun Regex.not(): Parser<Tuple0> = this.toParser().not
+
+
+/** [MatchResult] からマッチした文字列を取り出すパーサーを返します。 */
+val Parser<MatchResult>.value: Parser<String> get() = this map { it.value }

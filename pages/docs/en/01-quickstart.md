@@ -15,8 +15,8 @@ Let's build a simple key-value parser that matches patterns like `count=42`:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
@@ -36,9 +36,10 @@ fun main() {
 
 **The unary `-` operator** matches a parser but excludes its value from the result tuple (example: `-'='` drops the `=` character).
 
+**The `.value` property** on `Parser<MatchResult>` extracts the matched string, returning `Parser<String>`.
+
 **The `map` function** transforms parsed values:
-- `map { it.value }` extracts string from MatchResult
-- `map { it.value.toInt() }` converts string to integer
+- `map { it.toInt() }` converts string to integer
 - `map { (key, value) -> ... }` destructures tuple and transforms
 
 **The `named` function** assigns names to parsers for better error messages (example: `named "identifier"`).
@@ -51,8 +52,8 @@ Use `parseAll(...).getOrThrow()` to parse and require the entire input to be con
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
@@ -76,6 +77,7 @@ fun main() {
 - **Unary `+`** creates parsers from literals, characters, or regex
 - **Binary `*`** sequences parsers and produces tuples
 - **Unary `-`** matches but drops values from results
+- **`.value`** extracts matched string from regex parsers
 - **`map`** transforms parsed values to your domain types
 - **`named`** improves error messages
 - **`parseAll(...).getOrThrow()`** parses complete input or throws exceptions

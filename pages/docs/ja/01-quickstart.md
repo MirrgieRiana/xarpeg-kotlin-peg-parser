@@ -15,8 +15,8 @@ title: ステップ1 – クイックスタート
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
@@ -36,9 +36,10 @@ fun main() {
 
 **単項`-`演算子**は、パーサにマッチしますが、その値を結果のタプルから除外します（例：`-'='`は`=`文字をドロップします）。
 
+**`.value`プロパティ**は、`Parser<MatchResult>`からマッチした文字列を取り出し、`Parser<String>`を返します。
+
 **`map`関数**は、解析された値を変換します：
-- `map { it.value }`はMatchResultから文字列を抽出します
-- `map { it.value.toInt() }`は文字列を整数に変換します
+- `map { it.toInt() }`は文字列を整数に変換します
 - `map { (key, value) -> ... }`はタプルを分解して変換します
 
 **`named`関数**は、より良いエラーメッセージのためにパーサに名前を割り当てます（例：`named "identifier"`）。
@@ -51,8 +52,8 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") map { it.value } named "identifier"
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val kv: Parser<Pair<String, Int>> =
     identifier * -'=' * number map { (key, value) -> key to value }
 
@@ -76,6 +77,7 @@ fun main() {
 - **単項`+`** リテラル、文字、または正規表現からパーサを作成
 - **二項`*`** パーサを連結してタプルを生成
 - **単項`-`** 値にマッチするが結果からドロップ
+- **`.value`** 正規表現パーサからマッチした文字列を取り出す
 - **`map`** 解析された値をドメイン型に変換
 - **`named`** エラーメッセージを改善
 - **`parseAll(...).getOrThrow()`** 完全な入力を解析するか、例外をスロー

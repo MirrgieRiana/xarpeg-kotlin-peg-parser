@@ -35,7 +35,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 
 val sign = (+'+' map { '+' }) + (+'-' map { '-' })
 val signOpt = sign.optional map { it.a ?: '+' }
-val unsigned = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val unsigned = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val signedInt = signOpt * unsigned map { (s, value) ->
     if (s == '-') -value else value
 }
@@ -83,11 +83,11 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val digits = (+Regex("[0-9]") map { it.value } named "digit").oneOrMore map { matches ->
+val digits = ((+Regex("[0-9]")).value named "digit").oneOrMore map { matches ->
     matches.joinToString("")
 }
 
-val letters = (+Regex("[a-z]") map { it.value } named "letter").zeroOrMore map { matches ->
+val letters = ((+Regex("[a-z]")).value named "letter").zeroOrMore map { matches ->
     matches
 }
 
@@ -137,12 +137,12 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-// ドロップなし：Tuple3<Char, MatchResult, Char>
-val word = +Regex("[a-z]+") named "word"
+// ドロップなし：Tuple3<Char, String, Char>
+val word = (+Regex("[a-z]+")).value named "word"
 val withDelimiters = +'(' * word * +')'
 
-// ドロップあり：MatchResult（中央の値のみ）
-val cleanResult = -'(' * word * -')' map { it.value }
+// ドロップあり：String（中央の値のみ）
+val cleanResult = -'(' * word * -')'
 
 fun main() {
     cleanResult.parseAll("(hello)").getOrThrow()  // => "hello"
@@ -155,10 +155,10 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val wordPart = +Regex("[a-z]+") named "word"
-val numPart = +Regex("[0-9]+") named "number"
+val wordPart = (+Regex("[a-z]+")).value named "word"
+val numPart = (+Regex("[0-9]+")).value named "number"
 val pair = wordPart * -',' * numPart map { (word, num) ->
-    word.value to num.value.toInt()
+    word to num.toInt()
 }
 
 fun main() {
@@ -174,7 +174,7 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val word = +Regex("[a-z]+") map { it.value } named "word"
+val word = (+Regex("[a-z]+")).value named "word"
 
 fun main() {
     // 入力の開始でマッチ
@@ -248,7 +248,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val whitespace = (+Regex("\\s+")).hidden
-    val number = +Regex("[0-9]+") named "number" map { it.value.toInt() }
+    val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
     val operator = (+'*' + +'+') named "operator"
 
     // 空白をオプションで受け入れるパーサ

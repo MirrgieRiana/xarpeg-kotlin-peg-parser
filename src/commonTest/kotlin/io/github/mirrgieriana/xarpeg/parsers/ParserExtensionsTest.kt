@@ -291,6 +291,23 @@ class ParserExtensionsTest {
     }
 
     @Test
+    fun regexValuePropertyExtractsString() {
+        val regex = Regex("[0-9]+")
+        val withMap = +regex map { it.value }
+        val withProperty = regex.token.value
+
+        assertEquals("123", withMap.parseAll("123").getOrThrow())
+        assertEquals("123", withProperty.parseAll("123").getOrThrow())
+    }
+
+    @Test
+    fun regexValuePropertyInSequence() {
+        val parser = Regex("[0-9]+").ignore * Regex("[a-z]+").token.value
+
+        assertEquals("abc", parser.parseAll("123abc").getOrThrow())
+    }
+
+    @Test
     fun regexPropertiesInSequence() {
         val parser = Regex("[0-9]+").ignore * Regex("[a-z]+").capture map { (letters) ->
             letters.value

@@ -24,7 +24,7 @@ title: ステップ5 – 解析位置
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
 fun main() {
     val result = number.parseAll("42").getOrThrow()
@@ -40,10 +40,10 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val identifier = +Regex("[a-zA-Z][a-zA-Z0-9_]*") named "identifier"
+val identifier = (+Regex("[a-zA-Z][a-zA-Z0-9_]*")).value named "identifier"
 
 val identifierWithPosition = identifier mapEx { ctx, result ->
-    "${result.value.value}@${result.start}-${result.end}"
+    "${result.value}@${result.start}-${result.end}"
 }
 
 fun main() {
@@ -52,7 +52,7 @@ fun main() {
 }
 ```
 
-**注意：** `+Regex(...)`は`Parser<MatchResult>`を返すため、`result.value.value`で文字列にアクセスします。
+**注意：** `+Regex(...)`は`Parser<MatchResult>`を返します。`.value`を使うと`Parser<String>`になるため、`result.value`はすでに`String`です。
 
 ## 完全なParseResultの取得
 
@@ -83,7 +83,7 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = +Regex("[0-9]+") named "number"
+val number = (+Regex("[0-9]+")).value named "number"
 
 val numberWithText = number mapEx { ctx, result ->
     val matched = result.text(ctx)
@@ -114,7 +114,7 @@ fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>> = this mapEx { ctx, r
     Located(result.value, line, column)
 }
 
-val keyword = +Regex("[a-z]+") map { it.value } named "keyword"
+val keyword = (+Regex("[a-z]+")).value named "keyword"
 val keywordWithLocation = keyword.withLocation()
 
 fun main() {
@@ -141,7 +141,7 @@ fun <T : Any> Parser<T>.withPos(): Parser<Token> = this mapEx { ctx, result ->
 }
 
 fun main() {
-    val word = +Regex("[a-z]+") map { it.value } named "word"
+    val word = (+Regex("[a-z]+")).value named "word"
     val wordWithPos = word.withPos()
 
     // 解析は入力内の位置を追跡
@@ -159,7 +159,7 @@ import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
-    val parser = +Regex("[0-9]+") map { it.value.toInt() } named "number"
+    val parser = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
     fun parseWithErrors(input: String): Result<Int> {
         val result = parser.parseAll(input)
@@ -187,7 +187,7 @@ fun main() {
 
 ## ベストプラクティス
 
-**デフォルトで`map`を使用** - 位置が不要な場合は型をシンプルに保つ（例：`val simple = +Regex("[0-9]+") map { it.value.toInt() } named "number"`）。
+**デフォルトで`map`を使用** - 位置が不要な場合は型をシンプルに保つ（例：`val simple = (+Regex("[0-9]+")).value map { it.toInt() } named "number"`）。
 
 **必要な場合は`mapEx`を使用** - 必要な場所でのみ位置を抽出。
 
