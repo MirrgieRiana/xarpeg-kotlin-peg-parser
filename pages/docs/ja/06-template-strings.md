@@ -40,8 +40,8 @@ val templateStringParser: Parser<String> = object {
 
     // 文字列部分：$(と閉じ引用符"以外のすべてにマッチ
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"$]+|\$(?!\()""") map { match ->
-            StringPart(match.value)
+        (+Regex("""[^"$]+|\$(?!\()""")).value map { str ->
+            StringPart(str)
         } named "string_part"
 
     // 式部分：$(...)
@@ -116,7 +116,7 @@ object TemplateWithNestedStrings {
     val grouped: Parser<Int> = -'(' * ref { sum } * -')'
 
     val stringPart: Parser<TemplateElement> =
-        +Regex("""[^"$]+|\$(?!\()""") map { match -> StringPart(match.value) } named "string_part"
+        (+Regex("""[^"$]+|\$(?!\()""")).value map { StringPart(it) } named "string_part"
 
     val expressionPart: Parser<TemplateElement> =
         -+"$(" * ref { sum } * -')' map { value ->

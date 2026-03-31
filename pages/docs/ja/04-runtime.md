@@ -17,7 +17,7 @@ title: ステップ4 – 実行時の動作
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
 fun main() {
     number.parseAll("123").getOrThrow()      // ✓ 123を返す
@@ -77,7 +77,7 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
@@ -100,7 +100,7 @@ fun main() {
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val operator = +'+' + +'-'
 val expr = number * operator * number
 

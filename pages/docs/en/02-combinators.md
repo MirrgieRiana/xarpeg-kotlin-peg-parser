@@ -248,7 +248,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 
 fun main() {
     val whitespace = (+Regex("\\s+")).hidden
-    val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+    val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
     val operator = (+'*' + +'+') named "operator"
 
     // Parser that optionally accepts whitespace

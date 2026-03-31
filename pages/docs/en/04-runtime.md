@@ -17,7 +17,7 @@ Requires the entire input to be consumed:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 
 fun main() {
     number.parseAll("123").getOrThrow()      // ✓ Returns 123
@@ -77,7 +77,7 @@ As parsing proceeds:
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val operator = (+'*' + +'+') named "operator"
 val expr = number * operator * number
 
@@ -100,7 +100,7 @@ Use the `formatMessage` extension function to generate user-friendly error messa
 import io.github.mirrgieriana.xarpeg.*
 import io.github.mirrgieriana.xarpeg.parsers.*
 
-val number = (+Regex("[0-9]+")).value named "number" map { it.toInt() }
+val number = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
 val operator = +'+' + +'-'
 val expr = number * operator * number
 
