@@ -103,6 +103,7 @@ Interactive browser-based parser that demonstrates:
 | **Sequence** | `parserA * parserB` | Match parsers in order, return typed tuple |
 | **Choice** | `parserA + parserB` | Try alternatives; first match wins |
 | **Ignore** | `-parser` | Match but drop result from tuple |
+| **Extract** | `.value` | Extract matched string from `Parser<MatchResult>` |
 | **Repetition** | `.zeroOrMore`, `.oneOrMore`, `.list(min, max)` | Collect matches into `List<T>` |
 | **Serial** | `serial(p1, p2, ...)` | Parse multiple different parsers, return `List<T>` (no tuple limit) |
 | **Optional** | `.optional` | Try to match; rewind on failure |
