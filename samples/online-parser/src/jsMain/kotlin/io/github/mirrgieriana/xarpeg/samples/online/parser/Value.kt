@@ -37,6 +37,15 @@ data class BooleanValue(val value: Boolean) : Value() {
 }
 
 /**
+ * A string value.
+ */
+data class StringValue(val value: String) : Value() {
+    override val typeName = "String"
+    override fun isEqualTo(other: Value) = if (other is StringValue) value == other.value else null
+    override fun toString() = value
+}
+
+/**
  * A callable lambda value. Holds a reference to the [closureScope] where the lambda was defined,
  * enabling lexical scoping when the lambda is called.
  */

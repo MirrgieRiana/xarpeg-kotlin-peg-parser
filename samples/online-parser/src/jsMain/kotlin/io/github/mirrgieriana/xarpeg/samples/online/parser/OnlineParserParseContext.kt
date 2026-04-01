@@ -3,15 +3,20 @@ package io.github.mirrgieriana.xarpeg.samples.online.parser
 import io.github.mirrgieriana.xarpeg.DefaultParseContext
 
 /**
- * Custom [DefaultParseContext] that tracks indentation levels for indent-based syntax.
+ * Custom [DefaultParseContext] that tracks indentation levels and heredoc delimiter state.
  *
- * Maintains an immutable stack of indent levels. [getState] returns the stack directly,
- * enabling correct memoization when indentation state changes.
+ * Maintains an immutable stack of indent levels and an optional heredoc delimiter.
+ * [getState] returns both, enabling correct memoization when either state changes.
  */
 class OnlineParserParseContext(src: String) : DefaultParseContext(src) {
     private var indentStack = listOf(0)
 
-    override fun getState(): Any = indentStack
+    /**
+     * The delimiter of the heredoc currently being parsed, or `null` if not inside a heredoc.
+     */
+    var heredocDelimiter: String? = null
+
+    override fun getState(): Any = Pair(indentStack, heredocDelimiter)
 
     /**
      * The current required indentation level (top of the stack).

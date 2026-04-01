@@ -9,6 +9,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.Expression.Evaluation
 import io.github.mirrgieriana.xarpeg.samples.online.parser.LambdaValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.NumberValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Statement
+import io.github.mirrgieriana.xarpeg.samples.online.parser.StringValue
 import io.github.mirrgieriana.xarpeg.samples.online.parser.Value
 
 // -- Atoms --
@@ -21,6 +22,16 @@ class NumberLiteralExpression(
     override val position: ParseResult<*>,
 ) : Expression {
     override fun evaluate(ctx: EvaluationContext): Value = value
+}
+
+/**
+ * A heredoc literal expression. Evaluates to a [StringValue] containing the heredoc content.
+ */
+class HeredocExpression(
+    private val content: String,
+    override val position: ParseResult<*>,
+) : Expression {
+    override fun evaluate(ctx: EvaluationContext): Value = StringValue(content)
 }
 
 /**

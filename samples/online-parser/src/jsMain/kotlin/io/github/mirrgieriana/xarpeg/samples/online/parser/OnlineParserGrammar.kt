@@ -15,6 +15,10 @@ import io.github.mirrgieriana.xarpeg.parsers.result
 import io.github.mirrgieriana.xarpeg.parsers.times
 import io.github.mirrgieriana.xarpeg.parsers.unaryMinus
 import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
+import io.github.mirrgieriana.xarpeg.parsers.value
+import io.github.mirrgieriana.xarpeg.parsers.endOfInput
+import io.github.mirrgieriana.xarpeg.parsers.lookAhead
+import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.zeroOrMore
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AddExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AssignmentExpression
@@ -24,6 +28,7 @@ import io.github.mirrgieriana.xarpeg.samples.online.parser.statements.Expression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.FunctionCallExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.GreaterThanOrEqualExpression
+import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.HeredocExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.LambdaExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.LessThanExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.LessThanOrEqualExpression
@@ -93,10 +98,57 @@ internal object OnlineParserGrammar {
         }
     }
 
+    /**
+     * Wraps [body] to safely scope the heredoc delimiter state.
+     * Saves and restores [OnlineParserParseContext.heredocDelimiter] using try-finally,
+     * ensuring correct memoization even on backtracking. Supports nesting.
+     */
+    fun <T : Any> withHeredocDelimiter(body: Parser<T>): Parser<T> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) return@Parser null
+        val oldDelimiter = context.heredocDelimiter
+        try {
+            context.parseOrNull(body, start)
+        } finally {
+            context.heredocDelimiter = oldDelimiter
+        }
+    }
+
     // -- Terminals --
 
     val identifier: Parser<String> = (+Regex("""[a-zA-Z_][a-zA-Z0-9_]*""")).value named "identifier"
     val number: Parser<NumberValue> = (+Regex("""[0-9]+(?:\.[0-9]+)?""")).value map { NumberValue(it.toDouble()) } named "number"
+
+    // -- Heredoc --
+
+    /** Heredoc open identifier: parses the delimiter name and stores it in the parse context. */
+    private val heredocOpenIdentifier: Parser<String> = (+Regex("""[a-zA-Z0-9_]+""")).value mapEx { context, result ->
+        if (context !is OnlineParserParseContext) return@mapEx null
+        context.heredocDelimiter = result.value
+        result.value
+    }
+
+    /** Heredoc open tag: `<<` whitespace identifier whitespace linebreak. Stores the delimiter in context. */
+    val heredocOpenTag: Parser<Tuple0> = -"<<" * s * -heredocOpenIdentifier * s * lineBreak
+
+    /**
+     * Matches the current heredoc delimiter followed by linebreak or EOF.
+     * Does not consume the trailing linebreak.
+     */
+    val heredocCloseTag: Parser<Tuple0> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) return@Parser null
+        val delimiter = context.heredocDelimiter ?: return@Parser null
+        context.parseOrNull(-delimiter, start)
+    } * (lineBreak.lookAhead + endOfInput)
+
+    /** A single heredoc content line: not a close tag, then line content, then linebreak. */
+    val heredocContentLine: Parser<String> = !heredocCloseTag * (+Regex("""[^\r\n]*""")).value * lineBreak
+
+    /** Heredoc literal expression: open tag, zero or more content lines, close tag. */
+    val heredocLiteral: Parser<Expression> = withHeredocDelimiter(
+        (heredocOpenTag * heredocContentLine.zeroOrMore * heredocCloseTag).result map { result ->
+            HeredocExpression(result.value.joinToString("\n"), result)
+        }
+    )
 
     // -- Atoms --
 
@@ -132,6 +184,7 @@ internal object OnlineParserGrammar {
         lambda,
         functionCall,
         variableRef,
+        heredocLiteral,
         number.result map { NumberLiteralExpression(it.value, it) },
         -'(' * b * ref { expression } * b * -')',
     )
