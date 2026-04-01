@@ -32,6 +32,26 @@ fun main() {
 }
 ```
 
+`map`と`mapEx`はどちらもnullableな戻り値を受け付けます。ブロックから`null`を返すと解析が失敗し、値に基づく拒否が可能になります：
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    val positiveNumber = (+Regex("[0-9]+")).value map {
+        val n = it.toInt()
+        if (n > 0) n else null  // ゼロを拒否
+    } named "positive number"
+
+    val fallback = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
+    val parser = positiveNumber + fallback
+
+    check(parser.parseAll("42").getOrThrow() == 42)
+    check(parser.parseAll("0").getOrThrow() == 0)
+}
+```
+
 ## `mapEx`による位置へのアクセス
 
 位置情報が必要な場合は`mapEx`を使用します。`DefaultParseContext`と完全な`ParseResult`を受け取ります：
@@ -191,6 +211,8 @@ fun main() {
 
 **必要な場合は`mapEx`を使用** - 必要な場所でのみ位置を抽出。
 
+**`null`を返して拒否** - `map`や`mapEx`でnullableな戻り値を使い、意味的な条件に基づいて解析値を拒否。選択（`+`）と組み合わせてフォールバック先を指定。
+
 **位置ロジックを分離** - 位置追跡のために`fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>>`のような再利用可能なヘルパーを作成。
 
 **覚えておいてください：位置は常にそこにあります** - 文法全体でパーサの戻り値の型を変更する必要はありません。必要な境界で位置情報を抽出します。
@@ -198,8 +220,8 @@ fun main() {
 ## 重要なポイント
 
 - **`ParseResult`** `value`、`start`、`end`を含む
-- **`map`** 値を変換し、型をシンプルに保つ
-- **`mapEx`** コンテキストと位置情報にアクセス
+- **`map`** 値を変換し、型をシンプルに保つ。`null`を返すと解析が失敗する
+- **`mapEx`** コンテキストと位置情報にアクセス。`null`を返すと解析が失敗する
 - **`.result`** すべての位置データに直接アクセスするための完全な`ParseResult<T>`を返す
 - **`.text(ctx)`** マッチした部分文字列を抽出
 - **行/列の計算** 改行のカウントが必要

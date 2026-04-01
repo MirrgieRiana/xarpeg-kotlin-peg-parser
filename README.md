@@ -107,8 +107,8 @@ Interactive browser-based parser that demonstrates:
 | **Repetition** | `.zeroOrMore`, `.oneOrMore`, `.list(min, max)` | Collect matches into `List<T>` |
 | **Serial** | `serial(p1, p2, ...)` | Parse multiple different parsers, return `List<T>` (no tuple limit) |
 | **Optional** | `.optional` | Try to match; rewind on failure |
-| **Transform** | `.map { ... }` | Convert parsed value to another type |
-| **Position** | `.mapEx { ctx, result -> ... }` | Access context and position info |
+| **Transform** | `.map { ... }` | Convert parsed value to another type; return `null` to reject |
+| **Position** | `.mapEx { ctx, result -> ... }` | Access context and position info; return `null` to reject |
 | **Position** | `.result` | Get full `ParseResult<T>` with value and positions |
 | **Lookahead** | `!parser` | Succeed if parser fails (zero width) |
 | **Naming** | `parser named "name"` | Assign name for error messages |
