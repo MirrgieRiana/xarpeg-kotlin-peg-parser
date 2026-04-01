@@ -486,6 +486,8 @@ NL              &lt;- ('\r\n' / [\r\n]) _</code></pre>
             { title: "Indent-Style Factorial", code: "factorial(n):\n    n <= 1 ? 1 : n * factorial(n - 1)\nfactorial(5)" },
             { title: "Indent-Style Function", code: "double(x):\n    x * 2\ndouble(7)" },
             { title: "Indent-Style Multi-param", code: "add(a, b):\n    a + b\nvar result = add(10, 20)\nresult" },
+            { title: "Indent-Style Variables", code: "compute(x):\n    var doubled = x * 2\n    var tripled = x * 3\n    doubled + tripled\ncompute(5)" },
+            { title: "Indent-Style Nested Function", code: "calc(x):\n    var doubled = x * 2\n    add(y):\n        doubled + y\n    add(10)\ncalc(3)" },
         ];
 
         const input = document.getElementById("input");
