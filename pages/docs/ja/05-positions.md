@@ -41,7 +41,7 @@ import io.github.mirrgieriana.xarpeg.parsers.*
 fun main() {
     val positiveNumber = (+Regex("[0-9]+")).value map {
         val n = it.toInt()
-        if (n > 0) n else null  // ゼロと負の数を拒否
+        if (n > 0) n else null  // ゼロを拒否
     } named "positive number"
 
     val fallback = (+Regex("[0-9]+")).value map { it.toInt() } named "number"

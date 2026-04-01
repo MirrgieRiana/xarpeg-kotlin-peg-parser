@@ -95,7 +95,7 @@ class ParserUtilityTest {
     }
 
     @Test
-    fun mapNullPreservesStartEnd() {
+    fun mapReturningNullCausesParseFailureWithCondition() {
         val parser = +"ab" map { value: String ->
             if (value == "ab") null else value.uppercase()
         }
