@@ -32,6 +32,26 @@ fun main() {
 }
 ```
 
+Both `map` and `mapEx` accept nullable return values. Returning `null` from the block causes the parse to fail, enabling value-based rejection:
+
+```kotlin
+import io.github.mirrgieriana.xarpeg.*
+import io.github.mirrgieriana.xarpeg.parsers.*
+
+fun main() {
+    val positiveNumber = (+Regex("[0-9]+")).value map {
+        val n = it.toInt()
+        if (n > 0) n else null  // Reject zero and negative
+    } named "positive number"
+
+    val fallback = (+Regex("[0-9]+")).value map { it.toInt() } named "number"
+    val parser = positiveNumber + fallback
+
+    check(parser.parseAll("42").getOrThrow() == 42)
+    check(parser.parseAll("0").getOrThrow() == 0)
+}
+```
+
 ## Accessing Positions with `mapEx`
 
 Use `mapEx` when you need position information. It receives the `ParseContext` and full `ParseResult`:
@@ -191,6 +211,8 @@ fun main() {
 
 **Use `mapEx` when needed** - Extract positions only where required.
 
+**Return `null` to reject** - Use nullable return in `map` or `mapEx` to reject parsed values based on semantic conditions, combined with choice (`+`) for fallback alternatives.
+
 **Isolate position logic** - Create reusable helpers like `fun <T : Any> Parser<T>.withLocation(): Parser<Located<T>>` for position tracking.
 
 **Remember: positions are always there** - You don't need to change your parser's return type throughout your grammar. Extract position information at boundaries where you need it.
@@ -198,8 +220,8 @@ fun main() {
 ## Key Takeaways
 
 - **`ParseResult`** includes `value`, `start`, and `end`
-- **`map`** transforms values, keeping types simple
-- **`mapEx`** accesses context and position information
+- **`map`** transforms values, keeping types simple; returning `null` rejects the parse
+- **`mapEx`** accesses context and position information; returning `null` rejects the parse
 - **`.result`** returns full `ParseResult<T>` for direct access to all position data
 - **`.text(ctx)`** extracts the matched substring
 - **Line/column calculation** requires counting newlines
