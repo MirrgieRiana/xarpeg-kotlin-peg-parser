@@ -18,7 +18,6 @@ import io.github.mirrgieriana.xarpeg.parsers.unaryPlus
 import io.github.mirrgieriana.xarpeg.parsers.value
 import io.github.mirrgieriana.xarpeg.parsers.endOfInput
 import io.github.mirrgieriana.xarpeg.parsers.lookAhead
-import io.github.mirrgieriana.xarpeg.parsers.mapEx
 import io.github.mirrgieriana.xarpeg.parsers.zeroOrMore
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AddExpression
 import io.github.mirrgieriana.xarpeg.samples.online.parser.expressions.AssignmentExpression
@@ -121,10 +120,12 @@ internal object OnlineParserGrammar {
     // -- Heredoc --
 
     /** Heredoc open identifier: parses the delimiter name and stores it in the parse context. */
-    private val heredocOpenIdentifier: Parser<String> = (+Regex("""[a-zA-Z0-9_]+""")).value mapEx { context, result ->
-        if (context !is OnlineParserParseContext) return@mapEx null
+    private val heredocOpenIdentifierPattern: Parser<String> = (+Regex("""[a-zA-Z0-9_]+""")).value
+    private val heredocOpenIdentifier: Parser<String> = Parser { context, start ->
+        if (context !is OnlineParserParseContext) return@Parser null
+        val result = context.parseOrNull(heredocOpenIdentifierPattern, start) ?: return@Parser null
         context.heredocDelimiter = result.value
-        result.value
+        result
     }
 
     /** Heredoc open tag: `<<` whitespace identifier whitespace linebreak. Stores the delimiter in context. */
