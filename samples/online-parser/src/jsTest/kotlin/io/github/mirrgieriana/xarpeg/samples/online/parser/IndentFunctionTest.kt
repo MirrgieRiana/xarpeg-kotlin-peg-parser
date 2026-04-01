@@ -99,6 +99,16 @@ class IndentFunctionTest {
         assertEquals("11", evaluateExpression("f(x):\n    var y = x * 2\n    y + 1\nf(5)").output)
     }
 
+    @Test
+    fun variablesInsideIndentFunction() {
+        assertEquals("25", evaluateExpression("compute(x):\n    var doubled = x * 2\n    var tripled = x * 3\n    doubled + tripled\ncompute(5)").output)
+    }
+
+    @Test
+    fun nestedIndentFunctionWithVariable() {
+        assertEquals("16", evaluateExpression("calc(x):\n    var doubled = x * 2\n    add(y):\n        doubled + y\n    add(10)\ncalc(3)").output)
+    }
+
     // -- Multiple functions and mixing --
 
     @Test
