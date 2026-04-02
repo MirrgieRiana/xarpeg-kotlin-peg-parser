@@ -88,6 +88,7 @@ Follow our comprehensive tutorial to master parser combinators:
 
 Interactive browser-based parser that demonstrates:
 - Real-time parsing and evaluation
+- Python-style indent blocks and heredoc string literals
 - Error reporting with suggestions
 - Kotlin/JS multiplatform capabilities
 

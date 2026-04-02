@@ -102,9 +102,16 @@ Features:
 - Command-line interface
 
 ### Online Parser Demo
-Interactive browser-based parser demonstrating real-time parsing and evaluation.
+Interactive browser-based parser demonstrating real-time parsing and evaluation, including Python-style indent blocks and heredoc string literals.
 
 → **[Try Live Demo](https://mirrgieriana.github.io/xarpeg-kotlin-peg-parser/online-parser/)** | **[View Source](https://github.com/MirrgieRiana/xarpeg-kotlin-peg-parser/tree/main/samples/online-parser)**
+
+Features:
+- Arithmetic, comparison, ternary operators
+- Variable declarations and lambda expressions
+- Python-style indent-based function definitions
+- Heredoc string literals with line-based syntax (`<< DELIMITER` on its own line, then content lines, then a line containing only `DELIMITER`)
+- Runtime error reporting with stack traces
 
 ---
 
