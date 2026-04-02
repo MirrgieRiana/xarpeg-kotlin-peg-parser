@@ -110,7 +110,7 @@ Features:
 - Arithmetic, comparison, ternary operators
 - Variable declarations and lambda expressions
 - Python-style indent-based function definitions
-- Heredoc string literals (`<< DELIMITER ... DELIMITER`)
+- Heredoc string literals with line-based syntax (`<< DELIMITER` on its own line, then content lines, then a line containing only `DELIMITER`)
 - Runtime error reporting with stack traces
 
 ---
